@@ -1,0 +1,45 @@
+{
+  "id": "coffee",
+  "name": "Coffee",
+  "version": "0.1.0",
+  "author": "Ankur <ankur@localhost>",
+  "description": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
+  "license": "MIT",
+  "official": false,
+  "tags": ["power", "idle", "caffeine", "bar-widget", "desktop-widget"],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": { "width": 300 },
+  "files": [
+    "content/Glyph.qml",
+    "content/Card.qml",
+    "content/RowItem.qml",
+    "content/Logic.js",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": ["glyph", "compact"]
+  },
+  "hosts": ["topbarGlyph", "desktopWidget"],
+  "defaults": {
+    "host": "topbarGlyph",
+    "bar": { "section": "right" },
+    "desktopWidget": { "bg": "card" },
+    "icon": "coffee",
+    "label": "Coffee",
+    "helperPath": ""
+  },
+  "commands": ["bin/state-write"],
+  "dependencies": { "commands": ["timeout", "systemd-inhibit"] },
+  "metadata": {
+    "settings": [
+      { "key": "barLabel", "type": "choice", "label": "Beside the mark", "group": "Coffee", "default": "none",
+        "options": [ { "value": "none", "label": "Nothing" }, { "value": "state", "label": "ON/OFF" } ] },
+      { "key": "poll", "type": "int", "label": "Refresh seconds", "group": "Coffee", "default": 10, "min": 3, "max": 60 },
+      { "key": "helperPath", "type": "text", "label": "Inhibitor script (blank = host's caffeine bridge)", "group": "Coffee", "default": "", "placeholder": "~/.config/hypr/scripts/ryoku-cmd-caffeine" }
+    ]
+  }
+}
