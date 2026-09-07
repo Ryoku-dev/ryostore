@@ -15,6 +15,8 @@ import "../content/Logic.js" as Logic
 // here survives a shell reload exactly like the native one.
 Item {
     id: svc
+    // NOTE: no member may be named "poll" — `svc.poll()` from Timers would
+    // resolve to the property (a number) and throw "not a function".
 
     // Set by the host after this loads; the plugin's settings live behind it.
     // Read settings through pluginApi.pluginSettings, always behind a default,
@@ -30,7 +32,7 @@ Item {
     function _str(k, d) { return _has(k) ? String(settings[k]) : d; }
 
     // Poll cadence in seconds, clamped to the manifest's range.
-    readonly property int poll: Math.max(3, Math.min(60, Math.round(_num("poll", 10))))
+    readonly property int pollSeconds: Math.max(3, Math.min(60, Math.round(_num("poll", 10))))
     // What rides beside the bar mark: nothing or the ON/OFF state.
     readonly property string barLabel: _str("barLabel", "none")
     // Blank = the host's own caffeine bridge; set to point at an equivalent
@@ -165,7 +167,7 @@ Item {
     }
 
     Timer {
-        interval: svc.poll * 1000
+        interval: svc.pollSeconds * 1000
         running: true
         repeat: true
         triggeredOnStart: true

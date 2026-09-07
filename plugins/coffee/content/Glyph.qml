@@ -61,9 +61,8 @@ Item {
 
     HoverHandler {
         id: hover
-        ToolTip.visible: hovered
-        ToolTip.delay: 400
-        ToolTip.text: !root.known ? "Coffee" : (root.on ? "Coffee: idle inhibited" : "Coffee: idle allowed")
+        // (no tooltip: attached ToolTip object needs QtQuick.Controls, which
+        // the plugin sandbox does not import; the panel is the status view)
     }
 
     MouseArea {

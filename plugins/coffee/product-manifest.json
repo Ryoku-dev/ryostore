@@ -22,6 +22,14 @@
       "install": false
     },
     {
+      "source": "assets/preview-live.png",
+      "destination": "assets/preview-live.png",
+      "sha256": "36b6b60ee9bfe1a9b8a1c34c36806e50006dae32ad1ee8f281df31499274b6cc",
+      "mode": "0644",
+      "size": 26036,
+      "install": true
+    },
+    {
       "source": "assets/preview-widget.png",
       "destination": "assets/preview-widget.png",
       "sha256": "20657d51e26dbebf94621819ca8979d2856e6263e8fb23d440055d88add7e41d",
@@ -48,9 +56,9 @@
     {
       "source": "content/Glyph.qml",
       "destination": "content/Glyph.qml",
-      "sha256": "5870a0e8f21cf0564c7d825880ce628bd08aa7afb33c17c360f423df3ab657be",
+      "sha256": "6226807d8616e51242564e5423ff2d4db054dc81e4cd939e72a1420a652b0d8d",
       "mode": "0644",
-      "size": 2572,
+      "size": 2558,
       "install": true
     },
     {
@@ -96,9 +104,9 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "16086b02c168fc823d7ed765ca723df94a76e5882e334c83582ef04ff2051157",
+      "sha256": "1809483809c3b2f2bd3cbaba37b6ae52c6aecfd3dbe8c2f67b8cf243f4d84757",
       "mode": "0644",
-      "size": 7771,
+      "size": 7933,
       "install": true
     }
   ]

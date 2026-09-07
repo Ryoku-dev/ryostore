@@ -241,7 +241,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "0c0c35cdb03c87b1a859fe04f9e27c5ab0c512b1ff649630bc6594cfe893a968",
+      "manifestSha256": "abb6383047bf3998079dccced8d60ae19b5eeee6cfa6708b4607480093dd60c3",
       "official": false,
       "tagline": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
       "icon": "coffee",
