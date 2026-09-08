@@ -35,6 +35,12 @@ Ryoku changes, the contributor must return and update their item. A maintainer
 helping an item into the store does not transfer that responsibility to Ryoku.
 Unmaintained, incompatible, or unsafe items may be removed from the catalogue.
 
+To pause downloads without delisting an item, supported product registries accept
+`"downloadPaused": true` and a user-facing `"downloadPauseReason"`. Updated Store
+clients keep the item visible as **Under construction**, block installs and
+updates, and still allow removal. Older clients do not enforce this flag.
+Remove these fields after the contributor's fix is ready to release.
+
 **Users remain responsible for reviewing the code they install and its updates.**
 Plugins and bar styles run inside your desktop with your user permissions; being
 listed is not sandboxing, an endorsement, or a promise of safety. Review external

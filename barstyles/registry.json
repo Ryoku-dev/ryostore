@@ -75,6 +75,8 @@
       "author": "feelyourwarmth",
       "summary": "A sleek, customizable pill-style bar for Ryoku.",
       "description": "Ricelin is a modern pill-style bar focused on clean visuals, smooth animations, dynamic theming, and extensive customization. It integrates with Ryoku and supports dynamic colors.",
+      "downloadPaused": true,
+      "downloadPauseReason": "Has known issues. The developer is working on fixes.",
       "tags": [
         "bar",
         "barstyle",
