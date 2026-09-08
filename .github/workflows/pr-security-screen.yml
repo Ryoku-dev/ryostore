@@ -65,6 +65,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           path: candidate
           persist-credentials: false
+          # Audited exception: readonly token, no secrets, no candidate execution.
+          # v7 otherwise refuses fork data in pull_request_target workflows.
+          allow-unsafe-pr-checkout: true
           submodules: false
           # Full history so the secret scanner can inspect the introduced range.
           fetch-depth: 0
