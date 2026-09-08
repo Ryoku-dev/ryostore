@@ -35,8 +35,8 @@ import Quickshell.Io
  * externally started or stopped recorder so the state is never stale.
  *
  * The recent list carries a cover thumbnail per clip: `refreshRecent()` first
- * runs the thumb script (ffmpeg extracts a single frame into a cache dir under
- * `$XDG_CACHE_HOME/ricelin/rec-thumbs`, skipping clips already cached) and only
+ * extracts a cover frame per clip with ffmpeg into a cache dir under
+ * `$XDG_CACHE_HOME/ricelin/rec-thumbs`, skipping clips already cached, and only
  * then re-reads the list, so each entry's `thumb` path is on disk by the time
  * the filmstrip binds to it. Entries are `{ path, name, mtime, sizeLabel,
  * thumb }`.
@@ -47,7 +47,26 @@ Singleton {
     readonly property string home: Quickshell.env("HOME")
     readonly property string defaultDir: home + "/Videos/Recordings"
     readonly property string thumbDir: (Quickshell.env("XDG_CACHE_HOME") || (home + "/.cache")) + "/ricelin/rec-thumbs/"
-    readonly property string thumbScript: home + "/.config/hypr/scripts/rec-thumbs.sh"
+    /**
+     * Inline replacement for the previous helper script: ffmpeg lifts one poster
+     * frame per recording into the cache dir, skipping clips already cached and
+     * falling back to the first frame for a very short clip. The save dir and
+     * cache dir arrive as positional args, never interpolated into the script.
+     */
+    readonly property string thumbCmd:
+        "src=\"$1\"; d=\"${2%/}\"\n" +
+        "[ -d \"$src\" ] || exit 0\n" +
+        "[ -n \"$d\" ] || exit 0\n" +
+        "mkdir -p \"$d\" 2>/dev/null || exit 0\n" +
+        "command -v ffmpeg >/dev/null 2>&1 || exit 0\n" +
+        "for f in \"$src\"/recording_*.mp4; do\n" +
+        "  [ -e \"$f\" ] || continue\n" +
+        "  b=${f##*/}; out=\"$d/${b%.mp4}.jpg\"\n" +
+        "  [ -s \"$out\" ] && continue\n" +
+        "  ffmpeg -nostdin -loglevel error -ss 1 -i \"$f\" -frames:v 1 -vf scale=480:-2 -y \"$out\" >/dev/null 2>&1\n" +
+        "  [ -s \"$out\" ] || ffmpeg -nostdin -loglevel error -i \"$f\" -frames:v 1 -vf scale=480:-2 -y \"$out\" >/dev/null 2>&1\n" +
+        "  [ -s \"$out\" ] || rm -f \"$out\"\n" +
+        "done\n"
     readonly property string outDir: {
         var d = Flags.recordDir;
         return d && d.length > 0 ? d : defaultDir;
@@ -266,8 +285,8 @@ Singleton {
 
     /**
      * Re-read the recent list, regenerating any missing cover thumbnails first.
-     * The thumb script extracts a frame per clip with ffmpeg into the cache dir
-     * (skipping clips whose thumb already exists and is newer) and only then does
+     * ffmpeg extracts a frame per clip into the cache dir
+     * (skipping clips whose thumb already exists) and only then does
      * the list land, so filmstrip delegates never bind to a not-yet-written jpg;
      * a thumb run already in flight is left to finish rather than stacked.
      */
@@ -409,7 +428,7 @@ Singleton {
 
     Process {
         id: thumbProc
-        command: ["sh", root.thumbScript, root.outDir]
+        command: ["sh", "-c", root.thumbCmd, "ricelin", root.outDir, root.thumbDir]
         onExited: listProc.running = true
     }
 

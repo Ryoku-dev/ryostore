@@ -18,7 +18,8 @@
     "content/Card.qml",
     "content/RowItem.qml",
     "content/Logic.js",
-    "assets/preview-widget.png"
+    "assets/preview-widget.png",
+    "assets/preview-live.png"
   ],
   "capabilities": {
     "densities": ["glyph", "compact"]
@@ -29,8 +30,7 @@
     "bar": { "section": "right" },
     "desktopWidget": { "bg": "card" },
     "icon": "coffee",
-    "label": "Coffee",
-    "helperPath": ""
+    "label": "Coffee"
   },
   "commands": ["bin/state-write"],
   "dependencies": { "commands": ["timeout", "systemd-inhibit"] },

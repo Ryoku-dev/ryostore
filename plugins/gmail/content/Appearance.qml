@@ -1,58 +1,23 @@
 pragma Singleton
 import QtQuick
-import Quickshell
-import Quickshell.Io
-import Ryoku.PluginKit
-import Ryoku.Ui.Singletons
+import Ryoku.PluginKit.Singletons as Kit
 
 QtObject {
     id: root
 
-    // ── Matugen Live Integration ──────────────────────────────────────────
-    property var matugen: ({})
-
-    function reloadMatugen() {
-        try {
-            var txt = colorsFile.text();
-            if (txt && txt.trim().length > 0) {
-                matugen = JSON.parse(txt) || {};
-            }
-        } catch(e) {
-            matugen = {};
-        }
-    }
-
-    readonly property color accentColor: (matugen && matugen.primary)
-        ? matugen.primary
-        : ((typeof Tokens !== "undefined" && Tokens && Tokens.sun) ? Tokens.sun : "#6E6A58")
-
-    readonly property color brightColor: (matugen && matugen.onSurface)
-        ? matugen.onSurface
-        : ((typeof Tokens !== "undefined" && Tokens && Tokens.ink) ? Tokens.ink : "#ebdbb2")
-
-    readonly property color dimColor: (matugen && matugen.onSurfaceVariant)
-        ? matugen.onSurfaceVariant
-        : ((typeof Tokens !== "undefined" && Tokens && Tokens.inkDim) ? Tokens.inkDim : "#F6F1DD")
-
-    readonly property color cardTopColor: (matugen && matugen.surfaceContainerLow)
-        ? matugen.surfaceContainerLow
-        : ((typeof Tokens !== "undefined" && Tokens && Tokens.paperLift) ? Tokens.paperLift : "#141514")
-
-    readonly property color cardBotColor: (matugen && matugen.surface)
-        ? matugen.surface
-        : ((typeof Tokens !== "undefined" && Tokens && Tokens.paper) ? Tokens.paper : "#0D0D0D")
-
-    readonly property color tileBgColor: (matugen && matugen.surfaceContainer)
-        ? matugen.surfaceContainer
-        : ((matugen && matugen.primaryContainer) ? matugen.primaryContainer : "#1b1d1b")
-
-    readonly property color hairColor: (matugen && matugen.outlineVariant)
-        ? matugen.outlineVariant
-        : ((typeof Tokens !== "undefined" && Tokens && Tokens.lineSoft) ? Tokens.lineSoft : Qt.rgba(brightColor.r, brightColor.g, brightColor.b, 0.15))
-
-    readonly property string fontMain: "Space Grotesk"
-    readonly property string fontMono: "JetBrainsMono Nerd Font"
-
+    // Resolve through the public SDK: named palettes and wallpaper-follow
+    // share the same precedence as the host shell.
+    readonly property var matugen: Kit.Scheme.namedScheme
+        || (Kit.Scheme.matchWallpaper ? Kit.Scheme.wall : ({}))
+    readonly property color accentColor: Kit.Theme.accent
+    readonly property color brightColor: Kit.Theme.bright
+    readonly property color dimColor: Kit.Theme.dim
+    readonly property color cardTopColor: Kit.Theme.cardTop
+    readonly property color cardBotColor: Kit.Theme.cardBot
+    readonly property color tileBgColor: Kit.Theme.tileBg
+    readonly property color hairColor: Kit.Theme.hair
+    readonly property string fontMain: Kit.Theme.font
+    readonly property string fontMono: Kit.Theme.mono
     property QtObject colors: QtObject {
         property color colPrimary: root.accentColor
         property color colPrimaryHover: Qt.lighter(root.accentColor, 1.15)
@@ -143,6 +108,8 @@ QtObject {
         property QtObject family: QtObject {
             property string main: root.fontMain
             property string mono: root.fontMono
+            property string reading: root.fontMain
+            property string iconNerd: root.fontMono
             property string icon: "Material Symbols Outlined"
         }
         property QtObject pixelSize: QtObject {
@@ -150,6 +117,7 @@ QtObject {
             property int smallest: 10
             property int smaller: 11
             property int small: 12
+            property int smallie: 12
             property int normal: 13
             property int large: 14
             property int larger: 16
@@ -164,6 +132,7 @@ QtObject {
         property real small: 4
         property real normal: 6
         property real large: 8
+        property real verylarge: 10
         property real extraLarge: 10
         property real full: 999
         property real windowRounding: 10
@@ -190,16 +159,4 @@ QtObject {
         }
     }
 
-    // ── File Watcher for Matugen colors.json ────────────────────────────────
-    Component.onCompleted: {
-        root.reloadMatugen();
-    }
-
-    // Direct binding helper: FileView with live watch on ~/.cache/ryoku/colors.json
-    readonly property var colorsFile: FileView {
-        path: (typeof Quickshell !== "undefined" && Quickshell.env && Quickshell.env("HOME") ? Quickshell.env("HOME") : Directories.home) + "/.cache/ryoku/colors.json"
-        watchChanges: true
-        onFileChanged: root.reloadMatugen()
-        onLoaded: root.reloadMatugen()
-    }
 }

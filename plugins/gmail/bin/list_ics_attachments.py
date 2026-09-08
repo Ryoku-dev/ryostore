@@ -28,7 +28,7 @@ CALENDAR_MIME_TYPES = {"text/calendar", "application/ics", "text/icalendar"}
 def api_get(url: str, token: str) -> dict[str, Any]:
     request = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
     with urllib.request.urlopen(request, timeout=20) as response:
-        return json.loads(response.read())
+        return gmail_config.read_json_response(response)
 
 
 def decode_base64url(value: str) -> bytes:

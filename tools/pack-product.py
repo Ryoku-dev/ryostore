@@ -76,6 +76,8 @@ def _iter_sources(product: Path, manifest_name: str):
         if path.is_symlink():
             raise ValueError(f"symlink forbidden: {relative}")
         if path.is_file():
+            if "__pycache__" in parts or path.suffix in {".pyc", ".pyo"}:
+                raise ValueError(f"remove generated Python bytecode before packing: {relative}")
             yield relative, path
 
 

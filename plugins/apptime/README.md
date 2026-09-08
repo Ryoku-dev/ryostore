@@ -70,3 +70,7 @@ ryoku plugin remove apptime         # uninstall
 
 Layout: `service/Main.qml` (tracker logic, no UI), `content/Widget.qml`
 (glyph), `content/Panel.qml` (panel). Follows the Ryoku plugin rules R1–R11.
+
+## Maintenance & safety
+
+App Time is a community contribution. Its author maintains and updates it — not the Ryoku team. Ryostore screens every submission against the plugin rules and reviews the code, but screening is a safeguard, not a guarantee: you install and run community plugins at your own discretion, so review what a plugin does before enabling it.

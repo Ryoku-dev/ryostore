@@ -596,7 +596,7 @@
       "path": "fastfetch/ryoku-mono",
       "author": "aethctl",
       "summary": "Editorial Matugen system dossier",
-      "description": "A structured Ryoku readout pairing the detected distro mark with grouped identity, session, machine and live system information in a restrained Matugen-driven palette.",
+      "description": "A structured Ryoku readout pairing the detected distro mark with grouped identity, session, machine and live system information in a restrained Matugen-driven palette. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "ryoku",
         "matugen",
@@ -620,7 +620,7 @@
       "path": "fastfetch/chroma",
       "author": "aethctl",
       "summary": "Matugen-first everyday system readout",
-      "description": "A colourful everyday summary built around Ryoku's live Material palette, with distinct system, desktop and hardware sections beside a compact distro mark.",
+      "description": "A colourful everyday summary built around Ryoku's live Material palette, with distinct system, desktop and hardware sections beside a compact distro mark. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "matugen",
         "colorful",
@@ -668,7 +668,7 @@
       "path": "fastfetch/glassline",
       "author": "aethctl",
       "summary": "Open-rail minimalist system card",
-      "description": "A lightweight precision readout using open rails rather than rigid boxes, keeping system, desktop and hardware information clean even when values vary in width.",
+      "description": "A lightweight precision readout using open rails rather than rigid boxes, keeping system, desktop and hardware information clean even when values vary in width. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "minimal",
         "rails",
@@ -692,7 +692,7 @@
       "path": "fastfetch/gridline",
       "author": "aethctl",
       "summary": "Dense Matugen technical tree",
-      "description": "A continuous technical rail grouping system, desktop, hardware and live status information into a dense but readable Matugen-coloured tree.",
+      "description": "A continuous technical rail grouping system, desktop, hardware and live status information into a dense but readable Matugen-coloured tree. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "technical",
         "tree",
@@ -716,7 +716,7 @@
       "path": "fastfetch/cascade",
       "author": "aethctl",
       "summary": "Stepped hierarchical machine readout",
-      "description": "A distinctive descending hierarchy that cascades from system information through the desktop and into machine hardware, driven by the active Ryoku palette.",
+      "description": "A distinctive descending hierarchy that cascades from system information through the desktop and into machine hardware, driven by the active Ryoku palette. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "hierarchy",
         "stepped",
@@ -740,7 +740,7 @@
       "path": "fastfetch/signal",
       "author": "aethctl",
       "summary": "Compact live-status system readout",
-      "description": "A focused status display for identity, session, network, compute, storage and time, designed as a compact alternative to full hardware inventories.",
+      "description": "A focused status display for identity, session, network, compute, storage and time, designed as a compact alternative to full hardware inventories. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "status",
         "compact",
@@ -764,7 +764,7 @@
       "path": "fastfetch/vector",
       "author": "aethctl",
       "summary": "Angular Matugen hardware profile",
-      "description": "A compact angular machine readout using sharp separators and a small distro mark to present core system, hardware and compositor information.",
+      "description": "A compact angular machine readout using sharp separators and a small distro mark to present core system, hardware and compositor information. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "angular",
         "technical",
@@ -860,7 +860,7 @@
       "path": "fastfetch/orbit",
       "author": "aethctl",
       "summary": "Circular Matugen system summary",
-      "description": "A compact everyday readout built around restrained circular motifs, separating system, hardware and session information through the active Ryoku palette.",
+      "description": "A compact everyday readout built around restrained circular motifs, separating system, hardware and session information through the active Ryoku palette. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "circular",
         "matugen",
@@ -884,7 +884,7 @@
       "path": "fastfetch/flow",
       "author": "aethctl",
       "summary": "Soft diagonal system progression",
-      "description": "A clean Matugen readout that moves diagonally from identity into hardware and session information with minimal decoration and generous spacing.",
+      "description": "A clean Matugen readout that moves diagonally from identity into hardware and session information with minimal decoration and generous spacing. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "minimal",
         "diagonal",
@@ -932,7 +932,7 @@
       "path": "fastfetch/zero",
       "author": "aethctl",
       "summary": "Bare-minimum Matugen inventory",
-      "description": "A deliberately tiny logo-free preset showing only the essential operating system, kernel, processor, graphics, memory and uptime information.",
+      "description": "A deliberately tiny logo-free preset showing only the essential operating system, kernel, processor, graphics, memory and uptime information. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
         "minimal",
         "logo-free",

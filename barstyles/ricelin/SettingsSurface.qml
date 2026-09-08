@@ -12,7 +12,8 @@ import QtQuick
  * Each `rows` entry pairs a row item with its control kind and the backing getter
  * and setter: `seg` cycles a segmented choice (wrapping), `toggle` flips a
  * boolean, `scrub` bumps a numeric scrub through its `bump(dir)`, `nav` morphs
- * to another surface. The host routes arrow keys through `kbMove`,
+ * to another surface, and `action` runs its `act()` (e.g. hand off to Ryoku
+ * Settings). The host routes arrow keys through `kbMove`,
  * `kbAdjust` and `kbActivate`; hover and clicks route through `reportRowHover`
  * and `activateRow`, keeping `kbIndex` and the seam in sync.
  */
@@ -89,6 +90,8 @@ PillSurface {
             root.requestSurface(r.surface);
         else if (r.kind === "seg")
             segCycle(r, 1);
+        else if (r.kind === "action")
+            r.act();
     }
 
     /**
@@ -110,6 +113,8 @@ PillSurface {
             root.requestSurface(r.surface);
         else if (r.kind === "seg")
             segCycle(r, 1);
+        else if (r.kind === "action")
+            r.act();
     }
 
     readonly property bool rowFocused: focusRowItem !== null && active

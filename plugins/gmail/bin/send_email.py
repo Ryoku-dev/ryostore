@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Send an email using Gmail API.
-Usage: send_email.py <refresh_token> <to> <subject> <body_html>
+Input: JSON on stdin; token via RYOKU_GMAIL_TOKEN. Private mail never enters argv.
 Outputs JSON: { "success": true } or { "success": false, "error": "<msg>" }
 """
 import sys
@@ -29,55 +29,33 @@ def send_message(token, raw_msg, thread_id=None):
             "Content-Type": "application/json"
         }
     )
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return gmail_config.read_json_response(resp)
 
 def main():
-    if len(sys.argv) < 5:
-        print(json.dumps({"success": False, "error": "Missing arguments"}))
-        sys.exit(0)
-
-    refresh_token = sys.argv[1]
-    to_address    = sys.argv[2]
-    subject       = sys.argv[3]
-    body_html     = sys.argv[4]
-
-    # Parse optional arguments and attachments
-    cc_address = None
-    bcc_address = None
-    thread_id = None
-    in_reply_to = None
-    references = None
-    attachments = []
-
-    i = 5
-    while i < len(sys.argv):
-        arg = sys.argv[i]
-        if arg == '--cc' and i + 1 < len(sys.argv):
-            cc_address = sys.argv[i+1]
-            i += 2
-        elif arg == '--bcc' and i + 1 < len(sys.argv):
-            bcc_address = sys.argv[i+1]
-            i += 2
-        elif arg == '--thread-id' and i + 1 < len(sys.argv):
-            thread_id = sys.argv[i+1]
-            i += 2
-        elif arg == '--in-reply-to' and i + 1 < len(sys.argv):
-            in_reply_to = sys.argv[i+1]
-            i += 2
-        elif arg == '--references' and i + 1 < len(sys.argv):
-            references = sys.argv[i+1]
-            i += 2
-        elif arg == '--attachments':
-            i += 1
-        else:
-            attachments.append(arg)
-            i += 1
+    raw_input = sys.stdin.read(1024 * 1024 + 1)
+    if len(raw_input) > 1024 * 1024:
+        print(json.dumps({"success": False, "error": "Message input exceeds 1 MiB"}))
+        return
+    try:
+        data = json.loads(raw_input)
+        to_address = data["to"]
+        subject = data["subject"]
+        body_html = data["body"]
+        cc_address = data.get("cc")
+        bcc_address = data.get("bcc")
+        thread_id = data.get("threadId")
+        in_reply_to = data.get("inReplyTo")
+        references = data.get("references")
+        attachments = data.get("attachments", [])
+    except (ValueError, KeyError, TypeError):
+        print(json.dumps({"success": False, "error": "Invalid message input"}))
+        return
 
     try:
         # 1. Resolve token (access or refresh)
         try:
-            token = gmail_config.resolve_token(refresh_token)
+            token = gmail_config.resolve_token(gmail_config.runtime_token())
         except Exception as e:
             print(json.dumps({"success": False, "error": f"Failed to get access token: {str(e)}"}))
             sys.exit(0)
@@ -103,9 +81,10 @@ def main():
         message.attach(alt_part)
 
         # Attachments
+        remaining_bytes = 25 * 1024 * 1024 - len(body_html.encode("utf-8"))
         for att_path in attachments:
             if not os.path.isfile(att_path):
-                continue
+                raise FileNotFoundError("An attachment is no longer available")
             ctype, encoding = mimetypes.guess_type(att_path)
             if ctype is None or encoding is not None:
                 ctype = 'application/octet-stream'
@@ -113,7 +92,11 @@ def main():
             
             with open(att_path, 'rb') as f:
                 part = MIMEBase(maintype, subtype)
-                part.set_payload(f.read())
+                content = f.read(max(0, remaining_bytes) + 1)
+                remaining_bytes -= len(content)
+                if remaining_bytes < 0:
+                    raise ValueError("Message attachments exceed 25 MiB")
+                part.set_payload(content)
             
             encoders.encode_base64(part)
             filename = os.path.basename(att_path)

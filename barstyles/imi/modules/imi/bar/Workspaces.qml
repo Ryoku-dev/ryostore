@@ -58,8 +58,10 @@ ButtonMouseArea {
     onPressed: mouse => {
         if (mouse.button == Qt.LeftButton)
             switchWorkspaceToHovered();
-        else if (mouse.button == Qt.RightButton)
-            RyokuServices.ShellState.toggleOverview();
+        else if (mouse.button == Qt.RightButton) {
+            const st = RyokuServices.ShellState.forScreen(wsModel.screen);
+            if (st) st.overviewOpen = !st.overviewOpen;
+        }
     }
     onWheel: event => {
         if (event.angleDelta.y < 0)

@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "0b4b6babd9778a2cbacf00aa52842ca77803cc3702728398cfe078f0793c33fc",
+      "sha256": "85a4d4eca4c81cd9814fd2da421b62a9ca2f9170d405d0bcec64fe5bba78f814",
       "mode": "0644",
-      "size": 3326,
+      "size": 3927,
       "install": false
     },
     {
@@ -64,9 +64,9 @@
     {
       "source": "content/Logic.js",
       "destination": "content/Logic.js",
-      "sha256": "a5f42ab829cb4b6fe706bdbe548b109de1a663700f32d0b04a9570a9ccce69a2",
+      "sha256": "9d40f2b20ba655a12e0210924b961f5aba17c49911c8ded7fdacbbadd49fc6d9",
       "mode": "0644",
-      "size": 2588,
+      "size": 2393,
       "install": true
     },
     {
@@ -96,17 +96,17 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "6e97100ee65908317a9e701bce2b4344c15d0a6cbcc9f0bc87c5b9f1ec97df4c",
+      "sha256": "4ba61a49502266cfe1c3e02d317b80d64b7fd131e591a791cb1ceae3d66a151d",
       "mode": "0644",
-      "size": 1648,
+      "size": 1657,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "1809483809c3b2f2bd3cbaba37b6ae52c6aecfd3dbe8c2f67b8cf243f4d84757",
+      "sha256": "e6c6454b2c3faecfc5d7efae51510798404255859ad9b5a5e8f2b64eb59d35e4",
       "mode": "0644",
-      "size": 7933,
+      "size": 8085,
       "install": true
     }
   ]

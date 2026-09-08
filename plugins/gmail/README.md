@@ -5,7 +5,7 @@ Native industrial noir Gmail client and notification reader plugin for the [Ryok
 ## Features
 
 - **Ryoku Industrial Design:** Styled to match the Ryoku design language with hairline borders, Japanese typography markers, and live Matugen color scheme integration.
-- **OAuth 2.0 PKCE:** Direct loopback authorization on `http://localhost:42069/callback`. Tokens are stored strictly locally in `~/.config/ryoku/` with zero telemetry or cloud relays.
+- **OAuth 2.0 PKCE:** Direct loopback authorization on `http://127.0.0.1:42069/callback` with an anti-CSRF `state` token. Tokens and API keys are stored strictly locally under the plugin state dir (`~/.local/state/ryoku/plugins/gmail/`, files `chmod 0600`) with zero telemetry or cloud relays.
 - **Custom Geometry:** Configurable popup width (480px–960px) and height (440px–720px) directly from Ryoku Settings.
 - **Full Mailbox Management:** Browse Inbox, Sent, Spam, and Trash with real-time search, read threads, view HTML/plain text, and compose/send emails.
 
@@ -52,6 +52,43 @@ To connect your Gmail account, you will need a free Google Cloud OAuth Client ID
 
 ---
 
+## Permissions & data handling
+
+- **Writes** only under the plugin state dir `~/.local/state/ryoku/plugins/gmail/`
+  (`$XDG_STATE_HOME/ryoku/plugins/gmail/`): `gmail.env` (OAuth client id/secret,
+  `chmod 0600`) and `accounts.json` (per-account refresh tokens, `chmod 0600`).
+  Downloaded attachments are saved to `~/Downloads` (or a folder you pick) on an
+  explicit download click; calendar `.ics` files are staged in a temp dir.
+- **Secrets** (OAuth tokens, client id/secret, account lists) are passed to the
+  helper scripts through the process environment or stdin, never as command-line
+  arguments, so they do not appear in process listings.
+- **Network** hosts contacted (declared in `manifest.json` `capabilities.network`):
+  `accounts.google.com`, `oauth2.googleapis.com`, `www.googleapis.com`,
+  `gmail.googleapis.com`. Nothing else is contacted.
+- **Commands**: the plugin ships its own Python helpers under `bin/` and shells
+  out to `python3` and `xdg-open` (to open the consent screen). `khal` is
+  optional and used only by **Add to Calendar** to import an `.ics` event;
+  without it, mail features are unaffected.
+
+## Maintenance & support
+
+This is a community plugin. It is maintained by its contributor, not the Ryoku
+team; updates and fixes are the contributor's responsibility. Ryostore provides
+robust screening of submissions, but that is not a guarantee of correctness or
+safety — you are responsible for reviewing the code you install and the Google
+Cloud credentials you provide.
+
+---
+
 ## License
 
-MIT
+This plugin is a composite work distributed as a whole under the **GNU GPL v3.0**
+(`SPDX: GPL-3.0-only AND MIT`).
+
+- Its QML UI widgets are derived from the GPL-3.0 [illogical-impulse](https://github.com/end-4/dots-hyprland)
+  Quickshell config and are styled for the GPL-3.0 [Ryoku](https://github.com/neur0map/ryoku) shell.
+- The Gmail-specific code (the `bin/` Python helpers and the `Email*` views) is
+  © 2026 Yash Parmar (Zatch07) and is additionally offered under the MIT License.
+
+See [LICENSE](LICENSE) (GPL-3.0), [NOTICE](NOTICE) (upstream attribution + the MIT
+notice), and [PROVENANCE.md](PROVENANCE.md) for the full determination.

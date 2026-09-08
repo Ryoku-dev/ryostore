@@ -5,17 +5,16 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import gmail_config
 
 def main():
-    if len(sys.argv) < 3:
-        print(json.dumps({"success": False, "error": "Usage: delete_email.py <token_or_refresh> <message_id> [mode=trash|permanent|untrash]"}))
+    if len(sys.argv) < 2:
+        print(json.dumps({"success": False, "error": "Usage: delete_email.py <message_id> [mode=trash|permanent|untrash]"}))
         sys.exit(1)
 
-    token_arg = sys.argv[1]
-    message_id = sys.argv[2]
-    mode = sys.argv[3] if len(sys.argv) > 3 else "trash"
+    message_id = sys.argv[1]
+    mode = sys.argv[2] if len(sys.argv) > 2 else "trash"
 
     # Safe token resolution
     try:
-        token = gmail_config.resolve_token(token_arg)
+        token = gmail_config.resolve_token(gmail_config.runtime_token())
         if not token:
             print(json.dumps({"success": False, "error": "Failed to resolve access token"}), flush=True)
             sys.exit(1)
@@ -41,12 +40,12 @@ def main():
 
     req = urllib.request.Request(url, data=data, method=method, headers=headers)
     try:
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=20) as resp:
             status = resp.getcode()
             print(json.dumps({"success": True, "status": status, "id": message_id, "mode": mode}), flush=True)
             sys.exit(0)
     except urllib.error.HTTPError as e:
-        raw_body = e.read().decode("utf-8", errors="replace")
+        raw_body = e.read(1024 * 1024).decode("utf-8", errors="replace")
         print(f"[delete_email] HTTP Error {e.code}: {raw_body}", file=sys.stderr, flush=True)
         print(json.dumps({"success": False, "code": e.code, "error": raw_body}), flush=True)
         sys.exit(1)

@@ -8,6 +8,21 @@ authoring guide, linked below.
 [DEVELOP.md](DEVELOP.md) guide shows you how to point your running desktop at
 your local copy and watch it work. Do that first; it catches almost everything.
 
+## You maintain what you submit
+
+Community items and plugins are **not maintained by the Ryoku team**. You are
+responsible for returning to update your submission when Ryoku's shell, APIs,
+paths, dependencies, or security requirements change. Keep a reachable author or
+upstream contact, investigate reports, bump the product version, regenerate its
+manifest, and submit fixes. If you cannot maintain an item, tell us so it can be
+retired instead of silently breaking users' desktops.
+
+Store review and automated checks are screening, not security certification.
+Users still need to inspect the code they install. Explain what your item runs,
+reads, writes, and contacts; do not describe a green check as proof that it is
+safe. Follow [SECURITY.md](SECURITY.md) before submitting or updating executable
+content.
+
 ## The shape of a submission
 
 Ryostore is a catalogue repo. Every item is:
@@ -75,7 +90,10 @@ with you.
   licensed for redistribution. Say so in the item's README or manifest.
 - A **`registry.json` entry** with the fields your catalogue's guide lists,
   `lastUpdated` in `YYYY-MM-DD`, and (for community work) `official: false`.
-- **`tests/validate-catalogue.sh` passing.**
+- **Catalogue integrity and security screening passing**, with every finding
+  resolved or explicitly reviewed under the security policy.
+- A clear **maintenance contact** and acknowledgement that ongoing maintenance
+  belongs to the contributor, not the Ryoku team.
 
 That is the whole contract. When in doubt, copy the closest existing item and
 change one thing at a time.

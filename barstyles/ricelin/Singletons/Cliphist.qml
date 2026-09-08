@@ -6,9 +6,9 @@ import Quickshell.Io
 /**
  * cliphist bridge: keeps a warm in-memory snapshot of the clipboard history so
  * the clipboard surface opens instantly without shelling out on demand. A
- * wl-paste watcher fires on every clipboard change; after a short debounce the
- * thumbnail script regenerates missing image previews (and prunes stale ones),
- * then `cliphist list` is re-read into `entries`. Thumbnails are written before
+ * wl-paste watcher fires on every clipboard change; after a short debounce
+ * magick regenerates missing image previews (and prunes stale ones), then
+ * `cliphist list` is re-read into `entries`. Thumbnails are written before
  * the list lands so image delegates never bind to a not-yet-existing file. A
  * change arriving while the pipeline runs sets `pending` and replays once the
  * list lands, so no clipboard event is ever silently dropped; the watcher
@@ -34,7 +34,41 @@ Singleton {
     property bool loaded: false
 
     readonly property string thumbDir: (Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")) + "/cliphist-thumbs/"
-    readonly property string thumbScript: Quickshell.env("HOME") + "/.config/hypr/scripts/cliphist-thumbs.sh"
+    /**
+     * Inline replacement for the previous helper script: enumerate cliphist's
+     * own list, decode each image entry with `cliphist decode` and shrink it to
+     * a cached preview png with magick (shipped in base), pruning thumbs whose
+     * id has aged out of history. magick-less boxes fall back to writing the raw
+     * decoded image so previews still render rather than going blank. The cache
+     * dir arrives as a positional arg, never interpolated into the script text.
+     */
+    readonly property string thumbCmd:
+        "d=\"${1%/}\"\n" +
+        "[ -n \"$d\" ] || exit 0\n" +
+        "mkdir -p \"$d\" 2>/dev/null || exit 0\n" +
+        "command -v cliphist >/dev/null 2>&1 || exit 0\n" +
+        "have=0; command -v magick >/dev/null 2>&1 && have=1\n" +
+        "keep=$(mktemp 2>/dev/null) || exit 0\n" +
+        "trap 'rm -f \"$keep\"' EXIT\n" +
+        "cliphist list 2>/dev/null | while IFS=$(printf '\\t') read -r id rest; do\n" +
+        "  case \"$id\" in ''|*[!0-9]*) continue ;; esac\n" +
+        "  case \"$rest\" in *'binary data'*) ;; *) continue ;; esac\n" +
+        "  case \"$rest\" in *png*|*jpg*|*jpeg*|*gif*|*bmp*|*webp*) ;; *) continue ;; esac\n" +
+        "  printf '%s\\n' \"$id\" >> \"$keep\"\n" +
+        "  out=\"$d/$id.png\"\n" +
+        "  [ -s \"$out\" ] && continue\n" +
+        "  if [ \"$have\" = 1 ]; then\n" +
+        "    printf '%s' \"$id\" | cliphist decode 2>/dev/null | magick - -auto-orient -strip -thumbnail 256x256 \"png:$out\" 2>/dev/null || rm -f \"$out\"\n" +
+        "  else\n" +
+        "    printf '%s' \"$id\" | cliphist decode 2>/dev/null > \"$out\" 2>/dev/null || rm -f \"$out\"\n" +
+        "    [ -s \"$out\" ] || rm -f \"$out\"\n" +
+        "  fi\n" +
+        "done\n" +
+        "for f in \"$d\"/*.png; do\n" +
+        "  [ -e \"$f\" ] || continue\n" +
+        "  b=${f##*/}; id=${b%.png}\n" +
+        "  grep -qxF \"$id\" \"$keep\" 2>/dev/null || rm -f \"$f\"\n" +
+        "done\n"
 
     function refresh() {
         if (thumbProc.running || listProc.running || delProc.running || delQueue.length) {
@@ -125,7 +159,7 @@ Singleton {
 
     Process {
         id: thumbProc
-        command: ["sh", root.thumbScript]
+        command: ["sh", "-c", root.thumbCmd, "ricelin", root.thumbDir]
         onExited: listProc.running = true
     }
 

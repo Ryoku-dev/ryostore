@@ -19,7 +19,7 @@ Item {
     readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
     property string activeWindowAddress: activeWindow?.HyprlandToplevel?.address ? `0x${activeWindow.HyprlandToplevel.address}` : ""
     property bool focusingThisMonitor: WM.focusedMonitor?.name === monitor?.name
-    property var biggestWindow: (typeof WM.biggestWindowForWorkspace === "function") ? WM.biggestWindowForWorkspace(WM.activeWorkspaceForMonitor(monitor?.name)?.id ?? 1) : null
+    property var biggestWindow: HyprlandData.biggestWindowForWorkspace(monitor?.activeWorkspace?.id ?? 1)
 
     property string activeAppClass: {
         if (!root.focusingThisMonitor || !root.activeWindow?.activated)
@@ -80,7 +80,7 @@ Item {
             elide: Text.ElideRight
             text: root.focusingThisMonitor && root.activeWindow?.activated && root.biggestWindow ?
                 root.activeWindow?.title :
-                (root.biggestWindow?.title) ?? `${Translation.tr("Workspace")} ${WM.activeWorkspaceForMonitor(monitor?.name)?.id ?? 1}`
+                (root.biggestWindow?.title) ?? `${Translation.tr("Workspace")} ${monitor?.activeWorkspace?.id ?? 1}`
         }
     }
 }

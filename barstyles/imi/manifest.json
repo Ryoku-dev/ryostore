@@ -17,8 +17,16 @@
       "source": "GlobalStates.qml",
       "destination": "GlobalStates.qml",
       "mode": "0644",
-      "size": 21963,
-      "sha256": "4a23fd94e7dc4daad6fbce8de2a27438d882235436f55ed23d0775a095561c88",
+      "size": 21493,
+      "sha256": "e84fbfd3a442f5cbeed9bb97dd99358abe9fe59559ce1673505e9c5e832f246e",
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
       "install": true
     },
     {
@@ -27,6 +35,14 @@
       "mode": "0644",
       "size": 556,
       "sha256": "ca77383350c63c129bf416f0704856ec6deac0d3d0dd9c0c13a1c58489c03a5a",
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 4172,
+      "sha256": "ac5a9adad4d392aa8306912e1069d13c2eb8a50e87a3e5dc54908123e04ad66f",
       "install": true
     },
     {
@@ -44,30 +60,6 @@
       "size": 7,
       "sha256": "a68641c6aacd345c4931a6217331d2bf43398c7bc134666a2f756953eab407aa",
       "install": true
-    },
-    {
-      "source": "qmldir",
-      "destination": "qmldir",
-      "mode": "0644",
-      "size": 54,
-      "sha256": "9d49e803d746a01ff0cdecc14ee46ef0e01f7beedbd2f4576a7c752d26f91921",
-      "install": true
-    },
-    {
-      "source": "assets/material_symbols_rounded.json",
-      "destination": "assets/material_symbols_rounded.json",
-      "mode": "0644",
-      "size": 1779316,
-      "sha256": "088d66e8b2f2a8de8fef9529980fee8a179b979eddcd629ba302d9c7cf8ec05d",
-      "install": true
-    },
-    {
-      "source": "assets/preview.png",
-      "destination": "assets/preview.png",
-      "mode": "0644",
-      "size": 520788,
-      "sha256": "540b97663cd70a4ade2c8e2537cc05965074ea09e8affca2e40a95dfdddc8ec5",
-      "install": false
     },
     {
       "source": "assets/icons/arch-symbolic.svg",
@@ -115,38 +107,6 @@
       "mode": "0644",
       "size": 1969,
       "sha256": "442fefed9e62c59024fbde148c82ca63020d2571be750c23b7f661830a31506b",
-      "install": true
-    },
-    {
-      "source": "assets/icons/microsoft-symbolic.svg",
-      "destination": "assets/icons/microsoft-symbolic.svg",
-      "mode": "0644",
-      "size": 1462,
-      "sha256": "59653d5478e0f91da36dbf8112289438da6fcd20c0f6e1dc92886e178169ab61",
-      "install": true
-    },
-    {
-      "source": "assets/icons/openai-symbolic.svg",
-      "destination": "assets/icons/openai-symbolic.svg",
-      "mode": "0644",
-      "size": 4091,
-      "sha256": "57b568c83987bebd149c931c65f36d4ad18affe9d47490428b7ca5d7708628f5",
-      "install": true
-    },
-    {
-      "source": "assets/icons/openrouter-symbolic.svg",
-      "destination": "assets/icons/openrouter-symbolic.svg",
-      "mode": "0644",
-      "size": 2660,
-      "sha256": "9adefecb482cea892c40ab362db99c751baca26ace65b0990b67ceab491b4a36",
-      "install": true
-    },
-    {
-      "source": "assets/icons/spark-symbolic.svg",
-      "destination": "assets/icons/spark-symbolic.svg",
-      "mode": "0644",
-      "size": 1929,
-      "sha256": "c3230638a740193f2ddd3760b30fd6eb049075778a68d8cfb74adc8f2546dba3",
       "install": true
     },
     {
@@ -214,6 +174,54 @@
       "install": true
     },
     {
+      "source": "assets/icons/microsoft-symbolic.svg",
+      "destination": "assets/icons/microsoft-symbolic.svg",
+      "mode": "0644",
+      "size": 1462,
+      "sha256": "59653d5478e0f91da36dbf8112289438da6fcd20c0f6e1dc92886e178169ab61",
+      "install": true
+    },
+    {
+      "source": "assets/icons/openai-symbolic.svg",
+      "destination": "assets/icons/openai-symbolic.svg",
+      "mode": "0644",
+      "size": 4091,
+      "sha256": "57b568c83987bebd149c931c65f36d4ad18affe9d47490428b7ca5d7708628f5",
+      "install": true
+    },
+    {
+      "source": "assets/icons/openrouter-symbolic.svg",
+      "destination": "assets/icons/openrouter-symbolic.svg",
+      "mode": "0644",
+      "size": 2660,
+      "sha256": "9adefecb482cea892c40ab362db99c751baca26ace65b0990b67ceab491b4a36",
+      "install": true
+    },
+    {
+      "source": "assets/icons/spark-symbolic.svg",
+      "destination": "assets/icons/spark-symbolic.svg",
+      "mode": "0644",
+      "size": 1929,
+      "sha256": "c3230638a740193f2ddd3760b30fd6eb049075778a68d8cfb74adc8f2546dba3",
+      "install": true
+    },
+    {
+      "source": "assets/material_symbols_rounded.json",
+      "destination": "assets/material_symbols_rounded.json",
+      "mode": "0644",
+      "size": 1779316,
+      "sha256": "088d66e8b2f2a8de8fef9529980fee8a179b979eddcd629ba302d9c7cf8ec05d",
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "assets/preview.png",
+      "mode": "0644",
+      "size": 520788,
+      "sha256": "540b97663cd70a4ade2c8e2537cc05965074ea09e8affca2e40a95dfdddc8ec5",
+      "install": false
+    },
+    {
       "source": "modules/common/Appearance.qml",
       "destination": "modules/common/Appearance.qml",
       "mode": "0644",
@@ -225,8 +233,8 @@
       "source": "modules/common/Config.qml",
       "destination": "modules/common/Config.qml",
       "mode": "0644",
-      "size": 91842,
-      "sha256": "a3c600a53611beac6453ea90d3750771cd562ea74cba43ac42ca0fa9337a17ac",
+      "size": 88909,
+      "sha256": "c5ecaa81a1a53adaf119b594f0e32bd92a60b6ddd58c12768ee7d6c780f3b124",
       "install": true
     },
     {
@@ -251,30 +259,6 @@
       "mode": "0644",
       "size": 6735,
       "sha256": "26398cdfb1210829089410df7d2631d9067377e9b3ff6ef14890eef1cf713958",
-      "install": true
-    },
-    {
-      "source": "modules/common/interaction_motion.js",
-      "destination": "modules/common/interaction_motion.js",
-      "mode": "0644",
-      "size": 3373,
-      "sha256": "8b268623b227c0d5e61e0d9ed3bf8e2f1b6dc731f5b8ec202db74b3f6f7d5b35",
-      "install": true
-    },
-    {
-      "source": "modules/common/motion_policy.js",
-      "destination": "modules/common/motion_policy.js",
-      "mode": "0644",
-      "size": 9269,
-      "sha256": "eae98fda1766f197c6335594f0f77b027db68d71045413bf83ac1376a0f04ae0",
-      "install": true
-    },
-    {
-      "source": "modules/common/qmldir",
-      "destination": "modules/common/qmldir",
-      "mode": "0644",
-      "size": 209,
-      "sha256": "e4f31c0cd84c4ac8cf0066525add014c8b45108ed433f47ed89bc0e196b9c6d9",
       "install": true
     },
     {
@@ -398,6 +382,14 @@
       "install": true
     },
     {
+      "source": "modules/common/interaction_motion.js",
+      "destination": "modules/common/interaction_motion.js",
+      "mode": "0644",
+      "size": 3373,
+      "sha256": "8b268623b227c0d5e61e0d9ed3bf8e2f1b6dc731f5b8ec202db74b3f6f7d5b35",
+      "install": true
+    },
+    {
       "source": "modules/common/models/AnimatedTabIndexPair.qml",
       "destination": "modules/common/models/AnimatedTabIndexPair.qml",
       "mode": "0644",
@@ -419,6 +411,14 @@
       "mode": "0644",
       "size": 2892,
       "sha256": "51f454f46980ee60ad843a7eb52aa4c6414ddc0bccd1123836fbcdf6aa3e0432",
+      "install": true
+    },
+    {
+      "source": "modules/common/motion_policy.js",
+      "destination": "modules/common/motion_policy.js",
+      "mode": "0644",
+      "size": 9269,
+      "sha256": "eae98fda1766f197c6335594f0f77b027db68d71045413bf83ac1376a0f04ae0",
       "install": true
     },
     {
@@ -459,14 +459,6 @@
       "mode": "0644",
       "size": 16968,
       "sha256": "5ee5b62f44c5b3dea2328bee72e999c446a38478b1f3e22a90ef128262caf2c4",
-      "install": true
-    },
-    {
-      "source": "modules/common/plugins/PluginPanelHost.qml",
-      "destination": "modules/common/plugins/PluginPanelHost.qml",
-      "mode": "0644",
-      "size": 1937,
-      "sha256": "79052ff7cad78483a1b153257510a8cc109afa8bad6ff5840034607d65a83a85",
       "install": true
     },
     {
@@ -521,8 +513,8 @@
       "source": "modules/common/plugins/qmldir",
       "destination": "modules/common/plugins/qmldir",
       "mode": "0644",
-      "size": 302,
-      "sha256": "125c8107d301632ba811228034a175194593131a7ea344ae61dcd708fbbb6ab5",
+      "size": 262,
+      "sha256": "1c981fa5e26ee04c91d3c10e75197a56861f28a126b780b7baa8fdfa30acbb5b",
       "install": true
     },
     {
@@ -531,6 +523,14 @@
       "mode": "0644",
       "size": 6574,
       "sha256": "b79c735b1f2b223e4a1a17f91818a4f7f8f74bfb7f57a4eb9f861b7d112986a2",
+      "install": true
+    },
+    {
+      "source": "modules/common/qmldir",
+      "destination": "modules/common/qmldir",
+      "mode": "0644",
+      "size": 209,
+      "sha256": "e4f31c0cd84c4ac8cf0066525add014c8b45108ed433f47ed89bc0e196b9c6d9",
       "install": true
     },
     {
@@ -1294,14 +1294,6 @@
       "install": true
     },
     {
-      "source": "modules/common/widgets/shapes/material-shapes.js",
-      "destination": "modules/common/widgets/shapes/material-shapes.js",
-      "mode": "0644",
-      "size": 26526,
-      "sha256": "ba3ac8388b3a3ffc46e188086c9237bf51a0019ccd1f033f3d339eab764312e9",
-      "install": true
-    },
-    {
       "source": "modules/common/widgets/shapes/geometry/offset.js",
       "destination": "modules/common/widgets/shapes/geometry/offset.js",
       "mode": "0644",
@@ -1315,6 +1307,14 @@
       "mode": "0644",
       "size": 6003,
       "sha256": "d624b09f32cf4a4896de0b526a45b8dcf0cc5a8d5bf75e027ae92c567b0b2e36",
+      "install": true
+    },
+    {
+      "source": "modules/common/widgets/shapes/material-shapes.js",
+      "destination": "modules/common/widgets/shapes/material-shapes.js",
+      "mode": "0644",
+      "size": 26526,
+      "sha256": "ba3ac8388b3a3ffc46e188086c9237bf51a0019ccd1f033f3d339eab764312e9",
       "install": true
     },
     {
@@ -1377,8 +1377,8 @@
       "source": "modules/imi/bar/ActiveWindow.qml",
       "destination": "modules/imi/bar/ActiveWindow.qml",
       "mode": "0644",
-      "size": 3347,
-      "sha256": "6ab9e43f3156dc3a5651859e279f51c4b9a59c5589da5d65a5f599252274f50c",
+      "size": 3257,
+      "sha256": "64702e867ff34018fdbe4a6866fa6c5a8542e43551f2b32f206ea512d8dc4736",
       "install": true
     },
     {
@@ -1569,8 +1569,8 @@
       "source": "modules/imi/bar/PopoutOverlay.qml",
       "destination": "modules/imi/bar/PopoutOverlay.qml",
       "mode": "0644",
-      "size": 4541,
-      "sha256": "6501bf0244dbc012841e296c2971df2abb25b364cf348738ffa715174bf20c97",
+      "size": 4677,
+      "sha256": "7450e8b173e15d460168a5c5bc44499d2116301eb545f6e9fe1ea5439b30c4fc",
       "install": true
     },
     {
@@ -1689,8 +1689,8 @@
       "source": "modules/imi/bar/SystemIcons.qml",
       "destination": "modules/imi/bar/SystemIcons.qml",
       "mode": "0644",
-      "size": 9773,
-      "sha256": "71546c0711bcb1be30e66bb7ab0a7270ac610348bc30c08e4bc1a20dd37c8c7b",
+      "size": 10631,
+      "sha256": "f30f91a11cd7b62d7d2ff7e5e6527d3273709d2066604a4230ab8cdcb99877d5",
       "install": true
     },
     {
@@ -1769,8 +1769,8 @@
       "source": "modules/imi/bar/Workspaces.qml",
       "destination": "modules/imi/bar/Workspaces.qml",
       "mode": "0644",
-      "size": 17758,
-      "sha256": "d2aea989a0bcb73bf2de963437ce40d09c93fc19ac614616bb8ae88a5adf47cf",
+      "size": 17846,
+      "sha256": "8e83f1aa4c6d805a78d8e72fee52d3afc711040cb267fe2dda15530b872bdc40",
       "install": true
     },
     {
@@ -1867,14 +1867,6 @@
       "mode": "0644",
       "size": 10314,
       "sha256": "ecdd09701f8f336b7a73c3a9b408815edda7a82ff1cdc1f3e8831fde75a7a59d",
-      "install": true
-    },
-    {
-      "source": "modules/imi/notificationPopup/NotificationPopup.qml",
-      "destination": "modules/imi/notificationPopup/NotificationPopup.qml",
-      "mode": "0644",
-      "size": 5610,
-      "sha256": "b4c445d9ae1c0cd88c506321b78a63f04a82176899ad9d8cc4f2176eb807249e",
       "install": true
     },
     {
@@ -1982,6 +1974,14 @@
       "install": true
     },
     {
+      "source": "qmldir",
+      "destination": "qmldir",
+      "mode": "0644",
+      "size": 54,
+      "sha256": "9d49e803d746a01ff0cdecc14ee46ef0e01f7beedbd2f4576a7c752d26f91921",
+      "install": true
+    },
+    {
       "source": "services/AppSearch.qml",
       "destination": "services/AppSearch.qml",
       "mode": "0644",
@@ -2073,8 +2073,8 @@
       "source": "services/HyprlandData.qml",
       "destination": "services/HyprlandData.qml",
       "mode": "0644",
-      "size": 105,
-      "sha256": "4cc04c8a375ad53770cce03ce4077eeb2e26a8791ab8b2507903f1365271acf2",
+      "size": 2375,
+      "sha256": "efd2f8c55320763b4bcb91ad56ab5d9b0a66ff3b6b5826cc909389caabd4dcb5",
       "install": true
     },
     {
@@ -2305,8 +2305,8 @@
       "source": "services/WM.qml",
       "destination": "services/WM.qml",
       "mode": "0644",
-      "size": 1560,
-      "sha256": "3fe0cec995e39ee668263ebf58c2de8510ba2890aed6fc58b4b982ee1fd27227",
+      "size": 1785,
+      "sha256": "f90c21dbd4524f1dd04252c9fc6467bd437748bf6f7f2fe8ddadd083e2904192",
       "install": true
     },
     {
@@ -2341,5 +2341,6 @@
       "sha256": "b91a53f73089e76988abe0c8c5731ac6302025466ef7761f824b6602416104b0",
       "install": true
     }
-  ]
+  ],
+  "license": "GPL-3.0-only"
 }

@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
+import shell.services as Shell
 
 Singleton {
     id: root
@@ -16,7 +17,7 @@ Singleton {
     property var expireAt: ({})
     property var hookedIds: ({})
 
-    readonly property var tracked: server.trackedNotifications.values
+    readonly property var tracked: Shell.Notifs.tracked
     readonly property int count: tracked.length + history.length
 
     readonly property int unread: {
@@ -245,35 +246,48 @@ Singleton {
         onTriggered: root.tick++
     }
 
-    NotificationServer {
-        id: server
-        keepOnReload: true
-        bodySupported: true
-        actionsSupported: true
-        imageSupported: true
+    // The active Ryoku shell already owns the org.freedesktop.Notifications
+    // server (shell.services Notifs). A second NotificationServer in this same
+    // process would fight it for the bus name, so Ricelin reads the shell's
+    // tracked list and keeps its own grouping, history and toast bookkeeping on
+    // top. Ids that newly appear in the shell's list are the arrivals the old
+    // onNotification handled; ids leaving it fire the per-notification closed
+    // hook that trims this state.
+    property bool seeded: false
 
-        Component.onCompleted: {
-            var l = trackedNotifications.values;
-            var a = Object.assign({}, root.arrivalMs);
-            for (var i = 0; i < l.length; i++) {
-                if (!a[l[i].id]) a[l[i].id] = Date.now();
-                root.hookClosed(l[i]);
-            }
-            root.arrivalMs = a;
-        }
-
-        onNotification: function(n) {
-            var a = Object.assign({}, root.arrivalMs);
+    function syncArrivals(allowPopup) {
+        var t = root.tracked;
+        var a = Object.assign({}, root.arrivalMs);
+        var e = Object.assign({}, root.expireAt);
+        var fresh = [];
+        var touched = false;
+        for (var i = 0; i < t.length; i++) {
+            var n = t[i];
+            if (a[n.id] !== undefined)
+                continue;
             a[n.id] = Date.now();
-            root.arrivalMs = a;
-            var e = Object.assign({}, root.expireAt);
-            e[n.id] = Date.now() + (n.urgency === NotificationUrgency.Low ? 4000 : 6000);
-            root.expireAt = e;
-            n.tracked = true;
             root.hookClosed(n);
-            var critical = n.urgency === NotificationUrgency.Critical;
-            if (!Flags.dnd || critical)
-                root.popups = root.popups.concat([n]).slice(-3);
+            touched = true;
+            if (allowPopup) {
+                e[n.id] = Date.now() + (n.urgency === NotificationUrgency.Low ? 4000 : 6000);
+                if (!Flags.dnd || n.urgency === NotificationUrgency.Critical)
+                    fresh.push(n);
+            }
         }
+        if (!touched)
+            return;
+        root.arrivalMs = a;
+        if (allowPopup) {
+            root.expireAt = e;
+            if (fresh.length > 0)
+                root.popups = root.popups.concat(fresh).slice(-3);
+        }
+    }
+
+    onTrackedChanged: if (root.seeded) root.syncArrivals(true);
+
+    Component.onCompleted: {
+        root.syncArrivals(false);
+        root.seeded = true;
     }
 }

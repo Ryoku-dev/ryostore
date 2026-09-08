@@ -1,7 +1,4 @@
-// Pure logic for the Coffee plugin: kept QML-free so it can be unit-tested in
-// plain Node.js. Loaded from QML with `import "Logic.js" as Logic` and from
-// Node with the loader shim in tests/logic.test.cjs (QML .js files carry no
-// CommonJS exports).
+// QML-free helpers shared by the Coffee service and views.
 
 // Single source of truth for the inhibitor the host Ryoku desktop ships:
 // the shell's own Keep-Awake runs `~/.config/hypr/scripts/ryoku-cmd-caffeine`

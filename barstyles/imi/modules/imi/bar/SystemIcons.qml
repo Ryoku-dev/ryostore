@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Bluetooth
 import shell.services as RyokuServices
 import shell.barkit as Pill
 import "../../../shared" as Shared
@@ -24,6 +25,21 @@ Item {
 
     readonly property color hoverDarkenColor: Qt.rgba(0, 0, 0, 0.18)
     readonly property int iconSize: 15
+
+    // Bluetooth status, read from Quickshell's adapter model (the shell exposes
+    // no BluetoothStatus singleton; the connectivity popout reads this same
+    // source, so the chip and the card agree).
+    readonly property var btAdapter: Bluetooth.defaultAdapter
+    readonly property bool btEnabled: !!(btAdapter && btAdapter.enabled)
+    readonly property bool btConnected: {
+        if (!root.btEnabled || !Bluetooth.devices)
+            return false;
+        const ds = Bluetooth.devices.values;
+        for (let i = 0; i < ds.length; i++)
+            if (ds[i] && ds[i].connected)
+                return true;
+        return false;
+    }
 
     RowLayout {
         id: mainRow
@@ -63,16 +79,16 @@ Item {
                     WheelHandler {
                         onWheel: (e) => {
                             const delta = e.angleDelta.y > 0 ? 0.05 : -0.05;
-                            if (Audio.sink && Audio.sink.audio) {
-                                Audio.sink.audio.volume = Math.max(0, Math.min(1.5, Audio.sink.audio.volume + delta));
+                            if (RyokuServices.Audio.sink && RyokuServices.Audio.sink.audio) {
+                                RyokuServices.Audio.sink.audio.volume = Math.max(0, Math.min(1.5, RyokuServices.Audio.sink.audio.volume + delta));
                             }
                         }
                     }
 
                     TapHandler {
                         onTapped: {
-                            if (Audio.sink && Audio.sink.audio) {
-                                Audio.sink.audio.muted = !Audio.sink.audio.muted;
+                            if (RyokuServices.Audio.sink && RyokuServices.Audio.sink.audio) {
+                                RyokuServices.Audio.sink.audio.muted = !RyokuServices.Audio.sink.audio.muted;
                             }
                         }
                     }
@@ -96,14 +112,14 @@ Item {
 
                         Pill.MaterialIcon {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: (Audio.sink && Audio.sink.audio && Audio.sink.audio.muted) ? "volume_off" : "volume_up"
+                            text: (RyokuServices.Audio.sink && RyokuServices.Audio.sink.audio && RyokuServices.Audio.sink.audio.muted) ? "volume_off" : "volume_up"
                             font.pixelSize: root.iconSize
                             color: root.isMaterial ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
                         }
 
                         Pill.MaterialIcon {
                             anchors.verticalCenter: parent.verticalCenter
-                            visible: Audio.source?.audio?.muted ?? false
+                            visible: RyokuServices.Audio.source?.audio?.muted ?? false
                             text: "mic_off"
                             font.pixelSize: root.iconSize
                             color: root.isMaterial ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
@@ -142,15 +158,15 @@ Item {
 
                         Pill.MaterialIcon {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: Network.wifiConnected ? "wifi" : (Network.kind === "ethernet" ? "lan" : "wifi_off")
+                            text: RyokuServices.Network.kind === "wifi" ? "wifi" : (RyokuServices.Network.kind === "ethernet" ? "lan" : "wifi_off")
                             font.pixelSize: root.iconSize
                             color: root.isMaterial ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
                         }
 
                         Pill.MaterialIcon {
                             anchors.verticalCenter: parent.verticalCenter
-                            visible: Boolean(BluetoothStatus.available)
-                            text: BluetoothStatus.connected ? "bluetooth_connected" : (BluetoothStatus.enabled ? "bluetooth" : "bluetooth_disabled")
+                            visible: Boolean(root.btAdapter)
+                            text: root.btConnected ? "bluetooth_connected" : (root.btEnabled ? "bluetooth" : "bluetooth_disabled")
                             font.pixelSize: root.iconSize
                             color: root.isMaterial ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
                         }
@@ -171,7 +187,7 @@ Item {
 
                     TapHandler {
                         onTapped: {
-                            Notifications.silent = !Notifications.silent;
+                            RyokuServices.Notifs.dnd = !RyokuServices.Notifs.dnd;
                         }
                     }
 
@@ -189,7 +205,7 @@ Item {
 
                     Pill.MaterialIcon {
                         anchors.centerIn: parent
-                        text: Notifications.silent ? "notifications_off" : "notifications"
+                        text: RyokuServices.Notifs.dnd ? "notifications_off" : "notifications"
                         font.pixelSize: root.iconSize
                         color: root.isMaterial ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer1
                     }

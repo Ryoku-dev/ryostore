@@ -1,10 +1,10 @@
 {
   "id": "gmail",
   "name": "Gmail",
-  "version": "1.0.0",
-  "author": "Antigravity",
+  "version": "1.0.1",
+  "author": "Yash Parmar (Zatch07) <https://github.com/Zatch07>",
   "description": "Native Gmail integration and reader plugin for Ryoku shell.",
-  "license": "MIT",
+  "license": "GPL-3.0-only AND MIT",
   "official": false,
   "entryPoints": {
     "main": "service/Main.qml",
@@ -14,6 +14,14 @@
     "densities": [
       "compact",
       "full"
+    ],
+    "network": [
+      "accounts.google.com",
+      "oauth2.googleapis.com",
+      "www.googleapis.com",
+      "gmail.googleapis.com",
+      "console.cloud.google.com",
+      "mail.google.com"
     ]
   },
   "hosts": [
@@ -46,11 +54,17 @@
     "bin/fetch_all_accounts.py",
     "bin/send_email.py",
     "bin/delete_email.py",
-    "bin/download_email_attachment.py"
+    "bin/download_email_attachment.py",
+    "bin/modify_message.py",
+    "bin/import_ics.py",
+    "bin/extract_ics_info.py",
+    "bin/list_ics_attachments.py"
   ],
   "dependencies": {
     "commands": [
-      "python3"
+      "python3",
+      "xdg-open",
+      "khal"
     ]
   },
   "metadata": {

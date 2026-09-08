@@ -119,21 +119,23 @@ Route the design's accent through a slot rather than hardcoding it in each
 format string. A preset whose colour lives in one object can be repainted; a
 preset with the same hex typed into fifteen format strings cannot.
 
-Then declare which system role each slot should follow:
+An adaptive design may record the intended system roles as a comment:
 
 ```jsonc
 // ryoku:recolor keys=primary title=foreground separator=outline
 ```
 
-Ryoku reads that marker after every palette change and rewrites those hex
-values in `display.color` from the live palette, so the readout tracks the
-wallpaper alongside the bar, the cursor and the terminal theme. Roles are the
-keys of `~/.cache/ryoku/colors.json`: `primary`, `secondary`, `tertiary`,
-`foreground`, `background`, `surface`, `outline`, `outlineVariant`, `onSurface`,
-`onSurfaceVariant`, and `color0`-`color15`.
+**Compatibility note:** the current `ryoku-arch` Fastfetch apply path copies the
+configuration verbatim; it does not consume this marker or automatically rewrite
+these slots when the wallpaper changes. Keep readable literal colours in
+`display.color`. The marker records recolouring intent for tooling that supports
+it, but is not a promise of live theming on current Ryoku.
 
-Nothing else in the file is touched, and a preset without the marker is never
-touched at all: leave it out when the palette *is* the design.
+The role names correspond to `~/.cache/ryoku/colors.json`: `primary`, `secondary`,
+`tertiary`, `foreground`, `background`, `surface`, `outline`, `outlineVariant`,
+`onSurface`, `onSurfaceVariant`, and `color0`-`color15`. Omit the marker when a
+fixed palette is integral to the design, and describe the actual behaviour in
+the store listing.
 
 ANSI palette references (`{#31}`, `{#1;33}`, `{#@141}`) already follow the
 terminal theme, which Ryoku regenerates from the same palette. They are a fine

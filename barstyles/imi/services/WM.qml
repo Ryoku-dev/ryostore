@@ -8,6 +8,10 @@ import Quickshell.Hyprland
 Singleton {
     id: root
 
+    // The output Hyprland currently has keyboard focus on, read from the shell's
+    // live connection. Widgets compare its name against their own monitor.
+    readonly property var focusedMonitor: Hyprland.focusedMonitor
+
     function switchWorkspace(id) {
         if (id !== undefined && id !== null) {
             const cmd = "hl.dsp.focus({ workspace = " + id + " })";

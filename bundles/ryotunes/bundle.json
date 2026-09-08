@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "id": "ryotunes",
+  "category": "bundles",
+  "version": "1.0.0",
+  "destination": "ryoku/bundles/ryotunes",
+  "name": "Ryotunes",
+  "author": "ashmitvoid",
+  "description": "The Ryoku-native music player, originally contributed by ashmitvoid. Installs the current distribution package, with native playback, MPRIS and live desktop theming.",
+  "icon": "music_note",
+  "accent": "#9a604b",
+  "preview": "assets/preview.webp",
+  "screenshots": [
+    "assets/preview.webp"
+  ],
+  "items": [
+    {
+      "type": "package",
+      "name": "ryotunes",
+      "detect": "ryotunes",
+      "tier": "core",
+      "source": "official",
+      "summary": "Ryoku-native music player with libmpv playback, MPRIS and live desktop theming.",
+      "upstream": "https://github.com/neur0map/ryotunes"
+    }
+  ],
+  "files": [
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 2396,
+      "sha256": "6c1d50dcc2d20faec4ebbfe756ea0a0799c0f20dc9b674c7202f485dc6a9dffb",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 660,
+      "sha256": "88a6e7ee9fe0a60249a636c7108b3971652069e35fa284711e8c3bc9fda25dbe",
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "mode": "0644",
+      "size": 57984,
+      "sha256": "dab8784912acbe549bf2a4725b04b7a052be0b1d0d9f08ae939e53b066b3ab1b",
+      "install": false
+    }
+  ]
+}

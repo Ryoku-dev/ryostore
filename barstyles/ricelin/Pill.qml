@@ -46,21 +46,13 @@ Item {
     readonly property bool batteryOpen: surface === "battery"
     readonly property bool settingsOpen: surface === "settings"
     readonly property bool keybindsOpen: surface === "keybinds"
-    readonly property bool workspacesOpen: surface === "workspaces"
-    readonly property bool stashOpen: surface === "stash"
-    readonly property bool spaceappsOpen: surface === "spaceapps"
     readonly property bool recorderOpen: surface === "recorder"
     readonly property bool sysmonOpen: surface === "sysmon"
     readonly property bool appearanceOpen: surface === "appearance"
-    readonly property bool updatesOpen: surface === "updates"
-    readonly property bool displayOpen: surface === "display"
-    readonly property bool inputOpen: surface === "input"
     readonly property bool lookOpen: surface === "look"
-    readonly property bool idlelockOpen: surface === "idlelock"
-    readonly property bool animationOpen: surface === "animation"
     readonly property bool fontpickerOpen: surface === "fontpicker"
-    readonly property bool settingsLike: settingsOpen || appearanceOpen || updatesOpen
-        || lookOpen || inputOpen || displayOpen || animationOpen || idlelockOpen || fontpickerOpen
+    readonly property bool settingsLike: settingsOpen || appearanceOpen
+        || lookOpen || fontpickerOpen
     readonly property bool hasMedia: Players.list.length > 0
 
     readonly property var netDevices: (typeof Networking !== "undefined" && Networking && Networking.devices) ? Networking.devices.values : []
@@ -91,13 +83,9 @@ Item {
 
     readonly property bool expanded: surfaceOpen || held || hoverLatch
 
-    /**
-     * True while the open surface is waiting on an external auth dialog (the
-     * updater's pkexec password prompt). The shell drops its modal grab for this
-     * so the polkit window underneath is clickable and typeable, instead of the
-     * backdrop swallowing the reach for it and dismissing the whole pill.
-     */
-    readonly property bool authPending: updatesOpen && ldUpdates.item !== null && ldUpdates.item.applying
+    // No surface waits on an external auth dialog anymore (the updater that used
+    // pkexec was retired), so the shell never needs to drop its modal grab.
+    readonly property bool authPending: false
 
     /**
      * The special workspace shown on this pill's monitor, surfaced as a plain word
@@ -112,10 +100,6 @@ Item {
                 var sw = (o && o.specialWorkspace) ? o.specialWorkspace.name : "";
                 if (sw && sw.indexOf("special:") === 0) {
                     var id = sw.slice("special:".length);
-                    var sl = Spaces.list;
-                    for (var j = 0; j < sl.length; j++)
-                        if (sl[j] && sl[j].id === id)
-                            return sl[j].name;
                     if (id === "minimized") return "Minimized";
                     if (id === "private") return "Private";
                     if (id === "stash") return "Stash";
@@ -161,18 +145,10 @@ Item {
     readonly property real btW: 286 * s
     readonly property real settingsW: 392 * s
     readonly property real keybindsW: 460 * s
-    readonly property real workspacesW: 392 * s
-    readonly property real stashW: 392 * s
-    readonly property real spaceappsW: 392 * s
     readonly property real recorderW: 384 * s
     readonly property real sysmonW: 392 * s
     readonly property real appearanceW: 392 * s
-    readonly property real updatesW: 360 * s
-    readonly property real displayW: 392 * s
-    readonly property real inputW: 392 * s
     readonly property real lookW: 392 * s
-    readonly property real idlelockW: 392 * s
-    readonly property real animationW: 392 * s
     readonly property real fontpickerW: 360 * s
     readonly property real toastW: 342 * s
     readonly property real quickChooseW: 344 * s
@@ -224,18 +200,10 @@ Item {
         battery:   { size: () => Qt.size(batteryW, surfaceItem(ldBattery).implicitHeight + 26 * s), ame: () => surfaceItem(ldBattery) },
         settings:  { size: () => Qt.size(settingsW, surfaceItem(ldSettings).implicitHeight + 29 * s), ame: () => surfaceItem(ldSettings) },
         keybinds:  { size: () => Qt.size(keybindsW, surfaceItem(ldKeybinds).implicitHeight + 29 * s), ame: () => surfaceItem(ldKeybinds) },
-        workspaces: { size: () => Qt.size(workspacesW, surfaceItem(ldWorkspaces).implicitHeight + 29 * s), ame: () => surfaceItem(ldWorkspaces) },
-        stash:     { size: () => Qt.size(stashW, surfaceItem(ldStash).implicitHeight + 29 * s), ame: () => surfaceItem(ldStash) },
-        spaceapps: { size: () => Qt.size(spaceappsW, surfaceItem(ldSpaceapps).implicitHeight + 29 * s), ame: () => surfaceItem(ldSpaceapps) },
         recorder:  { size: () => Qt.size(recorderW, surfaceItem(ldRecorder).implicitHeight + 33 * s), ame: () => surfaceItem(ldRecorder) },
         sysmon:    { size: () => Qt.size(sysmonW, surfaceItem(ldSysmon).implicitHeight + 33 * s), ame: () => surfaceItem(ldSysmon) },
         appearance: { size: () => Qt.size(appearanceW, surfaceItem(ldAppearance).implicitHeight + 29 * s), ame: () => surfaceItem(ldAppearance) },
-        updates:    { size: () => Qt.size(updatesW, surfaceItem(ldUpdates).implicitHeight + 29 * s), ame: () => surfaceItem(ldUpdates) },
-        display:    { size: () => Qt.size(displayW, surfaceItem(ldDisplay).implicitHeight + 29 * s), ame: () => surfaceItem(ldDisplay) },
-        input:      { size: () => Qt.size(inputW, surfaceItem(ldInput).implicitHeight + 29 * s), ame: () => surfaceItem(ldInput) },
         look:       { size: () => Qt.size(lookW, surfaceItem(ldLook).implicitHeight + 29 * s), ame: () => surfaceItem(ldLook) },
-        idlelock:   { size: () => Qt.size(idlelockW, surfaceItem(ldIdlelock).implicitHeight + 29 * s), ame: () => surfaceItem(ldIdlelock) },
-        animation:  { size: () => Qt.size(animationW, surfaceItem(ldAnimation).implicitHeight + 29 * s), ame: () => surfaceItem(ldAnimation) },
         fontpicker: { size: () => Qt.size(fontpickerW, surfaceItem(ldFontpicker).implicitHeight + 29 * s), ame: () => surfaceItem(ldFontpicker) }
     })
 
@@ -296,14 +264,6 @@ Item {
             return ldAppearance.item;
         if (pill.lookOpen)
             return ldLook.item;
-        if (pill.inputOpen)
-            return ldInput.item;
-        if (pill.displayOpen)
-            return ldDisplay.item;
-        if (pill.animationOpen)
-            return ldAnimation.item;
-        if (pill.idlelockOpen)
-            return ldIdlelock.item;
         if (pill.fontpickerOpen)
             return ldFontpicker.item;
         return null;
@@ -363,7 +323,6 @@ Item {
             ldKeybinds.item.activate();
     }
 
-    readonly property bool keybindsListening: pill.keybindsOpen && ldKeybinds.item !== null && ldKeybinds.item.listening
 
     /**
      * A tile was picked in the standalone quick-record chooser. Screen with several
@@ -398,35 +357,14 @@ Item {
      */
     function surfaceBack() {
         if (pill.keybindsOpen) {
-            if (ldKeybinds.item && ldKeybinds.item.formOpen)
-                ldKeybinds.item.closeForm();
-            else
-                pill.requestSurface("settings");
+            pill.requestSurface("settings");
             return;
         }
         if (pill.fontpickerOpen) {
             pill.requestSurface("appearance");
             return;
         }
-        if (pill.stashOpen) {
-            if (ldStash.item && ldStash.item.addOpen)
-                ldStash.item.closeAdd();
-            else
-                pill.requestSurface("workspaces");
-            return;
-        }
-        if (pill.spaceappsOpen) {
-            if (ldSpaceapps.item && ldSpaceapps.item.addOpen)
-                ldSpaceapps.item.closeAdd();
-            else
-                pill.requestSurface("workspaces");
-            return;
-        }
-        if (pill.workspacesOpen && ldWorkspaces.item && ldWorkspaces.item.formOpen) {
-            ldWorkspaces.item.closeForm();
-            return;
-        }
-        if (pill.appearanceOpen || pill.updatesOpen || pill.displayOpen || pill.inputOpen || pill.lookOpen || pill.idlelockOpen || pill.animationOpen || pill.workspacesOpen) {
+        if (pill.appearanceOpen || pill.lookOpen) {
             pill.requestSurface("settings");
             return;
         }
@@ -434,14 +372,11 @@ Item {
     }
 
     /**
-     * Pop the open keybinds editor form back to the bind list. Returns true when a
-     * form was open and dismissed, false otherwise so Escape closes the surface.
+     * Kept for the Escape handler: the keybinds surface is read-only now (editing
+     * is delegated to Ryoku Settings), so there is never a form to pop and Escape
+     * closes the surface.
      */
     function keybindsBack() {
-        if (pill.keybindsOpen && ldKeybinds.item && ldKeybinds.item.formOpen) {
-            ldKeybinds.item.closeForm();
-            return true;
-        }
         return false;
     }
 
@@ -455,7 +390,7 @@ Item {
     }
 
     /**
-     * Apply the wallpaper strip's focused thumb through wallpaper.sh. The
+     * Apply the wallpaper strip's focused thumb through Ryogami. The
      * surface stays open so the pick can be iterated. No-op unless the
      * wallpaper surface is open.
      */
@@ -464,16 +399,13 @@ Item {
             ldWall.item.activate();
     }
 
-    readonly property bool wallpaperSearching: pill.wallpaperOpen && ldWall.item !== null && ldWall.item.searching
 
     /**
-     * Route the first printable keystroke over the open wallpaper strip into a
-     * DuckDuckGo search seeded with that character. No-op unless the wallpaper
-     * surface is open.
+     * Open Ryogami's full picker when typing over the local wallpaper strip.
      */
-    function wallpaperType(ch) {
+    function openWallpaperPicker() {
         if (pill.wallpaperOpen && ldWall.item)
-            ldWall.item.startSearch(ch);
+            ldWall.item.openPicker();
     }
 
     /**
@@ -842,13 +774,17 @@ Item {
         return decodeURIComponent(s);
     }
 
-    readonly property var dropExt: /\.(appimage|deb|rpm|flatpakref|zip|tgz|txz|tbz2|ttf|otf|png|jpe?g|webp)$|\.(pkg\.)?tar\.(gz|xz|bz2|zst)$/i
+    readonly property var dropExt: /\.(appimage|deb|rpm|flatpak|tgz|ttf|otf|png|jpe?g|webp)$|\.(pkg\.)?tar(\.(gz|xz|bz2|zst))?$/i
 
     function droppablePaths(urls) {
         var out = [];
-        for (var i = 0; i < urls.length; i++)
-            if (pill.dropExt.test(String(urls[i])))
-                out.push(pill.localPath(urls[i]));
+        for (var i = 0; i < urls.length; i++) {
+            if (String(urls[i]).indexOf("file:///") !== 0)
+                continue;
+            var path = pill.localPath(urls[i]);
+            if (pill.dropExt.test(path))
+                out.push(path);
+        }
         return out;
     }
 
@@ -863,7 +799,7 @@ Item {
     property string installKind: "app"
     property string installAction: "new"
     property string installLine: ""
-    property string installProto: ""
+    property string installSource: ""
     property string installPct: ""
     property int installSeconds: 0
 
@@ -876,45 +812,49 @@ Item {
         var next = pill.installQueue.shift();
         pill.dragName = next.substring(next.lastIndexOf("/") + 1).replace(pill.dropExt, "");
         pill.installLine = "";
-        pill.installProto = "";
         pill.installPct = "";
-        installProc.command = ["bash", Quickshell.env("HOME") + "/.config/hypr/scripts/app-install.sh", "install", next];
+        pill.installSource = next;
+        pill.installAction = "new";
+        if (/\.(png|jpe?g|webp)$/i.test(next)) {
+            pill.installKind = "wallpaper";
+            installProc.command = ["ryogami", "wallpaper", "set", next];
+        } else if (/\.(ttf|otf)$/i.test(next)) {
+            pill.installKind = "font";
+            installProc.command = ["python3", pill.localPath(Qt.resolvedUrl("bin/install-font.py")), next];
+        } else {
+            pill.installKind = "app";
+            installProc.command = ["bash", Quickshell.env("HOME") + "/.config/hypr/scripts/stash-install.sh", next];
+        }
         installProc.running = true;
     }
 
     /**
      * Streams installer stdout instead of collecting it: slow backends (flatpak
      * runtime pulls, pacman) narrate their steps, and the drop face mirrors the
-     * newest line live. The machine-readable result is the one tab-separated
-     * kind-prefixed line, fished out of the stream as it passes.
+     * newest line live. The native command's exit status is the result; no
+     * Ricelin-specific tab-separated installer protocol is required.
      */
     Process {
         id: installProc
+        environment: ({ RYOKU_STASH_KEEP: "1" })
         stdout: SplitParser {
             onRead: (data) => {
                 var seg = data.split("\r").pop().replace(/\x1b\[[0-9;]*[a-zA-Z]/g, "").trim();
                 if (seg.length === 0)
                     return;
-                if (/^(app|native|font|wallpaper)\t/.test(seg)) {
-                    pill.installProto = seg;
-                } else {
-                    pill.installLine = seg;
-                    var pct = seg.match(/(\d{1,3})\s*%/);
-                    if (pct && Number(pct[1]) <= 100)
-                        pill.installPct = pct[1] + "%";
-                }
+                pill.installLine = seg;
+                var pct = seg.match(/(\d{1,3})\s*%/);
+                if (pct && Number(pct[1]) <= 100)
+                    pill.installPct = pct[1] + "%";
             }
         }
         onExited: (exitCode) => {
-            if (exitCode === 0 && pill.installProto.length > 0) {
+            if (exitCode === 0) {
                 pill.installedAny = true;
-                var parts = pill.installProto.split("\t");
-                pill.installKind = parts[0];
-                pill.installAction = parts[2];
-                if (parts[0] === "app" || parts[0] === "native")
+                if (pill.installKind === "app")
                     pill.installedApp = true;
-                if (parts[0] === "font" && parts.length >= 4)
-                    droppedFont.source = "file://" + parts[3];
+                if (pill.installKind === "font")
+                    droppedFont.source = "file://" + encodeURI(pill.installSource).replace(/#/g, "%23").replace(/\?/g, "%3F");
             } else {
                 pill.installFailed = true;
             }
@@ -962,8 +902,8 @@ Item {
     /**
      * File drops land only on the resting pill; an open surface turns the pill
      * into a fullscreen modal that swallows the drag before it can start.
-     * app-install.sh routes each drop by type (apps install, fonts land in the
-     * font dir, images become the wallpaper), anything else flashes a rejection.
+     * Native stash-install handles apps, the product-owned font helper installs
+     * fonts, and Ryogami applies images. Original dropped files are preserved.
      */
     DropArea {
         anchors.fill: parent
@@ -2012,45 +1952,6 @@ Item {
     }
 
     Loader {
-        id: ldWorkspaces
-        active: false
-        anchors.fill: parent
-        sourceComponent: WorkspacesSurface {
-            s: pill.s
-            open: pill.workspacesOpen
-            morphCloseness: pill.morphCloseness
-            onRequestClose: pill.requestClose()
-            onRequestSurface: (name) => pill.requestSurface(name)
-        }
-    }
-
-    Loader {
-        id: ldStash
-        active: false
-        anchors.fill: parent
-        sourceComponent: Stash {
-            s: pill.s
-            open: pill.stashOpen
-            morphCloseness: pill.morphCloseness
-            onRequestClose: pill.requestClose()
-            onRequestSurface: (name) => pill.requestSurface(name)
-        }
-    }
-
-    Loader {
-        id: ldSpaceapps
-        active: false
-        anchors.fill: parent
-        sourceComponent: SpaceApps {
-            s: pill.s
-            open: pill.spaceappsOpen
-            morphCloseness: pill.morphCloseness
-            onRequestClose: pill.requestClose()
-            onRequestSurface: (name) => pill.requestSurface(name)
-        }
-    }
-
-    Loader {
         id: ldRecorder
         active: false
         anchors.fill: parent
@@ -2089,77 +1990,12 @@ Item {
     }
 
     Loader {
-        id: ldUpdates
-        active: false
-        anchors.fill: parent
-        sourceComponent: Updates {
-            s: pill.s
-            open: pill.updatesOpen
-            morphCloseness: pill.morphCloseness
-            onRequestClose: pill.requestClose()
-            onRequestSurface: (name) => pill.requestSurface(name)
-        }
-    }
-
-    Loader {
-        id: ldDisplay
-        active: false
-        anchors.fill: parent
-        sourceComponent: Display {
-            s: pill.s
-            open: pill.displayOpen
-            morphCloseness: pill.morphCloseness
-            onRequestClose: pill.requestClose()
-            onRequestSurface: (name) => pill.requestSurface(name)
-        }
-    }
-
-    Loader {
-        id: ldInput
-        active: false
-        anchors.fill: parent
-        sourceComponent: Input {
-            s: pill.s
-            open: pill.inputOpen
-            morphCloseness: pill.morphCloseness
-            onRequestClose: pill.requestClose()
-            onRequestSurface: (name) => pill.requestSurface(name)
-        }
-    }
-
-    Loader {
         id: ldLook
         active: false
         anchors.fill: parent
         sourceComponent: Look {
             s: pill.s
             open: pill.lookOpen
-            morphCloseness: pill.morphCloseness
-            onRequestClose: pill.requestClose()
-            onRequestSurface: (name) => pill.requestSurface(name)
-        }
-    }
-
-    Loader {
-        id: ldIdlelock
-        active: false
-        anchors.fill: parent
-        sourceComponent: IdleLock {
-            s: pill.s
-            open: pill.idlelockOpen
-            morphCloseness: pill.morphCloseness
-            onRequestClose: pill.requestClose()
-            onRequestSurface: (name) => pill.requestSurface(name)
-        }
-    }
-
-    Loader {
-        id: ldAnimation
-        active: false
-        anchors.fill: parent
-        sourceComponent: AnimationSurface {
-            s: pill.s
-            open: pill.animationOpen
             morphCloseness: pill.morphCloseness
             onRequestClose: pill.requestClose()
             onRequestSurface: (name) => pill.requestSurface(name)

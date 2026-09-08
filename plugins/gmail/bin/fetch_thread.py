@@ -9,19 +9,18 @@ import fetch_email_body
 
 def api_get(url, token):
     req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return gmail_config.read_json_response(resp)
 
 def main():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print(json.dumps([]))
         sys.exit(0)
 
-    refresh_token = sys.argv[1]
-    thread_id     = sys.argv[2]
+    thread_id = sys.argv[1]
 
     try:
-        token = gmail_config.resolve_token(refresh_token)
+        token = gmail_config.resolve_token(gmail_config.runtime_token())
     except Exception:
         print(json.dumps([]))
         sys.exit(1)

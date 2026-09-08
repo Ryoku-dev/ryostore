@@ -3,8 +3,6 @@
 A Material 3-inspired top bar style for **Ryoku Desktop Shell**.  
 Ported and adapted from the Immaterial Impulse dotfiles (end-4).
 
-## Note to neuromap : i just realized that there are a couple unnecessary leftover qml files. since the bar is a heavily customized fork, it shouldnt be hard to see which files are trash, you can remove them yourself or lmk if you need me to do some changes. (most trash are at imi/services/
-
 ## Features
 
 - **Island Architecture** — Three rounded pill groups (left, center, right) with independent blur regions and configurable corner styles.
@@ -23,7 +21,10 @@ Ported and adapted from the Immaterial Impulse dotfiles (end-4).
 
 ## Configuration
 
-All options are exposed through Ryoku Settings > Bar section and stored in `~/.config/ryoku/shell.json` under the `bar` key:
+Imi keeps its own settings, separate from the shell's `shell.json`, in
+`~/.config/immaterial-impulse/config.json` under the `bar` key. Edit them live
+from the bar's own **Edit Mode** (double-click the bar) and its widget picker;
+value changes apply without restarting the shell:
 
 | Key | Description | Default |
 |-----|-------------|---------|
@@ -68,3 +69,11 @@ imi/
 ## License
 
 GPL-3.0 — see PROVENANCE.txt for attribution.
+
+## Maintenance & support
+
+Imi is a community contribution. It is maintained and updated by its author
+(Ryoku Community / dodo986), not by the Ryoku team. Ryostore runs robust
+automated and human screening on every submission, but that screening is not a
+guarantee of correctness or safety: you are responsible for reviewing the code
+you install and run. Report issues and request updates through the contributor.

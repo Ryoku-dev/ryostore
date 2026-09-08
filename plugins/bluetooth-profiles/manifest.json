@@ -22,8 +22,7 @@
   ],
   "capabilities": {
     "densities": [
-      "glyph",
-      "compact"
+      "glyph"
     ]
   },
   "defaults": {
@@ -33,7 +32,8 @@
   },
   "dependencies": {
     "commands": [
-      "pactl"
+      "pactl",
+      "ryoku-shell"
     ]
   },
   "metadata": {

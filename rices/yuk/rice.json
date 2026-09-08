@@ -5,8 +5,8 @@
   "version": "1.0.0",
   "destination": "ryoku/rices/yuk",
   "slug": "yuk",
-  "name": "yuk",
-  "author": "feel",
+  "name": "Yuk",
+  "author": "feelyourwarmth",
   "createdWith": "0.50.0-beta.19",
   "color": {
     "mode": "wallpaper",
@@ -145,7 +145,6 @@
     },
     "launcher": {
       "bgBlur": 2,
-      "heroImage": "file:///home/feel/Pictures/Wallpapers/wallhaven-vpel8p.jpg",
       "heroPosX": 0.5,
       "heroPosY": 0.5,
       "heroStrength": 0.6,
@@ -491,6 +490,14 @@
   },
   "files": [
     {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 726,
+      "sha256": "57bf4d631ffec7647896873623ad82d924c4ed05599b7ed73bcfeb4522655b5c",
+      "install": false
+    },
+    {
       "source": "assets/preview.webp",
       "destination": "assets/preview.webp",
       "mode": "0644",
@@ -504,6 +511,14 @@
       "mode": "0644",
       "size": 1611371,
       "sha256": "777f6318838ae311cf8ebc94ca612761236486239d38d678e91ccd7fd242a522",
+      "install": false
+    },
+    {
+      "source": "screenshots/1.webp",
+      "destination": "screenshots/1.webp",
+      "mode": "0644",
+      "size": 544698,
+      "sha256": "108ecf5af24a4b63e14d0e6fddfad09671f61f2f79557c5037d9174bd2c868f4",
       "install": false
     }
   ]

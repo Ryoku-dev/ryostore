@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """Fetch full body of a Gmail message.
-Sanitizes HTML for Qt RichText rendering. Saves raw HTML to a temp file.
-Usage: fetch_email_body.py <refresh_token> <message_id>
+Sanitizes HTML for Qt RichText and a private, inert browser preview.
+Usage: fetch_email_body.py <message_id> (token via RYOKU_GMAIL_TOKEN)
 Outputs JSON: { "body": "<sanitized html>", "htmlPath": "<path>", "attachments": [...] }
 """
 import sys, json, base64, re, os, urllib.request, urllib.parse
 from html.parser import HTMLParser
 import html as html_mod
+import hashlib
 import gmail_config
 
 # ─── HTTP ────────────────────────────────────────────────────────────
 
 def api_get(url, token):
     req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return gmail_config.read_json_response(resp)
 
 def decode_base64url(data):
     padded = data.replace("-", "+").replace("_", "/")
@@ -283,7 +284,10 @@ class _HtmlSanitizer(HTMLParser):
 
         # Links — detect button-style and preserve href
         if tag == "a":
-            href = attrs_dict.get("href", "")
+            href = attrs_dict.get("href", "").strip()
+            if (not re.match(r"^(https?://|mailto:|tel:)", href, re.I)
+                    or re.search(r"[\x00-\x20\x7f]", href)):
+                href = ""
             style = attrs_dict.get("style", "")
             self._current_link_href = href
             self._link_has_bg = bool(re.search(r'background(?:-color)?', style, re.I))
@@ -430,15 +434,14 @@ def mime_icon(mime):
 # ─── Main ───────────────────────────────────────────────────────────────────
 
 def main():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print(json.dumps({"body": "", "htmlPath": "", "attachments": []}))
         sys.exit(0)
 
-    refresh_token = sys.argv[1]
-    message_id    = sys.argv[2]
+    message_id = sys.argv[1]
 
     try:
-        token = gmail_config.resolve_token(refresh_token)
+        token = gmail_config.resolve_token(gmail_config.runtime_token())
     except Exception:
         print(json.dumps({"body": "", "htmlPath": "", "attachments": []}))
         sys.exit(1)
@@ -478,14 +481,20 @@ def main():
     html_path = ""
 
     if html_body:
-        try:
-            tmp_path = f"/tmp/qs_email_{message_id}.html"
-            with open(tmp_path, "w", encoding="utf-8") as f:
-                f.write(html_body)
-            html_path = tmp_path
-        except Exception:
-            html_path = ""
         safe_html = sanitize_html(html_body)
+        try:
+            name = "message-" + hashlib.sha256(message_id.encode("utf-8")).hexdigest() + ".html"
+            document = (
+                '<!doctype html><html><head><meta charset="utf-8">'
+                '<meta http-equiv="Content-Security-Policy" content="'
+                "default-src 'none'; style-src 'unsafe-inline'; form-action 'none'; base-uri 'none'"
+                '"><title>Gmail message preview</title></head>'
+                '<body style="font-family:sans-serif;max-width:70em;margin:2em auto;padding:1em">'
+                + safe_html + "</body></html>"
+            )
+            html_path = gmail_config.write_private_file(name, document)
+        except (OSError, ValueError):
+            html_path = ""
     elif plain_body:
         safe_html = linkify_text(plain_body)
     else:

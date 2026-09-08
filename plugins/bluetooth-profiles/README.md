@@ -36,6 +36,10 @@ ryoku plugin validate .
 ryoku plugin add . --bar --yes
 ```
 
+## Maintenance & safety
+
+Bluetooth Profiles is a community contribution. Its author maintains and updates it — not the Ryoku team. Ryostore screens every submission against the plugin rules and reviews the code, but screening is a safeguard, not a guarantee: you install and run community plugins at your own discretion, so review what a plugin does before enabling it.
+
 ## Author
 
 itsKontra <derntl@gmx.net>

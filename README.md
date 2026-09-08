@@ -26,6 +26,28 @@ index. An item is invisible to the desktop until it is listed in that registry.
 `installers/` holds small, auditable curl/script installers that a bundle item
 can reference; it is not a browsable catalogue of its own.
 
+## Community maintenance and trust
+
+**Community submissions, including plugins, are maintained by their contributors,
+not by the Ryoku team.** Submitting an item means taking responsibility for its
+compatibility, dependencies, bug fixes, security fixes, and future updates. When
+Ryoku changes, the contributor must return and update their item. A maintainer
+helping an item into the store does not transfer that responsibility to Ryoku.
+Unmaintained, incompatible, or unsafe items may be removed from the catalogue.
+
+**Users remain responsible for reviewing the code they install and its updates.**
+Plugins and bar styles run inside your desktop with your user permissions; being
+listed is not sandboxing, an endorsement, or a promise of safety. Review external
+commands, network access, file access, and any permission prompts before enabling
+an item. Do not install code you do not trust.
+
+Ryostore provides automated security screening and maintainer review to filter out
+possible problems and reduce exposure. These are defensive filters, **not a
+complete security audit or a guarantee**: static analysis can miss malicious,
+obfuscated, or simply buggy behavior, and upstream dependencies can change.
+See [SECURITY.md](SECURITY.md) for the screening boundary, secure coding rules,
+local hooks, and vulnerability reporting.
+
 ## Want to add something?
 
 Two guides, one job each:
@@ -49,10 +71,12 @@ Deep, per-catalogue authoring references live beside each catalogue
 - **Ship only what you have the right to ship.** Your own work, CC0, or content
   under a licence that permits redistribution. Colour schemes, wallpapers, and
   art are the usual traps.
-- **Run the check before you push:** `tests/validate-catalogue.sh`. CI runs it on
-  every push and pull request, so a dangling reference never reaches a user as a
-  failed install.
+- **Run the check before you push:** `tests/validate-catalogue.sh`. Trusted CI
+  validates the catalogue on main; pull requests receive the isolated security
+  screen and catalogue-integrity checks described in [SECURITY.md](SECURITY.md).
 - **Plugins and Ryotunes skins carry a per-file manifest.** After any change to
   such a product's files, regenerate it and its registry hash with
   `tools/pack-product.py <category>/<id>` (e.g. `plugins/obsidian` or
   `ryotunes-skins/nord-light`).
+  Remove generated `__pycache__`, `.pyc` and `.pyo` artifacts first; the packer
+  refuses to publish Python bytecode.

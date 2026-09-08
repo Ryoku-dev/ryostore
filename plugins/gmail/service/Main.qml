@@ -10,6 +10,8 @@ Item {
     property var pluginApi: null
     readonly property string pluginDir: pluginApi ? (pluginApi.pluginDir || pluginApi.dir || Qt.resolvedUrl("..").toString().replace(/^file:\/\//, "")) : Qt.resolvedUrl("..").toString().replace(/^file:\/\//, "")
     readonly property string binDir: pluginDir + "/bin"
+    readonly property string stateDir: pluginApi && pluginApi.stateDir ? pluginApi.stateDir
+        : (Quickshell.env("XDG_STATE_HOME") || (Quickshell.env("HOME") + "/.local/state")) + "/ryoku/plugins/gmail"
 
 
     signal attachmentDownloadFinished(string attachmentId, bool success, string path)
@@ -275,6 +277,7 @@ Item {
     Settings {
         id: emailSettings
         category: "EmailService"
+        location: "file://" + root.stateDir + "/settings.ini"
         property alias maxEmails: root.maxEmails
         property alias enableAllInboxes: root.enableAllInboxes
         property alias enableUpdates: root.enableUpdates
@@ -373,55 +376,6 @@ Item {
     property int _tokenExpiry: 0   // epoch seconds
     property string _refreshToken: ""
 
-    // IPC
-    IpcHandler {
-        target: "gmail"
-        function onAuthComplete(refreshToken: string, email: string, picture: string) {
-            let newAccounts = [];
-            if (root.accounts) {
-                for (let i = 0; i < root.accounts.length; i++) {
-                    newAccounts.push(root.accounts[i]);
-                }
-            }
-
-            let foundIdx = -1;
-            for (let i = 0; i < newAccounts.length; i++) {
-                if (newAccounts[i].email === email) {
-                    foundIdx = i;
-                    break;
-                }
-            }
-
-            if (foundIdx !== -1) {
-                newAccounts[foundIdx].refreshToken = refreshToken;
-                newAccounts[foundIdx].avatar = picture;
-                root.activeAccountIndex = foundIdx;
-            } else {
-                newAccounts.push({
-                    email: email,
-                    avatar: picture,
-                    refreshToken: refreshToken
-                });
-                root.activeAccountIndex = newAccounts.length - 1;
-            }
-
-            root.accounts = newAccounts;
-            root._saveAccountsToStore(newAccounts);
-
-            // Legacy fields for compatibility
-            
-
-            _clearAccountData();
-            _updateActiveAccount();
-            root._refreshAndFetch();
-        }
-        function onTokenRefreshed(accessToken: string, expiresIn: int) {
-            root._accessToken = accessToken;
-            root._tokenExpiry = Math.floor(Date.now() / 1000) + expiresIn - 60;
-            root.authenticated = true;
-            root.syncAll();
-        }
-    }
 
     function setNavOrder(newOrder) {
         root.navOrder = newOrder;
@@ -485,8 +439,22 @@ Item {
         accountsLoader.running = true;
     }
 
+    Process {
+        id: accountsSaver
+        stdinEnabled: true
+        property string _payload: "[]"
+        onStarted: {
+            write(accountsSaver._payload);
+            accountsSaver.stdinEnabled = false;
+        }
+    }
+
     function _saveAccountsToStore(accs) {
-        Quickshell.execDetached(["python3", root.binDir + "/accounts_store.py", "save", JSON.stringify(accs)]);
+        accountsSaver.running = false;
+        accountsSaver._payload = JSON.stringify(accs);
+        accountsSaver.command = ["python3", root.binDir + "/accounts_store.py", "save"];
+        accountsSaver.stdinEnabled = true;
+        accountsSaver.running = true;
     }
 
     function _updateActiveAccount() {
@@ -516,6 +484,12 @@ Item {
         labels.clear();
 
         root._accessToken = "";
+        root._tokenExpiry = 0;
+        root.authenticated = false;
+        root.currentEmailBody = "";
+        root.currentEmailHtmlPath = "";
+        root.currentEmailAttachments.clear();
+        root.currentThreadMessages.clear();
         root.historyId = "";
         root._pageTokens = ({});
         root.inboxUnreadCount = 0;
@@ -563,21 +537,11 @@ Item {
         root.accounts = newAccounts;
         root._saveAccountsToStore(newAccounts);
 
-        if (newAccounts.length > 0) {
-            root.activeAccountIndex = 0;
-            switchAccount(0);
-        } else {
-            // Last account removed
-            _accessToken = "";
-            _refreshToken = "";
-            userEmail = "";
-            userAvatar = "";
-            authenticated = false;
-            inboxMessages.clear();
-            sentMessages.clear();
-            spamMessages.clear();
-            labels.clear();
-        }
+        root.activeAccountIndex = 0;
+        _clearAccountData();
+        _updateActiveAccount();
+        if (newAccounts.length > 0)
+            _refreshAndFetch();
     }
 
     function syncAll() {
@@ -591,7 +555,8 @@ Item {
             return;
 
         // First refresh the token, then fetch all labels in parallel
-        tokenRefresher.command = ["python3", root.binDir + "/token_refresh.py", _refreshToken];
+        tokenRefresher.environment = ({ RYOKU_GMAIL_TOKEN: _refreshToken });
+        tokenRefresher.command = ["python3", root.binDir + "/token_refresh.py"];
         tokenRefresher.running = true;
     }
 
@@ -712,7 +677,8 @@ Item {
         if (!authenticated || !root.accounts || root.accounts.length === 0)
             return;
 
-        allInboxesFetcher.command = ["python3", root.binDir + "/fetch_all_accounts.py", JSON.stringify(root.accounts), maxEmails.toString()];
+        allInboxesFetcher.environment = ({ RYOKU_GMAIL_ACCOUNTS: JSON.stringify(root.accounts) });
+        allInboxesFetcher.command = ["python3", root.binDir + "/fetch_all_accounts.py", maxEmails.toString()];
         allInboxesFetcher.running = true;
     }
 
@@ -738,37 +704,44 @@ Item {
         let bestToken = _getBestToken();
         if (tab === "inbox") {
             let catFlags = (enableUpdates ? "1" : "0") + "," + (enablePromotions ? "1" : "0") + "," + (enableSocials ? "1" : "0");
-            inboxFetcher.command = ["python3", _fetchScript, bestToken, "INBOX", maxEmails.toString(), catFlags, token, hId];
+            inboxFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+            inboxFetcher.command = ["python3", _fetchScript, "INBOX", maxEmails.toString(), catFlags, token, hId];
             inboxFetcher._currentTab = tab;
             inboxFetcher._currentPage = pageIndex;
             inboxFetcher.running = true;
         } else if (tab === "sent") {
-            sentFetcher.command = ["python3", _fetchScript, bestToken, "SENT", maxEmails.toString(), token, hId];
+            sentFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+            sentFetcher.command = ["python3", _fetchScript, "SENT", maxEmails.toString(), token, hId];
             sentFetcher._currentTab = tab;
             sentFetcher._currentPage = pageIndex;
             sentFetcher.running = true;
         } else if (tab === "trash") {
-            trashFetcher.command = ["python3", _fetchScript, bestToken, "TRASH", maxEmails.toString(), token, hId];
+            trashFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+            trashFetcher.command = ["python3", _fetchScript, "TRASH", maxEmails.toString(), token, hId];
             trashFetcher._currentTab = tab;
             trashFetcher._currentPage = pageIndex;
             trashFetcher.running = true;
         } else if (tab === "spam") {
-            spamFetcher.command = ["python3", _fetchScript, bestToken, "SPAM", maxEmails.toString(), token, hId];
+            spamFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+            spamFetcher.command = ["python3", _fetchScript, "SPAM", maxEmails.toString(), token, hId];
             spamFetcher._currentTab = tab;
             spamFetcher._currentPage = pageIndex;
             spamFetcher.running = true;
         } else if (tab === "starred") {
-            starredFetcher.command = ["python3", _fetchScript, bestToken, "STARRED", maxEmails.toString(), token, hId];
+            starredFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+            starredFetcher.command = ["python3", _fetchScript, "STARRED", maxEmails.toString(), token, hId];
             starredFetcher._currentTab = tab;
             starredFetcher._currentPage = pageIndex;
             starredFetcher.running = true;
         } else if (tab === "important") {
-            importantFetcher.command = ["python3", _fetchScript, bestToken, "IMPORTANT", maxEmails.toString(), token, hId];
+            importantFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+            importantFetcher.command = ["python3", _fetchScript, "IMPORTANT", maxEmails.toString(), token, hId];
             importantFetcher._currentTab = tab;
             importantFetcher._currentPage = pageIndex;
             importantFetcher.running = true;
         } else if (tab === "purchases") {
-            purchasesFetcher.command = ["python3", _fetchScript, bestToken, "CATEGORY_PURCHASES", maxEmails.toString(), token, hId];
+            purchasesFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+            purchasesFetcher.command = ["python3", _fetchScript, "CATEGORY_PURCHASES", maxEmails.toString(), token, hId];
             purchasesFetcher._currentTab = tab;
             purchasesFetcher._currentPage = pageIndex;
             purchasesFetcher.running = true;
@@ -787,7 +760,8 @@ Item {
         syncLabel("inbox");
         if (root.enableAllInboxes)
             syncLabel("all_inboxes");
-        labelFetcher.command = ["python3", root.binDir + "/fetch_labels.py", _getBestToken(), enabledLabels.join(",")];
+        labelFetcher.environment = ({ RYOKU_GMAIL_TOKEN: _getBestToken() });
+        labelFetcher.command = ["python3", root.binDir + "/fetch_labels.py", enabledLabels.join(",")];
         labelFetcher.running = true;
     }
 
@@ -1094,7 +1068,12 @@ Item {
 
     Process {
         id: emailSender
-        command: ["echo", ""]
+        command: ["python3", root.binDir + "/send_email.py"]
+        property string payload: ""
+        onStarted: {
+            write(payload);
+            stdinEnabled = false;
+        }
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
@@ -1121,64 +1100,31 @@ Item {
             root.emailSent(false, "Not authenticated");
             return;
         }
-        let cmd = ["python3", root.binDir + "/send_email.py", _refreshToken, to, subject, bodyHtml];
-        if (cc)
-            cmd.push("--cc", cc);
-        if (bcc)
-            cmd.push("--bcc", bcc);
-        if (threadId)
-            cmd.push("--thread-id", threadId);
-        if (inReplyTo)
-            cmd.push("--in-reply-to", inReplyTo);
-        if (references)
-            cmd.push("--references", references);
-
-        if (attachments && attachments.length > 0) {
-            cmd.push("--attachments");
-            cmd = cmd.concat(attachments);
-        }
-        emailSender.command = cmd;
+        emailSender.environment = ({ RYOKU_GMAIL_TOKEN: _getBestToken() });
+        emailSender.payload = JSON.stringify({
+            to: to, subject: subject, body: bodyHtml, attachments: attachments || [],
+            threadId: threadId, inReplyTo: inReplyTo, references: references, cc: cc, bcc: bcc
+        });
+        emailSender.stdinEnabled = true;
         emailSender.running = true;
     }
 
-    function _ensureValidToken(callback) {
-        let now = Math.floor(Date.now() / 1000);
-        if (_accessToken !== "" && now < _tokenExpiry) {
-            callback(_accessToken);
-            return;
-        }
-
-        if (_refreshToken === "")
-            return;
-
-        // One-time connection to wait for the next token refresh
-        let connection = null;
-        connection = root.onAuthenticatedChanged.connect(() => {
-            if (root.authenticated && root._accessToken !== "") {
-                if (connection)
-                    root.onAuthenticatedChanged.disconnect(connection);
-                callback(root._accessToken);
-            }
-        });
-
-        _refreshAndFetch();
-    }
 
     function markAsRead(messageId) {
-        _ensureValidToken(token => {
-            const bodyStr = JSON.stringify({
-                removeLabelIds: ["UNREAD"]
-            });
-            Quickshell.execDetached(["curl", "-s", "-X", "POST", "-H", "Authorization: Bearer " + token, "-H", "Content-Type: application/json", "-d", bodyStr, `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}/modify`]);
+        const token = _getBestToken();
+        if (!token) return;
+        Quickshell.execDetached({
+            command: ["python3", root.binDir + "/modify_message.py", "message", messageId, "--remove", "UNREAD"],
+            environment: { RYOKU_GMAIL_TOKEN: token }
         });
     }
 
     function markThreadAsRead(threadId) {
-        _ensureValidToken(token => {
-            const bodyStr = JSON.stringify({
-                removeLabelIds: ["UNREAD"]
-            });
-            Quickshell.execDetached(["curl", "-s", "-X", "POST", "-H", "Authorization: Bearer " + token, "-H", "Content-Type: application/json", "-d", bodyStr, `https://gmail.googleapis.com/gmail/v1/users/me/threads/${threadId}/modify`]);
+        const token = _getBestToken();
+        if (!token) return;
+        Quickshell.execDetached({
+            command: ["python3", root.binDir + "/modify_message.py", "thread", threadId, "--remove", "UNREAD"],
+            environment: { RYOKU_GMAIL_TOKEN: token }
         });
 
         // Update local models
@@ -1197,13 +1143,11 @@ Item {
     }
 
     function toggleStarMessage(messageId, currentState) {
-        _ensureValidToken(token => {
-            const bodyStr = JSON.stringify(currentState ? {
-                removeLabelIds: ["STARRED"]
-            } : {
-                addLabelIds: ["STARRED"]
-            });
-            Quickshell.execDetached(["curl", "-s", "-X", "POST", "-H", "Authorization: Bearer " + token, "-H", "Content-Type: application/json", "-d", bodyStr, `https://gmail.googleapis.com/gmail/v1/users/me/messages/${messageId}/modify`]);
+        const token = _getBestToken();
+        if (!token) return;
+        Quickshell.execDetached({
+            command: ["python3", root.binDir + "/modify_message.py", "message", messageId, currentState ? "--remove" : "--add", "STARRED"],
+            environment: { RYOKU_GMAIL_TOKEN: token }
         });
 
         var models = [inboxMessages, allInboxesMessages, sentMessages, spamMessages, starredMessages, importantMessages, purchasesMessages, searchMessagesModel, currentThreadMessages];
@@ -1230,7 +1174,7 @@ Item {
         if (!token && _refreshToken)
             token = _refreshToken;
         if (token) {
-            Quickshell.execDetached(["python3", root.binDir + "/delete_email.py", token, messageId, "trash"]);
+            Quickshell.execDetached({ command: ["python3", root.binDir + "/delete_email.py", messageId, "trash"], environment: { RYOKU_GMAIL_TOKEN: token } });
         }
         _removeFromModels(messageId);
     }
@@ -1240,7 +1184,7 @@ Item {
         if (!token && _refreshToken)
             token = _refreshToken;
         if (token) {
-            Quickshell.execDetached(["python3", root.binDir + "/delete_email.py", token, messageId, "permanent"]);
+            Quickshell.execDetached({ command: ["python3", root.binDir + "/delete_email.py", messageId, "permanent"], environment: { RYOKU_GMAIL_TOKEN: token } });
         }
         _removeFromModels(messageId);
     }
@@ -1250,7 +1194,7 @@ Item {
         if (!token && _refreshToken)
             token = _refreshToken;
         if (token) {
-            Quickshell.execDetached(["python3", root.binDir + "/delete_email.py", token, messageId, "untrash"]);
+            Quickshell.execDetached({ command: ["python3", root.binDir + "/delete_email.py", messageId, "untrash"], environment: { RYOKU_GMAIL_TOKEN: token } });
         }
         _removeFromModels(messageId);
     }
@@ -1288,7 +1232,8 @@ Item {
         let token = _getToken("search", pageIndex);
         let bestToken = _getBestToken();
 
-        searchFetcher.command = ["python3", _fetchScript, bestToken, "SEARCH:" + query, maxEmails.toString(), token];
+        searchFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+        searchFetcher.command = ["python3", _fetchScript, "SEARCH:" + query, maxEmails.toString(), token];
         searchFetcher._currentTab = "search";
         searchFetcher._currentPage = pageIndex;
         searchFetcher.running = true;
@@ -1334,7 +1279,8 @@ Item {
         currentEmailBody = "";
         loadingEmailBody = true;
         let bestToken = _getBestToken();
-        emailBodyFetcher.command = ["python3", root.binDir + "/fetch_email_body.py", bestToken, messageId];
+        emailBodyFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+        emailBodyFetcher.command = ["python3", root.binDir + "/fetch_email_body.py", messageId];
         emailBodyFetcher.running = true;
     }
 
@@ -1361,12 +1307,37 @@ Item {
         if (_refreshToken === "")
             return;
         var bestToken = _getBestToken();
-        var cmd = ["python3", root.binDir + "/download_email_attachment.py", bestToken, messageId, attachmentId, filename];
+        var cmd = ["python3", root.binDir + "/download_email_attachment.py", messageId, attachmentId, filename];
         if (targetDir) {
             cmd.push(targetDir);
         }
+        emailAttachmentDownloader.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
         emailAttachmentDownloader.command = cmd;
         emailAttachmentDownloader.running = true;
+    }
+
+    signal icsImportFinished(bool success, int eventCount, string error)
+
+    Process {
+        id: icsImporter
+        command: ["echo", ""]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const data = JSON.parse(text);
+                    root.icsImportFinished(!!data.success, data.event_count || 0, data.error || "");
+                } catch (e) {
+                    root.icsImportFinished(false, 0, "parse error");
+                }
+            }
+        }
+    }
+
+    function importIcsToCalendar(path, deleteAfter) {
+        if (!path)
+            return;
+        icsImporter.command = ["python3", root.binDir + "/import_ics.py", path, deleteAfter ? "true" : "false"];
+        icsImporter.running = true;
     }
 
     Process {
@@ -1390,7 +1361,6 @@ Item {
                                 snippet: msg.snippet,
                                 body: msg.body,
                                 attachments: msg.attachments || [],
-                                unread: msg.unread,
                                 starred: msg.starred,
                                 timestamp: msg.timestamp,
                                 labelsString: (msg.labels || []).join(",")
@@ -1414,7 +1384,8 @@ Item {
         currentThreadMessages.clear();
         loadingEmailBody = true;
         var bestToken = _getBestToken();
-        threadFetcher.command = ["python3", root.binDir + "/fetch_thread.py", bestToken, threadId];
+        threadFetcher.environment = ({ RYOKU_GMAIL_TOKEN: bestToken });
+        threadFetcher.command = ["python3", root.binDir + "/fetch_thread.py", threadId];
         threadFetcher.running = true;
     }
 }

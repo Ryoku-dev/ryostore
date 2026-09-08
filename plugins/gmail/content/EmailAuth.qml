@@ -39,6 +39,12 @@ Item {
 
     Process {
         id: saveGmailCredentialsProc
+        property string _payload: ""
+        stdinEnabled: true
+        onStarted: {
+            write(saveGmailCredentialsProc._payload);
+            saveGmailCredentialsProc.stdinEnabled = false;
+        }
         onExited: (code) => {
             root.isSaving = false;
             console.log("[EmailAuth] Gmail credentials backup finished with code:", code);
@@ -81,7 +87,9 @@ Item {
         }
 
         var bin = (EmailService.instance ? EmailService.instance.binDir : Qt.resolvedUrl("../bin").toString().replace(/^file:\/\//, ""));
-        saveGmailCredentialsProc.command = ["python3", bin + "/backup_gmail_env.py", cid, sec];
+        saveGmailCredentialsProc._payload = JSON.stringify({ client_id: cid, client_secret: sec });
+        saveGmailCredentialsProc.command = ["python3", bin + "/backup_gmail_env.py"];
+        saveGmailCredentialsProc.stdinEnabled = true;
         saveGmailCredentialsProc.running = false;
         saveGmailCredentialsProc.running = true;
     }
@@ -716,7 +724,7 @@ Item {
                         code: "VAULT-01"
                         title: "安全性"
                         sub: "LOCAL CREDENTIAL VAULT"
-                        caption: "API credentials are saved to ~/.config/ryoku/gmail.env (0600 permissions). Zero cloud relays or telemetry."
+                        caption: "API credentials are saved to the plugin state dir (~/.local/state/ryoku/plugins/gmail/gmail.env, 0600). Zero cloud relays or telemetry."
                         readout: ["STORAGE|LOCAL ONLY", "SECURITY|PKCE", "PERM|0600"]
                         seal: "護"
                     }
@@ -732,7 +740,7 @@ Item {
                 code: "SETUP-00"
                 title: "初期設定"
                 sub: "GOOGLE CLOUD"
-                caption: "Provide desktop app OAuth keys to communicate with Gmail API. Keys are written to ~/.config/ryoku/gmail.env."
+                caption: "Provide desktop app OAuth keys to communicate with Gmail API. Keys are written to the plugin state dir (~/.local/state/ryoku/plugins/gmail)."
                 readout: ["API|GMAIL v1", "AUTH|UNCONFIGURED", "STORE|LOCAL", "FLOW|PKCE"]
                 seal: "鍵"
             }

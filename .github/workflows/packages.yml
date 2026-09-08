@@ -5,22 +5,34 @@ name: packages
 # flagged out-of-date, and `proton-cachyos` became unresolvable upstream after
 # CachyOS split it into -slr and -native. Both would have shipped.
 #
-# This runs on a schedule rather than on every push: a package disappearing is
-# drift in someone else's repo, not a regression in a commit, so it must not fail
-# a PR that never touched a manifest. Upstream being unreachable is reported and
-# skipped, never a failure.
+# This runs on a schedule (and manual dispatch) on the trusted default branch,
+# not on PRs: a package disappearing is drift in someone else's repo, not a
+# regression in a commit, so it must not fail a PR that never touched a manifest.
+# Upstream being unreachable is reported and skipped, never a failure.
 
 on:
   schedule:
     - cron: '17 6 * * 1'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: packages-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
       - name: Install zstd
-        run: sudo apt-get update && sudo apt-get install -y zstd
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends zstd
+
       - name: Every bundle package resolves to its declared source
         run: python3 tests/verify-packages.py

@@ -46,7 +46,7 @@
       "name": "Imi",
       "version": "1.0.0",
       "path": "barstyles/imi",
-      "author": "Ryoku Community (dodo986)",
+      "author": "Ryoku Community / dodo986",
       "summary": "Material 3 Island Bar",
       "description": "Material 3-Like design with morphing popouts, kanji workspaces, audio visualizer, and customizable widget pills.",
       "tags": [
@@ -62,9 +62,10 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "761726be369bdc5d26267416d1c4b74260ebf410de810850e7e6b8739c2e43fa",
-      "lastUpdated": "2025-08-23",
-      "official": false
+      "manifestSha256": "e5ba3c49f9761c7a57fd46982fbfaa2ad22d9e4a41f2892fe50791f585983f00",
+      "lastUpdated": "2026-09-07",
+      "official": false,
+      "license": "GPL-3.0-only"
     },
     {
       "id": "ricelin",
@@ -87,7 +88,9 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "70f1d19515368af145d636f0a3087b5529c374c2bda0ba9d5f51485242fd5663"
+      "manifestSha256": "fa70aad41d19ac3f9996f8fa1c40d90ac2816d72ae4b23901c04c09924b3462f",
+      "official": false,
+      "lastUpdated": "2026-09-07"
     }
   ]
 }

@@ -647,13 +647,7 @@ Item {
                                 color: Appearance.colors.colOnSurface
                                 wrapMode: Text.Wrap
                                 linkColor: Appearance.colors.colPrimary
-                                onLinkActivated: link => {
-                                    if (link.startsWith("copy:")) {
-                                        Quickshell.clipboardText = link.substring(5);
-                                    } else {
-                                        Qt.openUrlExternally(link);
-                                    }
-                                }
+                                onLinkActivated: link => EmailService.openLink(link)
 
                                 HoverHandler {
                                     cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
@@ -709,13 +703,7 @@ Item {
                                         }
                                         wrapMode: Text.Wrap
                                         linkColor: Appearance.colors.colPrimary
-                                        onLinkActivated: link => {
-                                            if (link.startsWith("copy:")) {
-                                                Quickshell.clipboardText = link.substring(5);
-                                            } else {
-                                                Qt.openUrlExternally(link);
-                                            }
-                                        }
+                                        onLinkActivated: link => EmailService.openLink(link)
                                     }
                                 }
                             }
@@ -972,7 +960,7 @@ Item {
 
                             if (downloadFab.status === "done" && downloadFab.lastPath.startsWith("/tmp")) {
                                 icsActionBtn.status = "downloading";
-                                CalendarService.importFromIcs(downloadFab.lastPath, true);
+                                EmailService.importIcsToCalendar(downloadFab.lastPath, true);
                                 icsActionBtn.imported = true;
                                 icsActionBtn.status = "done";
                             } else {
@@ -984,7 +972,7 @@ Item {
                                 onDownload = function (id, success, path) {
                                     if (id === model.attachmentId) {
                                         if (success) {
-                                            CalendarService.importFromIcs(path, true);
+                                            EmailService.importIcsToCalendar(path, true);
                                             icsActionBtn.imported = true;
                                             icsActionBtn.status = "done";
                                         } else {

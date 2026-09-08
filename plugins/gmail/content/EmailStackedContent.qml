@@ -442,7 +442,7 @@ Item {
                                                     color: Appearance.colors.colOnSurface
                                                     linkColor: Appearance.colors.colPrimary
                                                     onLinkActivated: function (link) {
-                                                        Qt.openUrlExternally(link);
+                                                        EmailService.openLink(link);
                                                     }
                                                 }
                                             }

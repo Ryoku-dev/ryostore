@@ -241,14 +241,14 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "7b7c16ec683d0c9b9b35dbda2d65e17b36808f58d9707ac42cd5e97991faae7a",
+      "manifestSha256": "6e956c8865c7f4470e7db0a02efa5c88e4ae266a27d315d2d6e32c6b70ce8613",
       "official": false,
       "tagline": "Inbox, search & compose in Ryoku noir style.",
       "icon": "mail",
       "hosts": [
         "framePopout"
       ],
-      "lastUpdated": "2026-08-29"
+      "lastUpdated": "2026-09-07"
     },
     {
       "id": "apptime",
@@ -268,14 +268,14 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "717bcc51935ee43b6eb2256c451d29ce4f36567b4e7915f22cd6ebd99d97f0cb",
+      "manifestSha256": "f863ae7a4fb04a270ec0ad1d81e456012fb4a95b517367bc8cc84d46ee3a7bd6",
       "official": false,
       "tagline": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
       "icon": "",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-09-05"
+      "lastUpdated": "2026-09-07"
     },
     {
       "id": "bluetooth-profiles",
@@ -295,7 +295,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "f44f6e378127dada722fa2ba8f7eabd8fe9e81928e1c66661db6ac2fc5bc6dd0",
+      "manifestSha256": "92159a6ecc76ddb10a60be1beb6b44b7c0a9fcf6a4abcd76dccfa63db10ce56a",
       "official": false,
       "tagline": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
       "icon": "bluetooth",
@@ -326,7 +326,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "abb6383047bf3998079dccced8d60ae19b5eeee6cfa6708b4607480093dd60c3",
+      "manifestSha256": "a608be5647f2c271ed27a78a6854711912a53a9e3189b78eda5a2b37a183d911",
       "official": false,
       "tagline": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
       "icon": "coffee",

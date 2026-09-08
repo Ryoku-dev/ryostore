@@ -16,6 +16,11 @@ Item {
     readonly property var service: pluginApi ? pluginApi.mainInstance : null
     readonly property int count: service ? service.connectedCount : 0
 
+    // Initial expand state of each device card, from the autoExpand setting.
+    readonly property bool autoExpand: (pluginApi && pluginApi.pluginSettings
+        && pluginApi.pluginSettings.autoExpand !== undefined)
+        ? !!pluginApi.pluginSettings.autoExpand : true
+
     readonly property real contentW: widthBudget > 0 ? widthBudget : 296
 
     implicitWidth: root.contentW
@@ -166,7 +171,7 @@ Item {
                 delegate: Rectangle {
                     id: devTile
                     required property var modelData
-                    property bool expanded: true
+                    property bool expanded: root.autoExpand
                     readonly property bool isCardActive: modelData.activeProfile !== "off"
                     readonly property bool hovered: tileHover.containsMouse || actionMa.containsMouse || infoMa.containsMouse
                     readonly property int rowHeight: 42 * root.s

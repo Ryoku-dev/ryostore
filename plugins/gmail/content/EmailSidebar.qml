@@ -233,7 +233,7 @@ Item {
             code: "CLIENT"
             title: "通信監視"
             sub: "RYOKU DAEMON"
-            caption: EmailService.authenticated ? "Gmail sync active on localhost:42069." : "Waiting for Google authentication."
+            caption: EmailService.authenticated ? "Gmail sync active over gmail.googleapis.com." : "Waiting for Google authentication."
             readout: EmailService.authenticated ? ["NET|ONLINE", "SYNC|IDLE"] : ["AUTH|PENDING", "PORT|42069"]
             seal: "便"
         }

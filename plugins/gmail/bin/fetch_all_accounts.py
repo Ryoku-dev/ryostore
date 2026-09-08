@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import os
 import json
 import urllib.request
 import urllib.parse
@@ -8,8 +9,8 @@ import gmail_config
 
 def api_get(url, token):
     req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return gmail_config.read_json_response(resp)
 
 def fetch_detail(msg_id, token, account_email):
     url = f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{msg_id}?format=metadata&metadataHeaders=Subject&metadataHeaders=From&metadataHeaders=Date"
@@ -61,16 +62,16 @@ def fetch_account_inbox(account, max_results):
         return []
 
 def main():
-    if len(sys.argv) < 2:
-        print(json.dumps({"messages": []}))
-        sys.exit(0)
-
     try:
-        accounts = json.loads(sys.argv[1])
-        max_results = int(sys.argv[2]) if len(sys.argv) > 2 else 20
+        accounts = json.loads(os.environ.get("RYOKU_GMAIL_ACCOUNTS", "[]"))
+        max_results = int(sys.argv[1]) if len(sys.argv) > 1 else 20
     except Exception:
         print(json.dumps({"messages": []}))
         sys.exit(1)
+
+    if not accounts:
+        print(json.dumps({"messages": []}))
+        sys.exit(0)
 
     all_messages = []
     

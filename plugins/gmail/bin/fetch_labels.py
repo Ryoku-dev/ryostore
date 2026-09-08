@@ -4,23 +4,18 @@ import gmail_config
 
 def api_get(url, token):
     req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read())
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return gmail_config.read_json_response(resp)
 
 def fetch_label_detail(label_id, token):
     url = f"https://gmail.googleapis.com/gmail/v1/users/me/labels/{label_id}"
     return api_get(url, token)
 
 def main():
-    if len(sys.argv) < 2:
-        print("{}")
-        sys.exit(0)
-
-    refresh_token = sys.argv[1]
-    enabled_labels = sys.argv[2].split(",") if len(sys.argv) > 2 and sys.argv[2] else []
+    enabled_labels = sys.argv[1].split(",") if len(sys.argv) > 1 and sys.argv[1] else []
 
     try:
-        token = gmail_config.resolve_token(refresh_token)
+        token = gmail_config.resolve_token(gmail_config.runtime_token())
     except Exception:
         print("{}")
         sys.exit(1)

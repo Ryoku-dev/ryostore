@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
-import "../../../../services/lib/screens.js" as Screens
+import "lib/screens.js" as Screens
 import "."
 import "Singletons"
 
@@ -58,40 +58,6 @@ Item {
         root.peekMon = root.peekMon === mon ? "" : mon;
     }
 
-    Binding {
-        target: Notifs
-        property: "dnd"
-        value: Flags.dnd
-    }
-
-    Component.onCompleted: {
-        root.refresh();
-        Devices.restore();
-        void GameMode.active;
-    }
-
-    // Keep Ricelin's keep-awake behavior, but instantiate it only once because
-    // this Scene is hosted exactly once (on the primary monitor).
-    PanelWindow {
-        id: inhibitWin
-        visible: Flags.keepAwake
-        implicitWidth: 1
-        implicitHeight: 1
-        color: "transparent"
-        exclusionMode: ExclusionMode.Ignore
-        WlrLayershell.layer: WlrLayer.Background
-        WlrLayershell.namespace: "pill-inhibit"
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        anchors { top: true; left: true }
-        IdleInhibitor { window: inhibitWin; enabled: Flags.keepAwake }
-    }
-
-    Process {
-        running: Flags.keepAwake
-        command: ["systemd-inhibit", "--what=idle:sleep", "--who=Ricelin",
-                  "--why=keep awake", "--mode=block", "sleep", "infinity"]
-    }
-
     readonly property var refreshEvents: ({
         workspace: true, workspacev2: true,
         createworkspace: true, createworkspacev2: true,
@@ -106,63 +72,104 @@ Item {
         monitorremoved: true
     })
 
-    Connections {
-        target: Hyprland
-        function onRawEvent(event) {
-            if (root.refreshEvents[event.name])
-                root.refresh();
-        }
-    }
+    // Frame.qml mounts this Scene once PER monitor, so every global-once node --
+    // the "pill" IPC handler (whose target must be unique per process), the
+    // keep-awake idle inhibitor and the startup/refresh side-effects -- lives
+    // under one primary-owned Loader. Without the gate a two-monitor session
+    // builds two IpcHandlers fighting for the same target and two idle
+    // inhibitors. The visual reserve/overlay Variants below carry their own
+    // isPrimary Loader.
+    Loader {
+        active: root.isPrimary
+        sourceComponent: Component {
+            Item {
+                Component.onCompleted: {
+                    root.refresh();
+                    Devices.restore();
+                    void GameMode.active;
+                }
 
-    // The single Ricelin IPC namespace now lives in the active Ryoku shell,
-    // exactly where the old ShellRoot handler lived.
-    IpcHandler {
-        target: "pill"
-        function mixer(mon: string): void { root.toggleSurface(mon, "mixer"); }
-        function calendar(mon: string): void { root.toggleSurface(mon, "calendar"); }
-        function launcher(mon: string): void { root.toggleSurface(mon, "launcher"); }
-        function power(mon: string): void { root.toggleSurface(mon, "power"); }
-        function link(mon: string): void { root.toggleSurface(mon, "link"); }
-        function battery(mon: string): void { root.toggleSurface(mon, "battery"); }
-        function settings(mon: string): void { root.toggleSurface(mon, "settings"); }
-        function keybinds(mon: string): void { root.toggleSurface(mon, "keybinds"); }
-        function recorder(mon: string): void { root.toggleSurface(mon, "recorder"); }
-        function screenrec(mon: string): void { root.toggleSurface(mon, "recorder"); }
-        function record(mon: string): void { root.toggleSurface(mon, "recorder"); }
-        function sysmon(mon: string): void { root.toggleSurface(mon, "sysmon"); }
-        function system(mon: string): void { root.toggleSurface(mon, "sysmon"); }
-        function clipboard(mon: string): void { root.toggleSurface(mon, "clipboard"); }
-        function wallpaper(mon: string): void { root.toggleSurface(mon, "wallpaper"); }
-        function media(mon: string): void {
-            if (Players.list.length > 0)
-                root.toggleSurface(mon, "media");
-        }
-        function peek(mon: string): void { root.peek(mon); }
-        function hide(): void { root.close(); }
-        function page(mon: string, name: string): void { root.toggleSurface(mon, name); }
-        function gameMode(mon: string): void { Flags.gameMode = !Flags.gameMode; }
-        function quickRecord(mon: string): void {
-            if (ScreenRec.recording) {
-                ScreenRec.stop();
-            } else if (ScreenRec.counting) {
-                ScreenRec.cancel();
-            } else if (ScreenRec.quickChoosing) {
-                ScreenRec.quickChoosing = false;
-                ScreenRec.quickScreenChoosing = false;
-            } else {
-                ScreenRec.quickMon = mon;
-                ScreenRec.quickScreenChoosing = false;
-                ScreenRec.quickChoosing = true;
+                Connections {
+                    target: Hyprland
+                    function onRawEvent(event) {
+                        if (root.refreshEvents[event.name])
+                            root.refresh();
+                    }
+                }
+
+                // The single Ricelin IPC namespace lives in the active Ryoku
+                // shell, exactly where the old ShellRoot handler lived.
+                IpcHandler {
+                    target: "pill"
+                    function mixer(mon: string): void { root.toggleSurface(mon, "mixer"); }
+                    function calendar(mon: string): void { root.toggleSurface(mon, "calendar"); }
+                    function launcher(mon: string): void { root.toggleSurface(mon, "launcher"); }
+                    function power(mon: string): void { root.toggleSurface(mon, "power"); }
+                    function link(mon: string): void { root.toggleSurface(mon, "link"); }
+                    function battery(mon: string): void { root.toggleSurface(mon, "battery"); }
+                    function settings(mon: string): void { root.toggleSurface(mon, "settings"); }
+                    function keybinds(mon: string): void { root.toggleSurface(mon, "keybinds"); }
+                    function recorder(mon: string): void { root.toggleSurface(mon, "recorder"); }
+                    function screenrec(mon: string): void { root.toggleSurface(mon, "recorder"); }
+                    function record(mon: string): void { root.toggleSurface(mon, "recorder"); }
+                    function sysmon(mon: string): void { root.toggleSurface(mon, "sysmon"); }
+                    function system(mon: string): void { root.toggleSurface(mon, "sysmon"); }
+                    function clipboard(mon: string): void { root.toggleSurface(mon, "clipboard"); }
+                    function wallpaper(mon: string): void { root.toggleSurface(mon, "wallpaper"); }
+                    function media(mon: string): void {
+                        if (Players.list.length > 0)
+                            root.toggleSurface(mon, "media");
+                    }
+                    function peek(mon: string): void { root.peek(mon); }
+                    function hide(): void { root.close(); }
+                    function page(mon: string, name: string): void { root.toggleSurface(mon, name); }
+                    function gameMode(mon: string): void { Flags.gameMode = !Flags.gameMode; }
+                    function quickRecord(mon: string): void {
+                        if (ScreenRec.recording) {
+                            ScreenRec.stop();
+                        } else if (ScreenRec.counting) {
+                            ScreenRec.cancel();
+                        } else if (ScreenRec.quickChoosing) {
+                            ScreenRec.quickChoosing = false;
+                            ScreenRec.quickScreenChoosing = false;
+                        } else {
+                            ScreenRec.quickMon = mon;
+                            ScreenRec.quickScreenChoosing = false;
+                            ScreenRec.quickChoosing = true;
+                        }
+                    }
+                    function minimizeWindow(addr: string): void {
+                        Hyprland.dispatch('hl.dsp.window.move({ workspace = "special:minimized", follow = false, window = "address:' + addr + '" })');
+                    }
+                    function restoreWindow(arg: string): void {
+                        var p = arg.split("|");
+                        if (p.length < 2 || p[0].length === 0)
+                            return;
+                        Hyprland.dispatch('hl.dsp.window.move({ workspace = ' + p[1] + ', window = "address:' + p[0] + '" })');
+                    }
+                }
+
+                // Ricelin's keep-awake, instantiated once under the primary Scene.
+                PanelWindow {
+                    id: inhibitWin
+                    visible: Flags.keepAwake
+                    implicitWidth: 1
+                    implicitHeight: 1
+                    color: "transparent"
+                    exclusionMode: ExclusionMode.Ignore
+                    WlrLayershell.layer: WlrLayer.Background
+                    WlrLayershell.namespace: "pill-inhibit"
+                    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+                    anchors { top: true; left: true }
+                    IdleInhibitor { window: inhibitWin; enabled: Flags.keepAwake }
+                }
+
+                Process {
+                    running: Flags.keepAwake
+                    command: ["systemd-inhibit", "--what=idle:sleep", "--who=Ricelin",
+                              "--why=keep awake", "--mode=block", "sleep", "infinity"]
+                }
             }
-        }
-        function minimizeWindow(addr: string): void {
-            Hyprland.dispatch('hl.dsp.window.move({ workspace = "special:minimized", follow = false, window = "address:' + addr + '" })');
-        }
-        function restoreWindow(arg: string): void {
-            var p = arg.split("|");
-            if (p.length < 2 || p[0].length === 0)
-                return;
-            Hyprland.dispatch('hl.dsp.window.move({ workspace = ' + p[1] + ', window = "address:' + p[0] + '" })');
         }
     }
 
@@ -291,11 +298,11 @@ Item {
                                 }
                             }
                             Keys.onUpPressed: (e) => {
-                                if (pill.keybindsOpen && !pill.keybindsListening) { pill.keybindsMove(-1); e.accepted = true; return; }
+                                if (pill.keybindsOpen) { pill.keybindsMove(-1); e.accepted = true; return; }
                                 e.accepted = pill.mixerStep(1) || pill.recorderStep(5) || pill.settingsMove(-1);
                             }
                             Keys.onDownPressed: (e) => {
-                                if (pill.keybindsOpen && !pill.keybindsListening) { pill.keybindsMove(1); e.accepted = true; return; }
+                                if (pill.keybindsOpen) { pill.keybindsMove(1); e.accepted = true; return; }
                                 e.accepted = pill.mixerStep(-1) || pill.recorderStep(-5) || pill.settingsMove(1);
                             }
                             Keys.onLeftPressed: (e) => {
@@ -313,8 +320,8 @@ Item {
                                 else if (pill.settingsLike) { pill.settingsAdjust(1); e.accepted = true; }
                             }
                             Keys.onPressed: (e) => {
-                                if (pill.wallpaperOpen && !pill.wallpaperSearching && e.text.length === 1 && e.text > " ") {
-                                    pill.wallpaperType(e.text);
+                                if (pill.wallpaperOpen && e.text.length === 1 && e.text > " ") {
+                                    pill.openWallpaperPicker();
                                     e.accepted = true;
                                     return;
                                 }
@@ -329,7 +336,7 @@ Item {
                                 } else if (pill.settingsLike) {
                                     if (!e.isAutoRepeat) pill.settingsActivate();
                                     e.accepted = true;
-                                } else if (pill.keybindsOpen && !pill.keybindsListening) {
+                                } else if (pill.keybindsOpen) {
                                     if (!e.isAutoRepeat) pill.keybindsActivate();
                                     e.accepted = true;
                                 }
@@ -390,12 +397,6 @@ Item {
                             target: pill
                             function onQuickChoosingChanged() {
                                 if (pill.quickChoosing) focusScope.forceActiveFocus();
-                            }
-                            function onWallpaperSearchingChanged() {
-                                if (!pill.wallpaperSearching && overlay.surfaceOpen) focusScope.forceActiveFocus();
-                            }
-                            function onKeybindsListeningChanged() {
-                                if (!pill.keybindsListening && overlay.surfaceOpen) focusScope.forceActiveFocus();
                             }
                         }
                     }

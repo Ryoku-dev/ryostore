@@ -6,30 +6,6 @@
   "destination": "ryoku/plugins/apptime",
   "files": [
     {
-      "source": ".gitignore",
-      "destination": ".gitignore",
-      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
-      "mode": "0644",
-      "size": 22,
-      "install": true
-    },
-    {
-      "source": "AGENTS.md",
-      "destination": "AGENTS.md",
-      "sha256": "dcda952afa577d8f0e2c91dc9e1fb9e583f60dfa2297a83c12754cbb3725c027",
-      "mode": "0644",
-      "size": 3956,
-      "install": true
-    },
-    {
-      "source": "CLAUDE.md",
-      "destination": "CLAUDE.md",
-      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
-      "mode": "0644",
-      "size": 152,
-      "install": true
-    },
-    {
       "source": "LICENSE",
       "destination": "LICENSE",
       "sha256": "43af8551eda421c5e36e4dea57794f834a0981568a1ab1a0a310f3266b6897ae",
@@ -40,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "2e2325c442cf3c31f4f4f41335366b555f9c8e33a9d6e0555091ce585fc5330b",
+      "sha256": "ee85b32846e81c0f5ca228b039b56f00cdb06e5e5dfea0c625867c35f0d41e5c",
       "mode": "0644",
-      "size": 3310,
+      "size": 3673,
       "install": false
     },
     {
@@ -72,9 +48,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "dfbb51c329eaa5e528baff792cb99ac6a95f0151e6056b771d1fedd3ab895888",
+      "sha256": "9111e9a3237f1163f604073fa0aae688a033efd1fb070eb05891dfecc46c2672",
       "mode": "0644",
-      "size": 1360,
+      "size": 1343,
       "install": true
     },
     {

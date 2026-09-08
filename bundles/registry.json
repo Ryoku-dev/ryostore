@@ -1346,6 +1346,44 @@
       "tagline": "cmatrix · bonsai · visualizers",
       "sources": "pacman / AUR",
       "icon": "auto_awesome"
+    },
+    {
+      "id": "ryotunes",
+      "name": "Ryotunes",
+      "version": "1.0.0",
+      "path": "bundles/ryotunes",
+      "author": "ashmitvoid",
+      "summary": "Native music · live Ryoku colours · MPRIS",
+      "description": "The Ryoku-native music player, originally contributed by ashmitvoid. Installs the current distribution package, with native playback, MPRIS and live desktop theming.",
+      "tags": [
+        "music",
+        "player",
+        "youtube",
+        "ryoku"
+      ],
+      "accent": "#9a604b",
+      "surface": "#161515",
+      "preview": "assets/preview.webp",
+      "screenshots": [
+        "assets/preview.webp"
+      ],
+      "manifest": "bundle.json",
+      "manifestSha256": "6e75462cff6c64197ce88499a3920387fe4344a31b43df5d496b071b3872f05f",
+      "components": [
+        {
+          "type": "package",
+          "name": "ryotunes",
+          "detect": "ryotunes",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Ryoku-native music player with libmpv playback, MPRIS and live desktop theming."
+        }
+      ],
+      "tagline": "Native music · live Ryoku colours · MPRIS",
+      "sources": "Ryoku package repository",
+      "icon": "music_note",
+      "official": false,
+      "lastUpdated": "2026-09-07"
     }
   ]
 }

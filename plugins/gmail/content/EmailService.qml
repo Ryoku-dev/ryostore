@@ -1,5 +1,6 @@
 pragma Singleton
 import QtQuick
+import Quickshell
 
 QtObject {
     id: root
@@ -8,11 +9,13 @@ QtObject {
 
     signal emailSent(bool success, string errorMsg)
     signal attachmentDownloadFinished(string attachmentId, bool success, string path)
+    signal icsImportFinished(bool success, int eventCount, string error)
 
     property Connections _conn: Connections {
         target: root.instance
         function onEmailSent(success, errorMsg) { root.emailSent(success, errorMsg); }
         function onAttachmentDownloadFinished(attachmentId, success, path) { root.attachmentDownloadFinished(attachmentId, success, path); }
+        function onIcsImportFinished(success, eventCount, error) { root.icsImportFinished(success, eventCount, error); }
     }
 
     // State
@@ -142,8 +145,17 @@ QtObject {
     property bool gmailCredentialsTempLoaded: false
 
     // Methods
+    function openLink(link) {
+        const value = String(link);
+        if (value.startsWith("copy:")) {
+            Quickshell.clipboardText = value.substring(5);
+            return true;
+        }
+        if (/^(https?:\/\/|mailto:|tel:)/i.test(value) && !/[\u0000-\u0020\u007f]/.test(value))
+            return Qt.openUrlExternally(value);
+        return false;
+    }
     function syncLabel(tab, force) { if (instance) instance.syncLabel(tab, force); }
-    function syncInbox(force) { if (instance) instance.syncInbox(force); }
     function syncAll() { if (instance) instance.syncAll(); }
     function syncAllInboxes() { if (instance) instance.syncAllInboxes(); }
     function startOAuth() { if (instance) instance.startOAuth(); }
@@ -152,19 +164,19 @@ QtObject {
     function removeAccount(idx) { if (instance) instance.removeAccount(idx); }
     function fetchEmailBody(msgId) { if (instance) instance.fetchEmailBody(msgId); }
     function fetchThread(threadId) { if (instance) instance.fetchThread(threadId); }
-    function sendEmail(to, subj, body, atts) { if (instance) return instance.sendEmail(to, subj, body, atts); }
+    function sendEmail(to, subj, body, atts, threadId = "", inReplyTo = "", references = "", cc = "", bcc = "") {
+        if (instance) return instance.sendEmail(to, subj, body, atts, threadId, inReplyTo, references, cc, bcc);
+    }
     function deleteEmail(msgId, mode) { if (instance) instance.deleteEmail(msgId, mode); }
     function trashMessage(msgId) { if (instance) instance.trashMessage(msgId); }
     function deleteMessagePermanent(msgId) { if (instance) instance.deleteMessagePermanent(msgId); }
     function restoreMessage(msgId) { if (instance) instance.restoreMessage(msgId); }
-    function starEmail(msgId, starred) { if (instance) instance.starEmail(msgId, starred); }
-    function toggleStarMessage(msgId, currentVal) { if (instance) instance.starEmail(msgId, !currentVal); }
+    function toggleStarMessage(msgId, currentVal) { if (instance) instance.toggleStarMessage(msgId, currentVal); }
     function markAsRead(msgId) { if (instance) instance.markAsRead(msgId); }
-    function markAsUnread(msgId) { if (instance) instance.markAsUnread(msgId); }
-    function downloadAttachment(msgId, attId, fname) { if (instance) instance.downloadAttachment(msgId, attId, fname); }
+    function downloadAttachment(msgId, attId, fname, targetDir) { if (instance) instance.downloadAttachment(msgId, attId, fname, targetDir); }
+    function importIcsToCalendar(path, deleteAfter) { if (instance) instance.importIcsToCalendar(path, deleteAfter); }
     function searchMessages(query) { if (instance) instance.searchMessages(query); }
     function hasNextPage(tab, page) { return instance ? instance.hasNextPage(tab, page) : false; }
-    function getModelForTab(tab) { return instance ? instance.getModelForTab(tab) : null; }
     function formatRelativeDate(ts) { return instance ? instance.formatRelativeDate(ts) : ""; }
     function decrementUnreadForModel(model) { if (instance) instance.decrementUnreadForModel(model); }
 }

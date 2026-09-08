@@ -7,7 +7,7 @@
       "version": "1.0.0",
       "path": "rices/aperture",
       "author": "Ryoku Team",
-      "summary": "A crisp, brutalist instrument. Square corners, tight gaps, a hard-edged frame\u2026",
+      "summary": "A crisp, brutalist instrument. Square corners, tight gaps, a hard-edged frame…",
       "description": "A crisp, brutalist instrument. Square corners, tight gaps, a hard-edged frame and no glass; colours track your wallpaper through matugen, so any wall becomes a sharp technical desktop.",
       "tags": [
         "adaptive",
@@ -32,7 +32,7 @@
       "version": "1.0.0",
       "path": "rices/lumen",
       "author": "Ryoku Team",
-      "summary": "Soft and airy. Rounded corners, generous gaps, a glassy blur and a gentle lift\u2026",
+      "summary": "Soft and airy. Rounded corners, generous gaps, a glassy blur and a gentle lift…",
       "description": "Soft and airy. Rounded corners, generous gaps, a glassy blur and a gentle lift; colours track your wallpaper through matugen, so any wall becomes a calm, luminous desktop.",
       "tags": [
         "adaptive",
@@ -57,7 +57,7 @@
       "version": "1.0.0",
       "path": "rices/evangelion",
       "author": "Ryoku Team",
-      "summary": "Unit-01. Purple and neon green on a black void, a hard-edged frame, NERV decor\u2026",
+      "summary": "Unit-01. Purple and neon green on a black void, a hard-edged frame, NERV decor…",
       "description": "Unit-01. Purple and neon green on a black void, a hard-edged frame, NERV decor and a rebranded seal. The wallpaper carries the beast; the chrome runs the operation.",
       "tags": [
         "evangelion",
@@ -85,12 +85,12 @@
     },
     {
       "id": "yuk",
-      "name": "yuk",
+      "name": "Yuk",
       "version": "1.0.0",
       "path": "rices/yuk",
       "author": "feelyourwarmth",
-      "summary": "yuk",
-      "description": "yuk",
+      "summary": "Warm autumn tones, glass and rounded windows",
+      "description": "A Japanese autumn desktop with warm wallpaper colours, translucent surfaces, rounded windows and a restrained frame.",
       "tags": [
         "adaptive",
         "dark",
@@ -103,16 +103,18 @@
       ],
       "accent": "#e0563b",
       "surface": "#241b1a",
-      "preview": "assets/preview.webp",
+      "preview": "screenshots/1.webp",
       "screenshots": [
         "screenshots/1.webp"
       ],
       "manifest": "rice.json",
-      "manifestSha256": "14df7c4e5fcab39f3b81631940d699b6d7b0a5745d1e2e4c1f53e9c3bcf0757c",
+      "manifestSha256": "db348546b01d1ed4704dc17d4ec0e648f6c40e1a0b187bcf98341ad84ad243d3",
       "createdWith": "0.50.0-beta.19",
       "color": "wallpaper",
       "rounding": 6,
-      "wallpaper": "https://github.com/neur0map/ryostore/releases/download/rices/yuk-wall.jpg"
+      "wallpaper": "https://github.com/neur0map/ryostore/releases/download/rices/yuk-wall.jpg",
+      "official": false,
+      "lastUpdated": "2026-09-07"
     }
   ]
 }

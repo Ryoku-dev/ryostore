@@ -2,19 +2,19 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Quickshell.Io
-import "lib/setDeco.js" as SetDeco
 import "Singletons"
 
 /**
- * 飾 LOOK sub-surface: edits the window-decoration knobs that live in
- * decoration.lua and writes each change straight back to its source so the choice
- * survives a restart. Window gaps, rounding and border size, the two opacity
- * fields and the blur block all rewrite the Lua and reload Hyprland so the change
- * lands at once. Blur fields are rewritten scoped to the `blur` block, since
- * `enabled` is shared with the sibling `shadow` block. The border colours are
- * sourced from the palette pipeline and never touched here. Reached from the
- * settings index; morphs back on the back chevron.
+ * 飾 LOOK sub-surface: the pill's own geometry and translucency -- the gap above
+ * the pill, the gap it leaves for windows below, and how see-through it sits.
+ * These are Ricelin's own settings (Flags), so editing them never touches host
+ * Hyprland config.
+ *
+ * Window-decoration knobs (gaps, rounding, border, blur, shadow, opacity, tiling
+ * layout) belong to Ryoku, which owns ~/.config/hypr/modules and edits them from
+ * Ryoku Settings > Appearance. This surface hands off to that page rather than
+ * rewriting the compositor's modules behind its back. Reached from the settings
+ * index; morphs back on the back chevron.
  */
 SettingsSurface {
     id: root
@@ -23,95 +23,26 @@ SettingsSurface {
     implicitHeight: content.implicitHeight
 
     /**
-     * Row registry, rebound whenever a group folds or a dependent toggle flips so
-     * keyboard navigation never lands on a hidden line. Scrub rows expose a bump
-     * that steps their ScrubValue one increment.
+     * Row registry, rebound whenever a group folds so keyboard navigation never
+     * lands on a hidden line. Scrub rows expose a bump that steps their ScrubValue
+     * one increment; the window row hands off to Ryoku Settings.
      */
     rows: {
         var r = [];
-        if (winGrp.open) {
-            r.push({ item: gapsInRow, kind: "scrub", bump: function (d) { gapsInScrub.bump(d); } });
-            r.push({ item: gapsOutRow, kind: "scrub", bump: function (d) { gapsOutScrub.bump(d); } });
-            r.push({ item: roundRow, kind: "scrub", bump: function (d) { roundScrub.bump(d); } });
-            r.push({ item: roundPowRow, kind: "scrub", bump: function (d) { roundPowScrub.bump(d); } });
-            r.push({ item: borderRow, kind: "scrub", bump: function (d) { borderScrub.bump(d); } });
-            r.push({ item: resizeRow, kind: "toggle", get: function () { return root.resizeOnBorder; }, set: function (v) { root.resizeOnBorder = v; root.writeDeco("resize_on_border", v ? "true" : "false"); } });
-            r.push({ item: layoutRow, kind: "seg", vals: ["dwindle", "master"], get: function () { return root.layout; }, set: function (v) { root.layout = v; root.writeDeco("layout", "\"" + v + "\""); } });
-        }
-        if (nightGrp.open) {
-            r.push({ item: nlModeRow, kind: "seg", vals: ["off", "on", "scheduled"], get: function () { return Flags.nightLightMode; }, set: function (v) { NightLight.setMode(v); } });
-            if (Flags.nightLightMode !== "off")
-                r.push({ item: nlTempRow, kind: "scrub", bump: function (d) { nlTempScrub.bump(d); } });
-            if (Flags.nightLightMode === "scheduled") {
-                r.push({ item: nlOnRow, kind: "scrub", bump: function (d) { nlOnScrub.bump(d); } });
-                r.push({ item: nlOffRow, kind: "scrub", bump: function (d) { nlOffScrub.bump(d); } });
-            }
-        }
-        if (shadowGrp.open) {
-            r.push({ item: shEnRow, kind: "toggle", get: function () { return root.shadowOn; }, set: function (v) { root.shadowOn = v; root.writeShadow("enabled", v ? "true" : "false"); } });
-            if (root.shadowOn) {
-                r.push({ item: shRangeRow, kind: "scrub", bump: function (d) { shRangeScrub.bump(d); } });
-                r.push({ item: shPowRow, kind: "scrub", bump: function (d) { shPowScrub.bump(d); } });
-            }
-        }
-        if (blurGrp.open) {
-            r.push({ item: blEnRow, kind: "toggle", get: function () { return root.blurOn; }, set: function (v) { root.blurOn = v; root.writeBlur("enabled", v ? "true" : "false"); } });
-            if (root.blurOn) {
-                r.push({ item: blSizeRow, kind: "scrub", bump: function (d) { blSizeScrub.bump(d); } });
-                r.push({ item: blPassRow, kind: "scrub", bump: function (d) { blPassScrub.bump(d); } });
-                r.push({ item: blVibRow, kind: "scrub", bump: function (d) { blVibScrub.bump(d); } });
-                r.push({ item: blNoiseRow, kind: "scrub", bump: function (d) { blNoiseScrub.bump(d); } });
-            }
-        }
-        if (opGrp.open) {
-            r.push({ item: opActRow, kind: "scrub", bump: function (d) { opActScrub.bump(d); } });
-            r.push({ item: opInactRow, kind: "scrub", bump: function (d) { opInactScrub.bump(d); } });
-        }
         if (pillGrp.open) {
             r.push({ item: pillGapRow, kind: "scrub", bump: function (d) { pillGapScrub.bump(d); } });
             r.push({ item: appGapRow, kind: "scrub", bump: function (d) { appGapScrub.bump(d); } });
             r.push({ item: pillOpRow, kind: "scrub", bump: function (d) { pillOpScrub.bump(d); } });
-            r.push({ item: pillBlurRow, kind: "toggle", get: function () { return Flags.pillBlur; }, set: function (v) { Flags.pillBlur = v; root.applyPillBlur(v); } });
         }
+        r.push({ item: windowRow, kind: "action", act: function () { root.openWindowSettings(); } });
         return r;
     }
-
-    property string note: ""
-
-    readonly property string decoPath: Quickshell.env("HOME") + "/.config/hypr/modules/decoration.lua"
-    readonly property string pillBlurRule: 'hl.layer_rule({ name = "pill-blur", match = { namespace = "pill" }, blur = true, ignore_alpha = 0.5 })\n'
-
-    property int gapsIn: 6
-    property int gapsOut: 12
-    property int rounding: 12
-    property int roundingPower: 4
-    property int borderSize: 2
-    property bool resizeOnBorder: true
-    property string layout: "dwindle"
-    property bool blurOn: true
-    property int blurSize: 8
-    property int blurPasses: 3
-    property real blurVibrancy: 0.17
-    property real blurNoise: 0.01
-    property bool shadowOn: true
-    property int shadowRange: 12
-    property int shadowRenderPower: 3
-    property real activeOpacity: 1.0
-    property real inactiveOpacity: 1.0
-
-    readonly property var layoutOptions: [
-        { label: "Dwindle", value: "dwindle" },
-        { label: "Master", value: "master" }
-    ]
-
-    property string decoText: ""
 
     /** Per-field values captured on each open; the ScrubValue undo glyphs revert to these. */
     property var base: ({})
 
     onActiveChanged: {
         if (active) {
-            decoFile.reload();
             seed();
         } else {
             focusRowItem = null;
@@ -119,207 +50,22 @@ SettingsSurface {
         }
     }
 
-    /**
-     * Seeds every control from the live decoration.lua. Numbers fall back to the
-     * shipped defaults when a field is missing so a partially hand-edited config
-     * never leaves a control blank. Blur fields read from the `blur` block so a
-     * field name shared with the `shadow` block resolves correctly.
-     */
+    /** Snapshots the pill-local baseline the ScrubValue undo glyphs revert to. */
     function seed() {
-        root.decoText = decoFile.text();
-        var t = root.decoText;
-
-        var gi = parseInt(SetDeco.getField(t, "gaps_in"), 10);
-        root.gapsIn = isNaN(gi) ? 6 : gi;
-        var go = parseInt(SetDeco.getField(t, "gaps_out"), 10);
-        root.gapsOut = isNaN(go) ? 12 : go;
-        var rd = parseInt(SetDeco.getField(t, "rounding"), 10);
-        root.rounding = isNaN(rd) ? 12 : rd;
-        var rp = parseInt(SetDeco.getField(t, "rounding_power"), 10);
-        root.roundingPower = isNaN(rp) ? 4 : rp;
-        var bs = parseInt(SetDeco.getField(t, "border_size"), 10);
-        root.borderSize = isNaN(bs) ? 2 : bs;
-        root.resizeOnBorder = SetDeco.getField(t, "resize_on_border") === "true";
-        var lo = SetDeco.getField(t, "layout");
-        root.layout = lo.length > 0 ? lo : "dwindle";
-
-        root.blurOn = SetDeco.getBlockField(t, "blur", "enabled") === "true";
-        var bz = parseInt(SetDeco.getBlockField(t, "blur", "size"), 10);
-        root.blurSize = isNaN(bz) ? 8 : bz;
-        var bp = parseInt(SetDeco.getBlockField(t, "blur", "passes"), 10);
-        root.blurPasses = isNaN(bp) ? 3 : bp;
-        var vb = parseFloat(SetDeco.getBlockField(t, "blur", "vibrancy"));
-        root.blurVibrancy = isNaN(vb) ? 0.17 : vb;
-        var nz = parseFloat(SetDeco.getBlockField(t, "blur", "noise"));
-        root.blurNoise = isNaN(nz) ? 0.01 : nz;
-
-        root.shadowOn = SetDeco.getBlockField(t, "shadow", "enabled") === "true";
-        var sr = parseInt(SetDeco.getBlockField(t, "shadow", "range"), 10);
-        root.shadowRange = isNaN(sr) ? 12 : sr;
-        var sp = parseInt(SetDeco.getBlockField(t, "shadow", "render_power"), 10);
-        root.shadowRenderPower = isNaN(sp) ? 3 : sp;
-
-        var ao = parseFloat(SetDeco.getField(t, "active_opacity"));
-        root.activeOpacity = isNaN(ao) ? 1.0 : ao;
-        var io = parseFloat(SetDeco.getField(t, "inactive_opacity"));
-        root.inactiveOpacity = isNaN(io) ? 1.0 : io;
-
-        Flags.pillBlur = SetDeco.hasNamedRule(t, "pill-blur");
-
         root.base = {
-            gapsIn: root.gapsIn,
-            gapsOut: root.gapsOut,
-            rounding: root.rounding,
-            roundingPower: root.roundingPower,
-            borderSize: root.borderSize,
-            blurSize: root.blurSize,
-            blurPasses: root.blurPasses,
-            blurVibrancy: root.blurVibrancy,
-            blurNoise: root.blurNoise,
-            shadowRange: root.shadowRange,
-            shadowRenderPower: root.shadowRenderPower,
-            activeOpacity: root.activeOpacity,
-            inactiveOpacity: root.inactiveOpacity,
             pillOpacity: Flags.pillOpacity,
             topGap: Flags.topGap,
-            appGap: Flags.appGap,
-            nlTemp: Flags.nightLightTemp,
-            nlOnMin: Flags.nightLightOnMin,
-            nlOffMin: Flags.nightLightOffMin
+            appGap: Flags.appGap
         };
     }
 
-    /** Minutes-since-midnight rendered as HH:MM for the schedule scrubs. */
-    function fmtClock(v) {
-        var h = Math.floor(v / 60);
-        var m = v % 60;
-        return h + ":" + (m < 10 ? "0" + m : m);
-    }
-
-    readonly property var nightModeOptions: [
-        { label: "Off", value: "off" },
-        { label: "On", value: "on" },
-        { label: "Scheduled", value: "scheduled" }
-    ]
-
     /**
-     * Rewrites one top-level decoration.lua field to `literal` (already formatted
-     * by the caller) and reloads Hyprland so the change takes effect at once.
+     * Hands window-decoration editing to Ryoku Settings > Appearance, the owner of
+     * gaps, rounding, borders, blur, shadow and opacity. Ricelin never writes the
+     * managed hypr modules itself.
      */
-    function writeDeco(name, literal) {
-        var res = SetDeco.setField(root.decoText, name, literal);
-        if (!res.ok)
-            return;
-        root.decoText = res.text;
-        decoWriter.setText(res.text);
-        reloadTimer.restart();
-    }
-
-    /**
-     * Same as writeDeco, but for the two opacity fields. A plain reload re-reads
-     * the file yet only animates windows on their next focus change, so a window
-     * that was inactive when the value changed keeps its stale alpha. Pushing the
-     * value through hl.config hits Hyprland's REFRESH_WINDOW_STATES path, which
-     * recomputes every existing window's active/inactive alpha at once. Sends both
-     * fields so lowering one then restoring the other never leaves a window stuck,
-     * and the push fires even when the value lands back on 1.0.
-     */
-    function writeOpacity(name, literal) {
-        writeDeco(name, literal);
-        opacityRefresh.command = ["hyprctl", "eval",
-            "hl.config({ decoration = { active_opacity = " + root.activeOpacity.toFixed(2)
-            + ", inactive_opacity = " + root.inactiveOpacity.toFixed(2) + " } })"];
-        opacityRefresh.running = true;
-    }
-
-    /**
-     * Rewrites one field inside the `blur` block to `literal` and reloads
-     * Hyprland. Scoping to the block keeps `enabled` from hitting the sibling
-     * `shadow` block's `enabled` first.
-     */
-    function writeBlur(name, literal) {
-        var res = SetDeco.setBlockField(root.decoText, "blur", name, literal);
-        if (!res.ok)
-            return;
-        root.decoText = res.text;
-        decoWriter.setText(res.text);
-        reloadTimer.restart();
-    }
-
-    /**
-     * Rewrites one field inside the `shadow` block to `literal` and reloads
-     * Hyprland. Scoped to the block so `enabled` lands on shadow, not the sibling
-     * `blur` block.
-     */
-    function writeShadow(name, literal) {
-        var res = SetDeco.setBlockField(root.decoText, "shadow", name, literal);
-        if (!res.ok)
-            return;
-        root.decoText = res.text;
-        decoWriter.setText(res.text);
-        reloadTimer.restart();
-    }
-
-    /**
-     * Adds or removes the pill-blur layer_rule in decoration.lua and reloads
-     * Hyprland so the frosted-glass effect behind the pill turns on or off at
-     * once. The rule lives in the Lua source (the live config parser rejects a
-     * runtime `layerrule` keyword), so it has to be written, not pushed.
-     */
-    function applyPillBlur(on) {
-        var t = root.decoText;
-        var res;
-        if (on) {
-            if (SetDeco.hasNamedRule(t, "pill-blur"))
-                return;
-            res = SetDeco.addNamedRule(t, root.pillBlurRule);
-        } else {
-            res = SetDeco.removeNamedRule(t, "pill-blur");
-        }
-        if (!res.ok)
-            return;
-        root.decoText = res.text;
-        decoWriter.setText(res.text);
-        reloadTimer.restart();
-    }
-
-    FileView {
-        id: decoFile
-        path: root.decoPath
-        blockLoading: true
-        printErrors: false
-    }
-
-    FileView {
-        id: decoWriter
-        path: root.decoPath
-        atomicWrites: true
-        printErrors: false
-    }
-
-    /**
-     * Reload is debounced so a scrub drag writes the file per step but reloads
-     * Hyprland once, and captured so a failed reload surfaces as the inline note
-     * instead of vanishing with a detached process.
-     */
-    Timer {
-        id: reloadTimer
-        interval: 250
-        repeat: false
-        onTriggered: reloadProc.running = true
-    }
-
-    Process {
-        id: reloadProc
-        command: ["sh", "-c", "sleep 0.3; hyprctl reload"]
-        onExited: function (exitCode) {
-            root.note = exitCode === 0 ? "" : "Hyprland reload failed. The change is saved but not applied.";
-        }
-    }
-
-    Process {
-        id: opacityRefresh
-        command: []
+    function openWindowSettings() {
+        Quickshell.execDetached(["ryoku-shell", "hub", "open", "appearance"]);
     }
 
     component GroupLabel: Text {
@@ -389,10 +135,9 @@ SettingsSurface {
     /**
      * One settings line. At rest it is a label + control row; hovering or
      * keyboard-focusing the row folds its grey caption open below the label so a
-     * long tab stays compact by default. `collapsed` drops the whole row to zero
-     * height with the same height animation, used by the blur and shadow rows that
-     * depend on a toggle. The row feeds the surface registry: hover moves the soul
-     * seam and a click anywhere on the line drives its control via activateRow.
+     * long tab stays compact by default. The row feeds the surface registry: hover
+     * moves the soul seam and a click anywhere on the line drives its control via
+     * activateRow.
      */
     component FieldRow: Item {
         id: frow
@@ -533,33 +278,21 @@ SettingsSurface {
                 }
             }
 
+            }
+
+            GroupLabel { text: "Windows" }
+
             FieldRow {
-                id: pillBlurRow
-                label: "Pill blur"
-                caption: "Frosts behind the pill. Needs opacity under 100%."
-                LinkToggle {
-                    s: root.s
-                    on: Flags.pillBlur
-                    onToggled: {
-                        Flags.pillBlur = !Flags.pillBlur;
-                        root.applyPillBlur(Flags.pillBlur);
-                    }
+                id: windowRow
+                label: "Window appearance"
+                caption: "Gaps, rounding, borders, blur, shadow and opacity — edit in Ryoku Settings"
+                GlyphIcon {
+                    width: 16 * root.s
+                    height: 16 * root.s
+                    name: "chevron-right"
+                    color: root.focusRowItem === windowRow ? Theme.cream : Theme.iconDim
+                    stroke: 2.0
                 }
-            }
-
-            }
-
-            Text {
-                width: parent.width
-                topPadding: 8 * root.s
-                visible: root.note.length > 0
-                text: root.note
-                color: Theme.subtle
-                font.family: Theme.font
-                font.pixelSize: 10 * root.s
-                font.weight: Font.Medium
-                wrapMode: Text.WordWrap
-                lineHeight: 1.25
             }
 
             Item { width: 1; height: 10 * root.s }

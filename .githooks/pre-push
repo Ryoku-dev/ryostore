@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Ryostore local pre-push screen.
+#
+# TRUST MODEL: this hook runs from a trusted SNAPSHOT that tools/install-hooks.sh
+# copied into the repo's git-common-dir, OUTSIDE the working tree. It derives its
+# trust root from its OWN installed location and runs the snapshotted scanner and
+# policy — never the work tree's tools/security-screen.py or security/. A
+# checked-out branch or PR therefore cannot substitute the scanner or the
+# exception list. Refresh the snapshot by re-running the installer.
+#
+# git streams one line per ref being pushed on stdin:
+#   <local ref> <local sha> <remote ref> <remote sha>
+# For every non-deleted ref we screen the EXACT tree at its pushed tip commit
+# (security-screen.py --revision <local sha>) — what will actually land on the
+# remote, not the dirty working tree and not HEAD. Full static policy is applied
+# to each pushed tip only; superseded intermediate commits in a clean merge
+# history are not re-screened here (by design). Secret history across introduced
+# commits is covered by the CI secret scanner on the PR.
+#
+# Edge cases:
+#   * ref deletion       (local sha all-zero)  -> nothing is pushed, skip
+#   * initial push / new branch (remote all-zero) -> screen the pushed tip
+#   * force update / normal update             -> screen the (new) pushed tip
+#
+# Fail closed: a missing interpreter/snapshot or an infrastructure error blocks
+# the push. The scanner only READS committed objects; it never executes pushed
+# content. A green run is screening, not a safety certificate.
+
+set -uo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+scanner="$here/scanner/security-screen.py"
+policy_root="$here/policy"
+repo_root="$(git rev-parse --show-toplevel)" || exit 2
+zero_re='^0+$'
+
+fail() { echo "pre-push: $1" >&2; exit 1; }
+
+command -v python3 >/dev/null 2>&1 \
+  || fail "python3 not found; cannot run the security screen. Push blocked (fail closed)."
+[ -f "$scanner" ] \
+  || fail "trusted scanner snapshot missing at $scanner; re-run tools/install-hooks.sh. Push blocked (fail closed)."
+
+status=0
+while read -r local_ref local_sha _remote_ref _remote_sha; do
+  # Skip blank lines and ref deletions (nothing is being pushed).
+  [ -z "${local_sha:-}" ] && continue
+  if [[ "$local_sha" =~ $zero_re ]]; then
+    echo "pre-push: $local_ref is a deletion; nothing to screen." >&2
+    continue
+  fi
+
+  echo "pre-push: screening pushed tip ${local_sha} (${local_ref})" >&2
+  python3 "$scanner" \
+    --root "$repo_root" \
+    --revision "$local_sha" \
+    --policy-root "$policy_root" \
+    --format text </dev/null
+  rc=$?
+
+  if [ "$rc" -eq 2 ]; then
+    echo "pre-push: security screen infrastructure failure (exit 2) for ${local_sha}. Push blocked (fail closed)." >&2
+    status=1
+  elif [ "$rc" -ne 0 ]; then
+    echo "pre-push: blocking security findings at pushed tip ${local_sha}. Push blocked." >&2
+    status=1
+  fi
+done
+
+[ "$status" -eq 0 ] || echo "pre-push: fix findings above, or (owners only) record a narrow exception in security/exceptions.json and re-run tools/install-hooks.sh." >&2
+exit "$status"

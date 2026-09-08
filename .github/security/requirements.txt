@@ -1,0 +1,9 @@
+# Advisory Python SAST layer for the PR security screen (see
+# .github/workflows/pr-security-screen.yml). Version-pinned so scans are
+# reproducible; Dependabot (.github/dependabot.yml) proposes bumps.
+#
+# Unlike the checksum-verified binary scanners (gitleaks, shellcheck), this pip
+# layer is version-pinned, not digest-pinned -- an honest limit of installing
+# from an index. Bandit is advisory; the authoritative gate is
+# tools/security-screen.py.
+bandit==1.9.4

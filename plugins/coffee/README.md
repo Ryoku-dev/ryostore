@@ -8,7 +8,7 @@ Keep the Ryoku desktop awake: a coffee-cup bar glyph that toggles the idle inhib
 
 Coffee puts a small cup on the QS Bar. While it is lit, the desktop does not idle: no screen blank, no lock, no suspend. Tap the glyph for a panel that shows the state and how long it has been awake, and flip it from there — the panel is the only place that changes anything; a bar click never mutates.
 
-Coffee drives the host desktop's **own caffeine bridge** (`~/.config/hypr/scripts/ryoku-cmd-caffeine`, the same script Ryoku's built-in Keep-Awake toggle runs). So the cup, the quick-settings tile and the deck toggle always agree, and a hold started here survives a shell reload exactly like the native one. Coffee never forks the truth: it reads state by polling `status`, applies the optimistic flip immediately, and confirms or corrects it on the next poll.
+Coffee drives the host desktop's **own caffeine bridge** (`~/.config/hypr/scripts/ryoku-cmd-caffeine`, the same script Ryoku's built-in Keep-Awake toggle runs), so it shares one source of truth with the shell rather than forking its own: Coffee reads state by polling the bridge's `status`, applies the optimistic flip immediately, and confirms or corrects it on the next poll, so a change made from the shell's own Keep-Awake toggle shows up here too. The shell reconciles the durable inhibitor to its Keep-Awake flag when it restarts, so for a hold that must outlive a full shell restart, use the shell's Keep-Awake toggle.
 
 ## Install
 
@@ -51,15 +51,16 @@ content/Glyph.qml    the bar mark
 content/Panel.qml    the bar panel (the only mutating view)
 content/Card.qml     the desktop tile
 content/RowItem.qml  shared key/value row
-content/Logic.js     pure helpers (argv, elapsed formatting) — unit-tested
-tests/logic.test.cjs Node tests for Logic.js
+content/Logic.js     pure helpers (argv, elapsed formatting)
 ```
 
-Run the logic tests with plain Node (no QML runtime needed):
+Use the repository's [live development guide](../../DEVELOP.md) to load the
+plugin against the current shell. Exercise both Coffee's toggle and the host's
+Keep-Awake control; each must converge to the same observed inhibitor state.
 
-```
-node tests/logic.test.cjs
-```
+## Maintenance & safety
+
+Coffee is a community contribution. Its author maintains and updates it — not the Ryoku team. Ryostore screens every submission against the plugin rules and reviews the code, but screening is a safeguard, not a guarantee: you install and run community plugins at your own discretion, so review what a plugin does before enabling it.
 
 ## Credits
 

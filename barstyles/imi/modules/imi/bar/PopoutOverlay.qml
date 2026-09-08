@@ -30,7 +30,9 @@ PanelWindow {
     }
 
     readonly property var activePop: GlobalStates.activeBarPopup
-    readonly property bool onThisScreen: activePop !== null && activePop.shown
+    readonly property bool onThisScreen: !!activePop && activePop.shown
+        && !!activePop.target && !!activePop.target.QsWindow.window
+        && activePop.target.QsWindow.window.screen === popoutWindow.screen
 
     visible: true
 

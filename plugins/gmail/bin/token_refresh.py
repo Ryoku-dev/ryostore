@@ -2,7 +2,7 @@
 import sys, json, urllib.request, urllib.parse
 import gmail_config
 
-refresh_token = sys.argv[1] if len(sys.argv) > 1 else sys.stdin.read().strip()
+refresh_token = gmail_config.runtime_token()
 
 try:
     res = gmail_config.refresh_token_exchange(refresh_token)

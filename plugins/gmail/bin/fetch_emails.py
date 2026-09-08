@@ -9,8 +9,8 @@ import gmail_config
 def api_get(url, token):
     try:
         req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
-        with urllib.request.urlopen(req) as resp:
-            return json.loads(resp.read().decode("utf-8", errors="ignore"))
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return gmail_config.read_json_response(resp)
     except Exception:
         return {}
 
@@ -38,35 +38,34 @@ def fetch_detail(msg_id, token):
     }
 
 def main():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print(json.dumps({"messages": [], "nextPageToken": "", "historyId": ""}))
         sys.exit(0)
 
-    refresh_token = sys.argv[1]
-    raw_label = sys.argv[2].strip()
+    raw_label = sys.argv[1].strip()
     label_upper = raw_label.upper()
-    max_results = int(sys.argv[3]) if len(sys.argv) > 3 else 50
-    
+    max_results = int(sys.argv[2]) if len(sys.argv) > 2 else 50
+
     flags_arg = ""
     page_token = ""
     last_history_id = ""
-    
+
     if label_upper == "INBOX":
-        arg4 = sys.argv[4] if len(sys.argv) > 4 else ""
+        arg4 = sys.argv[3] if len(sys.argv) > 3 else ""
         if "," in arg4:
             flags_arg = arg4
-            page_token = sys.argv[5] if len(sys.argv) > 5 else ""
-            last_history_id = sys.argv[6] if len(sys.argv) > 6 else ""
+            page_token = sys.argv[4] if len(sys.argv) > 4 else ""
+            last_history_id = sys.argv[5] if len(sys.argv) > 5 else ""
         else:
             flags_arg = ""
             page_token = arg4
-            last_history_id = sys.argv[5] if len(sys.argv) > 5 else ""
+            last_history_id = sys.argv[4] if len(sys.argv) > 4 else ""
     else:
-        page_token = sys.argv[4] if len(sys.argv) > 4 else ""
-        last_history_id = sys.argv[5] if len(sys.argv) > 5 else ""
+        page_token = sys.argv[3] if len(sys.argv) > 3 else ""
+        last_history_id = sys.argv[4] if len(sys.argv) > 4 else ""
 
     try:
-        token = gmail_config.resolve_token(refresh_token)
+        token = gmail_config.resolve_token(gmail_config.runtime_token())
     except Exception:
         print(json.dumps({"messages": [], "nextPageToken": "", "historyId": ""}))
         sys.exit(1)

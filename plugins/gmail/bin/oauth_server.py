@@ -1,232 +1,166 @@
 #!/usr/bin/env python3
+"""One bounded, loopback-only OAuth/PKCE session; credentials never enter argv."""
+import base64
+import hashlib
+import html
 import http.server
-import urllib.parse
-import urllib.request
-import urllib.error
-import subprocess
 import json
 import secrets
-import hashlib
-import base64
-import os
+import subprocess
 import sys
 import time
-import gmail_config
+import urllib.parse
+import urllib.request
+
 import accounts_store
+import gmail_config
 
 PORT = 42069
+AUTH_SECONDS = 180
+SCOPES = "https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.send email profile"
 
-# 1. Automatically kill any leftover process holding the port
-try:
-    subprocess.run(f"lsof -ti :{PORT} | xargs -r kill -9", shell=True, capture_output=True)
-    time.sleep(0.3)
-except Exception:
-    pass
 
-CLIENT_ID, CLIENT_SECRET = gmail_config.get_credentials()
-CLIENT_ID = (CLIENT_ID or "").strip().strip('"').strip("'").strip()
-CLIENT_SECRET = (CLIENT_SECRET or "").strip().strip('"').strip("'").strip()
+def request_json(request):
+    with urllib.request.urlopen(request, timeout=20) as response:
+        data = response.read(1024 * 1024 + 1)
+    if len(data) > 1024 * 1024:
+        raise ValueError("OAuth response is too large")
+    return json.loads(data)
 
-if not CLIENT_ID or not CLIENT_SECRET:
-    print(json.dumps({"error": "Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET in gmail.env"}), flush=True)
-    sys.exit(1)
 
-REDIRECT_URI  = f"http://localhost:{PORT}/callback"
-SCOPES        = "https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.send email profile"
+class OAuthServer(http.server.HTTPServer):
+    allow_reuse_address = True
 
-# RFC 7636 compliant PKCE
-code_verifier  = secrets.token_urlsafe(48)
-code_challenge = base64.urlsafe_b64encode(
-    hashlib.sha256(code_verifier.encode("ascii")).digest()
-).decode("ascii").rstrip("=")
+    def __init__(self, credentials, port=PORT):
+        self.client_id, self.client_secret = credentials
+        self.state = secrets.token_urlsafe(32)
+        self.verifier = secrets.token_urlsafe(48)
+        self.result = None
+        super().__init__(("127.0.0.1", port), Handler)
+        self.redirect_uri = f"http://127.0.0.1:{self.server_port}/callback"
 
-auth_url = (
-    "https://accounts.google.com/o/oauth2/v2/auth?"
-    + urllib.parse.urlencode({
-        "client_id":             CLIENT_ID,
-        "redirect_uri":          REDIRECT_URI,
-        "response_type":         "code",
-        "scope":                 SCOPES,
-        "access_type":           "offline",
-        "prompt":                "consent",
-        "code_challenge":        code_challenge,
-        "code_challenge_method": "S256",
-    })
-)
+    def get_request(self):
+        connection, address = super().get_request()
+        connection.settimeout(5)
+        return connection, address
 
-print(f"Opening browser for authorization: {auth_url}", flush=True)
-subprocess.Popen(["xdg-open", auth_url])
+    def authorization_url(self):
+        challenge = base64.urlsafe_b64encode(
+            hashlib.sha256(self.verifier.encode("ascii")).digest()
+        ).decode("ascii").rstrip("=")
+        return "https://accounts.google.com/o/oauth2/v2/auth?" + urllib.parse.urlencode({
+            "client_id": self.client_id,
+            "redirect_uri": self.redirect_uri,
+            "response_type": "code",
+            "scope": SCOPES,
+            "access_type": "offline",
+            "prompt": "consent",
+            "code_challenge": challenge,
+            "code_challenge_method": "S256",
+            "state": self.state,
+        })
 
-result = {"done": False, "refresh": None, "email": None, "picture": None}
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def log_message(self, format, *args):
-        pass  # quiet
+        # The callback URL contains a short-lived authorization code.
+        pass
+
+    def reply(self, status, title, message):
+        page = (
+            "<!doctype html><html><body style='background:#111;color:#eee;"
+            "font-family:sans-serif;padding:40px'><h2>" + html.escape(title) +
+            "</h2><p>" + html.escape(message) + "</p></body></html>"
+        ).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(page)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'")
+        self.end_headers()
+        self.wfile.write(page)
 
     def do_GET(self):
-        parsed_url = urllib.parse.urlparse(self.path)
-        params = dict(urllib.parse.parse_qsl(parsed_url.query))
-
+        parsed = urllib.parse.urlsplit(self.path)
+        if parsed.path != "/callback":
+            self.reply(404, "Not found", "This listener accepts only the OAuth callback.")
+            return
+        try:
+            params = urllib.parse.parse_qs(parsed.query, max_num_fields=16, keep_blank_values=True)
+        except ValueError:
+            self.reply(400, "Invalid callback", "Too many callback fields.")
+            return
+        states = params.get("state", [])
+        if len(states) != 1 or not secrets.compare_digest(states[0], self.server.state):
+            self.reply(400, "Authorization rejected", "Invalid authorization state.")
+            return  # An unrelated request must not cancel the real authorization.
         if "error" in params:
-            err_msg = params.get("error_description", params.get("error", "Authorization denied"))
-            self.send_response(400)
-            self.send_header("Content-Type", "text/html")
-            self.end_headers()
-            self.wfile.write(f"<html><body style=\"background:#111;color:#ff5252;font-family:sans-serif;padding:40px;\"><h2>Google Auth Error</h2><p>{err_msg}</p></body></html>".encode("utf-8"))
-            result["done"] = True
+            self.server.result = {"error": "Authorization was declined."}
+            self.reply(400, "Authorization declined", "Return to Ryoku to try again.")
             return
-
-        if "code" not in params:
-            self.send_response(400)
-            self.send_header("Content-Type", "text/html")
-            self.end_headers()
-            self.wfile.write(b"<html><body style=\"background:#111;color:#ff5252;font-family:sans-serif;padding:40px;\"><h2>Error</h2><p>No authorization code returned in callback.</p></body></html>")
-            result["done"] = True
+        codes = params.get("code", [])
+        if len(codes) != 1 or not codes[0]:
+            self.reply(400, "Invalid callback", "Exactly one authorization code is required.")
             return
-
-        # Exchange code for tokens
-        token_data = urllib.parse.urlencode({
-            "code":          params["code"],
-            "client_id":     CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
-            "redirect_uri":  REDIRECT_URI,
-            "grant_type":    "authorization_code",
-            "code_verifier": code_verifier,
-        }).encode("utf-8")
-
-        req = urllib.request.Request(
-            "https://oauth2.googleapis.com/token",
-            data=token_data,
-            headers={"Content-Type": "application/x-www-form-urlencoded"}
-        )
-
         try:
-            with urllib.request.urlopen(req) as resp:
-                tokens = json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
-            raw_err = e.read().decode("utf-8", errors="replace")
-            print(f"[OAuth Server Error] HTTP {e.code}: {raw_err}", file=sys.stderr, flush=True)
-            try:
-                err_obj = json.loads(raw_err)
-                err_code = err_obj.get("error", f"HTTP {e.code}")
-                err_desc = err_obj.get("error_description", raw_err)
-            except Exception:
-                err_code = f"HTTP {e.code}"
-                err_desc = raw_err
-
-            self.send_response(400)
-            self.send_header("Content-Type", "text/html")
-            self.end_headers()
-            err_html = f"""<!DOCTYPE html>
-<html>
-<body style="font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #111; color: #fff;">
-  <div style="text-align: center; border: 1px solid #ff5252; padding: 40px; border-radius: 12px; background: #1a1a1a; max-width: 540px;">
-    <h2 style="color: #ff5252; margin-top: 0;">Token Exchange Failed</h2>
-    <p>Google returned <b>{err_code}</b></p>
-    <p style="color: #ffb4a9; background: #3b0808; padding: 14px; border-radius: 8px; font-family: monospace; font-size: 13px; text-align: left; word-break: break-all;">{err_desc}</p>
-    <p style="color: #aaa; font-size: 13px; margin-top: 20px;">If this is <code>redirect_uri_mismatch</code>, ensure your Google Cloud credentials were created as a <b>Desktop App</b> with Redirect URI: <code>{REDIRECT_URI}</code>.</p>
-  </div>
-</body>
-</html>"""
-            self.wfile.write(err_html.encode("utf-8"))
-            result["done"] = True
-            return
-        except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-Type", "text/html")
-            self.end_headers()
-            self.wfile.write(f"<html><body style=\"background:#111;color:#ff5252;padding:40px;\"><h2>Token Exchange Error</h2><p>{e}</p></body></html>".encode("utf-8"))
-            result["done"] = True
-            return
-
-        refresh_token = tokens.get("refresh_token")
-        access_token  = tokens.get("access_token")
-
-        if not refresh_token:
-            self.send_response(500)
-            self.send_header("Content-Type", "text/html")
-            self.end_headers()
-            self.wfile.write(b"<html><body style=\"background:#111;color:#ff5252;padding:40px;\"><h2>Missing Refresh Token</h2><p>Google did not return a refresh token. Did you set prompt=consent?</p></body></html>")
-            result["done"] = True
-            return
-
-        # Fetch user info
-        userinfo_req = urllib.request.Request(
-            "https://www.googleapis.com/oauth2/v2/userinfo",
-            headers={"Authorization": f"Bearer {access_token}"}
-        )
-        try:
-            with urllib.request.urlopen(userinfo_req) as resp:
-                userinfo = json.loads(resp.read().decode("utf-8"))
-        except Exception as e:
-            userinfo = {}
-
-        email   = userinfo.get("email", "unknown")
-        picture = userinfo.get("picture", "")
-
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html")
-        self.end_headers()
-        html = f"""<!DOCTYPE html>
-<html>
-<body style="font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #111; color: #fff;">
-  <div style="text-align: center; border: 1px solid #333; padding: 40px; border-radius: 12px; background: #1a1a1a;">
-    <h2 style="color: #4ade80; margin-top: 0;">Authentication Successful!</h2>
-    <p>Logged in as <b>{email}</b></p>
-    <p style="color: #888;">You can close this tab and return to Ryoku.</p>
-  </div>
-</body>
-</html>"""
-        self.wfile.write(html.encode("utf-8"))
-
-        result["refresh"] = refresh_token
-        result["email"]   = email
-        result["picture"] = picture
-        result["done"]    = True
-
-http.server.HTTPServer.allow_reuse_address = True
-httpd = http.server.HTTPServer(("", PORT), Handler)
-httpd.timeout = 180  # 3 minute timeout
-while not result["done"]:
-    httpd.handle_request()
-
-httpd.server_close()
-
-if result["done"] and result["refresh"]:
-    # 1. Update accounts storage
-    existing = accounts_store.get_accounts()
-    updated = []
-    found = False
-    for acc in existing:
-        if acc.get("email") == result["email"]:
-            acc["refreshToken"] = result["refresh"]
-            acc["avatar"] = result["picture"] or ""
-            found = True
-        updated.append(acc)
-    if not found:
-        updated.append({
-            "email": result["email"],
-            "avatar": result["picture"] or "",
-            "refreshToken": result["refresh"]
-        })
-    accounts_store.save_accounts(updated)
-
-    # 2. Output json on stdout
-    print(json.dumps({
-        "success": True,
-        "refresh": result["refresh"],
-        "email": result["email"],
-        "picture": result["picture"]
-    }), flush=True)
-
-    # 3. Notify quickshell via IPC if available
-    for cmd in [
-        ["qs", "-c", "shell", "ipc", "call", "gmail", "onAuthComplete", result["refresh"], result["email"], result["picture"]],
-        ["qs", "ipc", "call", "gmail", "onAuthComplete", result["refresh"], result["email"], result["picture"]]
-    ]:
-        try:
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=2)
-            if res.returncode == 0:
-                break
+            token_request = urllib.request.Request(
+                "https://oauth2.googleapis.com/token",
+                data=urllib.parse.urlencode({
+                    "code": codes[0],
+                    "client_id": self.server.client_id,
+                    "client_secret": self.server.client_secret,
+                    "redirect_uri": self.server.redirect_uri,
+                    "grant_type": "authorization_code",
+                    "code_verifier": self.server.verifier,
+                }).encode("utf-8"),
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+            )
+            tokens = request_json(token_request)
+            if not tokens.get("refresh_token") or not tokens.get("access_token"):
+                raise ValueError("Google did not return the required tokens")
+            profile = request_json(urllib.request.Request(
+                "https://www.googleapis.com/oauth2/v2/userinfo",
+                headers={"Authorization": "Bearer " + tokens["access_token"]},
+            ))
+            email = profile.get("email")
+            if not isinstance(email, str) or not email or profile.get("verified_email") is not True:
+                raise ValueError("Google did not return a verified account identity")
+            accounts = accounts_store.get_accounts()
+            account = {"email": email, "avatar": profile.get("picture", ""),
+                       "refreshToken": tokens["refresh_token"]}
+            accounts = [old for old in accounts if old.get("email") != email] + [account]
+            accounts_store.save_accounts(accounts)
+            self.server.result = {"success": True, "email": email, "picture": account["avatar"]}
+            self.reply(200, "Authentication successful", "You can close this tab and return to Ryoku.")
         except Exception:
-            pass
+            # Do not reflect server responses, tokens, or credentials into HTML/logs.
+            self.server.result = {"error": "Authorization could not be completed. Check credentials and connectivity, then retry."}
+            self.reply(502, "Authorization failed", self.server.result["error"])
+
+
+def main():
+    credentials = tuple(value.strip().strip('"').strip("'") for value in gmail_config.get_credentials())
+    if not all(credentials):
+        print(json.dumps({"error": "Configure Google Desktop App credentials first."}), flush=True)
+        return 1
+    try:
+        # Bind before opening a browser: a busy port must never send a code to
+        # an unrelated listener, and no process is killed to reclaim the port.
+        with OAuthServer(credentials) as server:
+            subprocess.Popen(["xdg-open", server.authorization_url()],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            deadline = time.monotonic() + AUTH_SECONDS
+            while server.result is None and time.monotonic() < deadline:
+                server.timeout = min(1, max(0.01, deadline - time.monotonic()))
+                server.handle_request()
+            result = server.result or {"error": "Authorization timed out. Try again."}
+        print(json.dumps(result), flush=True)
+        return 0 if result.get("success") else 1
+    except OSError:
+        print(json.dumps({"error": "Cannot open the local OAuth listener or browser. Close any previous authorization attempt and retry."}), flush=True)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

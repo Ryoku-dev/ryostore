@@ -10,9 +10,11 @@ import "../content/Logic.js" as Logic
 // the bar glyph, the bar panel and the desktop card all bind the same live
 // state. State is polled from the host's own caffeine bridge
 // (~/.config/hypr/scripts/ryoku-cmd-caffeine, the same script the shell's
-// Keep-Awake toggle drives), so Coffee never forks the truth: the deck toggle,
-// the quick settings tile and this plugin always agree, and a hold started
-// here survives a shell reload exactly like the native one.
+// Keep-Awake toggle drives), so Coffee never forks the truth: a change made
+// from the shell's own Keep-Awake toggle is reflected here on the next poll.
+// The shell reconciles the durable inhibitor to its Keep-Awake flag on a
+// restart, so a hold that must outlive a full shell restart is best driven
+// from the shell's own toggle.
 Item {
     id: svc
     // NOTE: no member may be named "poll" — `svc.poll()` from Timers would
@@ -123,6 +125,7 @@ Item {
             lastOk = status === 0 && code === 0;
             svc.error = status === 0 && code <= 1 ? "" : Logic.commandError(code, status, statusErr.text);
             var exp = Logic.settleExpected(svc.expected, svc.expectedUntil, Date.now());
+            svc.expected = exp;
             if (exp === null) {
                 svc.observed = lastOk;
                 if (!lastOk)

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Ryostore local pre-commit screen.
+#
+# TRUST MODEL: this hook runs from a trusted SNAPSHOT that tools/install-hooks.sh
+# copied into the repo's git-common-dir, OUTSIDE the working tree. It derives its
+# trust root from its OWN installed location and runs the snapshotted scanner and
+# policy — never the work tree's tools/security-screen.py or security/. That is
+# what stops a checked-out branch or PR from substituting the scanner or the
+# exception list it is screened against. Refresh the snapshot by re-running the
+# installer after pulling reviewed updates.
+#
+# It screens the EXACT staged index tree (security-screen.py --staged), never the
+# dirty working tree, and never executes any staged file.
+#
+# Fail closed: a missing interpreter or snapshotted scanner, or an infrastructure
+# error, BLOCKS the commit. A green run is screening, not a safety certificate.
+# Emergency bypass (you accept the risk): git commit --no-verify
+
+set -uo pipefail
+
+here="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+scanner="$here/scanner/security-screen.py"
+policy_root="$here/policy"
+repo_root="$(git rev-parse --show-toplevel)" || exit 2
+
+fail() { echo "pre-commit: $1" >&2; exit 1; }
+
+command -v python3 >/dev/null 2>&1 \
+  || fail "python3 not found; cannot run the security screen. Commit blocked (fail closed)."
+[ -f "$scanner" ] \
+  || fail "trusted scanner snapshot missing at $scanner; re-run tools/install-hooks.sh. Commit blocked (fail closed)."
+
+echo "pre-commit: screening the exact staged tree with the trusted snapshot scanner" >&2
+
+# Stdin from /dev/null so the scanner can never consume anything. --root is the
+# untrusted work tree being screened; --policy-root is the TRUSTED snapshot.
+python3 "$scanner" \
+  --root "$repo_root" \
+  --staged \
+  --policy-root "$policy_root" \
+  --format text </dev/null
+rc=$?
+
+if [ "$rc" -eq 0 ]; then
+  exit 0
+elif [ "$rc" -eq 2 ]; then
+  echo "pre-commit: security screen infrastructure failure (exit 2). Commit blocked (fail closed)." >&2
+else
+  echo "pre-commit: blocking security findings in the staged tree. Commit blocked." >&2
+  echo "pre-commit: fix the findings above, or (owners only) record a narrow exception in security/exceptions.json and re-run tools/install-hooks.sh." >&2
+fi
+exit 1

@@ -11,14 +11,38 @@
       "sha256": "3cc4689ade89492a45afa96395c515c8b67b2133a568c5c7bf0f515971da090e",
       "mode": "0644",
       "size": 25,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mode": "0644",
+      "size": 35149,
       "install": false
+    },
+    {
+      "source": "NOTICE",
+      "destination": "NOTICE",
+      "sha256": "9fa2ac871c04ac82325d03b8328ce0647c31ab53f210c8a5aad81ea20337617e",
+      "mode": "0644",
+      "size": 3465,
+      "install": false
+    },
+    {
+      "source": "PROVENANCE.md",
+      "destination": "PROVENANCE.md",
+      "sha256": "6279d9df0922bc542bd230f02feba46c98e289ff6496be3a7dac19396b6480c4",
+      "mode": "0644",
+      "size": 3734,
+      "install": true
     },
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "00f0257d1840efdee884d860cdcedaf9a115a25804fe96e4b2b7951d6f0bc224",
+      "sha256": "dad89087c9bd2ab96c70e471cbd6b74bfa04e0d12702a926636f246d38d2f1da",
       "mode": "0644",
-      "size": 2807,
+      "size": 5072,
       "install": false
     },
     {
@@ -32,17 +56,17 @@
     {
       "source": "bin/accounts_store.py",
       "destination": "bin/accounts_store.py",
-      "sha256": "9bc65b48482982b5fa0f1dac32ac187534181b6fddafb923b7c1362f04d5519b",
+      "sha256": "4d74955170a41345d984ba908f1922f2445104765432458fef649d7fc38eff68",
       "mode": "0755",
-      "size": 1312,
+      "size": 1191,
       "install": true
     },
     {
       "source": "bin/backup_gmail_env.py",
       "destination": "bin/backup_gmail_env.py",
-      "sha256": "88f18c9e48c9b984d7b0a453f8cda837c2bfe5bc9bc0e576679cc5337dd277a6",
+      "sha256": "b10be249c6f2abc66ee78a8aee0586e394aa9ca5bd8296d41ad89ce7e73607de",
       "mode": "0755",
-      "size": 2049,
+      "size": 719,
       "install": true
     },
     {
@@ -56,17 +80,17 @@
     {
       "source": "bin/delete_email.py",
       "destination": "bin/delete_email.py",
-      "sha256": "db7eb1a6349f6555cd55ea90102223e81923c5c150643c162520f75f07b3e887",
+      "sha256": "ade332610bdcb31c0f71c1fcf75d0bb23cab1ea9d311f0534f2ddbeacbc706db",
       "mode": "0755",
-      "size": 2293,
+      "size": 2288,
       "install": true
     },
     {
       "source": "bin/download_email_attachment.py",
       "destination": "bin/download_email_attachment.py",
-      "sha256": "7f02966b5e0eaa38334bd8881bb9060f45567bbb858be8b166bcfe2d02d4011e",
+      "sha256": "075688e6f9a06d64ade264496dbb93a2d4a5470b8a6262464136ee596e627fcd",
       "mode": "0755",
-      "size": 1820,
+      "size": 2991,
       "install": true
     },
     {
@@ -80,41 +104,41 @@
     {
       "source": "bin/fetch_all_accounts.py",
       "destination": "bin/fetch_all_accounts.py",
-      "sha256": "638eb6e9e0d70c6cc67c66f73b392915c42b5b8d2ee9ca717ba55085a0358115",
+      "sha256": "e31705ad1d39ed97d6c4c444f1d13c416abbb0706b05f0001ab474e1049d458d",
       "mode": "0755",
-      "size": 3336,
+      "size": 3400,
       "install": true
     },
     {
       "source": "bin/fetch_email_body.py",
       "destination": "bin/fetch_email_body.py",
-      "sha256": "9575b06cb049f0e7b2eb36bda593381d0ddc7163f3f46f54590dd189de00ed5e",
+      "sha256": "655eeca8985e6bb6e7f45ceb58928f67845664db0f30f3c6c4cc45f29685c2df",
       "mode": "0755",
-      "size": 18935,
+      "size": 19615,
       "install": true
     },
     {
       "source": "bin/fetch_emails.py",
       "destination": "bin/fetch_emails.py",
-      "sha256": "406098ece1103c7fe04a9716111c5b8b341976c90a2ceb89c93a6dac488869ad",
+      "sha256": "b345f5bc20dd063ef62bd5c81d8fc4d6e5c94dcda7ed0736f7ed5403ac13d3bd",
       "mode": "0755",
-      "size": 6403,
+      "size": 6371,
       "install": true
     },
     {
       "source": "bin/fetch_labels.py",
       "destination": "bin/fetch_labels.py",
-      "sha256": "c54fcda37469b48791fb38a432ef689f64040bd2d0cc91aa2d095915167cfd73",
+      "sha256": "b5c80bad28cf311f9f307c2c50f0b12d75974f10aeeb395d0f215e7160cbc017",
       "mode": "0755",
-      "size": 2069,
+      "size": 2011,
       "install": true
     },
     {
       "source": "bin/fetch_thread.py",
       "destination": "bin/fetch_thread.py",
-      "sha256": "7fc30f7ad3f06bab045041eb4dcb253da4896a4699c51bc1956aaa30d9b2ee56",
+      "sha256": "b7d66e545ed47d3a4e552daf5ab8df1511d68c2514d9470527661498d848f60f",
       "mode": "0755",
-      "size": 2572,
+      "size": 2577,
       "install": true
     },
     {
@@ -128,9 +152,9 @@
     {
       "source": "bin/gmail_config.py",
       "destination": "bin/gmail_config.py",
-      "sha256": "9afdf4b85155e985b2135214f482ae4cdf24cc4670f396c989bd460f7dbc60bc",
+      "sha256": "1fc1d8d83cdee7730f87bef800fe7ab10a107528367526a8ceee0814e40df615",
       "mode": "0755",
-      "size": 3999,
+      "size": 6759,
       "install": true
     },
     {
@@ -144,33 +168,41 @@
     {
       "source": "bin/list_ics_attachments.py",
       "destination": "bin/list_ics_attachments.py",
-      "sha256": "40333f54077d067bd020b186dc0795b0d44196a3a0d22ba962d372e8ddda3e7d",
+      "sha256": "1cac3aa7b7358353c0478893d51dc102fed5f66ebde340ae3b96a2595c65c9ec",
       "mode": "0755",
-      "size": 4683,
+      "size": 4697,
+      "install": true
+    },
+    {
+      "source": "bin/modify_message.py",
+      "destination": "bin/modify_message.py",
+      "sha256": "fd8415fc45625912912de734ed33098b23b95c6e3247305cf6c9698d0422804c",
+      "mode": "0755",
+      "size": 2477,
       "install": true
     },
     {
       "source": "bin/oauth_server.py",
       "destination": "bin/oauth_server.py",
-      "sha256": "f692e945f05ae98fdab730f233d08daaa461b04ebca57fc0ba6c5285b32d56c8",
+      "sha256": "df5b12b9472786f5e7d2da4a513f1af126fad96fa0fb0ac82f136f4cbea1cdb6",
       "mode": "0755",
-      "size": 9213,
+      "size": 7505,
       "install": true
     },
     {
       "source": "bin/send_email.py",
       "destination": "bin/send_email.py",
-      "sha256": "93b811f036fec7d5bf970b7f07147225481b914b505abd25579c3ed0be86b494",
+      "sha256": "c20259ad8317ec9b04e99bded2c926876327196fcf5880ecdd609449f6c6daf2",
       "mode": "0755",
-      "size": 4589,
+      "size": 4522,
       "install": true
     },
     {
       "source": "bin/token_refresh.py",
       "destination": "bin/token_refresh.py",
-      "sha256": "0a2dcff83ba372798f44cf60f5ba823661a48abf34f3456e2827203f690c090f",
+      "sha256": "c451735171f25b337c3d29ddeb69c8ba9969361b293c18fb20181f29f7c6b9a2",
       "mode": "0755",
-      "size": 547,
+      "size": 513,
       "install": true
     },
     {
@@ -184,9 +216,9 @@
     {
       "source": "content/Appearance.qml",
       "destination": "content/Appearance.qml",
-      "sha256": "0c093ace2a8903874427934fd605eb0cb2cc57442ee07baf930174c678f558fe",
+      "sha256": "691fe1b67470286432a48705ccec86d8f0d9ebdd6374271b181f1291c872e4dd",
       "mode": "0644",
-      "size": 10181,
+      "size": 8372,
       "install": true
     },
     {
@@ -216,9 +248,9 @@
     {
       "source": "content/EmailAuth.qml",
       "destination": "content/EmailAuth.qml",
-      "sha256": "a4bac48b2ba0750edebb47b90f27a9171d285a4ec54944d04a1de8eeecba8148",
+      "sha256": "88325916e9c05da48860ccca24479c49443d3fb8af34f828a2acdca9ed9c03a5",
       "mode": "0644",
-      "size": 36693,
+      "size": 37106,
       "install": true
     },
     {
@@ -232,9 +264,9 @@
     {
       "source": "content/EmailContent.qml",
       "destination": "content/EmailContent.qml",
-      "sha256": "94fb46cd4a7b990e8e5b810472313aa314e1f0e68bce1e35b006b99f36c64fe5",
+      "sha256": "33caab01ee1f59f85929e2b4c11546cd65dc6ed9a1ae1866135993e1d6a8ecfe",
       "mode": "0644",
-      "size": 50612,
+      "size": 49944,
       "install": true
     },
     {
@@ -288,9 +320,9 @@
     {
       "source": "content/EmailService.qml",
       "destination": "content/EmailService.qml",
-      "sha256": "b6a60b589e6bb0ce634a3a3e932488e6fe73d1add9c8bfb52d434c37a61fc163",
+      "sha256": "628ee77ae4e833763400f03e6d5288045e9909cd9285fa9ee2d651348cf9fd39",
       "mode": "0644",
-      "size": 11300,
+      "size": 11813,
       "install": true
     },
     {
@@ -304,17 +336,17 @@
     {
       "source": "content/EmailSidebar.qml",
       "destination": "content/EmailSidebar.qml",
-      "sha256": "d65d695f2dfef430ddd61f6e079a0a74d411ec960fc050d575a0027ff5b40b03",
+      "sha256": "3b286ae990ea97e3772d4b52dcb84aea787b7884e0724c9586f8814d7faa2b5f",
       "mode": "0644",
-      "size": 13342,
+      "size": 13349,
       "install": true
     },
     {
       "source": "content/EmailStackedContent.qml",
       "destination": "content/EmailStackedContent.qml",
-      "sha256": "f8a115a66974d714473f58223204327bce7302b9f8ffa9d365a1bfb8652d9839",
+      "sha256": "b220c37312a2eb2ebd6e02fd2525d3f28ec5899d5f13471c6e792d9d134111e2",
       "mode": "0644",
-      "size": 44606,
+      "size": 44607,
       "install": true
     },
     {
@@ -464,17 +496,17 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "fdfa39955d5a0345e2fd4571e238a1f3fcb22beaa9d22b323fbe8702281c5c6f",
+      "sha256": "7a7b55f6adbef574dd8accc386ad5bd45eb7f77246cd07838c663d0400d440f4",
       "mode": "0644",
-      "size": 3490,
+      "size": 3898,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "0fe6887c67734a6a41e162f9f82e40f0f23147921326318aaf8410e329d9b5c8",
+      "sha256": "d1ac9f24fabd884ff5ab8ebd1593575be9e06509d8beeeb5a499d84948be009c",
       "mode": "0644",
-      "size": 51340,
+      "size": 50899,
       "install": true
     }
   ]
