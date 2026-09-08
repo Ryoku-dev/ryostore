@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "id": "bluetooth-profiles",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/bluetooth-profiles",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "972c8ca9a8af4276fa1a9296515402ec4ce839d216335c4f75393a0126c8139d",
+      "mode": "0644",
+      "size": 3967,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "af651afd555b53c39ef23e48f9ebd597e1b2854051ac78afd3c860c90f328773",
+      "mode": "0644",
+      "size": 1066,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "7d5e066cfd82357efb48bec35108a6ddadca8d71019870ac3b10c33648174804",
+      "mode": "0644",
+      "size": 2239,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "811e7dfdef75b1fca67c91516d8a22ab96b9b8e1e0ce4fd56603eaeac53b3206",
+      "mode": "0644",
+      "size": 34062,
+      "install": false
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "02d8e6c4331304340bef65a8e6799f89a8580ccafde41c23523903790b1f59d4",
+      "mode": "0644",
+      "size": 21448,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "279a4523748e46dda188a58fac5d8fcf9a28d5829e9a3e25732ff86bcc0fe19b",
+      "mode": "0644",
+      "size": 2175,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "d0aeb03c5e8f6deda9f7b8fa0a45e41d026c6b27c9e752b36455b3cf98ca1789",
+      "mode": "0644",
+      "size": 1494,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "817c667bf21c89c386c135b18d57f5ab0fd12215c4f9d5ec9994de7f6403665b",
+      "mode": "0644",
+      "size": 10084,
+      "install": true
+    }
+  ]
+}

@@ -276,6 +276,33 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-09-05"
+    },
+    {
+      "id": "bluetooth-profiles",
+      "name": "Bluetooth Profiles",
+      "version": "1.0.0",
+      "path": "plugins/bluetooth-profiles",
+      "author": "itsKontra <derntl@gmx.net>",
+      "summary": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
+      "description": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "f44f6e378127dada722fa2ba8f7eabd8fe9e81928e1c66661db6ac2fc5bc6dd0",
+      "official": false,
+      "tagline": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
+      "icon": "bluetooth",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-07"
     }
   ]
 }
