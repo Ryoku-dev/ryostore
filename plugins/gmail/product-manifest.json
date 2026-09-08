@@ -1,0 +1,481 @@
+{
+  "schema": 1,
+  "id": "gmail",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/gmail",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "3cc4689ade89492a45afa96395c515c8b67b2133a568c5c7bf0f515971da090e",
+      "mode": "0644",
+      "size": 25,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "00f0257d1840efdee884d860cdcedaf9a115a25804fe96e4b2b7951d6f0bc224",
+      "mode": "0644",
+      "size": 2807,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "0249e4def345b592228b5d0b52cb8fc72402360cc5c397c77dd02ff907cdd736",
+      "mode": "0644",
+      "size": 176887,
+      "install": false
+    },
+    {
+      "source": "bin/accounts_store.py",
+      "destination": "bin/accounts_store.py",
+      "sha256": "9bc65b48482982b5fa0f1dac32ac187534181b6fddafb923b7c1362f04d5519b",
+      "mode": "0755",
+      "size": 1312,
+      "install": true
+    },
+    {
+      "source": "bin/backup_gmail_env.py",
+      "destination": "bin/backup_gmail_env.py",
+      "sha256": "88f18c9e48c9b984d7b0a453f8cda837c2bfe5bc9bc0e576679cc5337dd277a6",
+      "mode": "0755",
+      "size": 2049,
+      "install": true
+    },
+    {
+      "source": "bin/check_credentials.py",
+      "destination": "bin/check_credentials.py",
+      "sha256": "9b9568cc204a6fd4225534c72cb9b399e74c45bc87c5afe4d3f254b2d5a8033f",
+      "mode": "0755",
+      "size": 191,
+      "install": true
+    },
+    {
+      "source": "bin/delete_email.py",
+      "destination": "bin/delete_email.py",
+      "sha256": "db7eb1a6349f6555cd55ea90102223e81923c5c150643c162520f75f07b3e887",
+      "mode": "0755",
+      "size": 2293,
+      "install": true
+    },
+    {
+      "source": "bin/download_email_attachment.py",
+      "destination": "bin/download_email_attachment.py",
+      "sha256": "7f02966b5e0eaa38334bd8881bb9060f45567bbb858be8b166bcfe2d02d4011e",
+      "mode": "0755",
+      "size": 1820,
+      "install": true
+    },
+    {
+      "source": "bin/extract_ics_info.py",
+      "destination": "bin/extract_ics_info.py",
+      "sha256": "f841d19ce6bc780e9a333c7c3c916beb9d76f726f606ec645236d32c4fce126f",
+      "mode": "0755",
+      "size": 3122,
+      "install": true
+    },
+    {
+      "source": "bin/fetch_all_accounts.py",
+      "destination": "bin/fetch_all_accounts.py",
+      "sha256": "638eb6e9e0d70c6cc67c66f73b392915c42b5b8d2ee9ca717ba55085a0358115",
+      "mode": "0755",
+      "size": 3336,
+      "install": true
+    },
+    {
+      "source": "bin/fetch_email_body.py",
+      "destination": "bin/fetch_email_body.py",
+      "sha256": "9575b06cb049f0e7b2eb36bda593381d0ddc7163f3f46f54590dd189de00ed5e",
+      "mode": "0755",
+      "size": 18935,
+      "install": true
+    },
+    {
+      "source": "bin/fetch_emails.py",
+      "destination": "bin/fetch_emails.py",
+      "sha256": "406098ece1103c7fe04a9716111c5b8b341976c90a2ceb89c93a6dac488869ad",
+      "mode": "0755",
+      "size": 6403,
+      "install": true
+    },
+    {
+      "source": "bin/fetch_labels.py",
+      "destination": "bin/fetch_labels.py",
+      "sha256": "c54fcda37469b48791fb38a432ef689f64040bd2d0cc91aa2d095915167cfd73",
+      "mode": "0755",
+      "size": 2069,
+      "install": true
+    },
+    {
+      "source": "bin/fetch_thread.py",
+      "destination": "bin/fetch_thread.py",
+      "sha256": "7fc30f7ad3f06bab045041eb4dcb253da4896a4699c51bc1956aaa30d9b2ee56",
+      "mode": "0755",
+      "size": 2572,
+      "install": true
+    },
+    {
+      "source": "bin/get_gmail_credentials.py",
+      "destination": "bin/get_gmail_credentials.py",
+      "sha256": "dadc6697d991f328c4233abacc6278cdffdcb6dd06fefbc9c6c1729d5e88a1d1",
+      "mode": "0755",
+      "size": 249,
+      "install": true
+    },
+    {
+      "source": "bin/gmail_config.py",
+      "destination": "bin/gmail_config.py",
+      "sha256": "9afdf4b85155e985b2135214f482ae4cdf24cc4670f396c989bd460f7dbc60bc",
+      "mode": "0755",
+      "size": 3999,
+      "install": true
+    },
+    {
+      "source": "bin/import_ics.py",
+      "destination": "bin/import_ics.py",
+      "sha256": "fc03d15707f236a09d5b1af568253503ab9e8ed2df47e67d985bac432ec45979",
+      "mode": "0755",
+      "size": 2479,
+      "install": true
+    },
+    {
+      "source": "bin/list_ics_attachments.py",
+      "destination": "bin/list_ics_attachments.py",
+      "sha256": "40333f54077d067bd020b186dc0795b0d44196a3a0d22ba962d372e8ddda3e7d",
+      "mode": "0755",
+      "size": 4683,
+      "install": true
+    },
+    {
+      "source": "bin/oauth_server.py",
+      "destination": "bin/oauth_server.py",
+      "sha256": "f692e945f05ae98fdab730f233d08daaa461b04ebca57fc0ba6c5285b32d56c8",
+      "mode": "0755",
+      "size": 9213,
+      "install": true
+    },
+    {
+      "source": "bin/send_email.py",
+      "destination": "bin/send_email.py",
+      "sha256": "93b811f036fec7d5bf970b7f07147225481b914b505abd25579c3ed0be86b494",
+      "mode": "0755",
+      "size": 4589,
+      "install": true
+    },
+    {
+      "source": "bin/token_refresh.py",
+      "destination": "bin/token_refresh.py",
+      "sha256": "0a2dcff83ba372798f44cf60f5ba823661a48abf34f3456e2827203f690c090f",
+      "mode": "0755",
+      "size": 547,
+      "install": true
+    },
+    {
+      "source": "content/AddressBar.qml",
+      "destination": "content/AddressBar.qml",
+      "sha256": "b70fd068534e3fb8e56d06e4f0a5795557451e68022558a79e5924867f1ba4fb",
+      "mode": "0644",
+      "size": 1047,
+      "install": true
+    },
+    {
+      "source": "content/Appearance.qml",
+      "destination": "content/Appearance.qml",
+      "sha256": "0c093ace2a8903874427934fd605eb0cb2cc57442ee07baf930174c678f558fe",
+      "mode": "0644",
+      "size": 10181,
+      "install": true
+    },
+    {
+      "source": "content/Config.qml",
+      "destination": "content/Config.qml",
+      "sha256": "6ec3816837518445a67c7abc8cb5dc0ec6cc490b89f383ff4d7c5c0126176275",
+      "mode": "0644",
+      "size": 981,
+      "install": true
+    },
+    {
+      "source": "content/ConfigTextField.qml",
+      "destination": "content/ConfigTextField.qml",
+      "sha256": "0fdac2303143235401d400879c7b1aff2af0b8279731f44564d83730aef8ad0f",
+      "mode": "0644",
+      "size": 2023,
+      "install": true
+    },
+    {
+      "source": "content/Directories.qml",
+      "destination": "content/Directories.qml",
+      "sha256": "7eadc448b551a66ca72e8fe97dae1bb7a7e13ca697df03bb5d8aeeade8b5607e",
+      "mode": "0644",
+      "size": 665,
+      "install": true
+    },
+    {
+      "source": "content/EmailAuth.qml",
+      "destination": "content/EmailAuth.qml",
+      "sha256": "a4bac48b2ba0750edebb47b90f27a9171d285a4ec54944d04a1de8eeecba8148",
+      "mode": "0644",
+      "size": 36693,
+      "install": true
+    },
+    {
+      "source": "content/EmailCompose.qml",
+      "destination": "content/EmailCompose.qml",
+      "sha256": "ac3f0f93525f744708078469b16d139898d18e1493b402acabbd6e39d532d684",
+      "mode": "0644",
+      "size": 64647,
+      "install": true
+    },
+    {
+      "source": "content/EmailContent.qml",
+      "destination": "content/EmailContent.qml",
+      "sha256": "94fb46cd4a7b990e8e5b810472313aa314e1f0e68bce1e35b006b99f36c64fe5",
+      "mode": "0644",
+      "size": 50612,
+      "install": true
+    },
+    {
+      "source": "content/EmailDetections.js",
+      "destination": "content/EmailDetections.js",
+      "sha256": "e29810b49926a00260cf5621306dae1486b5bb6eb93a73f744f5c1eceda5dd9e",
+      "mode": "0644",
+      "size": 3480,
+      "install": true
+    },
+    {
+      "source": "content/EmailDetections.qml",
+      "destination": "content/EmailDetections.qml",
+      "sha256": "fdf8dab041d7e3f37f48e3f40a94d92d8ec7c71f1350eb1c6b4db3744fa343e8",
+      "mode": "0644",
+      "size": 158,
+      "install": true
+    },
+    {
+      "source": "content/EmailIcon.qml",
+      "destination": "content/EmailIcon.qml",
+      "sha256": "99ee4ff599990638567f355349fc9d3042b2351194d09dcc67236c8e3d2d0e05",
+      "mode": "0644",
+      "size": 6395,
+      "install": true
+    },
+    {
+      "source": "content/EmailIconRules.js",
+      "destination": "content/EmailIconRules.js",
+      "sha256": "68696ad9db00757d0ee06c2df7e0ffca04e1fde6a8ce27a62151b303cc89ea54",
+      "mode": "0644",
+      "size": 3575,
+      "install": true
+    },
+    {
+      "source": "content/EmailInbox.qml",
+      "destination": "content/EmailInbox.qml",
+      "sha256": "1699f6831085974fe9a534950a0b324b25d6fe505c32132a8ad0bea48f785282",
+      "mode": "0644",
+      "size": 61056,
+      "install": true
+    },
+    {
+      "source": "content/EmailNavButton.qml",
+      "destination": "content/EmailNavButton.qml",
+      "sha256": "34a6a7733d53c9e27e3741478d8b4db8b3fecbba3454ae910015489f64bde8e6",
+      "mode": "0644",
+      "size": 6115,
+      "install": true
+    },
+    {
+      "source": "content/EmailService.qml",
+      "destination": "content/EmailService.qml",
+      "sha256": "b6a60b589e6bb0ce634a3a3e932488e6fe73d1add9c8bfb52d434c37a61fc163",
+      "mode": "0644",
+      "size": 11300,
+      "install": true
+    },
+    {
+      "source": "content/EmailSettings.qml",
+      "destination": "content/EmailSettings.qml",
+      "sha256": "a076d7ea02b0a8b9b126ff2c09471d21d286f6ed1dbef88bfc00bee89dfc4dd6",
+      "mode": "0644",
+      "size": 65465,
+      "install": true
+    },
+    {
+      "source": "content/EmailSidebar.qml",
+      "destination": "content/EmailSidebar.qml",
+      "sha256": "d65d695f2dfef430ddd61f6e079a0a74d411ec960fc050d575a0027ff5b40b03",
+      "mode": "0644",
+      "size": 13342,
+      "install": true
+    },
+    {
+      "source": "content/EmailStackedContent.qml",
+      "destination": "content/EmailStackedContent.qml",
+      "sha256": "f8a115a66974d714473f58223204327bce7302b9f8ffa9d365a1bfb8652d9839",
+      "mode": "0644",
+      "size": 44606,
+      "install": true
+    },
+    {
+      "source": "content/FileUtils.qml",
+      "destination": "content/FileUtils.qml",
+      "sha256": "e1ce1272c16e3d23892fde0662d8d6562c6adfac9c5f94611f81ed07a71724d4",
+      "mode": "0644",
+      "size": 1501,
+      "install": true
+    },
+    {
+      "source": "content/FolderListModelWithHistory.qml",
+      "destination": "content/FolderListModelWithHistory.qml",
+      "sha256": "15d0e24023b85dc9a7d82ec0a9bc0ca58b9fe1e8e9b7f344da85b8ae4557b588",
+      "mode": "0644",
+      "size": 1444,
+      "install": true
+    },
+    {
+      "source": "content/GroupButton.qml",
+      "destination": "content/GroupButton.qml",
+      "sha256": "2b3bc48ab9f15e2571923a1090791033ff8c7ed9e73194cf6e94d5d7f7d2a9fc",
+      "mode": "0644",
+      "size": 1417,
+      "install": true
+    },
+    {
+      "source": "content/MaterialLoadingIndicator.qml",
+      "destination": "content/MaterialLoadingIndicator.qml",
+      "sha256": "1953fb067e128208c467f5462ecccf9162571f05d7436adbb740b2ded01dc28b",
+      "mode": "0644",
+      "size": 1108,
+      "install": true
+    },
+    {
+      "source": "content/MaterialShape.qml",
+      "destination": "content/MaterialShape.qml",
+      "sha256": "4c834b9054e6e971a4b48d93b993586bbfb013c239c12cb129a9740fd046d165",
+      "mode": "0644",
+      "size": 607,
+      "install": true
+    },
+    {
+      "source": "content/MaterialSymbol.qml",
+      "destination": "content/MaterialSymbol.qml",
+      "sha256": "bdda96743e0cadd65c97b34ca2b63a984ccdfb57d3155e831257f9fb7d82e01e",
+      "mode": "0644",
+      "size": 743,
+      "install": true
+    },
+    {
+      "source": "content/RippleButton.qml",
+      "destination": "content/RippleButton.qml",
+      "sha256": "f5f53ba546169b113f177710e4830c93e3ecd1ac84066d8729beb5024e8bf8b5",
+      "mode": "0644",
+      "size": 2854,
+      "install": true
+    },
+    {
+      "source": "content/RippleButtonWithIcon.qml",
+      "destination": "content/RippleButtonWithIcon.qml",
+      "sha256": "0b44110649980524ec11d4c3e6eb3dc6d1992b92c6f7042d6ee8da222a94cd8a",
+      "mode": "0644",
+      "size": 2822,
+      "install": true
+    },
+    {
+      "source": "content/RyokuDecor.qml",
+      "destination": "content/RyokuDecor.qml",
+      "sha256": "6991070b0f0bd4628ce00d4618a1eede569254b53e4c75d4d04b732b81e47326",
+      "mode": "0644",
+      "size": 17137,
+      "install": true
+    },
+    {
+      "source": "content/StyledFlickable.qml",
+      "destination": "content/StyledFlickable.qml",
+      "sha256": "e4fb84a2fba8979d12a8c3c3ecbb8126893da8978e55c1925e0615fcee6a9a9f",
+      "mode": "0644",
+      "size": 158,
+      "install": true
+    },
+    {
+      "source": "content/StyledListView.qml",
+      "destination": "content/StyledListView.qml",
+      "sha256": "4c9337d19d6d0b9318c230f214ff8ac15104a13f6d2c280b402ea6cef1e35cc9",
+      "mode": "0644",
+      "size": 117,
+      "install": true
+    },
+    {
+      "source": "content/StyledScrollBar.qml",
+      "destination": "content/StyledScrollBar.qml",
+      "sha256": "2771f0b387ee34bdb33409a7d03729cf67030137ac7a1014a1cbdb92e8043c92",
+      "mode": "0644",
+      "size": 3868,
+      "install": true
+    },
+    {
+      "source": "content/StyledSwitch.qml",
+      "destination": "content/StyledSwitch.qml",
+      "sha256": "8c6087b54146b0e0b4794f3d6baa811c6a1ab5ce2b1beb988cd347b0fb587cd8",
+      "mode": "0644",
+      "size": 1127,
+      "install": true
+    },
+    {
+      "source": "content/StyledText.qml",
+      "destination": "content/StyledText.qml",
+      "sha256": "cabeae48102c1860a8dd0e53ffc2156fccfee85fa1abd9323f202e6940a6a6b2",
+      "mode": "0644",
+      "size": 596,
+      "install": true
+    },
+    {
+      "source": "content/StyledToolTip.qml",
+      "destination": "content/StyledToolTip.qml",
+      "sha256": "d69a3f29b50fa0dfb6d8373cd0130f050cc258d62e00892d6d5195991e63a0a0",
+      "mode": "0644",
+      "size": 550,
+      "install": true
+    },
+    {
+      "source": "content/Translation.qml",
+      "destination": "content/Translation.qml",
+      "sha256": "197ee20cf98f6398aedf05b4e0a3c91cc3e8dcd18e40fc5d325680f506b0baf1",
+      "mode": "0644",
+      "size": 136,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "459796bfdcfde4be6ab1ff3b4c24b9d1bd58e5952c136ab1e040d68ba449957a",
+      "mode": "0644",
+      "size": 15174,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "611a73da6151a5b0aa8d2c92ca34dba7f0fdd0e1400f93da0320a7e4053302b3",
+      "mode": "0644",
+      "size": 1198,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "fdfa39955d5a0345e2fd4571e238a1f3fcb22beaa9d22b323fbe8702281c5c6f",
+      "mode": "0644",
+      "size": 3490,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "0fe6887c67734a6a41e162f9f82e40f0f23147921326318aaf8410e329d9b5c8",
+      "mode": "0644",
+      "size": 51340,
+      "install": true
+    }
+  ]
+}

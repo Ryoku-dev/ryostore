@@ -1,0 +1,147 @@
+{
+  "id": "gmail",
+  "name": "Gmail",
+  "version": "1.0.0",
+  "author": "Antigravity",
+  "description": "Native Gmail integration and reader plugin for Ryoku shell.",
+  "license": "MIT",
+  "official": false,
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact",
+      "full"
+    ]
+  },
+  "hosts": [
+    "framePopout"
+  ],
+  "defaults": {
+    "host": "framePopout",
+    "framePopout": {
+      "edge": "top",
+      "align": "center",
+      "width": 360,
+      "radius": 16,
+      "autoDismiss": false
+    },
+    "icon": "mail",
+    "label": "Gmail"
+  },
+  "commands": [
+    "bin/gmail_config.py",
+    "bin/accounts_store.py",
+    "bin/get_gmail_credentials.py",
+    "bin/backup_gmail_env.py",
+    "bin/check_credentials.py",
+    "bin/oauth_server.py",
+    "bin/token_refresh.py",
+    "bin/fetch_emails.py",
+    "bin/fetch_email_body.py",
+    "bin/fetch_thread.py",
+    "bin/fetch_labels.py",
+    "bin/fetch_all_accounts.py",
+    "bin/send_email.py",
+    "bin/delete_email.py",
+    "bin/download_email_attachment.py"
+  ],
+  "dependencies": {
+    "commands": [
+      "python3"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "width",
+        "type": "choice",
+        "label": "Popup width",
+        "group": "Geometry",
+        "default": "680",
+        "options": [
+          {
+            "value": "480",
+            "label": "Compact (480px)"
+          },
+          {
+            "value": "680",
+            "label": "Standard (680px)"
+          },
+          {
+            "value": "800",
+            "label": "Wide (800px)"
+          },
+          {
+            "value": "960",
+            "label": "Expanded (960px)"
+          }
+        ]
+      },
+      {
+        "key": "height",
+        "type": "choice",
+        "label": "Popup height",
+        "group": "Geometry",
+        "default": "520",
+        "options": [
+          {
+            "value": "440",
+            "label": "Compact (440px)"
+          },
+          {
+            "value": "520",
+            "label": "Standard (520px)"
+          },
+          {
+            "value": "620",
+            "label": "Tall (620px)"
+          },
+          {
+            "value": "720",
+            "label": "Extended (720px)"
+          }
+        ]
+      }
+    ]
+  },
+  "files": [
+    "content/AddressBar.qml",
+    "content/Appearance.qml",
+    "content/Config.qml",
+    "content/ConfigTextField.qml",
+    "content/Directories.qml",
+    "content/EmailAuth.qml",
+    "content/EmailCompose.qml",
+    "content/EmailContent.qml",
+    "content/EmailDetections.js",
+    "content/EmailDetections.qml",
+    "content/EmailIcon.qml",
+    "content/EmailIconRules.js",
+    "content/EmailInbox.qml",
+    "content/EmailNavButton.qml",
+    "content/EmailService.qml",
+    "content/EmailSettings.qml",
+    "content/EmailSidebar.qml",
+    "content/EmailStackedContent.qml",
+    "content/FileUtils.qml",
+    "content/FolderListModelWithHistory.qml",
+    "content/GroupButton.qml",
+    "content/MaterialLoadingIndicator.qml",
+    "content/MaterialShape.qml",
+    "content/MaterialSymbol.qml",
+    "content/RippleButton.qml",
+    "content/RippleButtonWithIcon.qml",
+    "content/RyokuDecor.qml",
+    "content/StyledFlickable.qml",
+    "content/StyledListView.qml",
+    "content/StyledScrollBar.qml",
+    "content/StyledSwitch.qml",
+    "content/StyledText.qml",
+    "content/StyledToolTip.qml",
+    "content/Translation.qml",
+    "content/qmldir"
+  ]
+}

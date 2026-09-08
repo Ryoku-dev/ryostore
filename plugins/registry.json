@@ -218,6 +218,37 @@
         "framePopout"
       ],
       "lastUpdated": "2026-08-20"
+    },
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "version": "1.0.0",
+      "path": "plugins/gmail",
+      "author": "Yash Parmar",
+      "summary": "Industrial noir Gmail client and notification reader for Ryoku.",
+      "description": "Native Gmail client for the Ryoku shell with live Matugen color scheme integration, OAuth 2.0 PKCE, folder navigation, search, compose, and noir spec decor. Browse your Inbox, Sent, Spam, and Trash, read threads, and compose emails directly from a frame popout.",
+      "tags": [
+        "gmail",
+        "email",
+        "google",
+        "productivity",
+        "frame-popout"
+      ],
+      "accent": "#6E6A58",
+      "surface": "#0D0D0D",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7b7c16ec683d0c9b9b35dbda2d65e17b36808f58d9707ac42cd5e97991faae7a",
+      "official": false,
+      "tagline": "Inbox, search & compose in Ryoku noir style.",
+      "icon": "mail",
+      "hosts": [
+        "framePopout"
+      ],
+      "lastUpdated": "2026-08-29"
     }
   ]
 }
