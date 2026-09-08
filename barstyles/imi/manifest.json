@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "imi",
   "category": "barstyles",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/barstyles/imi",
   "files": [
     {
@@ -33,16 +33,16 @@
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
       "mode": "0644",
-      "size": 556,
-      "sha256": "ca77383350c63c129bf416f0704856ec6deac0d3d0dd9c0c13a1c58489c03a5a",
+      "size": 538,
+      "sha256": "1ce08bcb516d3a6daec11c5da9b7c230ca75650ad7427b1786c3ce30a5b5d6c4",
       "install": true
     },
     {
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 4172,
-      "sha256": "ac5a9adad4d392aa8306912e1069d13c2eb8a50e87a3e5dc54908123e04ad66f",
+      "size": 4156,
+      "sha256": "93a025e3621c181c89afa1d4353c76db193753736c6571603f54f55033d8e3a3",
       "install": true
     },
     {
@@ -233,8 +233,8 @@
       "source": "modules/common/Config.qml",
       "destination": "modules/common/Config.qml",
       "mode": "0644",
-      "size": 88909,
-      "sha256": "c5ecaa81a1a53adaf119b594f0e32bd92a60b6ddd58c12768ee7d6c780f3b124",
+      "size": 88889,
+      "sha256": "085ca1c3bd5e6fa3d7242f7a8c247d00eb10276166087fa3867f46a569237500",
       "install": true
     },
     {
@@ -425,8 +425,8 @@
       "source": "modules/common/plugins/BarWidgets.qml",
       "destination": "modules/common/plugins/BarWidgets.qml",
       "mode": "0644",
-      "size": 5235,
-      "sha256": "e6c8d26eb52481d938558e0efef07272ea70eb6f5076744797fa751fd4a3b7bb",
+      "size": 5131,
+      "sha256": "91246df1cb03d1575ff69e5387b737a255b329b6ab93169c853f0aba6f7fa89c",
       "install": true
     },
     {
@@ -537,8 +537,8 @@
       "source": "modules/common/widgets/AppIcon.qml",
       "destination": "modules/common/widgets/AppIcon.qml",
       "mode": "0644",
-      "size": 319,
-      "sha256": "a496297d27a76fa832b6eaf763e7061331ba89997ad0334f5260101b05f48fd6",
+      "size": 1002,
+      "sha256": "c399bb64a9aa875cc419487f9c4578d12ccbe3e866414eff8f5a6618adb0948a",
       "install": true
     },
     {
@@ -966,6 +966,14 @@
       "install": true
     },
     {
+      "source": "modules/common/widgets/Player.qml",
+      "destination": "modules/common/widgets/Player.qml",
+      "mode": "0644",
+      "size": 5474,
+      "sha256": "ee239ad47a32c41e60ce64c748747d6e54b62e662f73ac2330c848c65d3a3ff3",
+      "install": true
+    },
+    {
       "source": "modules/common/widgets/PointingHandInteraction.qml",
       "destination": "modules/common/widgets/PointingHandInteraction.qml",
       "mode": "0644",
@@ -1289,8 +1297,8 @@
       "source": "modules/common/widgets/qmldir",
       "destination": "modules/common/widgets/qmldir",
       "mode": "0644",
-      "size": 7171,
-      "sha256": "97d7ba2b86855fa4cf66cdb6837ecaf303ba3c722702d8038a417838b195e3e4",
+      "size": 3685,
+      "sha256": "154ed0706d0fc81bb631635f6a308821c4981a38c7b01801f40b43ca2b666741",
       "install": true
     },
     {
@@ -1689,8 +1697,8 @@
       "source": "modules/imi/bar/SystemIcons.qml",
       "destination": "modules/imi/bar/SystemIcons.qml",
       "mode": "0644",
-      "size": 10631,
-      "sha256": "f30f91a11cd7b62d7d2ff7e5e6527d3273709d2066604a4230ab8cdcb99877d5",
+      "size": 10744,
+      "sha256": "f0145b5051c96ae1a54e7ed9016d3513ed53299548a3b6c6edff5e0e3e3c04ff",
       "install": true
     },
     {
@@ -1795,6 +1803,14 @@
       "mode": "0644",
       "size": 3403,
       "sha256": "6feb367a79ad0f52db6ed2116a30704ab164ef8a2e3d6ffd5e148952c819dee5",
+      "install": true
+    },
+    {
+      "source": "modules/imi/dock/dock_geometry.js",
+      "destination": "modules/imi/dock/dock_geometry.js",
+      "mode": "0644",
+      "size": 6059,
+      "sha256": "b4397caf0cbd66bb711fe4eb7c0c9bec39643932c3cb1fd9175be9990bc010d2",
       "install": true
     },
     {
@@ -2341,6 +2357,5 @@
       "sha256": "b91a53f73089e76988abe0c8c5731ac6302025466ef7761f824b6602416104b0",
       "install": true
     }
-  ],
-  "license": "GPL-3.0-only"
+  ]
 }

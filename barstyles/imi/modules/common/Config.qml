@@ -999,7 +999,7 @@ Singleton {
                 property JsonObject layouts: JsonObject {
                     property list<string> leftLayout: ["leftSidebarButton", "activeWindow"]
                     property list<string> middleLayout: ["visualizer", "media", "resources", "workspaces", "utilButtons", "clockWidget", "weatherBar", "visualizer"]
-                    property list<string> rightLayout: ["submapIndicator", "privacyIndicator", "sysTray", "hyprlandXkbIndicator", "systemIcons"]
+                    property list<string> rightLayout: ["submapIndicator", "sysTray", "hyprlandXkbIndicator", "systemIcons"]
                 }
                 
                 property list<string> screenList: [] // List of names, like "eDP-1", find out with 'hyprctl monitors' command

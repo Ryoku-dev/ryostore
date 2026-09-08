@@ -35,7 +35,6 @@ Singleton {
         { id: "media",             name: Translation.tr("Media"),                icon: "music_note" },
         { id: "resources",         name: Translation.tr("Resources"),            icon: "empty_dashboard" },
         { id: "systemIcons",       name: Translation.tr("System Icons"),         icon: "info" },
-        { id: "privacyIndicator",  name: Translation.tr("Privacy"),              icon: "privacy_tip" },
         { id: "submapIndicator",   name: Translation.tr("Submap"),               icon: "keyboard" },
         { id: "clockWidget",       name: Translation.tr("Clock"),                icon: "schedule" },
         { id: "utilButtons",       name: Translation.tr("Util Buttons"),         icon: "toggle_on" },
