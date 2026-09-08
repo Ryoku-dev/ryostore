@@ -1,0 +1,88 @@
+// Flow
+// Soft continuous progression from identity into hardware and session.
+// ryoku:recolor keys=primary title=foreground output=onSurface separator=outlineVariant
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "display": {
+    "color": {
+      "keys": "#dba9c7",
+      "title": "#f1ebe7",
+      "output": "#d1cac7",
+      "separator": "#655b60"
+    },
+    "key": {
+      "width": 10
+    },
+    "separator": "  "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#separator}────────────────────────────{#}"
+    },
+
+    {
+      "type": "title",
+      "key": "identity"
+    },
+    {
+      "type": "os",
+      "key": "system"
+    },
+    {
+      "type": "kernel",
+      "key": "kernel"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#separator}  ╲{#}"
+    },
+
+    {
+      "type": "cpu",
+      "key": "cpu"
+    },
+    {
+      "type": "gpu",
+      "key": "gpu",
+      "detectionMethod": "pci"
+    },
+    {
+      "type": "memory",
+      "key": "memory",
+      "percent": {
+        "type": 9
+      }
+    },
+
+    {
+      "type": "custom",
+      "format": "{#separator}  ╲{#}"
+    },
+
+    {
+      "type": "wm",
+      "key": "desktop"
+    },
+    {
+      "type": "terminal",
+      "key": "terminal"
+    },
+    {
+      "type": "uptime",
+      "key": "uptime"
+    },
+    {
+      "type": "datetime",
+      "key": "time"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#separator}──────────────────────{#} {#keys}●{#}"
+    }
+  ]
+}

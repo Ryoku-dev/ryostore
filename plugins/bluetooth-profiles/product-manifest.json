@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "id": "bluetooth-profiles",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/bluetooth-profiles",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "af651afd555b53c39ef23e48f9ebd597e1b2854051ac78afd3c860c90f328773",
+      "mode": "0644",
+      "size": 1066,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "55646786b8846058358256afb59b55b75f45ba035084bd67189329100fd5d68b",
+      "mode": "0644",
+      "size": 2612,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "811e7dfdef75b1fca67c91516d8a22ab96b9b8e1e0ce4fd56603eaeac53b3206",
+      "mode": "0644",
+      "size": 34062,
+      "install": false
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "6e4e662d4ea3838e53ab58b371ca33684c9db153cd627d1546465665a13925a5",
+      "mode": "0644",
+      "size": 21733,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "279a4523748e46dda188a58fac5d8fcf9a28d5829e9a3e25732ff86bcc0fe19b",
+      "mode": "0644",
+      "size": 2175,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "50488d469ccb62a22074a89ce5a392283e0630b51a3b237e1be44446f66a7f29",
+      "mode": "0644",
+      "size": 1498,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "817c667bf21c89c386c135b18d57f5ab0fd12215c4f9d5ec9994de7f6403665b",
+      "mode": "0644",
+      "size": 10084,
+      "install": true
+    }
+  ]
+}

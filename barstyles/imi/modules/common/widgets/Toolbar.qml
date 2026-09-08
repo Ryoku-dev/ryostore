@@ -1,0 +1,48 @@
+import QtQuick
+import QtQuick.Layouts
+import ".."
+import "."
+
+/**
+ * Material 3 expressive style toolbar.
+ * https://m3.material.io/components/toolbars
+ */
+Item {
+    id: root
+
+    property bool enableShadow: true
+    property real padding: Appearance.spacing.space100
+    property alias colBackground: background.color
+    property alias spacing: toolbarLayout.spacing
+    default property alias data: toolbarLayout.data
+    implicitWidth: background.implicitWidth
+    implicitHeight: background.implicitHeight
+    property alias radius: background.radius
+
+    Loader {
+        active: root.enableShadow
+        anchors.fill: background
+        sourceComponent: StyledRectangularShadow {
+            target: background
+            anchors.fill: undefined
+        }
+    }
+
+    Rectangle {
+        id: background
+        anchors.fill: parent
+        color: Appearance.m3colors.m3surfaceContainer
+        implicitHeight: Appearance.sizes.toolbarHeight
+        implicitWidth: toolbarLayout.implicitWidth + root.padding * 2
+        radius: height / 2
+
+        RowLayout {
+            id: toolbarLayout
+            spacing: Appearance.spacing.space50
+            anchors {
+                fill: parent
+                margins: root.padding
+            }
+        }
+    }
+}

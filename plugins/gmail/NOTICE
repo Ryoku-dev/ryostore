@@ -1,0 +1,65 @@
+Ryoku Gmail plugin — licensing and attribution
+==============================================
+
+SPDX-License-Identifier: GPL-3.0-only AND MIT
+
+This plugin is a composite work and, as distributed, is conveyed under the
+GNU General Public License v3.0 (see the LICENSE file). The reason is that it
+incorporates and depends on QML user-interface components that are derived from
+GPL-3.0 upstream projects; under GPL-3.0 section 5, the combined work as a whole
+is therefore licensed under GPL-3.0.
+
+GPL-3.0 derived portions (© their respective authors)
+-----------------------------------------------------
+The QML widgets in `content/` are adapted from the "illogical-impulse" Quickshell
+configuration in end-4/dots-hyprland (https://github.com/end-4/dots-hyprland),
+licensed GPL-3.0, and are styled for the Ryoku shell (https://github.com/neur0map/ryoku),
+also GPL-3.0. Files adapted from or modelled on that upstream widget set include,
+among others:
+
+  content/MaterialSymbol.qml            content/StyledFlickable.qml
+  content/MaterialShape.qml             content/StyledListView.qml
+  content/MaterialLoadingIndicator.qml  content/StyledScrollBar.qml
+  content/RippleButton.qml              content/StyledSwitch.qml
+  content/RippleButtonWithIcon.qml      content/StyledText.qml
+  content/GroupButton.qml               content/StyledToolTip.qml
+  content/FolderListModelWithHistory.qml
+  content/Appearance.qml (token/colour/rounding/font singleton structure)
+
+  Copyright (c) end-4 and the dots-hyprland / illogical-impulse contributors.
+  Copyright (c) the Ryoku shell authors.
+
+MIT contributor-owned portions
+------------------------------
+The Gmail-specific original work — the Python helpers under `bin/` (OAuth loopback
+flow, Gmail API fetch/send/label/attachment/thread handling, credential and account
+storage) and the `Email*` / `AddressBar` / `RyokuDecor` / `Config` / `Directories`
+/ `Translation` / `FileUtils` / `Widget` / `Main` QML views — is authored by:
+
+  Copyright (c) 2026 Yash Parmar (Zatch07) <https://github.com/Zatch07>
+
+The author additionally makes these contributor-owned portions available under the
+MIT License:
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+Because the MIT terms above are GPL-compatible, the contributor's portions can be
+combined with the GPL-3.0 components; the resulting combined plugin is distributed
+under GPL-3.0 while the MIT grant continues to cover the contributor-owned files in
+isolation.

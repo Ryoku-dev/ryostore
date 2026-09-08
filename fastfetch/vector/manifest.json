@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "vector",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/vector",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 414,
+      "sha256": "5fb3b15f64ac406b413a980a02682c14c4cb6d2dc6f3a078496964de5b9179cb",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1346,
+      "sha256": "a7d2b5a108148db927098a8bbf3dd2b66ea95a7a97570ba17c4d29a93b2beb5e",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 26984,
+      "sha256": "b5c52e073c96cf53921d3c6fad9691a1431574d0d5f5f726e714fcd9a7bc4512",
+      "install": false
+    }
+  ]
+}

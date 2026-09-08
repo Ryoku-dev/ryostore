@@ -1,0 +1,124 @@
+// Ryoku Mono
+// Editorial, neutral and deliberately restrained.
+// The distro logo is detected automatically by Fastfetch.
+// ryoku:recolor keys=foreground title=foreground output=onSurface separator=outline
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "display": {
+    "color": {
+      "keys": "#d8d3cc",
+      "title": "#f4efe9",
+      "output": "#c5c0ba",
+      "separator": "#76716c"
+    },
+    "key": {
+      "width": 11
+    },
+    "separator": "  "
+  },
+
+  "modules": [
+    "break",
+    {
+      "type": "custom",
+      "format": "{#separator}────────────────────────────────────────────{#}"
+    },
+
+    {
+      "type": "title",
+      "key": "IDENTITY"
+    },
+    {
+      "type": "os",
+      "key": "OS"
+    },
+    {
+      "type": "kernel",
+      "key": "KERNEL"
+    },
+    {
+      "type": "uptime",
+      "key": "UPTIME"
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#1;title}SESSION{#}"
+    },
+    {
+      "type": "shell",
+      "key": "SHELL"
+    },
+    {
+      "type": "wm",
+      "key": "DESKTOP"
+    },
+    {
+      "type": "terminal",
+      "key": "TERMINAL"
+    },
+    {
+      "type": "display",
+      "key": "DISPLAY"
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#1;title}MACHINE{#}"
+    },
+    {
+      "type": "cpu",
+      "key": "CPU"
+    },
+    {
+      "type": "gpu",
+      "key": "GPU",
+      "detectionMethod": "pci"
+    },
+    {
+      "type": "memory",
+      "key": "MEMORY",
+      "percent": {
+        "type": 9
+      }
+    },
+    {
+      "type": "disk",
+      "key": "DISK",
+      "folders": "/",
+      "percent": {
+        "type": 9
+      }
+    },
+    {
+      "type": "packages",
+      "key": "PACKAGES"
+    },
+
+    "break",
+
+    {
+      "type": "localip",
+      "key": "LOCAL IP"
+    },
+    {
+      "type": "sound",
+      "key": "AUDIO"
+    },
+    {
+      "type": "media",
+      "key": "PLAYING"
+    },
+    {
+      "type": "datetime",
+      "key": "TIME"
+    },
+
+    "break"
+  ]
+}

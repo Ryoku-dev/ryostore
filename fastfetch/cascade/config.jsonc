@@ -1,0 +1,92 @@
+// Cascade
+// A stepped hierarchy of system, desktop and hardware information.
+// ryoku:recolor keys=primary title=foreground output=onSurface separator=outlineVariant
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "display": {
+    "color": {
+      "keys": "#d9a6c7",
+      "title": "#eee8e5",
+      "output": "#d0c8c5",
+      "separator": "#62585d"
+    },
+    "key": {
+      "width": 17
+    },
+    "separator": "  "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#keys}╭─ SYSTEM{#}"
+    },
+    {
+      "type": "os",
+      "key": "│  OS"
+    },
+    {
+      "type": "kernel",
+      "key": "│  KERNEL"
+    },
+    {
+      "type": "uptime",
+      "key": "│  UPTIME"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#keys}╰─╮{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#keys}  ├─ DESKTOP{#}"
+    },
+    {
+      "type": "wm",
+      "key": "  │  WM"
+    },
+    {
+      "type": "shell",
+      "key": "  │  SHELL"
+    },
+    {
+      "type": "terminal",
+      "key": "  │  TERM"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#keys}  ╰─╮{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#keys}    ├─ MACHINE{#}"
+    },
+    {
+      "type": "cpu",
+      "key": "    │  CPU"
+    },
+    {
+      "type": "gpu",
+      "key": "    │  GPU",
+      "detectionMethod": "pci"
+    },
+    {
+      "type": "memory",
+      "key": "    │  RAM",
+      "percent": {
+        "type": 9
+      }
+    },
+    {
+      "type": "disk",
+      "key": "    ╰─ DISK",
+      "folders": "/",
+      "percent": {
+        "type": 9
+      }
+    }
+  ]
+}

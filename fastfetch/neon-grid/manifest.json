@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "neon-grid",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/neon-grid",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 417,
+      "sha256": "50a975b2cb2e37b529b1614abaaaa3908dc140ba643d6888ae13f102d3e1a935",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1677,
+      "sha256": "7b46505df8a7386011a6471166ccccab696721348cadfc282c65116447f42691",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 43058,
+      "sha256": "9c716ce40a29ad8dcb2dd17f5ca364968d26f930ec803c7858e29e858f4e39e9",
+      "install": false
+    }
+  ]
+}

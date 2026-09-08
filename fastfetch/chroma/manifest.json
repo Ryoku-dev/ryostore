@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "chroma",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/chroma",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 414,
+      "sha256": "baadc2be5e9f76fe2e804d40eaf557697a2fff308a952d5f9a50c027c6ec8193",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1975,
+      "sha256": "68d935f72f358eff5ed8eb6948f2eea80b6e0c7a7fa8f7bbe755afec8a94fe1b",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 37872,
+      "sha256": "633237de3ae72e24810c51a147697ffa9b28ed104ebc8418932c5900184feb14",
+      "install": false
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+// Monolith
+// Heavy vertical hierarchy with the host distro logo left untouched.
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "display": {
+    "color": {
+      "keys": "#c8c8c8",
+      "title": "#f5f5f5",
+      "output": "#d7d7d7",
+      "separator": "#686868"
+    },
+    "key": {
+      "width": 9
+    },
+    "separator": " │ "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#1;title}{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#separator}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{#}"
+    },
+
+    {
+      "type": "title",
+      "key": "HOST"
+    },
+    {
+      "type": "os",
+      "key": "SYSTEM"
+    },
+    {
+      "type": "kernel",
+      "key": "KERNEL"
+    },
+
+    "break",
+
+    {
+      "type": "cpu",
+      "key": "CPU"
+    },
+    {
+      "type": "gpu",
+      "key": "GPU",
+      "detectionMethod": "pci"
+    },
+    {
+      "type": "memory",
+      "key": "RAM",
+      "percent": {
+        "type": 9
+      }
+    },
+    {
+      "type": "disk",
+      "key": "STORAGE",
+      "folders": "/",
+      "percent": {
+        "type": 9
+      }
+    },
+
+    "break",
+
+    {
+      "type": "wm",
+      "key": "DESKTOP"
+    },
+    {
+      "type": "shell",
+      "key": "SHELL"
+    },
+    {
+      "type": "terminal",
+      "key": "TERM"
+    },
+    {
+      "type": "uptime",
+      "key": "UPTIME"
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#separator}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{#}"
+    },
+    {
+      "type": "datetime",
+      "key": "NOW"
+    }
+  ]
+}

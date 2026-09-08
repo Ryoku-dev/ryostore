@@ -1,0 +1,68 @@
+Ricelin bar style
+
+Source: Ricelin
+Author: feelyourwarmth
+License: MIT License; see LICENSE
+
+This product carries Ricelin's scene, widgets, components and product-local
+runtime, adapted to run as a Ryoku bar style. Ryoku owns the desktop's host
+configuration (Hyprland, theme, idle/lock, updates), so the original standalone
+shell's host-config editors are not part of a bar style's capability and are not
+shipped here.
+
+Community submission. The Ryoku project screens contributions but does not
+guarantee them: this style is maintained and updated by its original author, not
+the Ryoku team. Review the code before installing and running it; you are
+responsible for what you run on your system.
+
+Ryoku integration notes (2026-09-07): the per-monitor screen dedup helper is now
+product-local (lib/screens.js) instead of reaching into the shell tree; the
+notification model reads the active shell's notification server through
+shell.services rather than starting a second one; the once-only controllers (the
+"pill" IPC handler and the keep-awake idle inhibitor) are gated to the primary
+monitor so a multi-head session does not build duplicates; and the orphaned
+wallpaper / manual-hue palette apply (an unshipped wallcolors.py the surface no
+longer invoked) was removed, since the pill already follows Ryoku's active theme
+through the Dyn singleton.
+
+Two classes of the original standalone-shell UI were adapted because Ryoku, not
+Ricelin, owns the host configuration:
+
+  - Retired outright (they wrote or clobbered host config, or shelled to unshipped
+    Ricelin dotfiles, and were only reachable through the generic "pill" page IPC):
+    idlelock (hypridle.conf + scripts/lock.sh), input (modules/{input,env,
+    autostart}.lua), display (modules/monitors.lua + scripts/display-apply.sh),
+    animation (modules/animations.lua), updates (scripts/ricelin-update.py), and
+    the custom special-workspace / stash / app-routing editors (WorkspacesSurface,
+    Stash, SpaceApps and the Spaces store over modules/{spaces,stash-apps}.lua) --
+    concepts a Ryoku host has no equivalent for and never sources. Live Hyprland
+    workspace switching, window move/minimize, the scratchpad and the active
+    special-workspace label are kept, driven from live compositor state.
+
+  - Delegated to Ryoku Settings, which owns them: the Look surface keeps its own
+    pill geometry/opacity (Ricelin Flags) but hands window decoration -- gaps,
+    rounding, borders, blur, shadow, opacity -- to Ryoku Settings > Appearance
+    ("ryoku-shell hub open appearance"); the Keybinds surface is now a read-only
+    live listing of the shortcuts that opens Ryoku Settings > Keybinds
+    ("ryoku-shell hub open keybinds") to edit. No surface writes a managed hypr
+    module.
+
+Remaining integration changes:
+
+  - Game mode retains the working pill-local notification, keep-awake and
+    visualizer flags. It does not change Hyprland effects through gamemode.sh.
+  - App drops use Ryoku's native stash-install.sh with RYOKU_STASH_KEEP=1, so
+    originals are retained. Image drops use Ryogami; fonts install into a
+    content-addressed, per-user fonts/ricelin directory. App rename/delete
+    affordances tied to Ricelin's absent app-install.sh were removed; normal
+    app launching remains.
+  - Clipboard thumbnails use cliphist and ImageMagick; recording covers use
+    ffmpeg. Neither depends on private scripts from the author's dotfiles.
+  - The local wallpaper filmstrip uses Ryogami's wallpaper state and set command.
+    Its Browse action opens Ryogami's full picker instead of an absent private
+    search/downloader script. Video posters are generated locally with ffmpeg.
+  - The updated tray lifecycle fix uses the daemon-owned shell.services.Tray
+    frame and the native BarKit menu, matching Obi and Nacre. Closed services
+    disappear and restarted apps can reappear; no persistent dead-ID blacklist
+    or swallowed activation errors are used. Native left/right click and scroll
+    are retained; the old unsupported secondary-activation route is not exposed.

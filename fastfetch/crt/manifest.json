@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "crt",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/crt",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 411,
+      "sha256": "3b91e9e73d37fda7b36165510dd9e8e7c04646f44dbfb4e67a6494430abcd646",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1515,
+      "sha256": "fff3f9ac2e1c1901e54d7c57a8bdb4bc68345210333fc6ecbaffe6ac0f74dc72",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 35330,
+      "sha256": "c879a1dea5cf0a2935a9f565219647f9e12a008fc781661bed011a1c23160510",
+      "install": false
+    }
+  ]
+}

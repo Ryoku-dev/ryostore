@@ -1,0 +1,9 @@
+Ryotunes store submission: https://github.com/neur0map/ryostore/issues/5
+Contributor: ashmitvoid
+Submitted source: https://github.com/ashmitvoid/ryotunes
+Current Ryoku package source: https://github.com/neur0map/ryotunes
+Application license: GPL-3.0-or-later; derived from SimoHypers/LiMusic.
+The bundle contains no application source or binaries; it installs package ryotunes.
+Preview source: https://github.com/user-attachments/assets/581d4d17-74b7-4807-9ad3-3a1c2c0241dc
+The contributor affirmed ownership/permission and redistribution of the content and preview in issue #5.
+Preview resized and encoded as WebP for the store; no visual content fabricated.

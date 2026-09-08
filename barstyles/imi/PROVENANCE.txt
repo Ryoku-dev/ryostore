@@ -1,0 +1,8 @@
+Immaterial Impulse (imi) Ryoku Bar Style
+
+Source: Forked and ported from Immaterial Impulse (end-4 dotfiles)
+Author: Ryoku Community (dodo986)
+Description: Material 3-Like design with heavy customizations, ported and forked from Immaterial Impulse
+License: GNU General Public License version 3; see LICENSE
+
+This bar style contains the customized Immaterial Impulse bar adapted for native Ryoku shell integration, featuring Matugen dynamic theming, Ryoku MusicBars spectrum visualizer, native ring gauges, kanji workspaces, and Quick Settings integration.
