@@ -1,0 +1,7 @@
+Ricelin bar style
+
+Source: Ricelin
+Author: feelyourwarmth
+License: MIT License; see LICENSE
+
+This product contains the complete Ricelin scene, widgets, components, and product-local runtime required for standalone installation.
