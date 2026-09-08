@@ -73,7 +73,7 @@ GPL-3.0 — see PROVENANCE.txt for attribution.
 ## Maintenance & support
 
 Imi is a community contribution. It is maintained and updated by its author
-(Ryoku Community / dodo986), not by the Ryoku team. Ryostore runs robust
+( dodo986 ), not by the Ryoku team. Ryostore runs robust
 automated and human screening on every submission, but that screening is not a
 guarantee of correctness or safety: you are responsible for reviewing the code
 you install and run. Report issues and request updates through the contributor.

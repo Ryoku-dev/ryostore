@@ -53,7 +53,7 @@ Item {
             id: statusPill
             implicitWidth: flow.implicitWidth + 14
             implicitHeight: 28
-            radius: 14
+            radius: Appearance.rounding.full
             color: root.isMaterial ? Appearance.colors.colPrimary : Appearance.colors.colLayer0Background
             border.width: root.isMaterial ? 0 : 1
             border.color: Appearance.colors.colLayer0Border
@@ -69,7 +69,7 @@ Item {
                     id: audioCell
                     implicitWidth: audioRow.implicitWidth + 12
                     implicitHeight: 22
-                    radius: 11
+                    radius: Appearance.rounding.small
                     color: (audioHh.hovered || audioPop.shown) ? root.hoverDarkenColor : "transparent"
                     Behavior on color { ColorAnimation { duration: 150 } }
                     Layout.alignment: Qt.AlignVCenter
@@ -132,7 +132,7 @@ Item {
                     id: connCell
                     implicitWidth: connRow.implicitWidth + 12
                     implicitHeight: 22
-                    radius: 11
+                    radius: Appearance.rounding.small
                     color: (connHh.hovered || connPop.shown) ? root.hoverDarkenColor : "transparent"
                     Behavior on color { ColorAnimation { duration: 150 } }
                     Layout.alignment: Qt.AlignVCenter
@@ -178,7 +178,7 @@ Item {
                     id: notifCell
                     implicitWidth: 22
                     implicitHeight: 22
-                    radius: 11
+                    radius: Appearance.rounding.small
                     color: (notifHh.hovered || notifPop.shown) ? root.hoverDarkenColor : "transparent"
                     Behavior on color { ColorAnimation { duration: 150 } }
                     Layout.alignment: Qt.AlignVCenter
@@ -220,7 +220,7 @@ Item {
             id: stashPill
             implicitWidth: 28
             implicitHeight: 28
-            radius: 14
+            radius: Appearance.rounding.full
             color: stashHh.hovered
                 ? (root.isMaterial ? Appearance.colors.colPrimaryContainer : Appearance.colors.colSecondaryContainer)
                 : (root.isMaterial ? Appearance.colors.colSecondaryContainer : Appearance.colors.colLayer0Background)
