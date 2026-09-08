@@ -1,0 +1,20 @@
+# Trusted gitleaks configuration for Ryostore CI secret scanning.
+#
+# TRUSTED: this file is only ever loaded from the base (reviewed) checkout and
+# passed to gitleaks with `-c`, which takes precedence over any `.gitleaks.toml`
+# a contributor ships. The PR workflow additionally runs gitleaks in `git` mode
+# over the introduced commit range with --ignore-gitleaks-allow and a trusted
+# --gitleaks-ignore-path, so contributor `gitleaks:allow` comments and
+# `.gitleaksignore` files cannot weaken the scan.
+#
+# Keep the allowlist tight and specific. Broad path/regex exclusions blind the
+# scanner and defeat the point; prefer narrow, justified entries. Owners review
+# every change here (.github/CODEOWNERS).
+title = "Ryostore trusted gitleaks config"
+
+[extend]
+# Inherit gitleaks' built-in ruleset baked into the pinned binary.
+useDefault = true
+
+# No repository-specific allowlist. Gitleaks rejects empty allowlist tables.
+# Add only narrow, reviewed checks with an explanation; never blanket paths.

@@ -1,23 +1,47 @@
 name: catalogue
 
-# The Hub fetches this repo's `main` at runtime and installs straight from it,
-# so a broken catalogue reaches users. Gate every push and PR on integrity.
+# Trusted integrity gate. Runs ONLY on push to main — i.e. AFTER review and
+# merge, when the tree is already trusted — so it may safely execute the repo's
+# own validators and shellcheck the installers.
+#
+# Pull requests are screened by pr-security-screen.yml, which never executes
+# PR-authored code. DO NOT add a `pull_request` trigger here: that is precisely
+# the unsafe pattern (running contributor code on the runner) this split removed.
 
 on:
   push:
     branches: [main]
-  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalogue-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - name: Install jq and shellcheck
-        run: sudo apt-get update && sudo apt-get install -y jq shellcheck
-      - name: Shellcheck the validator and installers
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Install pinned, checksum-verified shellcheck (fail closed)
+        run: |
+          bindir="$GITHUB_WORKSPACE/.sectools/bin"
+          bash .github/scripts/install-shellcheck.sh "$bindir"
+          echo "$bindir" >> "$GITHUB_PATH"
+
+      - name: ShellCheck the validator and installers
         run: |
           shellcheck tests/validate-catalogue.sh
-          find installers bundles -type f \( -path 'installers/*.sh' -o -path '*/installers/*.sh' \) -exec shellcheck {} +
-      - name: Validate catalogue integrity
+          find installers bundles -type f \( -path 'installers/*.sh' -o -path '*/installers/*.sh' \) \
+            -print0 | xargs -0 -r shellcheck
+
+      - name: Validate catalogue integrity (shell)
         run: bash tests/validate-catalogue.sh
+
+      - name: Validate product catalogue (python)
+        run: python3 tests/validate-store.py

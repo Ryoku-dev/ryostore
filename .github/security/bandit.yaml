@@ -1,0 +1,15 @@
+# Trusted Bandit configuration for the advisory Python SAST layer.
+#
+# TRUSTED: loaded only from the base (reviewed) checkout via `-c`. Contributor
+# Bandit configs are never honoured -- the PR workflow scans a pristine export
+# of the candidate tip tree with contributor suppression files stripped, and
+# Bandit only reads its ruleset from this file (target paths come from the CLI).
+#
+# Bandit builds an AST and NEVER executes the scanned code. It is ADVISORY: its
+# findings are reported to reviewers but do not hard-gate the merge, because
+# community Python legitimately uses subprocess/eval-like idioms and there is no
+# governed exception path for Bandit here. The authoritative gate is
+# tools/security-screen.py; secrets are gated by gitleaks. This is an honest
+# limit, not a proof of safety.
+exclude_dirs:
+  - '/.git'

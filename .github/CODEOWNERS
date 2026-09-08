@@ -1,0 +1,30 @@
+# Code owners for the security / CI trust boundary.
+#
+# Every change to the paths below requires review from the owners listed here.
+# Enforce it in branch protection with "Require review from Code Owners" on the
+# default branch. This is what stops a PR from quietly loosening a scanner, a
+# hook, a workflow, a pin, or the exception policy.
+#
+# NOTE for maintainers: @neur0map is the repo owner and a guaranteed reviewer.
+# Replace it with a dedicated security team handle (e.g. @neur0map/security) if
+# one exists. CODEOWNERS entries MUST be collaborators or a team or GitHub
+# silently ignores the rule.
+
+# CI workflows, scanner installers, and trusted tool configs.
+/.github/workflows/            @neur0map
+/.github/scripts/              @neur0map
+/.github/security/             @neur0map
+/.github/CODEOWNERS            @neur0map
+/.github/dependabot.yml        @neur0map
+
+# Local git hooks and their opt-in installer.
+/.githooks/                    @neur0map
+/tools/install-hooks.sh        @neur0map
+
+# The shared scanner and its tests.
+/tools/security-screen.py      @neur0map
+/tests/test_security_screen.py @neur0map
+
+# The security exception policy (allowlist). Every exception is an owner
+# decision; never let it be self-approved in a contribution.
+/security/                     @neur0map

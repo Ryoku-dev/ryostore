@@ -1,0 +1,201 @@
+name: pr-security-screen
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TRUST BOUNDARY — read this before editing.
+#
+# A pull request from a fork is UNTRUSTED. The old `catalogue` workflow ran the
+# PR's own tests/validate-catalogue.sh and shellchecked PR-authored files on the
+# runner, i.e. it EXECUTED attacker-controlled code. This workflow removes that
+# and screens the candidate as inert DATA with trusted tooling only.
+#
+# Why pull_request_target: it runs in the BASE repo context, so the workflow
+# definition and every tool/config/policy come from the trusted base branch, not
+# from the PR. That is exactly the property we need — a malicious PR cannot edit
+# this file or the scanners. pull_request_target normally exposes secrets and a
+# write token, so we clamp it hard and rely on ONE invariant: no candidate code
+# ever runs.
+#
+#   * permissions: contents: read only (no write; nothing else granted)
+#   * NO secrets are referenced anywhere in this file
+#   * the PR head is checked out ONLY as data into ./candidate with
+#     persist-credentials: false, and is NEVER executed, sourced, built, or
+#     imported, and never supplies a tool, config, or policy
+#   * every scanner/validator is the TRUSTED copy from the base checkout (.)
+#   * only pinned hex SHAs cross the boundary into run: scripts; no PR title,
+#     body, or branch name is ever interpolated (injection-safe)
+#   * scanners use trusted configuration, never contributor suppression files
+#
+# If you ever need to run candidate code, DO NOT do it here. Use a separate
+# `pull_request` workflow (no secrets, read-only token) for that.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+# Least privilege. pull_request_target defaults to a write token; force it down.
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-security-screen-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  screen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      # Pinned, attacker-influenced-but-inert hex SHAs. Passed via env (never
+      # interpolated into a shell word) and only ever used as data.
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      UPSTREAM_URL: ${{ github.server_url }}/${{ github.repository }}.git
+    steps:
+      - name: Check out TRUSTED base tree (tools, validators, policy, configs)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+
+      - name: Check out UNTRUSTED candidate as data only
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: candidate
+          persist-credentials: false
+          submodules: false
+          # Full history so the secret scanner can inspect the introduced range.
+          fetch-depth: 0
+
+      - name: Assert trusted scanner is present (fail closed)
+        run: |
+          test -f tools/security-screen.py \
+            || { echo "::error::trusted scanner tools/security-screen.py is missing from the base tree"; exit 1; }
+          test -f tests/validate-store.py \
+            || { echo "::error::trusted validator tests/validate-store.py is missing from the base tree"; exit 1; }
+
+      - name: Install pinned, checksum-verified binary scanners (fail closed)
+        run: |
+          bindir="$GITHUB_WORKSPACE/.sectools/bin"
+          bash .github/scripts/install-gitleaks.sh "$bindir"
+          bash .github/scripts/install-shellcheck.sh "$bindir"
+          echo "$bindir" >> "$GITHUB_PATH"
+
+      - name: Install advisory Python SAST (Bandit, version-pinned; fail closed)
+        run: |
+          python3 -m venv "$GITHUB_WORKSPACE/.sec-venv"
+          "$GITHUB_WORKSPACE/.sec-venv/bin/pip" install \
+            --disable-pip-version-check --no-input \
+            -r .github/security/requirements.txt
+
+      - name: Trusted security screen — full static policy on the tip tree (BLOCKING)
+        # Runs FIRST, on the git object tree (--revision), BEFORE anything is
+        # written to the filesystem. Its contract rejects symlinks and submodules,
+        # so a malicious link/gitlink is refused before the export below could
+        # materialise it on disk.
+        run: |
+          set +e
+          python3 tools/security-screen.py \
+            --root candidate \
+            --revision "$HEAD_SHA" \
+            --policy-root "$PWD" \
+            --format text
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ]; then
+            echo "security screen: clean"
+          elif [ "$rc" -eq 2 ]; then
+            echo "::error::security-screen infrastructure/input failure (exit 2)"; exit 2
+          else
+            echo "::error::blocking security findings (exit ${rc})"; exit "$rc"
+          fi
+
+      - name: Export the EXACT candidate tip tree as inert data
+        run: |
+          # Only reached once the static screen above is clean. Trusted git writes
+          # the exact head tree to disk; no candidate hook, filter, or script runs.
+          # A trusted attributes override (highest precedence, beats any in-tree
+          # .gitattributes) neutralises candidate export-ignore / export-subst so
+          # the export is byte-exact — it can neither hide files from the scanners
+          # nor substitute $Format:$ content. We delete NO tracked file: the tree
+          # must stay exact for validate-store's per-file sha256 / undeclared-
+          # payload checks. Trusted tool configs are passed explicitly to each
+          # scanner instead of stripping candidate ones.
+          mkdir -p candidate/.git/info candidate-tree
+          printf '* -export-ignore -export-subst\n' > candidate/.git/info/attributes
+          git -C candidate archive --format=tar "$HEAD_SHA" | tar -x -C candidate-tree
+
+      - name: Trusted catalogue integrity on the tip tree (BLOCKING)
+        # Trusted validator run against the candidate as data. No --require-media,
+        # so ImageMagick is never invoked on untrusted images.
+        run: python3 tests/validate-store.py --root candidate-tree
+
+      - name: Secret scan across the introduced history (BLOCKING, redacted)
+        run: |
+          # Make the base commit available, then scan the commits the PR
+          # introduces (base..head). git mode inspects commit patches; it never
+          # checks out or executes candidate content. --diff-merges=first-parent
+          # keeps merge commits in scope so a secret introduced ONLY in a merge
+          # resolution is still caught. --redact=100 guarantees no secret value is
+          # printed; --ignore-gitleaks-allow and a trusted --gitleaks-ignore-path
+          # defeat contributor suppression.
+          git -C candidate fetch --no-tags --no-recurse-submodules \
+            "$UPSTREAM_URL" "$BASE_SHA"
+          gitleaks git candidate \
+            --log-opts="--diff-merges=first-parent ${BASE_SHA}..${HEAD_SHA}" \
+            --config "$GITHUB_WORKSPACE/.github/security/gitleaks.toml" \
+            --gitleaks-ignore-path "$GITHUB_WORKSPACE" \
+            --ignore-gitleaks-allow \
+            --redact=100 \
+            --no-banner \
+            --exit-code 1 \
+            --verbose
+
+      - name: Bandit advisory Python SAST (non-blocking, reported)
+        run: |
+          # Bandit auto-discovers .bandit even with -c; override that separately.
+          printf '[bandit]\n' > "$RUNNER_TEMP/bandit.ini"
+          {
+            echo "## Bandit — advisory Python SAST"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          set +e
+          "$GITHUB_WORKSPACE/.sec-venv/bin/bandit" -r candidate-tree \
+            --ini "$RUNNER_TEMP/bandit.ini" \
+            -c .github/security/bandit.yaml \
+            --severity-level medium --confidence-level medium 2>&1 \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+          rc=${PIPESTATUS[0]}
+          set -e
+          {
+            echo '```'
+            echo "Bandit exit code: ${rc} (advisory; does not gate the merge)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: ShellCheck advisory shell lint (non-blocking, reported)
+        run: |
+          {
+            echo "## ShellCheck — advisory shell lint"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          set +e
+          mapfile -d '' files < <(find candidate-tree -type f -name '*.sh' -print0)
+          if [ "${#files[@]}" -gt 0 ]; then
+            # --norc ignores any candidate .shellcheckrc.
+            shellcheck --norc --severity=warning "${files[@]}" 2>&1 \
+              | tee -a "$GITHUB_STEP_SUMMARY"
+            rc=${PIPESTATUS[0]}
+          else
+            echo "no shell scripts in candidate tree" | tee -a "$GITHUB_STEP_SUMMARY"
+            rc=0
+          fi
+          set -e
+          {
+            echo '```'
+            echo "ShellCheck exit code: ${rc} (advisory). Limit: inline"
+            echo "'# shellcheck disable=' directives inside candidate files cannot"
+            echo "be overridden from the CLI. The authoritative shell gate is"
+            echo "tools/security-screen.py."
+          } >> "$GITHUB_STEP_SUMMARY"

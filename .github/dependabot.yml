@@ -1,0 +1,32 @@
+version: 2
+
+# Keeps the security tooling pins current. GitHub Actions pins (the SHA-pinned
+# actions in .github/workflows/**) and the Bandit pin in
+# .github/security/requirements.txt are updated here.
+#
+# NOTE: the gitleaks and shellcheck binary pins live in
+# .github/scripts/install-*.sh as sha256-verified downloads. Dependabot cannot
+# track raw binary releases, so those are re-pinned by hand — each script's
+# header documents the exact command. Owners review every bump (.github/CODEOWNERS).
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - security
+    commit-message:
+      prefix: ci
+
+  - package-ecosystem: pip
+    directory: /.github/security
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - security
+    commit-message:
+      prefix: security
