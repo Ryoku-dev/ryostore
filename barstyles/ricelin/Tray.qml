@@ -20,19 +20,35 @@ Item {
 
     property real s: 1
     property var barWindow
+    property var deadIds: ({})
+
+    readonly property var liveItems: SystemTray.items.values.filter(
+        it => !tray.deadIds[it.id]
+    )
 
     visible: SystemTray.items.values.length > 0
     implicitWidth: visible ? row.implicitWidth : 0
     implicitHeight: 24 * tray.s
 
+    function markDead(item) {
+        var d = {}
+        for (var k in tray.deadIds) d[k] = true
+        d[item.id] = true
+        tray.deadIds = d
+    }
+
     function showMenu(item, anchorItem) {
-        if (!item.hasMenu)
-            return;
-        card.expandedIdx = -1;
-        opener.menu = item.menu;
-        var p = anchorItem.mapToItem(null, anchorItem.width / 2, 0);
-        menu.anchorX = p.x;
-        menu.open = true;
+        try {
+            if (!item.hasMenu)
+                return;
+            card.expandedIdx = -1;
+            opener.menu = item.menu;
+            var p = anchorItem.mapToItem(null, anchorItem.width / 2, 0);
+            menu.anchorX = p.x;
+            menu.open = true;
+        } catch (e) {
+            tray.markDead(item);
+        }
     }
 
     QsMenuOpener {
@@ -45,7 +61,7 @@ Item {
         spacing: 2 * tray.s
 
         Repeater {
-            model: SystemTray.items
+            model: tray.liveItems
 
             delegate: Item {
                 id: slot
@@ -85,14 +101,18 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
                     onClicked: (mouse) => {
-                        if (mouse.button === Qt.MiddleButton) {
-                            slot.modelData.secondaryActivate();
-                        } else if (mouse.button === Qt.RightButton) {
-                            tray.showMenu(slot.modelData, slot);
-                        } else if (slot.modelData.onlyMenu) {
-                            tray.showMenu(slot.modelData, slot);
-                        } else {
-                            slot.modelData.activate();
+                        try {
+                            if (mouse.button === Qt.MiddleButton) {
+                                slot.modelData.secondaryActivate();
+                            } else if (mouse.button === Qt.RightButton) {
+                                tray.showMenu(slot.modelData, slot);
+                            } else if (slot.modelData.onlyMenu) {
+                                tray.showMenu(slot.modelData, slot);
+                            } else {
+                                slot.modelData.activate();
+                            }
+                        } catch (e) {
+                            tray.markDead(slot.modelData);
                         }
                     }
                     onWheel: (wheel) => {
