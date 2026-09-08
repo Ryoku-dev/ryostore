@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "ryoku-mono",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/ryoku-mono",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 418,
+      "sha256": "f5365ea7a108e70be59b99ba67bc0d839828897563d7601980d22332a84adbb4",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 2090,
+      "sha256": "b172cacd5f807d30cecca83d80e52b50dc7eb197f7a16a01093a5eb6f764fe2d",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 56438,
+      "sha256": "1f84aaacb1d6fb418632d4779bdeb6318c0cf9d88665831fd5f16facb2be9583",
+      "install": false
+    }
+  ]
+}

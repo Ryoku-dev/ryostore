@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "gridline",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/gridline",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 416,
+      "sha256": "dbebbe879da04598297cc3968214083e32428dd94bf3272c59531345812c67a4",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1998,
+      "sha256": "a5000c6ff029708c217ea08c806ea0142c7e6f404f460fd7405914da3c38c8d0",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 47924,
+      "sha256": "69cb461a89fc3593fc5d94acab210160131ae760077b4f8b2b879cdbaf7b2ce8",
+      "install": false
+    }
+  ]
+}

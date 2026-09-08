@@ -1,0 +1,13 @@
+Original Fastfetch preset designed for the Ryoku ecosystem.
+
+Preset: blueprint
+Author: aethctl
+Created: 2026
+License: MIT
+
+The layout, styling and inline ASCII used by this preset were created
+specifically for this RyoStore contribution.
+
+No third-party artwork or external assets are bundled. Distro marks, where
+used, are Fastfetch's built-in detected logos. Inline terminal/CRT artwork is
+original to this preset.

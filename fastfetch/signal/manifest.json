@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "signal",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/signal",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 414,
+      "sha256": "f29d3dc651b2802e36b39d20371dc9557e7d3a2add939eadeacd33f575b50cf3",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1602,
+      "sha256": "85aa3ba0842fcbc903af4d3786b4023be4f26f52fed0e7ab6750bfd0d3460835",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 32860,
+      "sha256": "0a0931990b496236544a8ca87b367c05b5b94f3c0530c08ed849f060d917831f",
+      "install": false
+    }
+  ]
+}

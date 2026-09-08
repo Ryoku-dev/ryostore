@@ -1,0 +1,83 @@
+// Terminal 84
+// Intentionally fixed warm amber. This palette is the design.
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "logo": {
+    "type": "data",
+    "source": "$1  ___________\n |           |\n |    >_     |\n |___________|\n     |___|\n",
+    "color": {
+      "1": "#d6a74f"
+    },
+    "padding": {
+      "right": 4
+    }
+  },
+
+  "display": {
+    "color": {
+      "keys": "#d6a74f",
+      "title": "#ffd37a",
+      "output": "#e6bd6b",
+      "separator": "#806127"
+    },
+    "key": {
+      "width": 10
+    },
+    "separator": " : "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#1;title}{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#separator}BOOT MONITOR / REV.84{#}"
+    },
+
+    "break",
+
+    {
+      "type": "title",
+      "key": "LOGIN"
+    },
+    {
+      "type": "os",
+      "key": "SYSTEM"
+    },
+    {
+      "type": "kernel",
+      "key": "KERNEL"
+    },
+    {
+      "type": "cpu",
+      "key": "PROCESSOR"
+    },
+    {
+      "type": "memory",
+      "key": "MEMORY"
+    },
+    {
+      "type": "disk",
+      "key": "DRIVE",
+      "folders": "/"
+    },
+    {
+      "type": "uptime",
+      "key": "RUNTIME"
+    },
+    {
+      "type": "datetime",
+      "key": "CLOCK"
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#1;keys}READY.{#}"
+    }
+  ]
+}

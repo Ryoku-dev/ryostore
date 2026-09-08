@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "cascade",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/cascade",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 415,
+      "sha256": "399a528de8ec1bda68e823ef55cc325c4f3143b738bf1ef485322022c8a9f8ec",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1661,
+      "sha256": "87d7d1df882d0f7bff5ad1285c7bdacaffce17e48fb29cd1aa5a06cde9086214",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 33480,
+      "sha256": "e670f3e36a3327a779531819c67c369567ab2101ad51e63a263328a833d1ee61",
+      "install": false
+    }
+  ]
+}

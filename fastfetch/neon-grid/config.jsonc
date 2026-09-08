@@ -1,0 +1,100 @@
+// Neon Grid
+// Fixed cyan/magenta cyber palette. Deliberately outside Matugen.
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "logo": {
+    "type": "auto",
+    "color": {
+      "1": "#00e5ff",
+      "2": "#ff55d8",
+      "3": "#8845a3",
+      "4": "#00e5ff",
+      "5": "#ff55d8",
+      "6": "#8845a3"
+    },
+    "padding": {
+      "right": 5
+    }
+  },
+
+  "display": {
+    "color": {
+      "keys": "#00e5ff",
+      "title": "#ff55d8",
+      "output": "#d7faff",
+      "separator": "#8845a3"
+    },
+    "key": {
+      "width": 14
+    },
+    "separator": "  ::  "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#keys}╭─{#} {#1;title}{#} {#keys}──────────────╮{#}"
+    },
+
+    "break",
+
+    {
+      "type": "title",
+      "key": "[IDENT]"
+    },
+    {
+      "type": "os",
+      "key": "[SYSTEM]"
+    },
+    {
+      "type": "kernel",
+      "key": "[KERNEL]"
+    },
+    {
+      "type": "wm",
+      "key": "[DESKTOP]"
+    },
+
+    "break",
+
+    {
+      "type": "cpu",
+      "key": "[CPU]"
+    },
+    {
+      "type": "gpu",
+      "key": "[GPU]",
+      "detectionMethod": "pci"
+    },
+    {
+      "type": "memory",
+      "key": "[MEM]"
+    },
+    {
+      "type": "disk",
+      "key": "[DISK]",
+      "folders": "/"
+    },
+
+    "break",
+
+    {
+      "type": "localip",
+      "key": "[NET]"
+    },
+    {
+      "type": "uptime",
+      "key": "[UP]"
+    },
+    {
+      "type": "datetime",
+      "key": "[TIME]"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#keys}╰──────────────────────────────╯{#}"
+    }
+  ]
+}

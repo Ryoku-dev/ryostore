@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "monolith",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/monolith",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 416,
+      "sha256": "0546196ae1c22e5e15659c87721f0d91bde99b280282e1453f303d3905ffc424",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1667,
+      "sha256": "8aabc5020d0b0b013b4f07059eca3c8646221cd510f14689bebcaaa8b8e870a2",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 34166,
+      "sha256": "9f0148aae75c7b98f2d8a082ee459d905c0ba05895bdced0f33df07aabd52ba3",
+      "install": false
+    }
+  ]
+}

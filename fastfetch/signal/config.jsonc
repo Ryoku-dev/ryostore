@@ -1,0 +1,85 @@
+// Signal
+// A compact live-status readout rather than a full hardware inventory.
+// ryoku:recolor keys=primary title=secondary output=foreground separator=outline
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "display": {
+    "color": {
+      "keys": "#e0a6c8",
+      "title": "#efc5aa",
+      "output": "#eee8e5",
+      "separator": "#665a60"
+    },
+    "key": {
+      "width": 11
+    },
+    "separator": "  "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#keys}●{#} {#1;title}{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#separator}────────────────────────────────────{#}"
+    },
+
+    {
+      "type": "title",
+      "key": "IDENTITY"
+    },
+    {
+      "type": "uptime",
+      "key": "SESSION"
+    },
+    {
+      "type": "localip",
+      "key": "NETWORK"
+    },
+    {
+      "type": "wm",
+      "key": "DESKTOP"
+    },
+
+    "break",
+
+    {
+      "type": "cpu",
+      "key": "COMPUTE"
+    },
+    {
+      "type": "memory",
+      "key": "MEMORY",
+      "percent": {
+        "type": 9
+      }
+    },
+    {
+      "type": "disk",
+      "key": "STORAGE",
+      "folders": "/",
+      "percent": {
+        "type": 9
+      }
+    },
+
+    "break",
+
+    {
+      "type": "player",
+      "key": "PLAYER"
+    },
+    {
+      "type": "datetime",
+      "key": "CLOCK"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#separator}────────────────────────────────────{#}"
+    }
+  ]
+}

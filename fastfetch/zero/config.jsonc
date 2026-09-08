@@ -1,0 +1,54 @@
+// Zero
+// Ruthlessly minimal. No logo, no frames, no decoration.
+// ryoku:recolor keys=primary title=foreground output=onSurface
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "logo": {
+    "type": "none"
+  },
+
+  "display": {
+    "color": {
+      "keys": "#dba7c5",
+      "title": "#f0e9e6",
+      "output": "#cec7c4"
+    },
+    "key": {
+      "width": 7
+    },
+    "separator": " "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#1;title}{#}"
+    },
+    {
+      "type": "os",
+      "key": "os"
+    },
+    {
+      "type": "kernel",
+      "key": "kernel"
+    },
+    {
+      "type": "cpu",
+      "key": "cpu"
+    },
+    {
+      "type": "gpu",
+      "key": "gpu",
+      "detectionMethod": "pci"
+    },
+    {
+      "type": "memory",
+      "key": "memory"
+    },
+    {
+      "type": "uptime",
+      "key": "up"
+    }
+  ]
+}

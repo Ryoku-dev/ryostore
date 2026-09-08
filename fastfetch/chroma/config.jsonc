@@ -1,0 +1,122 @@
+// Chroma
+// The Matugen-first preset: layout stays stable while Ryoku owns the palette.
+// ryoku:recolor keys=primary title=secondary output=foreground separator=tertiary
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "logo": {
+    "type": "small",
+    "padding": {
+      "right": 4
+    }
+  },
+
+  "display": {
+    "color": {
+      "keys": "#cba6f7",
+      "title": "#89b4fa",
+      "output": "#cdd6f4",
+      "separator": "#f5c2e7"
+    },
+    "key": {
+      "width": 10
+    },
+    "separator": "  ›  "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#1;title}{#}"
+    },
+
+    {
+      "type": "title",
+      "format": "{#1;keys}{user-name}{#}{#separator}@{#}{#1;title}{host-name}{#}"
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#keys}●{#} {#1;title}SYSTEM{#}"
+    },
+    {
+      "type": "os",
+      "key": "os"
+    },
+    {
+      "type": "kernel",
+      "key": "kernel"
+    },
+    {
+      "type": "packages",
+      "key": "packages"
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#separator}●{#} {#1;title}DESKTOP{#}"
+    },
+    {
+      "type": "wm",
+      "key": "desktop"
+    },
+    {
+      "type": "shell",
+      "key": "shell"
+    },
+    {
+      "type": "terminal",
+      "key": "terminal"
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "format": "{#keys}●{#} {#1;title}HARDWARE{#}"
+    },
+    {
+      "type": "cpu",
+      "key": "cpu"
+    },
+    {
+      "type": "gpu",
+      "key": "gpu",
+      "detectionMethod": "pci"
+    },
+    {
+      "type": "memory",
+      "key": "memory",
+      "percent": {
+        "type": 9
+      }
+    },
+    {
+      "type": "disk",
+      "key": "disk",
+      "folders": "/",
+      "percent": {
+        "type": 9
+      }
+    },
+
+    "break",
+
+    {
+      "type": "datetime",
+      "key": "time"
+    },
+
+    "break",
+
+    {
+      "type": "colors",
+      "symbol": "circle",
+      "paddingLeft": 1
+    }
+  ]
+}

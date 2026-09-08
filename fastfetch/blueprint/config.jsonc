@@ -1,0 +1,108 @@
+// Blueprint
+// Fixed technical cyan palette. Deliberately outside Matugen.
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "logo": {
+    "type": "auto",
+    "color": {
+      "1": "#76d7ff",
+      "2": "#bcecff",
+      "3": "#467b91",
+      "4": "#76d7ff",
+      "5": "#bcecff",
+      "6": "#467b91"
+    },
+    "padding": {
+      "right": 5
+    }
+  },
+
+  "display": {
+    "color": {
+      "keys": "#76d7ff",
+      "title": "#bcecff",
+      "output": "#a7d8ea",
+      "separator": "#467b91"
+    },
+    "key": {
+      "width": 16
+    },
+    "separator": " ┆ "
+  },
+
+  "modules": [
+    {
+      "type": "custom",
+      "format": "{#keys}┌─{#} {#1;title}{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#separator}│{#}"
+    },
+
+    {
+      "type": "title",
+      "key": "REF / HOST"
+    },
+    {
+      "type": "os",
+      "key": "SYS / OS"
+    },
+    {
+      "type": "kernel",
+      "key": "SYS / KERNEL"
+    },
+    {
+      "type": "uptime",
+      "key": "SYS / UPTIME"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#separator}│{#}"
+    },
+
+    {
+      "type": "cpu",
+      "key": "HW / CPU"
+    },
+    {
+      "type": "gpu",
+      "key": "HW / GPU",
+      "detectionMethod": "pci"
+    },
+    {
+      "type": "memory",
+      "key": "HW / MEMORY"
+    },
+    {
+      "type": "disk",
+      "key": "HW / STORAGE",
+      "folders": "/"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#separator}│{#}"
+    },
+
+    {
+      "type": "wm",
+      "key": "ENV / WM"
+    },
+    {
+      "type": "shell",
+      "key": "ENV / SHELL"
+    },
+    {
+      "type": "terminal",
+      "key": "ENV / TERM"
+    },
+
+    {
+      "type": "custom",
+      "format": "{#keys}└────────────────────────────{#}"
+    }
+  ]
+}

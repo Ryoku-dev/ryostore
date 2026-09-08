@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "flow",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/flow",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 412,
+      "sha256": "973326b217d4363626f57c89cfddb808216e84655417f25ac0b9ccd0b0380d51",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1608,
+      "sha256": "c518ca4ff0fdd238277ce963913870c1d30cd7ab97d87f070df08b604b279709",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 32062,
+      "sha256": "600771eca9727b59500331e35935b04f1581171d4e85c8936b9da934042e4ce9",
+      "install": false
+    }
+  ]
+}

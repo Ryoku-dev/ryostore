@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "id": "blueprint",
+  "category": "fastfetch",
+  "version": "1.0.0",
+  "destination": "ryoku/fastfetch/blueprint",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1064,
+      "sha256": "b5c69a818bc21c35b8229cf33112e0b54b49de6afa990a437603b5fe375ed740",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 417,
+      "sha256": "728f42d420810155cdbd6f4fa7ce366269773ab5e56f9a0016ad923d8e9c2c4c",
+      "install": true
+    },
+    {
+      "source": "config.jsonc",
+      "destination": "config.jsonc",
+      "mode": "0644",
+      "size": 1829,
+      "sha256": "67908d447a3690d1c5095d1e46c539ff431775210e44f07b3e3092c3a06ace22",
+      "install": true
+    },
+    {
+      "source": "preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 42726,
+      "sha256": "17aacda6c88655d6f0879c76df24550bb4ce222629bcdd6fb07fa43c30b17417",
+      "install": false
+    }
+  ]
+}
