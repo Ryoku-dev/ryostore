@@ -656,16 +656,20 @@
     },
     {
       "id": "spiceflow",
-      "name": "Spiceflow",
-      "version": "1.0.0",
+      "name": "Ryoku Palette Bridge",
+      "version": "2.0.0",
       "path": "bundles/spiceflow",
       "author": "Rayyan",
-      "summary": "wallpaper · Spotify · uninterrupted",
-      "description": "Make Comfy Spotify follow Ryoku or Pop!_OS/Pywal wallpaper palettes without renderer reloads or interrupted playback. RyoStore installs it inactive; run spiceflow enable when ready.",
+      "summary": "wallpaper · Zen · Spotify · Discord",
+      "description": "One wallpaper palette for Zen Browser, Spotify, and Vesktop. A local event-driven bridge repaints all three without browser restarts, Discord theme flashes, or interrupted music.",
       "tags": [
+        "zen browser",
         "spotify",
         "spicetify",
-        "wallpaper colors"
+        "discord",
+        "vesktop",
+        "wallpaper colors",
+        "matugen"
       ],
       "accent": "#65d3ff",
       "surface": "#101820",
@@ -674,22 +678,22 @@
         "assets/preview.png"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "83d4e81d172d9032bb7ebed661f8a729639dba60bed540d48b5f592721cd3343",
+      "manifestSha256": "9dc31b1c36cb03809e4424ece632e1a8832cd645242a316dc07fa8f2c68825d7",
       "components": [
         {
           "type": "script",
-          "name": "spiceflow",
-          "detect": "spiceflow",
+          "name": "ryoku-palette-bridge",
+          "detect": "ryoku-palette-bridge",
           "tier": "core",
           "interactive": false,
-          "summary": "Playback-safe live wallpaper colors for Spicetify and Comfy."
+          "summary": "Live Ryoku wallpaper colours for Zen, Spotify, and Vesktop."
         }
       ],
-      "tagline": "wallpaper · Spotify · uninterrupted",
-      "sources": "GitHub / GPL-3.0-or-later",
+      "tagline": "one palette · three apps · zero reloads",
+      "sources": "GitHub / MIT",
       "icon": "palette",
       "official": false,
-      "lastUpdated": "2026-09-01"
+      "lastUpdated": "2026-09-08"
     },
     {
       "id": "cachyos-layer",

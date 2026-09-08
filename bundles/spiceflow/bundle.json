@@ -2,10 +2,10 @@
   "schema": 1,
   "id": "spiceflow",
   "category": "bundles",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "destination": "ryoku/bundles/spiceflow",
-  "name": "Spiceflow",
-  "description": "Make Comfy Spotify follow Ryoku or Pop!_OS/Pywal wallpaper palettes without renderer reloads or interrupted playback. RyoStore installs it inactive; run spiceflow enable when ready.",
+  "name": "Ryoku Palette Bridge",
+  "description": "One wallpaper palette for Zen Browser, Spotify, and Vesktop. A local event-driven bridge repaints all three without browser restarts, Discord theme flashes, or interrupted music.",
   "icon": "palette",
   "accent": "#65d3ff",
   "preview": "assets/preview.png",
@@ -15,13 +15,13 @@
   "items": [
     {
       "type": "script",
-      "name": "spiceflow",
-      "detect": "spiceflow",
+      "name": "ryoku-palette-bridge",
+      "detect": "ryoku-palette-bridge",
       "tier": "core",
       "interactive": false,
       "source": "git",
-      "summary": "Playback-safe live wallpaper colors for Spicetify and Comfy.",
-      "upstream": "https://github.com/Sipper1236/spiceflow"
+      "summary": "Live Ryoku wallpaper colours for Zen, Spotify, and Vesktop.",
+      "upstream": "https://github.com/Sipper1236/ryoku-palette-bridge"
     }
   ],
   "files": [
@@ -29,8 +29,8 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 556,
-      "sha256": "f2811dbc1399f5aa259fef96104d503d4225d66119db3dbb8e2691f7155e2610",
+      "size": 1239,
+      "sha256": "867c7c99031d931479b194fd354bd32e76b7d1122193f33a1f5bac421c3f61d0",
       "install": false
     },
     {
@@ -42,11 +42,11 @@
       "install": false
     },
     {
-      "source": "installers/spiceflow.sh",
-      "destination": "installers/spiceflow.sh",
+      "source": "installers/ryoku-palette-bridge.sh",
+      "destination": "installers/ryoku-palette-bridge.sh",
       "mode": "0755",
-      "size": 731,
-      "sha256": "7cb8334fca75ee2c55504589e3570217a964916b83554a0b6c3cc5c8922c42fb",
+      "size": 1594,
+      "sha256": "0965517c844bee68a02668bf32382d0001449f1b7e949193866033d2687b8b22",
       "install": false
     }
   ]
