@@ -249,6 +249,33 @@
         "framePopout"
       ],
       "lastUpdated": "2026-08-29"
+    },
+    {
+      "id": "apptime",
+      "name": "App Time",
+      "version": "0.2.0",
+      "path": "plugins/apptime",
+      "author": "ran",
+      "summary": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
+      "description": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "717bcc51935ee43b6eb2256c451d29ce4f36567b4e7915f22cd6ebd99d97f0cb",
+      "official": false,
+      "tagline": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-05"
     }
   ]
 }

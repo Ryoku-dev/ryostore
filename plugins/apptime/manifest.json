@@ -1,0 +1,65 @@
+{
+  "id": "apptime",
+  "name": "App Time",
+  "version": "0.2.0",
+  "author": "ran",
+  "description": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 340
+  },
+  "files": [
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "App Time"
+  },
+  "dependencies": {
+    "commands": []
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "glyphTotal",
+        "type": "toggle",
+        "label": "Show today's total on the bar",
+        "group": "App Time",
+        "default": true
+      },
+      {
+        "key": "topCount",
+        "type": "int",
+        "label": "Apps shown in the panel",
+        "group": "App Time",
+        "default": 5,
+        "min": 1,
+        "max": 10
+      },
+      {
+        "key": "idleMinutes",
+        "type": "int",
+        "label": "Pause counting after idle (minutes, 0 = off)",
+        "group": "App Time",
+        "default": 5,
+        "min": 0,
+        "max": 60
+      }
+    ]
+  }
+}
