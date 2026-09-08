@@ -391,7 +391,7 @@
         "assets/hero.png"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "f31800b5cfabbb4e2464257429d9116a1c60a44e3e6909d3d3c9c131a3ccd06a",
+      "manifestSha256": "6bc20d2205fd601cab871bed1cb9253dc2b166d01d54183c41884259d48c6f83",
       "components": [
         {
           "type": "nautilus-pack",
@@ -1368,7 +1368,7 @@
         "assets/preview.webp"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "6e75462cff6c64197ce88499a3920387fe4344a31b43df5d496b071b3872f05f",
+      "manifestSha256": "b01460fdf96b7977cd165a69d5e6b248b5d13d9e16b8bfb4df74aa0fbca3ffb8",
       "components": [
         {
           "type": "package",

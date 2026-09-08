@@ -2,7 +2,7 @@ Skin: Tokyo Night Storm (tokyo-night-storm)
 Provider: Ryoku
 Upstream palette: Tokyo Night <https://github.com/enkia/tokyo-night-vscode-theme>
 Source: Ryoku colour-scheme catalogue (colorschemes/tokyo-night-storm)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Tokyo%20Night%20Storm/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Tokyo%20Night%20Storm/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

@@ -6,7 +6,7 @@
 # hook, a workflow, a pin, or the exception policy.
 #
 # NOTE for maintainers: @neur0map is the repo owner and a guaranteed reviewer.
-# Replace it with a dedicated security team handle (e.g. @neur0map/security) if
+# Replace it with a dedicated security team handle (e.g. @ryoku-dev/security) if
 # one exists. CODEOWNERS entries MUST be collaborators or a team or GitHub
 # silently ignores the rule.
 

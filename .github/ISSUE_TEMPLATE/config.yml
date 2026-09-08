@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Build and test live first
-    url: https://github.com/neur0map/ryostore/blob/main/DEVELOP.md
+    url: https://github.com/ryoku-dev/ryostore/blob/main/DEVELOP.md
     about: Run your work-in-progress inside your own live Ryoku desktop before submitting.
   - name: Submit with a pull request
-    url: https://github.com/neur0map/ryostore/blob/main/CONTRIBUTING.md
+    url: https://github.com/ryoku-dev/ryostore/blob/main/CONTRIBUTING.md
     about: The faster path if you are comfortable with git. Add your folder and registry entry, then open a PR.

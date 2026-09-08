@@ -13,7 +13,7 @@ GPL-3.0 derived portions (© their respective authors)
 -----------------------------------------------------
 The QML widgets in `content/` are adapted from the "illogical-impulse" Quickshell
 configuration in end-4/dots-hyprland (https://github.com/end-4/dots-hyprland),
-licensed GPL-3.0, and are styled for the Ryoku shell (https://github.com/neur0map/ryoku),
+licensed GPL-3.0, and are styled for the Ryoku shell (https://github.com/ryoku-dev/ryoku-arch),
 also GPL-3.0. Files adapted from or modelled on that upstream widget set include,
 among others:
 

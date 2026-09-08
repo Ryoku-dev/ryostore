@@ -259,7 +259,7 @@ def lockscreen_scene(accent, surface, seed):
 CS_DW = 1280
 CS_OW, CS_OH = 1600, 900
 CS_K = CS_OW / CS_DW
-RAW_BASE = "https://raw.githubusercontent.com/neur0map/ryostore/main"
+RAW_BASE = "https://raw.githubusercontent.com/ryoku-dev/ryostore/main"
 
 
 def _cu(value) -> int:
