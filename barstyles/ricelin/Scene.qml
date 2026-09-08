@@ -235,6 +235,24 @@ Item {
                             pill.pinned = false;
                         }
 
+                        // pillHidden already fades the pill to opacity 0 and masks
+                        // its input away, but the layer-shell surface itself stayed
+                        // mapped and kept getting painted/composited every frame the
+                        // whole time something was fullscreen on this monitor -- pure
+                        // waste on the exact monitor where you want every frame going
+                        // to the fullscreen app instead. `visible` unmaps the surface
+                        // so nothing here renders at all while hidden. We delay the
+                        // unmap by the fade-out duration so the opacity/position
+                        // Behaviors above still get to play out instead of popping
+                        // off-screen, and reveal instantly on the way back in so the
+                        // fade-in isn't clipped.
+                        visible: !pillHidden || hideDelay.running
+                        Timer {
+                            id: hideDelay
+                            interval: Motion.morph
+                        }
+                        onPillHiddenChanged: pillHidden ? hideDelay.restart() : hideDelay.stop()
+
                         screen: modelData
                         color: "transparent"
                         exclusionMode: ExclusionMode.Ignore
