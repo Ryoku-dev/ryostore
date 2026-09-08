@@ -1,0 +1,510 @@
+{
+  "schema": 1,
+  "id": "yuk",
+  "category": "rices",
+  "version": "1.0.0",
+  "destination": "ryoku/rices/yuk",
+  "slug": "yuk",
+  "name": "yuk",
+  "author": "feel",
+  "createdWith": "0.50.0-beta.19",
+  "color": {
+    "mode": "wallpaper",
+    "themeApps": true
+  },
+  "assets": {
+    "wallpaper": "wall.jpg",
+    "cursor": "Bibata-Material-Ryoku"
+  },
+  "look": {
+    "decor": {},
+    "hypr": {
+      "anim": {
+        "curves": [
+          {
+            "name": "almostLinear",
+            "x0": 0.34,
+            "x1": 0.64,
+            "y0": 1.5,
+            "y1": 1
+          }
+        ],
+        "items": [
+          {
+            "bezier": "almostLinear",
+            "enabled": true,
+            "leaf": "fadeOut",
+            "speed": 2.2,
+            "style": ""
+          }
+        ]
+      },
+      "appearance": {
+        "activeBorder": "#e0563b",
+        "activeOpacity": 1,
+        "animatedBorder": true,
+        "animations": true,
+        "blurBrightness": 1,
+        "blurContrast": 0.8916,
+        "blurEnabled": true,
+        "blurIgnoreOpacity": true,
+        "blurNewOptimizations": true,
+        "blurNoise": 0.01,
+        "blurPasses": 2,
+        "blurPopups": false,
+        "blurSize": 4,
+        "blurSpecial": false,
+        "blurVibrancy": 0.17,
+        "blurVibrancyDarkness": 0,
+        "blurXray": true,
+        "borderAngleSpeed": 5,
+        "borderPartOfWindow": true,
+        "borderSize": 2,
+        "dimAround": 0.4,
+        "dimInactive": true,
+        "dimModal": true,
+        "dimSpecial": 0.2,
+        "dimStrength": 0.2,
+        "extendBorderGrab": 15,
+        "fullscreenOpacity": 1,
+        "gapsIn": 4,
+        "gapsOut": 6,
+        "gapsWorkspaces": 16,
+        "glowColor": "#ee33cc",
+        "glowEnabled": false,
+        "glowRange": 10,
+        "hoverIconOnBorder": true,
+        "inactiveBorder": "#313a4d",
+        "inactiveOpacity": 0.9,
+        "layout": "scrolling",
+        "noFocusFallback": false,
+        "resizeCorner": 0,
+        "resizeOnBorder": true,
+        "rounding": 6,
+        "roundingPower": 4,
+        "shadowColor": "#000000",
+        "shadowEnabled": false,
+        "shadowPower": 4,
+        "shadowRange": 45,
+        "shadowScale": 1,
+        "shadowSharp": false,
+        "snapEnabled": false,
+        "windowStyle": "gnomed",
+        "wobblyWindows": false
+      },
+      "cursor": {
+        "hideOnKeyPress": false,
+        "inactiveTimeout": 0,
+        "size": 20,
+        "theme": "Bibata-Material-Ryoku"
+      },
+      "plugins": {
+        "dynamicCursors": {
+          "enabled": false,
+          "magnify": 4,
+          "mode": "tilt",
+          "shake": true
+        },
+        "hyprbars": {
+          "blur": true,
+          "buttons": true,
+          "enabled": false,
+          "height": 26,
+          "textSize": 11
+        },
+        "hyprfocus": {
+          "bounce": 0.95,
+          "enabled": false,
+          "mode": "bounce",
+          "opacity": 0.8,
+          "slide": 20
+        },
+        "hyprglass": {
+          "blurStrength": 2,
+          "brightness": 1,
+          "enabled": false,
+          "opacity": 1,
+          "preset": "clear",
+          "theme": "dark",
+          "tint": "8899aa22"
+        },
+        "hyprscrolling": {
+          "columnWidth": 0.5,
+          "followFocus": true
+        },
+        "imgborders": {
+          "blur": false,
+          "enabled": false,
+          "image": "",
+          "insets": "0,0,0,0",
+          "scale": 1,
+          "sizes": "8,8,8,8",
+          "smooth": true
+        }
+      }
+    },
+    "launcher": {
+      "bgBlur": 2,
+      "heroImage": "file:///home/feel/Pictures/Wallpapers/wallhaven-vpel8p.jpg",
+      "heroPosX": 0.5,
+      "heroPosY": 0.5,
+      "heroStrength": 0.6,
+      "radius": 16,
+      "resultSettleMs": 360,
+      "showGreeting": false,
+      "showWeather": true
+    },
+    "shell": {
+      "dock": {
+        "autohide": false,
+        "edge": "auto",
+        "enabled": false,
+        "frost": true,
+        "labels": true,
+        "magnify": true,
+        "media": false,
+        "pinned": [],
+        "shadow": true
+      },
+      "fontScale": 1,
+      "frameBars": {
+        "dock": {
+          "pinned": []
+        },
+        "menus": {
+          "quick-settings": {
+            "anchor": "left",
+            "expansion": "always",
+            "minWidth": 410,
+            "modules": [
+              "home",
+              "notifications",
+              "weather",
+              "capture",
+              "depth"
+            ],
+            "widgets": [
+              "quick-settings"
+            ]
+          },
+          "theme": {
+            "anchor": "right",
+            "expansion": "never",
+            "minWidth": 320,
+            "widgets": [
+              "theme"
+            ]
+          },
+          "wallpaper": {
+            "anchor": "bottom",
+            "expansion": "always",
+            "minWidth": 1400,
+            "widgets": [
+              "theme",
+              "wallpaper"
+            ]
+          },
+          "weather": {
+            "anchor": "right",
+            "expansion": "never",
+            "minWidth": 320,
+            "widgets": [
+              "weather"
+            ]
+          }
+        },
+        "rails": {
+          "bottom": {
+            "center": [],
+            "enabled": false,
+            "end": [],
+            "reveal": true,
+            "size": 32,
+            "start": []
+          },
+          "left": {
+            "bottom": [
+              "recording",
+              "tray",
+              "audio-output",
+              "network",
+              "clock",
+              "battery"
+            ],
+            "center": [
+              "workspaces"
+            ],
+            "enabled": true,
+            "reveal": true,
+            "size": 48,
+            "top": [
+              "quick-settings"
+            ]
+          },
+          "right": {
+            "bottom": [],
+            "center": [],
+            "enabled": false,
+            "reveal": true,
+            "size": 48,
+            "top": []
+          },
+          "top": {
+            "center": [],
+            "enabled": false,
+            "end": [],
+            "reveal": true,
+            "size": 32,
+            "start": []
+          }
+        },
+        "style": "slate-frame",
+        "surfaces": {
+          "stash": {
+            "anchor": "right",
+            "minWidth": 340,
+            "panes": [
+              "stash"
+            ]
+          }
+        },
+        "version": 1
+      },
+      "frameCorner": 8,
+      "frameEnabled": true,
+      "frameOpacity": 0.9,
+      "osdOpacity": 1,
+      "osdRadius": 0
+    },
+    "visualizer": {
+      "active": 0,
+      "adaptive": false,
+      "angle": 9.578171301007217,
+      "bars": 48,
+      "bloom": 0.47,
+      "color": "",
+      "color2": "",
+      "enabled": false,
+      "extras": [],
+      "fps": 30,
+      "gain": 0.96,
+      "gradient": false,
+      "grow": "center",
+      "h": 0.18497334435344476,
+      "idleWave": false,
+      "mirror": true,
+      "peaks": false,
+      "reflection": 0.1,
+      "segments": 6,
+      "shape": "rounded",
+      "smoothing": 1,
+      "spin": 0,
+      "style": "wave",
+      "thickness": 0.72,
+      "tiltX": 17.84,
+      "tiltY": -0.04,
+      "w": 1.0082031226523274,
+      "x": -0.15660603841145831,
+      "y": 0.3900474675896332
+    },
+    "widgets": {
+      "aioAnchor": "top-right",
+      "aioColor": "",
+      "aioColor2": "",
+      "aioEnabled": false,
+      "aioGradient": false,
+      "aioLocked": false,
+      "aioOpacity": 1,
+      "aioScale": 1,
+      "aioStyle": "wide",
+      "aioX": 80,
+      "aioY": 80,
+      "calendarAnchor": "free",
+      "calendarColor": "",
+      "calendarColor2": "",
+      "calendarEnabled": false,
+      "calendarGradient": false,
+      "calendarHolidayRegion": "",
+      "calendarLocked": false,
+      "calendarOpacity": 0.8210999999999999,
+      "calendarScale": 0.8962,
+      "calendarStyle": "glass",
+      "calendarWeekNumbers": true,
+      "calendarWeeks": 6,
+      "calendarX": 928,
+      "calendarY": 192,
+      "clock24h": true,
+      "clockAccent": "palette",
+      "clockAnchor": "free",
+      "clockBg": "none",
+      "clockColor": "",
+      "clockColor2": "#111318",
+      "clockDesign": "column",
+      "clockEnabled": true,
+      "clockGradient": false,
+      "clockLocked": true,
+      "clockOpacity": 1,
+      "clockRadius": 26,
+      "clockScale": 0.8,
+      "clockSeconds": false,
+      "clockX": 1120,
+      "clockY": 320,
+      "dateDesign": "inline",
+      "dateShow": true,
+      "musicAnchor": "free",
+      "musicApp": "",
+      "musicColor": "",
+      "musicColor2": "#FFFFFF",
+      "musicEnabled": true,
+      "musicGradient": false,
+      "musicLocked": true,
+      "musicLyrics": true,
+      "musicOpacity": 0.8178,
+      "musicScale": 0.799,
+      "musicShape": "wide",
+      "musicStyle": "glass",
+      "musicVideo": "canvas",
+      "musicVideoFile": "",
+      "musicViz": "bars",
+      "musicX": 1440,
+      "musicY": 64,
+      "notesAnchor": "right",
+      "notesColor": "",
+      "notesColor2": "",
+      "notesEnabled": false,
+      "notesGradient": false,
+      "notesHeight": 180,
+      "notesLocked": false,
+      "notesOpacity": 1,
+      "notesScale": 1,
+      "notesWidth": 260,
+      "notesX": 80,
+      "notesY": 80,
+      "statsAnchor": "bottom-right",
+      "statsColor": "",
+      "statsColor2": "",
+      "statsEnabled": false,
+      "statsGradient": false,
+      "statsLocked": false,
+      "statsOpacity": 1,
+      "statsScale": 1,
+      "statsX": 80,
+      "statsY": 80,
+      "weatherAnchor": "free",
+      "weatherColor": "",
+      "weatherColor2": "",
+      "weatherDesign": "full",
+      "weatherEnabled": false,
+      "weatherGradient": false,
+      "weatherLocked": false,
+      "weatherOpacity": 1,
+      "weatherScale": 1,
+      "weatherX": 1664,
+      "weatherY": 128,
+      "widgetFont": ""
+    }
+  },
+  "layers": {
+    "autostart": [
+      {
+        "command": "easyeffects --hide-window --service-mode"
+      },
+      {
+        "command": "hyprsunset"
+      },
+      {
+        "command": "gsr-ui"
+      }
+    ],
+    "brand": {
+      "markImage": "",
+      "markText": "力",
+      "markTint": true,
+      "name": "feel"
+    },
+    "env": [
+      {
+        "key": "RYOKU_LEDS_DISABLE",
+        "value": "1"
+      }
+    ],
+    "input": {
+      "accelProfile": "flat",
+      "clickfinger": false,
+      "disableWhileTyping": false,
+      "followMouse": 1,
+      "kbLayout": "us,br",
+      "kbOptions": "grp:alt_shift_toggle",
+      "kbVariant": "",
+      "leftHanded": false,
+      "middleClickPaste": true,
+      "middleEmulation": false,
+      "mouseNaturalScroll": false,
+      "mouseScrollFactor": 1,
+      "naturalScroll": false,
+      "numlockByDefault": false,
+      "repeatDelay": 250,
+      "repeatRate": 20,
+      "sensitivity": 0.29,
+      "swipeCreateNew": true,
+      "swipeDistance": 300,
+      "swipeFingers": 3,
+      "swipeInvert": true,
+      "tapAndDrag": false,
+      "tapToClick": false,
+      "touchScrollFactor": 1,
+      "workspaceSwipe": false
+    },
+    "keybinds": [
+      {
+        "action": "exec",
+        "keys": "SUPER + period",
+        "value": "kitty gpk"
+      }
+    ],
+    "windowRules": [
+      {
+        "action": "workspace",
+        "class": "",
+        "title": "Discord",
+        "value": "2"
+      },
+      {
+        "action": "workspace",
+        "class": "",
+        "title": "Spotify",
+        "value": "3"
+      },
+      {
+        "action": "opacity",
+        "class": "discord-canary",
+        "title": "",
+        "value": "1.0"
+      },
+      {
+        "action": "workspace",
+        "class": "afterfx.exe",
+        "title": "",
+        "value": "1"
+      }
+    ]
+  },
+  "files": [
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "mode": "0644",
+      "size": 1611371,
+      "sha256": "777f6318838ae311cf8ebc94ca612761236486239d38d678e91ccd7fd242a522",
+      "install": false
+    },
+    {
+      "source": "poster.png",
+      "destination": "poster.png",
+      "mode": "0644",
+      "size": 1611371,
+      "sha256": "777f6318838ae311cf8ebc94ca612761236486239d38d678e91ccd7fd242a522",
+      "install": false
+    }
+  ]
+}

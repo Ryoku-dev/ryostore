@@ -82,6 +82,37 @@
       "rounding": 4,
       "wallpaper": "https://github.com/neur0map/ryostore/releases/download/rices/evangelion-wall.png",
       "hero": "https://github.com/neur0map/ryostore/releases/download/rices/evangelion-hero.jpg"
+    },
+    {
+      "id": "yuk",
+      "name": "yuk",
+      "version": "1.0.0",
+      "path": "rices/yuk",
+      "author": "feelyourwarmth",
+      "summary": "yuk",
+      "description": "yuk",
+      "tags": [
+        "adaptive",
+        "dark",
+        "glass",
+        "rounded",
+        "minimal",
+        "japanese",
+        "autumn",
+        "warm"
+      ],
+      "accent": "#e0563b",
+      "surface": "#241b1a",
+      "preview": "assets/preview.webp",
+      "screenshots": [
+        "screenshots/1.webp"
+      ],
+      "manifest": "rice.json",
+      "manifestSha256": "14df7c4e5fcab39f3b81631940d699b6d7b0a5745d1e2e4c1f53e9c3bcf0757c",
+      "createdWith": "0.50.0-beta.19",
+      "color": "wallpaper",
+      "rounding": 6,
+      "wallpaper": "https://github.com/neur0map/ryostore/releases/download/rices/yuk-wall.jpg"
     }
   ]
 }
