@@ -2,8 +2,8 @@
   // A Ryotunes skin, format 1. Copy this folder to ryotunes-skins/<id>/, rename
   // the folder to your skin id, fill in the palette, and strip these // comments
   // before you ship -- Ryotunes and `ryotunes-cli skin check` read strict JSON.
-  // Full reference: https://github.com/neur0map/ryotunes/blob/main/docs/SKINS.md
-  // Schema: https://raw.githubusercontent.com/neur0map/ryotunes/main/skins/skin.schema.json
+  // Full reference: https://github.com/ryoku-dev/ryotunes/blob/main/docs/SKINS.md
+  // Schema: https://raw.githubusercontent.com/ryoku-dev/ryotunes/main/skins/skin.schema.json
 
   "format": 1,                 // always 1
   "id": "my-skin",             // lowercase kebab-case, EQUAL to the folder name

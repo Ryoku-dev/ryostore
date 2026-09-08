@@ -2,7 +2,7 @@ Skin: Monokai Classic (monokai-classic)
 Provider: Ryoku
 Upstream palette: Monokai <https://monokai.pro>
 Source: Ryoku colour-scheme catalogue (colorschemes/monokai-classic)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Monokai%20Classic/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Monokai%20Classic/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

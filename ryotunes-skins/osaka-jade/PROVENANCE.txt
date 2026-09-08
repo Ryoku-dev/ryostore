@@ -2,7 +2,7 @@ Skin: Osaka jade (osaka-jade)
 Provider: Noctalia
 Upstream palette: Noctalia
 Source: Ryoku colour-scheme catalogue (colorschemes/osaka-jade)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Osaka%20jade/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Osaka%20jade/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

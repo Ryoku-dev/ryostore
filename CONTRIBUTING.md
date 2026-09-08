@@ -78,7 +78,7 @@ scales:
 ### 2. Fill in the submission form
 
 Not set up for a pull request, or want a maintainer to help land it? Open the
-[**submission form**](https://github.com/neur0map/ryostore/issues/new?template=submit-item.yml).
+[**submission form**](https://github.com/ryoku-dev/ryostore/issues/new?template=submit-item.yml).
 Tell us the kind, a short description, where the content lives (a repo, gist, or
 zip), and a preview image. A maintainer reviews it and opens the pull request
 with you.

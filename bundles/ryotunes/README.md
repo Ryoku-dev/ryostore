@@ -26,10 +26,10 @@ application continues to evolve. Additional appearance options are in RyoStore's
 ## Origin and maintenance
 
 Submitted by **ashmitvoid** in
-[ryostore issue #5](https://github.com/neur0map/ryostore/issues/5), based on
+[ryostore issue #5](https://github.com/ryoku-dev/ryostore/issues/5), based on
 [ashmitvoid/ryotunes](https://github.com/ashmitvoid/ryotunes), a GPL-3.0-or-later
 modified work derived from [LiMusic](https://github.com/SimoHypers/limusic).
-Ryoku's current package follows [neur0map/ryotunes](https://github.com/neur0map/ryotunes).
+Ryoku's current package follows [ryoku-dev/ryotunes](https://github.com/ryoku-dev/ryotunes).
 The package owns its application files and dependencies; this bundle only lists
 that package. Source and licensing are available from those repositories.
 

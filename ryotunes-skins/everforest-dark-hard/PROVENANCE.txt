@@ -2,7 +2,7 @@ Skin: Everforest Dark Hard (everforest-dark-hard)
 Provider: Ryoku
 Upstream palette: Everforest <https://github.com/sainnhe/everforest>
 Source: Ryoku colour-scheme catalogue (colorschemes/everforest-dark-hard)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Everforest%20Dark%20Hard/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Everforest%20Dark%20Hard/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

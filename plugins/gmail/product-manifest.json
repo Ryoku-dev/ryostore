@@ -24,9 +24,9 @@
     {
       "source": "NOTICE",
       "destination": "NOTICE",
-      "sha256": "9fa2ac871c04ac82325d03b8328ce0647c31ab53f210c8a5aad81ea20337617e",
+      "sha256": "9eea088b869206e9148c703d395bed30970b62705fa62b45571f067702dd7a14",
       "mode": "0644",
-      "size": 3465,
+      "size": 3471,
       "install": false
     },
     {
@@ -40,9 +40,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "dad89087c9bd2ab96c70e471cbd6b74bfa04e0d12702a926636f246d38d2f1da",
+      "sha256": "6325dcd07ca155ab4861a1fae76d7e25d5a15761c52d2217ba96e50ca1a32bcc",
       "mode": "0644",
-      "size": 5072,
+      "size": 5084,
       "install": false
     },
     {

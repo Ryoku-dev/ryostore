@@ -2,7 +2,7 @@ Skin: Oceanic Next (oceanic-next)
 Provider: Ryoku
 Upstream palette: Oceanic Next <https://github.com/voronianski/oceanic-next-color-scheme>
 Source: Ryoku colour-scheme catalogue (colorschemes/oceanic-next)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Oceanic%20Next/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Oceanic%20Next/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

@@ -2,7 +2,7 @@ Skin: Nord Light (nord-light)
 Provider: Ryoku
 Upstream palette: Nord <https://www.nordtheme.com>
 Source: Ryoku colour-scheme catalogue (colorschemes/nord-light)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Nord%20Light/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Nord%20Light/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

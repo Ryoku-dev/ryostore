@@ -2,7 +2,7 @@ Skin: GitHub Dark (github-dark)
 Provider: Noctalia
 Upstream palette: GitHub Primer <https://github.com/primer/github-vscode-theme>
 Source: Ryoku colour-scheme catalogue (colorschemes/github-dark)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/GitHub%20Dark/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/GitHub%20Dark/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette
