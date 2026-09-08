@@ -1,0 +1,8 @@
+#!/bin/sh
+# Write the current epoch seconds to "$1/since". Used by the Coffee service to
+# persist the keep-awake start time inside the plugin's own state dir (R8);
+# the value is read back on load so "Awake for" survives a shell reload.
+set -eu
+dir=${1:?state dir required}
+mkdir -p "$dir"
+date +%s > "$dir/since"

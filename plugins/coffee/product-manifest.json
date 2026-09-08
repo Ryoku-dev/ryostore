@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "id": "coffee",
+  "category": "plugins",
+  "version": "0.1.0",
+  "destination": "ryoku/plugins/coffee",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "2b66fcb127014c5983d2a283b2db453a61f5c4512119aaf1170bdc792fd639d8",
+      "mode": "0644",
+      "size": 1062,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "0b4b6babd9778a2cbacf00aa52842ca77803cc3702728398cfe078f0793c33fc",
+      "mode": "0644",
+      "size": 3326,
+      "install": false
+    },
+    {
+      "source": "assets/preview-live.png",
+      "destination": "assets/preview-live.png",
+      "sha256": "36b6b60ee9bfe1a9b8a1c34c36806e50006dae32ad1ee8f281df31499274b6cc",
+      "mode": "0644",
+      "size": 26036,
+      "install": true
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "20657d51e26dbebf94621819ca8979d2856e6263e8fb23d440055d88add7e41d",
+      "mode": "0644",
+      "size": 338,
+      "install": false
+    },
+    {
+      "source": "bin/state-write",
+      "destination": "bin/state-write",
+      "sha256": "2fbbf4a583d8f7d6ebdb3063b5709e9cb10233d28fd15de9364c44410e7d1dc9",
+      "mode": "0755",
+      "size": 315,
+      "install": true
+    },
+    {
+      "source": "content/Card.qml",
+      "destination": "content/Card.qml",
+      "sha256": "6b2cd3ad5e7eb9bffdce67bdbf24f546614b2b84f165b88b73e7516b84343dce",
+      "mode": "0644",
+      "size": 3914,
+      "install": true
+    },
+    {
+      "source": "content/Glyph.qml",
+      "destination": "content/Glyph.qml",
+      "sha256": "6226807d8616e51242564e5423ff2d4db054dc81e4cd939e72a1420a652b0d8d",
+      "mode": "0644",
+      "size": 2558,
+      "install": true
+    },
+    {
+      "source": "content/Logic.js",
+      "destination": "content/Logic.js",
+      "sha256": "a5f42ab829cb4b6fe706bdbe548b109de1a663700f32d0b04a9570a9ccce69a2",
+      "mode": "0644",
+      "size": 2588,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "a4c85add6ae252353f9a2ff33e71503a5695fffb462d2fc34a5523d05ea771ee",
+      "mode": "0644",
+      "size": 5588,
+      "install": true
+    },
+    {
+      "source": "content/RowItem.qml",
+      "destination": "content/RowItem.qml",
+      "sha256": "ce066d777a71e23c14c60b44a4c7740121b407e6fdcaf6e89fac820046f901e5",
+      "mode": "0644",
+      "size": 1419,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "f62559c48e146c6a32bf8221d7556efaa12af05ffa5d1fdc939c26f5d31804a4",
+      "mode": "0644",
+      "size": 1363,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "6e97100ee65908317a9e701bce2b4344c15d0a6cbcc9f0bc87c5b9f1ec97df4c",
+      "mode": "0644",
+      "size": 1648,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "1809483809c3b2f2bd3cbaba37b6ae52c6aecfd3dbe8c2f67b8cf243f4d84757",
+      "mode": "0644",
+      "size": 7933,
+      "install": true
+    }
+  ]
+}

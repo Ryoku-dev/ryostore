@@ -303,6 +303,38 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "coffee",
+      "name": "Coffee",
+      "version": "0.1.0",
+      "path": "plugins/coffee",
+      "author": "Ankur <ankur@localhost>",
+      "summary": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
+      "description": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
+      "tags": [
+        "power",
+        "idle",
+        "caffeine",
+        "bar-widget",
+        "desktop-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "abb6383047bf3998079dccced8d60ae19b5eeee6cfa6708b4607480093dd60c3",
+      "official": false,
+      "tagline": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
+      "icon": "coffee",
+      "hosts": [
+        "topbarGlyph",
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-07"
     }
   ]
 }
