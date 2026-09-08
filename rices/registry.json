@@ -80,8 +80,8 @@
       "color": "fixed",
       "palette": "rices/evangelion/palette.json",
       "rounding": 4,
-      "wallpaper": "https://github.com/neur0map/ryostore/releases/download/rices/evangelion-wall.png",
-      "hero": "https://github.com/neur0map/ryostore/releases/download/rices/evangelion-hero.jpg"
+      "wallpaper": "https://github.com/ryoku-dev/ryostore/releases/download/rices/evangelion-wall.png",
+      "hero": "https://github.com/ryoku-dev/ryostore/releases/download/rices/evangelion-hero.jpg"
     },
     {
       "id": "yuk",
@@ -108,11 +108,11 @@
         "screenshots/1.webp"
       ],
       "manifest": "rice.json",
-      "manifestSha256": "db348546b01d1ed4704dc17d4ec0e648f6c40e1a0b187bcf98341ad84ad243d3",
+      "manifestSha256": "01fac6e5ce919b69a9f61edb3482ce6ca66f45956ba78995d8b3a3a98c59c2a8",
       "createdWith": "0.50.0-beta.19",
       "color": "wallpaper",
       "rounding": 6,
-      "wallpaper": "https://github.com/neur0map/ryostore/releases/download/rices/yuk-wall.jpg",
+      "wallpaper": "https://github.com/ryoku-dev/ryostore/releases/download/rices/yuk-wall.jpg",
       "official": false,
       "lastUpdated": "2026-09-07"
     }

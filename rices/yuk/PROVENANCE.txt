@@ -1,5 +1,5 @@
 Yuk rice by feelyourwarmth (feel).
-Submission: https://github.com/neur0map/ryostore/pull/11
+Submission: https://github.com/ryoku-dev/ryostore/pull/11
 The contributor affirmed ownership or permission and redistribution rights in the PR checklist.
 The wallpaper release asset yuk-wall.jpg is a JPEG export of the wallpaper supplied as poster.png in that PR (1280 x 772); no unrelated image was substituted.
 The real desktop screenshot is screenshots/1.webp.

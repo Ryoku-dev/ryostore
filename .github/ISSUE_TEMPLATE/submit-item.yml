@@ -8,11 +8,11 @@ body:
     attributes:
       value: |
         Thanks for building for Ryoku. Comfortable with git? A
-        [pull request](https://github.com/neur0map/ryostore/blob/main/CONTRIBUTING.md)
+        [pull request](https://github.com/ryoku-dev/ryostore/blob/main/CONTRIBUTING.md)
         is faster. Otherwise fill this in and a maintainer will help land it.
 
         Please build and test it live first, the
-        [develop guide](https://github.com/neur0map/ryostore/blob/main/DEVELOP.md)
+        [develop guide](https://github.com/ryoku-dev/ryostore/blob/main/DEVELOP.md)
         shows how.
 
   - type: input

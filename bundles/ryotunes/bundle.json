@@ -21,7 +21,7 @@
       "tier": "core",
       "source": "official",
       "summary": "Ryoku-native music player with libmpv playback, MPRIS and live desktop theming.",
-      "upstream": "https://github.com/neur0map/ryotunes"
+      "upstream": "https://github.com/ryoku-dev/ryotunes"
     }
   ],
   "files": [
@@ -29,16 +29,16 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 2396,
-      "sha256": "6c1d50dcc2d20faec4ebbfe756ea0a0799c0f20dc9b674c7202f485dc6a9dffb",
+      "size": 2399,
+      "sha256": "1d9ab45f94f79ea7466ca9f1c312bd807f11fd1d3b4dd43885fa21cbec6abb91",
       "install": true
     },
     {
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
       "mode": "0644",
-      "size": 660,
-      "sha256": "88a6e7ee9fe0a60249a636c7108b3971652069e35fa284711e8c3bc9fda25dbe",
+      "size": 662,
+      "sha256": "ccd3a22e120662c87a0ef496aaa6f288ee915046e5dad41c2cc306b36a5512dc",
       "install": true
     },
     {

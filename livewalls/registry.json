@@ -6,7 +6,7 @@
       "name": "Ember Drift",
       "author": "Ryoku Team",
       "poster": "livewalls/ember-drift/poster.jpg",
-      "video": "https://github.com/neur0map/ryostore/releases/download/livewalls/ember-drift.mp4",
+      "video": "https://github.com/ryoku-dev/ryostore/releases/download/livewalls/ember-drift.mp4",
       "tags": ["abstract", "gradient", "warm"]
     },
     {
@@ -14,7 +14,7 @@
       "name": "Aurora Veil",
       "author": "Ryoku Team",
       "poster": "livewalls/aurora-veil/poster.jpg",
-      "video": "https://github.com/neur0map/ryostore/releases/download/livewalls/aurora-veil.mp4",
+      "video": "https://github.com/ryoku-dev/ryostore/releases/download/livewalls/aurora-veil.mp4",
       "tags": ["abstract", "gradient", "cool"]
     }
   ]

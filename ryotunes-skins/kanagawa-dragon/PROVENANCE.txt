@@ -2,7 +2,7 @@ Skin: Kanagawa Dragon (kanagawa-dragon)
 Provider: Noctalia
 Upstream palette: Kanagawa <https://github.com/rebelot/kanagawa.nvim>
 Source: Ryoku colour-scheme catalogue (colorschemes/kanagawa-dragon)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Kanagawa%20Dragon/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Kanagawa%20Dragon/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

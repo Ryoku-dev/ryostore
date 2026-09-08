@@ -241,7 +241,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "6e956c8865c7f4470e7db0a02efa5c88e4ae266a27d315d2d6e32c6b70ce8613",
+      "manifestSha256": "aab7b5aa4d70577d8a9dd9683a43bbd4635ca43b56ea711a54c761db32f34c7a",
       "official": false,
       "tagline": "Inbox, search & compose in Ryoku noir style.",
       "icon": "mail",
