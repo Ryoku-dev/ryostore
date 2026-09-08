@@ -193,8 +193,8 @@
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
       "mode": "0644",
-      "size": 3662,
-      "sha256": "385b9e33ae6c3420094c7044364d75b1340f3ceb5bf6d48c941cbcbd182be18d",
+      "size": 4057,
+      "sha256": "43c9befa721960059f8ab07262cee2a33f72ab2ba85cad64d4340eebae4e633b",
       "install": true
     },
     {
@@ -473,8 +473,8 @@
       "source": "Tray.qml",
       "destination": "Tray.qml",
       "mode": "0644",
-      "size": 13576,
-      "sha256": "0544638ec5d73445b7d6871e4783c168e1bc9e01e7127cffd4d9038a1b08638b",
+      "size": 3514,
+      "sha256": "ce153317e86e103cca971fb9d0ba4b1c54dce80bd3b81d8a6ff5ab72d8090cab",
       "install": true
     },
     {

@@ -61,3 +61,8 @@ Remaining integration changes:
   - The local wallpaper filmstrip uses Ryogami's wallpaper state and set command.
     Its Browse action opens Ryogami's full picker instead of an absent private
     search/downloader script. Video posters are generated locally with ffmpeg.
+  - The updated tray lifecycle fix uses the daemon-owned shell.services.Tray
+    frame and the native BarKit menu, matching Obi and Nacre. Closed services
+    disappear and restarted apps can reappear; no persistent dead-ID blacklist
+    or swallowed activation errors are used. Native left/right click and scroll
+    are retained; the old unsupported secondary-activation route is not exposed.
