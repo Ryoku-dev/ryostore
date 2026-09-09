@@ -235,6 +235,22 @@ Item {
                             pill.pinned = false;
                         }
 
+                        // Fully unmap the overlay's wlr-layer-shell surface while a
+                        // fullscreen client owns the monitor and the pill hasn't been
+                        // summoned (peeked/opened/pinned). Previously this state only
+                        // zeroed the input mask (below), leaving a real Overlay-layer
+                        // surface mapped and stacked above the fullscreen window at all
+                        // times. Any later mutation of that surface's region -- the pill
+                        // hover-expand animation, an OSD popup, a notification toast,
+                        // a workspace change -- is a layer-shell state change on a
+                        // surface sitting above the game, which is a known trigger for
+                        // pointer-constraint / relative-pointer hiccups in Hyprland
+                        // (reported as sudden cursor jumps/freezes in fullscreen games).
+                        // Setting visible: false removes the surface from the compositor
+                        // entirely during that window, instead of merely hiding it, so
+                        // none of that churn can reach the game. No user-facing change
+                        // outside fullscreen: pillHidden is only ever true there.
+                        visible: !pillHidden
                         screen: modelData
                         color: "transparent"
                         exclusionMode: ExclusionMode.Ignore
