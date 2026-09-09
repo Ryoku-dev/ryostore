@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "id": "synthwave",
+  "category": "lockscreens",
+  "version": "1.0.0",
+  "destination": "qylock/themes/synthwave",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 585,
+      "sha256": "e0a398cff2ffd6dd109ae899bd76d843b006f7aa2538d863aff80defd2c86558",
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "preview.png",
+      "mode": "0644",
+      "size": 752067,
+      "sha256": "9b096ed5bb131b58ed72962bae77d35edcc7520741199aade305a613551201c2",
+      "install": false
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 48902,
+      "sha256": "368e41f4c3db5c57d4e145fe715cfae5146683b604e278bc756329f26294b2d7",
+      "install": true
+    },
+    {
+      "source": "content/font/OFL.txt",
+      "destination": "font/OFL.txt",
+      "mode": "0644",
+      "size": 4389,
+      "sha256": "c676351bf8576b9aba743cd5eaa8c0e7ee0d51f805d720447b4df4ddb6a2e416",
+      "install": true
+    },
+    {
+      "source": "content/font/Outfit-Black.ttf",
+      "destination": "font/Outfit-Black.ttf",
+      "mode": "0644",
+      "size": 55372,
+      "sha256": "f240e6128c31a75aa3f456ea1ff3b0fda382176681788ae3d244d08e3fa7d6cd",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 144,
+      "sha256": "35814884d9564812225d6b9c57b7705258d215c75b10a0eb4d32e0a31ad9e9fd",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 328,
+      "sha256": "686c2afa498db8cf6255759e11d48c6f910ed47242bfaf4b94c07d0e3e770660",
+      "install": true
+    }
+  ]
+}

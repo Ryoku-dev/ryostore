@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "terminal",
+  "category": "lockscreens",
+  "version": "1.0.0",
+  "destination": "qylock/themes/terminal",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 368,
+      "sha256": "516581e28905ebd973804695ce03d30085f62a27113f864812ea7c548a80bbd7",
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "preview.png",
+      "mode": "0644",
+      "size": 213308,
+      "sha256": "ba38407574a160b5e1b18cf11ef3df6e6155dfaf42e21c0047cedd3564014600",
+      "install": false
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 32768,
+      "sha256": "2a02b475f7cbb00f5a125e0cf30a628f57249efe0da9a544875fd3d25653a56c",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 143,
+      "sha256": "5cd034ba66b2febbdb340a3ee204e322f45d12e189c9827ce260d07082bcc78b",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 358,
+      "sha256": "b96db753ea43ebbd008904f1d34e1b7e6bff5f221a91d979cc2597918fe66a19",
+      "install": true
+    }
+  ]
+}

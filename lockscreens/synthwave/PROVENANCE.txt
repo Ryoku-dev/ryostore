@@ -1,0 +1,14 @@
+Synthwave qylock theme
+
+Original work for the Ryoku desktop; not ported from an upstream qylock theme.
+Author: ZAAFHachemrachid
+License: GNU General Public License version 3; see LICENSE
+
+Ryoku ships assets/preview.png as catalogue media: a capture of the theme
+running under the Ryoku session lock on a 2560x1600 display. It is not installed
+with the runtime payload.
+
+Bundled font: Outfit Black (font/Outfit-Black.ttf)
+  Source: Google Fonts, https://fonts.google.com/specimen/Outfit
+  Copyright 2021 The Outfit Project Authors
+  License: SIL Open Font License 1.1; see font/OFL.txt

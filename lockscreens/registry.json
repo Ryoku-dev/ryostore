@@ -2,6 +2,30 @@
   "schema": 1,
   "lockscreens": [
     {
+      "id": "aurora",
+      "name": "Aurora",
+      "version": "1.0.0",
+      "path": "lockscreens/aurora",
+      "author": "ZAAFHachemrachid",
+      "summary": "Frosted glass over a slow aurora drift.",
+      "description": "A glass card floats over the blurred wallpaper while soft aurora light drifts behind it. A compact clock, the user avatar, and a glowing password field sit on the card; suspend, restart and shut down stay on the bottom rail. Blur radius, card opacity, dimming and the 12/24-hour clock are all in theme.conf.",
+      "tags": [
+        "glass",
+        "blur",
+        "calm"
+      ],
+      "accent": "#B9A3EA",
+      "surface": "#1C1A27",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "ff618c4f2e8fe758b5e9521fdd05d883c676497186acc9621bd6814809475ec1",
+      "official": false,
+      "lastUpdated": "2026-09-09"
+    },
+    {
       "id": "clockwork-tape",
       "name": "Tape",
       "version": "1.0.0",
@@ -690,6 +714,30 @@
       "manifestSha256": "b11248876dbbfca5cf598955185340430f50b8d49bf904420233d2d752cd1311"
     },
     {
+      "id": "swiss",
+      "name": "Swiss",
+      "version": "1.0.0",
+      "path": "lockscreens/swiss",
+      "author": "ZAAFHachemrachid",
+      "summary": "One hairline rule and one enormous clock.",
+      "description": "International-style typography for the lock: a single hairline rule, an oversized clock, a small ticking numeral at the right margin, and a caret that takes your password with no box around it. The margin unit, the rule thickness and the accent all come from theme.conf.",
+      "tags": [
+        "minimal",
+        "typography",
+        "monochrome"
+      ],
+      "accent": "#DCD8F5",
+      "surface": "#191724",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "01ade4e6d1866b66335c461c6dc40b4f6305267b0115b62160d2a8b9b0fbdaae",
+      "official": false,
+      "lastUpdated": "2026-09-09"
+    },
+    {
       "id": "sword",
       "name": "Sword",
       "version": "1.0.0",
@@ -710,6 +758,54 @@
       ],
       "manifest": "manifest.json",
       "manifestSha256": "e17837b1f5633b5b31b989fa62782c65cd269ae584dc169873d5e549d563a662"
+    },
+    {
+      "id": "synthwave",
+      "name": "Synthwave",
+      "version": "1.0.0",
+      "path": "lockscreens/synthwave",
+      "author": "ZAAFHachemrachid",
+      "summary": "A neon grid running out to a banded sun.",
+      "description": "An eighties horizon: a scrolling perspective grid, a banded sun on the skyline, CRT scanlines, and a chromatic-aberrated clock above a hot-neon login. Grid speed, scanline darkness, aberration and the neon hue are all in theme.conf. Ships the Outfit Black display face under the OFL.",
+      "tags": [
+        "retro",
+        "neon",
+        "animated"
+      ],
+      "accent": "#FF2FB0",
+      "surface": "#070612",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "98b1ea2c26b192a1fff68038a216b5d15a3605bc26522f70e477e0ddf099a996",
+      "official": false,
+      "lastUpdated": "2026-09-09"
+    },
+    {
+      "id": "terminal",
+      "name": "Terminal",
+      "version": "1.0.0",
+      "path": "lockscreens/terminal",
+      "author": "ZAAFHachemrachid",
+      "summary": "A boot log that stops at the login prompt.",
+      "description": "A single-phosphor console: a typewriter boot log, a blocky seven-segment clock, optional scanlines, and a password prompt that echoes nothing, like sudo. The ink is tinted from your Ryoku palette, or left classic green; echo mode, type speed and scanlines are in theme.conf.",
+      "tags": [
+        "terminal",
+        "retro",
+        "minimal"
+      ],
+      "accent": "#57D98B",
+      "surface": "#020203",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "cfcb6ae334719f91463e48f8156a76aeb6355e6f64a7b61a0718fa84f39d7365",
+      "official": false,
+      "lastUpdated": "2026-09-09"
     },
     {
       "id": "terraria",

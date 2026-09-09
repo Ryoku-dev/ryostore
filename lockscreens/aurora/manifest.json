@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "aurora",
+  "category": "lockscreens",
+  "version": "1.0.0",
+  "destination": "qylock/themes/aurora",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 366,
+      "sha256": "0390369fe4bfafffd6ea15c7899ed10bf2ad9eebb4922ba5839694252cd84710",
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "preview.png",
+      "mode": "0644",
+      "size": 547785,
+      "sha256": "8c2bf921b2ce62fb2ac03c9b253a861f7d1006ea40a3143b01778e15a7ba415d",
+      "install": false
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 44535,
+      "sha256": "565d74178a14a885de0babd0f705ab00eb77063c0e35dbd25e0ccfb2a6f92221",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 141,
+      "sha256": "d8a1a60797f5e129d778498b6811c51a4083389141fae1cd947fe657f32c5532",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 472,
+      "sha256": "64f89fa17f7171ccde225548da223be79a12f6b118f71b5990208466f7cb32be",
+      "install": true
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "id": "swiss",
+  "category": "lockscreens",
+  "version": "1.0.0",
+  "destination": "qylock/themes/swiss",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 365,
+      "sha256": "c3c137f3e46eed2d9b90b27d95f1e420afa4820d5fde0550f58c36d348715c17",
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "preview.png",
+      "mode": "0644",
+      "size": 67162,
+      "sha256": "8c906dd579abd93f92b27e3ab6a7a2b145b9f9b629bd66bd7feefa975738d015",
+      "install": false
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 32267,
+      "sha256": "514f991ba556e94052128b821e088e055bd1b74d1f5a3f8b7ed9ab5118f779b5",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 140,
+      "sha256": "03a82d874c504e8e0c8a00b52723e79263c8b6109b14b21deb504a15d75e07ef",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 591,
+      "sha256": "5fe5b4870ad5be452656cc1a52676d8342ac8e95dfe2ca45f6bcf3311714e9ab",
+      "install": true
+    }
+  ]
+}
