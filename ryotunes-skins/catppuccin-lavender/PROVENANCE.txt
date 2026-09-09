@@ -2,7 +2,7 @@ Skin: Catppuccin Lavender (catppuccin-lavender)
 Provider: Noctalia
 Upstream palette: Catppuccin <https://github.com/catppuccin/catppuccin>
 Source: Ryoku colour-scheme catalogue (colorschemes/catppuccin-lavender)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Catppuccin%20Lavender/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Catppuccin%20Lavender/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

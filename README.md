@@ -62,7 +62,7 @@ Two guides, one job each:
   submit. Point the running desktop at your local copy, watch it hot-reload, and
   validate the catalogue.
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** submit it: open a pull request, or fill
-  in the [submission form](https://github.com/neur0map/ryostore/issues/new?template=submit-item.yml)
+  in the [submission form](https://github.com/ryoku-dev/ryostore/issues/new?template=submit-item.yml)
   and a maintainer helps land it.
 
 Deep, per-catalogue authoring references live beside each catalogue

@@ -23,7 +23,7 @@ is a **GitHub Release asset** (kept out of git so the repo stays lean).
      "name": "Display Name",
      "author": "you",
      "poster": "livewalls/<id>/poster.jpg",
-     "video": "https://github.com/neur0map/ryostore/releases/download/livewalls/<id>.mp4",
+     "video": "https://github.com/ryoku-dev/ryostore/releases/download/livewalls/<id>.mp4",
      "tags": ["anime", "abstract"]
    }
    ```

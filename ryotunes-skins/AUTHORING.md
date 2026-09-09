@@ -5,9 +5,9 @@ face, radius, duration and a couple of globals the Ryotunes music player reads.
 Users install skins from the store; applying one lands it in a store-owned
 directory and Ryotunes shows it in **Settings › Appearance** with a STORE badge.
 The full format reference lives in the Ryotunes repo:
-[`docs/SKINS.md`](https://github.com/neur0map/ryotunes/blob/main/docs/SKINS.md),
+[`docs/SKINS.md`](https://github.com/ryoku-dev/ryotunes/blob/main/docs/SKINS.md),
 and the machine-checkable schema is
-[`skins/skin.schema.json`](https://raw.githubusercontent.com/neur0map/ryotunes/main/skins/skin.schema.json).
+[`skins/skin.schema.json`](https://raw.githubusercontent.com/ryoku-dev/ryotunes/main/skins/skin.schema.json).
 
 Copy [`template/`](template) to start; it is a complete skin with every field
 explained. For a skin derived from a known colour scheme, use the import tool

@@ -2,7 +2,7 @@ Skin: Solarized (solarized)
 Provider: Noctalia
 Upstream palette: Solarized <https://ethanschoonover.com/solarized/>
 Source: Ryoku colour-scheme catalogue (colorschemes/solarized)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Solarized/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Solarized/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

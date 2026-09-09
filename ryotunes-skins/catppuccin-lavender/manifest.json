@@ -16,9 +16,9 @@
     {
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
-      "sha256": "0be4b6eece58554d81da696a9614c86132bb7f4487af6d7838bb80836c53a42e",
+      "sha256": "a12431577ad03571486f031d471b00d394e938202a374213b01644cbd494d712",
       "mode": "0644",
-      "size": 857,
+      "size": 858,
       "install": true
     },
     {

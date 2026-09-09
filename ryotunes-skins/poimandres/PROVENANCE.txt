@@ -2,7 +2,7 @@ Skin: Poimandres (poimandres)
 Provider: Ryoku
 Upstream palette: Poimandres <https://github.com/drcmda/poimandres-theme>
 Source: Ryoku colour-scheme catalogue (colorschemes/poimandres)
-        https://raw.githubusercontent.com/neur0map/ryostore/main/colorschemes/Poimandres/preview.jpg
+        https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Poimandres/preview.jpg
 License: CC0-1.0
 
 Derived by tools/import-ryotunes-skins.py, mapping the Noctalia palette

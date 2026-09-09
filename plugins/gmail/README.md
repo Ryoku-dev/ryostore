@@ -1,6 +1,6 @@
 # Gmail Plugin for Ryoku
 
-Native industrial noir Gmail client and notification reader plugin for the [Ryoku](https://github.com/neur0map/ryoku) desktop shell.
+Native industrial noir Gmail client and notification reader plugin for the [Ryoku](https://github.com/ryoku-dev/ryoku-arch) desktop shell.
 
 ## Features
 
@@ -86,7 +86,7 @@ This plugin is a composite work distributed as a whole under the **GNU GPL v3.0*
 (`SPDX: GPL-3.0-only AND MIT`).
 
 - Its QML UI widgets are derived from the GPL-3.0 [illogical-impulse](https://github.com/end-4/dots-hyprland)
-  Quickshell config and are styled for the GPL-3.0 [Ryoku](https://github.com/neur0map/ryoku) shell.
+  Quickshell config and are styled for the GPL-3.0 [Ryoku](https://github.com/ryoku-dev/ryoku-arch) shell.
 - The Gmail-specific code (the `bin/` Python helpers and the `Email*` views) is
   © 2026 Yash Parmar (Zatch07) and is additionally offered under the MIT License.
 
