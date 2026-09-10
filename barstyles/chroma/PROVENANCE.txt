@@ -1,0 +1,8 @@
+Chroma bar for Ryoku.
+
+Author: aethctl
+Upstream design: https://github.com/aethctl/chroma-shell
+License: MIT
+
+This Ryoku-native port uses Ryoku services, Matugen theming, workspace controls,
+media integration, and playback-only spectrum visualisation.

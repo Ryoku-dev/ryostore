@@ -93,6 +93,31 @@
       "manifestSha256": "6d610f3e421135271fe9678120ce60b4c807487bb5110345ffa52c0219c7d7ed",
       "official": false,
       "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "chroma",
+      "name": "Chroma",
+      "version": "1.0.0",
+      "path": "barstyles/chroma",
+      "author": "aethctl",
+      "summary": "Matugen signal bar",
+      "description": "A colourful modular Ryoku top bar with wallpaper-driven theming, workspace controls, media integration, utilities, and playback visualisation.",
+      "tags": [
+        "top",
+        "horizontal",
+        "matugen",
+        "media",
+        "workspaces"
+      ],
+      "accent": "#9bd8f5",
+      "surface": "#10191f",
+      "preview": "assets/preview.png",
+      "screenshots": [],
+      "manifest": "manifest.json",
+      "manifestSha256": "b31139ff247e8e6f6ef1cbc087e4aa234893a85fce45ec304693542af2f777d8",
+      "lastUpdated": "2026-09-10",
+      "official": false,
+      "license": "MIT"
     }
   ]
 }
