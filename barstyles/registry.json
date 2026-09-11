@@ -118,6 +118,32 @@
       "lastUpdated": "2026-09-10",
       "official": false,
       "license": "MIT"
+    },
+    {
+      "id": "orbit",
+      "name": "Orbit",
+      "version": "1.0.0",
+      "path": "barstyles/orbit",
+      "author": "aethctl",
+      "summary": "Animated trajectory bar",
+      "description": "A motion-led top bar built around a live trajectory, adaptive media core, workspace satellites, native tray, and docked system popouts.",
+      "tags": [
+        "top",
+        "trajectory",
+        "animated",
+        "media",
+        "popouts",
+        "minimal"
+      ],
+      "accent": "#9aa7e8",
+      "surface": "#11131b",
+      "preview": "assets/preview.webp",
+      "screenshots": [],
+      "manifest": "manifest.json",
+      "manifestSha256": "4cb4519201351565e69ae48b4b1d901cbd0b28b4ec0aee23b2d16b79908567ad",
+      "lastUpdated": "2026-09-11",
+      "official": false,
+      "license": "GPL-3.0-only"
     }
   ]
 }
