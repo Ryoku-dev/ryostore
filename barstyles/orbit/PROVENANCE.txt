@@ -1,0 +1,10 @@
+Orbit
+=====
+
+Original Ryoku bar style by aethctl.
+Designed for the Ryostore catalogue.
+
+The product code and layout are original work.
+The bundled preview is a desktop screenshot of Orbit in use.
+
+License: GPL-3.0-only

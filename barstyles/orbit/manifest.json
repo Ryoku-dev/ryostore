@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "id": "orbit",
+  "category": "barstyles",
+  "version": "1.0.0",
+  "destination": "ryoku/barstyles/orbit",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 219,
+      "sha256": "2e2ea3a9af72d7ec2b87074901d40f228efd2e4487b2d6e49ec8e967c79536ee",
+      "install": true
+    },
+    {
+      "source": "Scene.qml",
+      "destination": "Scene.qml",
+      "mode": "0644",
+      "size": 22749,
+      "sha256": "1da6193004e034d290eb590d1d24a2403759ab789c763a16ae383c549f185663",
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "mode": "0644",
+      "size": 252694,
+      "sha256": "2273443796b36d7def2d24fb8e7376660fc84829a37dcffe0613ea4ad2534832",
+      "install": false
+    },
+    {
+      "source": "components/OrbitEqualizer.qml",
+      "destination": "components/OrbitEqualizer.qml",
+      "mode": "0644",
+      "size": 2634,
+      "sha256": "77ecd85d65ed09bceafad60a3c8446df1a41ebaa97cdf68cb9e7bbbd7edbd8b1",
+      "install": true
+    },
+    {
+      "source": "components/OrbitIconButton.qml",
+      "destination": "components/OrbitIconButton.qml",
+      "mode": "0644",
+      "size": 3680,
+      "sha256": "15308410acbfae28904a58736016e3f9ac571dc82b179571a6efc8af6796a6cf",
+      "install": true
+    },
+    {
+      "source": "components/OrbitMetric.qml",
+      "destination": "components/OrbitMetric.qml",
+      "mode": "0644",
+      "size": 1305,
+      "sha256": "273de7b031abe8ee5ec00ae5fce0ddc673cef55fafea467b1c59617113dfb29f",
+      "install": true
+    },
+    {
+      "source": "components/OrbitNode.qml",
+      "destination": "components/OrbitNode.qml",
+      "mode": "0644",
+      "size": 6048,
+      "sha256": "be24d42dc3404dd62db1a1058a40a58db2d57135ba82e53da2e2d6f22ae1f25a",
+      "install": true
+    },
+    {
+      "source": "components/OrbitPopup.qml",
+      "destination": "components/OrbitPopup.qml",
+      "mode": "0644",
+      "size": 8637,
+      "sha256": "d47cd2c7e9b151e26be96f1c862bd1cec2c36f98bd21d1a632fdbdaa83eaa96c",
+      "install": true
+    },
+    {
+      "source": "components/OrbitStage.qml",
+      "destination": "components/OrbitStage.qml",
+      "mode": "0644",
+      "size": 871,
+      "sha256": "6e8bbf4a2deedef55dce03541c004923d11edd3799c74e489211b48ba3ef0385",
+      "install": true
+    },
+    {
+      "source": "components/OrbitTrajectory.qml",
+      "destination": "components/OrbitTrajectory.qml",
+      "mode": "0644",
+      "size": 6080,
+      "sha256": "9dd9f751d704fee782a8f3eaeacf2991c5345a103fbda8a00f8f6641a3233eb7",
+      "install": true
+    },
+    {
+      "source": "components/TrayStrip.qml",
+      "destination": "components/TrayStrip.qml",
+      "mode": "0644",
+      "size": 2874,
+      "sha256": "e089d73d0d9b5057d195726bec49dc1fe31d547bd7882e863f3f61cb81d464f1",
+      "install": true
+    },
+    {
+      "source": "popouts/AudioPopout.qml",
+      "destination": "popouts/AudioPopout.qml",
+      "mode": "0644",
+      "size": 11492,
+      "sha256": "51c2a191a1a35f88006ecb08447ef902c8416f2ab087b8aad1c2b61b46e3101b",
+      "install": true
+    },
+    {
+      "source": "popouts/BatteryPopout.qml",
+      "destination": "popouts/BatteryPopout.qml",
+      "mode": "0644",
+      "size": 5334,
+      "sha256": "e3511450b4269cd1bdb6a1db455417e0f37b2c435118f894b6397d84edf7068c",
+      "install": true
+    },
+    {
+      "source": "popouts/BluetoothPopout.qml",
+      "destination": "popouts/BluetoothPopout.qml",
+      "mode": "0644",
+      "size": 9889,
+      "sha256": "59f22ffbbf07ac804d13f53c51d4086b1ce2520a46d47a626020e4b1fb1c97f9",
+      "install": true
+    },
+    {
+      "source": "popouts/MediaPopout.qml",
+      "destination": "popouts/MediaPopout.qml",
+      "mode": "0644",
+      "size": 19550,
+      "sha256": "5612898e5bfe3a97ba328950739672b62bf718a3993037551931dc68a39705fa",
+      "install": true
+    },
+    {
+      "source": "popouts/NetworkPopout.qml",
+      "destination": "popouts/NetworkPopout.qml",
+      "mode": "0644",
+      "size": 8195,
+      "sha256": "2f6ae8dee045d2f1da4cd852063069aca564c9cf018e5d78820fadeaed8e05ce",
+      "install": true
+    }
+  ]
+}
