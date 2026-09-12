@@ -1,16 +1,18 @@
 # Ryoku Palette Bridge
 
-One wallpaper change can now flow through the three apps that tend to stay open
-all day: Zen Browser, Spotify, and Discord through Vesktop.
+Ryoku Palette Bridge keeps Zen, Spotify, and Discord matched to your wallpaper.
+Change the wallpaper and all three apps pick up its Ryoku colours automatically.
 
-Ryoku Palette Bridge watches Matugen's active Ryoku palette and shares each
-change over a local event stream. Every app uses the least disruptive way to
-apply it:
+It works with the themes each app already supports:
 
-- Zen updates its browser chrome through Firefox's native theme API.
-- Spotify updates Spicetify and Encore colour tokens without stopping playback.
-- Vesktop keeps Midnight loaded while Matugen changes only its QuickCSS
-  variables, avoiding the flash back to Discord's stock theme.
+- Zen's browser theme changes colour through Firefox's theme API.
+- Spotify's Spicetify theme gets the same colours without stopping your music.
+- Discord uses the Midnight theme in Vesktop, with its colours updated through
+  QuickCSS so the stock Discord theme never flashes on screen.
+
+This bundle is stored under `bundles/spiceflow` because the project started as
+Spiceflow, a Spotify-only tool. The current project and its name in Ryostore are
+Ryoku Palette Bridge because it now handles all three apps.
 
 Ryostore installs the bridge and automatically configures integrations for
 compatible apps already present on the machine. The source is kept at
