@@ -115,6 +115,37 @@
       "wallpaper": "https://github.com/ryoku-dev/ryostore/releases/download/rices/yuk-wall.jpg",
       "official": false,
       "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "monolith",
+      "name": "Monolith",
+      "version": "1.0.0",
+      "path": "rices/monolith",
+      "author": "aethctl",
+      "summary": "A restrained architectural Ryoku desktop built around sharp geometry, negative…",
+      "description": "A restrained architectural Ryoku desktop built around sharp geometry, negative space, mechanical motion and a structural two-axis frame.",
+      "tags": [
+        "adaptive",
+        "architectural",
+        "minimal",
+        "structural",
+        "dark",
+        "mechanical"
+      ],
+      "accent": "#e0563b",
+      "surface": "#0e1416",
+      "preview": "assets/preview.webp",
+      "screenshots": [],
+      "manifest": "rice.json",
+      "manifestSha256": "9411b07ae41f525a80f11780433a05e1e6e89158aece582c31fb90ead27db27b",
+      "blurb": "A restrained architectural Ryoku desktop built around sharp geometry, negative space, mechanical motion and a structural two-axis frame.",
+      "createdWith": "0.63.1-beta.19",
+      "color": "wallpaper",
+      "rounding": 2,
+      "wallpaper": "https://github.com/ryoku-dev/ryostore/releases/download/rices/monolith-wall.jpg",
+      "hero": "https://github.com/ryoku-dev/ryostore/releases/download/rices/monolith-hero.jpg",
+      "lastUpdated": "2026-09-11",
+      "official": false
     }
   ]
 }
