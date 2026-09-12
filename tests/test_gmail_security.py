@@ -44,7 +44,8 @@ class GmailSecurityTests(unittest.TestCase):
         sys.path.insert(0, str(BIN))
         for key in saved:
             sys.modules.pop(key, None)
-        module = importlib.import_module(name)
+        with patch.object(sys, "dont_write_bytecode", True):
+            module = importlib.import_module(name)
 
         def restore():
             sys.path[:] = old_path

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "spiceflow",
   "category": "bundles",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/bundles/spiceflow",
   "name": "Ryoku Palette Bridge",
   "description": "One wallpaper palette for Zen Browser, Spotify, and Vesktop. A local event-driven bridge repaints all three without browser restarts, Discord theme flashes, or interrupted music.",
@@ -13,6 +13,33 @@
     "assets/preview.png"
   ],
   "items": [
+    {
+      "type": "package",
+      "name": "git",
+      "detect": "git",
+      "tier": "core",
+      "source": "official",
+      "summary": "Fetch the pinned palette bridge source.",
+      "upstream": "https://git-scm.com"
+    },
+    {
+      "type": "package",
+      "name": "go",
+      "detect": "go",
+      "tier": "core",
+      "source": "official",
+      "summary": "Build the small palette bridge daemon.",
+      "upstream": "https://go.dev"
+    },
+    {
+      "type": "package",
+      "name": "curl",
+      "detect": "curl",
+      "tier": "core",
+      "source": "official",
+      "summary": "Verify the local bridge health endpoint.",
+      "upstream": "https://curl.se"
+    },
     {
       "type": "script",
       "name": "ryoku-palette-bridge",
@@ -29,8 +56,8 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 1239,
-      "sha256": "867c7c99031d931479b194fd354bd32e76b7d1122193f33a1f5bac421c3f61d0",
+      "size": 1495,
+      "sha256": "e599c3e60671e6914ae7b939fa1ca30aa5c23d1ba6c10c44116016d93eeb1b00",
       "install": false
     },
     {
@@ -45,8 +72,8 @@
       "source": "installers/ryoku-palette-bridge.sh",
       "destination": "installers/ryoku-palette-bridge.sh",
       "mode": "0755",
-      "size": 1594,
-      "sha256": "0965517c844bee68a02668bf32382d0001449f1b7e949193866033d2687b8b22",
+      "size": 3175,
+      "sha256": "bec920f8318330efcafbe0e1bf19f21c1a84113787ae1b4844bb017c722fc54b",
       "install": false
     }
   ]

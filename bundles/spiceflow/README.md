@@ -21,6 +21,15 @@ later:
 ~/.local/share/ryoku-palette-bridge/install-integrations.sh --all
 ```
 
+Check the core service and published palette at any time:
+
+```bash
+ryoku-palette-bridge-doctor
+```
+
+Rerunning the bundle is safe: a healthy installation is left alone, while an
+incomplete installation is repaired from the verified pinned source checkout.
+
 Zen's live extension must be signed by Mozilla. The repository includes a
 guided setup:
 

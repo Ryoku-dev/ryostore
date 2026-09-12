@@ -657,7 +657,7 @@
     {
       "id": "spiceflow",
       "name": "Ryoku Palette Bridge",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "bundles/spiceflow",
       "author": "Rayyan",
       "summary": "wallpaper · Zen · Spotify · Discord",
@@ -678,8 +678,32 @@
         "assets/preview.png"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "9dc31b1c36cb03809e4424ece632e1a8832cd645242a316dc07fa8f2c68825d7",
+      "manifestSha256": "310ea5dc26bcfc4eb53d711efa619671688ca02e28ab51a352c38de83b5280d4",
       "components": [
+        {
+          "type": "package",
+          "name": "git",
+          "detect": "git",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Fetch the pinned palette bridge source."
+        },
+        {
+          "type": "package",
+          "name": "go",
+          "detect": "go",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Build the small palette bridge daemon."
+        },
+        {
+          "type": "package",
+          "name": "curl",
+          "detect": "curl",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Verify the local bridge health endpoint."
+        },
         {
           "type": "script",
           "name": "ryoku-palette-bridge",
@@ -693,7 +717,7 @@
       "sources": "GitHub / MIT",
       "icon": "palette",
       "official": false,
-      "lastUpdated": "2026-09-08"
+      "lastUpdated": "2026-09-12"
     },
     {
       "id": "cachyos-layer",
