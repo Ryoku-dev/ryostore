@@ -657,7 +657,7 @@
     {
       "id": "spiceflow",
       "name": "Ryoku Palette Bridge",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "path": "bundles/spiceflow",
       "author": "Rayyan",
       "summary": "wallpaper · Zen · Spotify · Discord",
@@ -678,7 +678,7 @@
         "assets/preview.png"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "310ea5dc26bcfc4eb53d711efa619671688ca02e28ab51a352c38de83b5280d4",
+      "manifestSha256": "e699c127be6b7345d9f7b37ed6ae4ed2b135721e542deee9d6c219a4cfe3e3cd",
       "components": [
         {
           "type": "package",

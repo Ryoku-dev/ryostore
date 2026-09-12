@@ -3,7 +3,7 @@
 # Official source: https://github.com/Sipper1236/ryoku-palette-bridge
 set -euo pipefail
 
-commit=ab2ca9bc3c3cd9754cfc468b47e1349788db6486
+commit=b1d13b2d93404570166dcce56ef640b7aac71f4c
 upstream=https://github.com/Sipper1236/ryoku-palette-bridge.git
 data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
 source_dir="$data_home/ryoku-palette-bridge"
