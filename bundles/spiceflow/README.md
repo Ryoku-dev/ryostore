@@ -1,19 +1,43 @@
-# Spiceflow
+# Ryoku Palette Bridge
 
-Spiceflow makes the Comfy Spicetify theme follow Ryoku's wallpaper palette
-without reloading Spotify's renderer or pausing playback.
+One wallpaper change can now flow through the three apps that tend to stay open
+all day: Zen Browser, Spotify, and Discord through Vesktop.
 
-RyoStore installs the integration but does not activate it. After installation,
-run:
+Ryoku Palette Bridge watches Matugen's active Ryoku palette and shares each
+change over a local event stream. Every app uses the least disruptive way to
+apply it:
+
+- Zen updates its browser chrome through Firefox's native theme API.
+- Spotify updates Spicetify and Encore colour tokens without stopping playback.
+- Vesktop keeps Midnight loaded while Matugen changes only its QuickCSS
+  variables, avoiding the flash back to Discord's stock theme.
+
+Ryostore installs the bridge and automatically configures integrations for
+compatible apps already present on the machine. The source is kept at
+`~/.local/share/ryoku-palette-bridge`, so you can add another integration
+later:
 
 ```bash
-spiceflow enable
+~/.local/share/ryoku-palette-bridge/install-integrations.sh --all
 ```
 
-The initial activation applies Spicetify once and may reload Spotify. Wallpaper
-changes afterward update CSS variables in place and preserve playback.
+Check the core service and published palette at any time:
 
-Source: <https://github.com/Sipper1236/spiceflow>
+```bash
+ryoku-palette-bridge-doctor
+```
 
-License: GPL-3.0-or-later. The separately downloaded Comfy theme retains its
-own license.
+Rerunning the bundle is safe: a healthy installation is left alone, while an
+incomplete installation is repaired from the verified pinned source checkout.
+
+Zen's live extension must be signed by Mozilla. The repository includes a
+guided setup:
+
+```bash
+~/.local/share/ryoku-palette-bridge/setup-zen-signing.sh
+```
+
+Source: <https://github.com/Sipper1236/ryoku-palette-bridge>
+
+License: MIT. The bundled integration templates retain the third-party notices
+included upstream.

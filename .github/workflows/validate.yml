@@ -43,5 +43,8 @@ jobs:
       - name: Validate catalogue integrity (shell)
         run: bash tests/validate-catalogue.sh
 
+      - name: Verify palette bridge installer recovery
+        run: bash tests/ryoku-palette-bridge-installer.test.sh
+
       - name: Validate product catalogue (python)
         run: python3 tests/validate-store.py

@@ -2,10 +2,10 @@
   "schema": 1,
   "id": "spiceflow",
   "category": "bundles",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/bundles/spiceflow",
-  "name": "Spiceflow",
-  "description": "Make Comfy Spotify follow Ryoku or Pop!_OS/Pywal wallpaper palettes without renderer reloads or interrupted playback. RyoStore installs it inactive; run spiceflow enable when ready.",
+  "name": "Ryoku Palette Bridge",
+  "description": "One wallpaper palette for Zen Browser, Spotify, and Vesktop. A local event-driven bridge repaints all three without browser restarts, Discord theme flashes, or interrupted music.",
   "icon": "palette",
   "accent": "#65d3ff",
   "preview": "assets/preview.png",
@@ -14,14 +14,41 @@
   ],
   "items": [
     {
+      "type": "package",
+      "name": "git",
+      "detect": "git",
+      "tier": "core",
+      "source": "official",
+      "summary": "Fetch the pinned palette bridge source.",
+      "upstream": "https://git-scm.com"
+    },
+    {
+      "type": "package",
+      "name": "go",
+      "detect": "go",
+      "tier": "core",
+      "source": "official",
+      "summary": "Build the small palette bridge daemon.",
+      "upstream": "https://go.dev"
+    },
+    {
+      "type": "package",
+      "name": "curl",
+      "detect": "curl",
+      "tier": "core",
+      "source": "official",
+      "summary": "Verify the local bridge health endpoint.",
+      "upstream": "https://curl.se"
+    },
+    {
       "type": "script",
-      "name": "spiceflow",
-      "detect": "spiceflow",
+      "name": "ryoku-palette-bridge",
+      "detect": "ryoku-palette-bridge",
       "tier": "core",
       "interactive": false,
       "source": "git",
-      "summary": "Playback-safe live wallpaper colors for Spicetify and Comfy.",
-      "upstream": "https://github.com/Sipper1236/spiceflow"
+      "summary": "Live Ryoku wallpaper colours for Zen, Spotify, and Vesktop.",
+      "upstream": "https://github.com/Sipper1236/ryoku-palette-bridge"
     }
   ],
   "files": [
@@ -29,8 +56,8 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 556,
-      "sha256": "f2811dbc1399f5aa259fef96104d503d4225d66119db3dbb8e2691f7155e2610",
+      "size": 1495,
+      "sha256": "e599c3e60671e6914ae7b939fa1ca30aa5c23d1ba6c10c44116016d93eeb1b00",
       "install": false
     },
     {
@@ -42,11 +69,11 @@
       "install": false
     },
     {
-      "source": "installers/spiceflow.sh",
-      "destination": "installers/spiceflow.sh",
+      "source": "installers/ryoku-palette-bridge.sh",
+      "destination": "installers/ryoku-palette-bridge.sh",
       "mode": "0755",
-      "size": 731,
-      "sha256": "7cb8334fca75ee2c55504589e3570217a964916b83554a0b6c3cc5c8922c42fb",
+      "size": 3175,
+      "sha256": "bec920f8318330efcafbe0e1bf19f21c1a84113787ae1b4844bb017c722fc54b",
       "install": false
     }
   ]
