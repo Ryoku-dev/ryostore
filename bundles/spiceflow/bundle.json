@@ -2,10 +2,10 @@
   "schema": 1,
   "id": "spiceflow",
   "category": "bundles",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "destination": "ryoku/bundles/spiceflow",
   "name": "Ryoku Palette Bridge",
-  "description": "Keeps Zen, Spotify, and Discord matched to your Ryoku wallpaper. It updates Zen's browser theme, Spotify through Spicetify, and Discord through Vesktop's Midnight theme whenever your wallpaper colours change.",
+  "description": "Wallpaper colours for Spotify and Vesktop, with optional Zen live theming through a separately installed signed extension. Installs and starts the bridge user service.",
   "icon": "palette",
   "accent": "#65d3ff",
   "preview": "assets/preview.png",
@@ -43,7 +43,7 @@
     {
       "type": "script",
       "name": "ryoku-palette-bridge",
-      "detect": "ryoku-palette-bridge",
+      "detect": "ryoku-palette-bridge-store-2-1-0",
       "tier": "core",
       "interactive": false,
       "source": "git",
@@ -56,8 +56,8 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 1629,
-      "sha256": "31f856ddba918f3ebc86ad29d1b5cde9eda7df662206d8040337615f4cdab041",
+      "size": 3235,
+      "sha256": "0dd204a9470ac98ecacfaef6a66edc336e62beda09a1a7ecd4757bc359133a64",
       "install": false
     },
     {
@@ -72,8 +72,8 @@
       "source": "installers/ryoku-palette-bridge.sh",
       "destination": "installers/ryoku-palette-bridge.sh",
       "mode": "0755",
-      "size": 3175,
-      "sha256": "c808eb5d0df4a3665c01bed6891d0f4309580e400a910209293cbf7a81b1a66c",
+      "size": 3525,
+      "sha256": "182b7f8edeecba1e0566319f9816179a0b6114c6065f7ff2f2dd35fa05dbbe05",
       "install": false
     }
   ]
