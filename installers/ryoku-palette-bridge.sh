@@ -3,7 +3,7 @@
 # Official source: https://github.com/Sipper1236/ryoku-palette-bridge
 set -euo pipefail
 
-commit=ff0d457ad565549f3be40b91b3c71d6e243cea16
+commit=41f6b5ed6b5506bcf3ee25dd8383ac0f63c094ce
 upstream=https://github.com/Sipper1236/ryoku-palette-bridge.git
 data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
 source_dir="$data_home/ryoku-palette-bridge"
@@ -11,7 +11,7 @@ config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
 
 bridge_healthy() {
   command -v curl >/dev/null &&
-    [[ $(curl -fsS http://127.0.0.1:47616/healthz 2>/dev/null) == ok ]]
+    [[ $(curl --connect-timeout 2 --max-time 5 -fsS http://127.0.0.1:47616/healthz 2>/dev/null) == ok ]]
 }
 
 canonical_service_active() {
