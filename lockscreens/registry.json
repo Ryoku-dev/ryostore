@@ -802,6 +802,31 @@
       "manifestSha256": "74a856e540af412b71269d41aef21a2d0fc29dcda6658c60f3c195a680215de3"
     },
     {
+      "id": "world-machine",
+      "name": "World Machine",
+      "version": "1.0.0",
+      "path": "lockscreens/world-machine",
+      "author": "CratusGod",
+      "summary": "Niko's lightbulb over a OneShot sunset, with music.",
+      "description": "A OneShot lock: Avolicis' pixel-art sunset animation (used with permission) with its soundtrack, Niko's lightbulb as your avatar, THE WORLD MACHINE wordmark, Terminus type and a Num Lock indicator. The matching shell reload cover and boot screen live at https://github.com/CratusGod/Oneshot-themed-Ryoku.",
+      "tags": [
+        "game",
+        "pixel",
+        "animated",
+        "music"
+      ],
+      "accent": "#FFD34A",
+      "surface": "#0B0A12",
+      "preview": "assets/preview.gif",
+      "screenshots": [
+        "assets/preview.gif"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "a5f50095dcb2a445591428e5ecc0e9ba44c5ab46e490b8befe2f044fb1fb73c5",
+      "official": false,
+      "lastUpdated": "2026-09-15"
+    },
+    {
       "id": "wuwa",
       "name": "Wuthering Waves",
       "version": "1.0.0",
