@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "id": "world-machine",
+  "category": "lockscreens",
+  "version": "1.0.0",
+  "destination": "qylock/themes/world-machine",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 1707,
+      "sha256": "ca879d3a6ed107cdaa94c689187284c3ab9c59f9c3068316f0bf2e8b4e9698e2",
+      "install": true
+    },
+    {
+      "source": "assets/preview.gif",
+      "destination": "preview.gif",
+      "mode": "0644",
+      "size": 209964,
+      "sha256": "ccaa7c979ac9b76f3e9d88c171c2c9f940e311863a412d5243a9d71a5ae5e091",
+      "install": false
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 29490,
+      "sha256": "2ce7ed46ef62bfbff25ecd7d89d337ef95a13a9d924592a3b866528d17ff4192",
+      "install": true
+    },
+    {
+      "source": "content/bg.mp4",
+      "destination": "bg.mp4",
+      "mode": "0644",
+      "size": 10461645,
+      "sha256": "d2486faf14e34988d28a3e71bf65ea80d2ac6fe1e52dec1119b5946c33edd2b5",
+      "install": true
+    },
+    {
+      "source": "content/bulb.png",
+      "destination": "bulb.png",
+      "mode": "0644",
+      "size": 5339,
+      "sha256": "fa6feb6b1c62ca6f56e7ba63b8d168fd232ea19a73f7ec05c5092f2bd988e67e",
+      "install": true
+    },
+    {
+      "source": "content/font/LICENSE-Terminus.txt",
+      "destination": "font/LICENSE-Terminus.txt",
+      "mode": "0644",
+      "size": 4570,
+      "sha256": "6a30ebc918d73e02c283f04099fb2cf97ddc15e1c8368960b3f1bbb7ee959ae4",
+      "install": true
+    },
+    {
+      "source": "content/font/TerminessNerdFont-Bold.ttf",
+      "destination": "font/TerminessNerdFont-Bold.ttf",
+      "mode": "0644",
+      "size": 2743896,
+      "sha256": "9091a182bbbb86c7e1ab0cdb6e918b95fc379b0a4f42874a54ebbfd39b5c4211",
+      "install": true
+    },
+    {
+      "source": "content/font/TerminessNerdFont-Regular.ttf",
+      "destination": "font/TerminessNerdFont-Regular.ttf",
+      "mode": "0644",
+      "size": 2742276,
+      "sha256": "b1cf6d042a725f04156018a53c3fb2cbc46b10c0eef67288fdc76ba9266b8dc7",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 206,
+      "sha256": "b227d6d2fa5cdf72cf8281761a019b1ff1009dd6927fc64fb3ef8340cb8fb5dc",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 28,
+      "sha256": "4d56524dc7eb60fd1ca54f3c3f79c5438f650b06781564e33627a36c6b6227e3",
+      "install": true
+    },
+    {
+      "source": "content/wordmark.png",
+      "destination": "wordmark.png",
+      "mode": "0644",
+      "size": 1720,
+      "sha256": "f976b057d1c2fc5281799966b68b7f8b0fa28f9aee2cfaf2f3fc053a73d493b6",
+      "install": true
+    }
+  ]
+}
