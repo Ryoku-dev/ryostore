@@ -1,0 +1,35 @@
+World Machine qylock theme
+
+Derived from the Ryoku store's "last-of-us" lockscreen.
+  Upstream: https://github.com/Darkkal44/qylock
+  Upstream commit: c45eed24c0f9a3148a7d13081b28acc4d7874853
+  Upstream author: Darkkal44 and qylock contributors
+  License: GNU General Public License version 3; see LICENSE
+Changes: new OneShot palette and art, bundled Terminus font with outlined bold
+text, right-aligned layout, lightbulb avatar, a Num Lock indicator read from the
+keyboard LED under /sys/class/leds, video audio played through AudioOutput, a
+per-second clock, and a working wrong-password shake.
+
+Author of this theme: CratusGod
+Maintainer: CratusGod, https://github.com/CratusGod/Oneshot-themed-Ryoku
+
+Background video (bg.mp4): "Memory of a Distant Place (OneShot)" by Avolicis,
+  https://www.youtube.com/watch?v=eHxaYojFgl8
+  Used with the artist's permission for this free, non-commercial theme.
+  Re-encoded to 1920x1080 30 fps H.264 with AAC audio, with short fades at the
+  loop point.
+
+Lightbulb sprite (bulb.png): the OneShot lightbulb, a free-to-use sprite whose
+  original author is unknown. Rescaled on its pixel grid.
+
+Wordmark (wordmark.png): original pixel lettering "THE WORLD MACHINE" by CratusGod.
+
+OneShot, Niko and THE WORLD MACHINE belong to Future Cat. This is a fan work and
+is not affiliated with or endorsed by Future Cat.
+
+Bundled font: Terminess Nerd Font (font/TerminessNerdFont-Regular.ttf,
+  font/TerminessNerdFont-Bold.ttf), a patched build of Terminus from Nerd Fonts.
+  License: SIL Open Font License 1.1; see font/LICENSE-Terminus.txt
+
+Ryoku ships assets/preview.gif as catalogue media: a short clip of the
+background video. It is not installed with the runtime payload.
