@@ -102,7 +102,10 @@ with you.
   which compositor is running. A feature the compositor genuinely cannot do is
   gated on the capability (`Wm.caps`), not on its name. An item that needs a
   capability nothing else offers is compositor-exclusive content: say so in the
-  README rather than shipping a control that does nothing.
+  README, and declare it in your registry entry (`"windowManager": "<provider
+  name>"`, with an optional `windowManagerReason`). The Store then greys the item
+  out on any other window manager, says why, and refuses the install, so nothing
+  lands on a desktop that cannot run it, while an installed copy stays removable.
 
 That is the whole contract. When in doubt, copy the closest existing item and
 change one thing at a time.

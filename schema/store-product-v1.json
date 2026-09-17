@@ -49,7 +49,11 @@
         "previewRaw": {"type": "string", "minLength": 1},
         "screenshots": {"type": "array", "items": {"type": "string", "minLength": 1}},
         "manifest": {"type": "string", "minLength": 1},
-        "manifestSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        "manifestSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "downloadPaused": {"type": "boolean", "description": "Pause new downloads without delisting the item: the Store keeps it listed and removable and refuses install and update."},
+        "downloadPauseReason": {"type": "string", "minLength": 1, "description": "User-facing note shown with a paused item."},
+        "windowManager": {"type": "string", "minLength": 1, "description": "The window manager this item is written for, named the way `ryoku wm use <name>` names one (for example \"hyprland\"). Absent means it runs on any; on any other window manager the Store greys the item out and refuses the install."},
+        "windowManagerReason": {"type": "string", "minLength": 1, "description": "User-facing note shown when the item cannot run on the current window manager."}
       }
     }
   }
