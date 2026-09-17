@@ -10,21 +10,26 @@ Two categories ship a per-file manifest (schema 1, with ``destination`` and a
 ``product-manifest.json``, destination ``ryoku/plugins/<id>``) and
 ``ryotunes-skins`` (manifest ``manifest.json``, destination
 ``ryoku/ryotunes-skins/<id>``). Both name their manifest file in the registry
-entry's ``manifest`` field. Every other category installs differently and has no
-such manifest to reproduce, so generalising further would be guesswork.
+entry's ``manifest`` field. ``barstyles`` ships ``manifest.json`` the same way
+(destination ``ryoku/barstyles/<id>``), with one difference this tool honours:
+a bar style installs its README/LICENSE beside its QML, while a plugin and a
+skin hold documentation back. Every other category installs differently and has
+no such manifest to reproduce, so generalising further would be guesswork.
 
 The manifest is derived to match the convention already in the tree, verified by
-repacking the four existing plugins byte for byte:
+repacking the existing plugins, skins and bar styles byte for byte:
 
-- ``destination``: ``ryoku/plugins/<id>``.
+- ``destination``: ``ryoku/<category>/<id>``.
 - ``files``: every regular file under the product folder except the manifest
   itself (and any ``.git`` metadata), one row per file, sorted by source path
   (POSIX, codepoint order). Each row's ``destination`` mirrors its ``source``.
 - ``mode``: ``0755`` for files that are executable on disk and start with a
   shebang, otherwise ``0644`` (exactly what the validator accepts).
-- ``install``: ``false`` for documentation (README/LICENSE/COPYING/NOTICE/AUTHORS
-  and ``docs/`` trees, per the validator's ``is_documentation``) and for the
-  registry entry's ``preview`` and ``screenshots``; ``true`` for everything else.
+- top level: ``license`` is copied from the registry entry when it names one.
+- ``install``: ``false`` for the registry entry's ``preview`` and
+  ``screenshots``, and for documentation (README/LICENSE/COPYING/NOTICE/AUTHORS
+  and ``docs/`` trees, per the validator's ``is_documentation``) except in a
+  category listed in ``DOCS_SHIPPED_CATEGORIES``; ``true`` otherwise.
 
 It then rewrites the registry entry's ``manifestSha256`` to the new manifest's
 hash and, with ``--touch``, sets ``lastUpdated`` to today. Registry key order and
@@ -43,7 +48,23 @@ import sys
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SUPPORTED_CATEGORIES = ("plugins", "ryotunes-skins")
+SUPPORTED_CATEGORIES = ("plugins", "barstyles", "ryotunes-skins")
+
+# Categories whose products install their documentation alongside their payload.
+# A bar style is a folder of QML that installs whole, so its README and LICENSE
+# land next to it; a plugin and a skin hold documentation back.
+DOCS_SHIPPED_CATEGORIES = {"barstyles"}
+
+# The file-row field order each category already ships. It is per category
+# because a regenerated row must be byte-identical to the row it replaces: the
+# plugins and skins were written by this tool (digest before mode), the categories
+# authored by hand put mode and size first. Emitting the other order would rewrite
+# every row of a manifest whose content did not change.
+ROW_ORDER = {
+    "plugins": ("source", "destination", "sha256", "mode", "size", "install"),
+    "ryotunes-skins": ("source", "destination", "sha256", "mode", "size", "install"),
+    "barstyles": ("source", "destination", "mode", "size", "sha256", "install"),
+}
 
 
 def _load_validator():
@@ -95,21 +116,25 @@ def build_manifest(product: Path, entry: dict, category: str) -> dict:
     if isinstance(screenshots, list):
         uninstalled.update(screenshots)
 
+    ships_docs = category in DOCS_SHIPPED_CATEGORIES
+    order = ROW_ORDER[category]
     rows = []
     for relative, path in _iter_sources(product, manifest_name):
-        install = not (validate_store.is_documentation(relative) or relative in uninstalled)
-        rows.append(
-            {
-                "source": relative,
-                "destination": relative,
-                "sha256": validate_store.sha256(path),
-                "mode": _file_mode(path),
-                "size": path.stat().st_size,
-                "install": install,
-            }
+        install = not (
+            relative in uninstalled
+            or (validate_store.is_documentation(relative) and not ships_docs)
         )
+        fields = {
+            "source": relative,
+            "destination": relative,
+            "sha256": validate_store.sha256(path),
+            "mode": _file_mode(path),
+            "size": path.stat().st_size,
+            "install": install,
+        }
+        rows.append({name: fields[name] for name in order})
     rows.sort(key=lambda row: row["source"])
-    return {
+    manifest = {
         "schema": 1,
         "id": entry.get("id"),
         "category": category,
@@ -117,13 +142,17 @@ def build_manifest(product: Path, entry: dict, category: str) -> dict:
         "destination": f"ryoku/{category}/{entry.get('id')}",
         "files": rows,
     }
+    # A registry entry may name a licence; the manifest mirrors it after the rows.
+    if entry.get("license"):
+        manifest["license"] = entry["license"]
+    return manifest
 
 
 def pack_product(root: Path, category: str, product_id: str, touch: bool = False) -> dict:
     if category not in SUPPORTED_CATEGORIES:
         raise ValueError(
             f"unsupported category {category!r}: only "
-            f"{', '.join(map(repr, SUPPORTED_CATEGORIES))} carry a product-manifest.json"
+            f"{', '.join(map(repr, SUPPORTED_CATEGORIES))} carry a product manifest"
         )
     registry_path = root / category / "registry.json"
     registry = _read_json(registry_path)

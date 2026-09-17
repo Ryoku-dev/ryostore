@@ -33,8 +33,8 @@
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 17599,
-      "sha256": "d9fd2f553b08ba9f62dcb2fa47e0638692267bddd7684c6f86786c861654d39b",
+      "size": 17212,
+      "sha256": "ffade74870a799e92afa0c2e47e0fb64fb62fad1785e3f17a73109472daf5c02",
       "install": true
     },
     {
@@ -177,8 +177,8 @@
       "source": "widgets/ActiveWindow.qml",
       "destination": "widgets/ActiveWindow.qml",
       "mode": "0644",
-      "size": 571,
-      "sha256": "c994d6b4cce746c2a8b047c187715947d14a4c066fe395c402671f9f1be9431c",
+      "size": 464,
+      "sha256": "1340fb230c15c0f346701e54a16f02f30d86b6f2dcb8591d77c18778c419c962",
       "install": true
     },
     {
@@ -273,8 +273,8 @@
       "source": "widgets/Workspaces.qml",
       "destination": "widgets/Workspaces.qml",
       "mode": "0644",
-      "size": 4465,
-      "sha256": "6cf9df0b5ac338e78c7199013b9a03d9dbe3ab1b9865b5c92f5eec73d0fb2b67",
+      "size": 5244,
+      "sha256": "05598abe33474144fc81f9bd9488c43779b56f12984caccbebf38bfcd0767d53",
       "install": true
     }
   ]

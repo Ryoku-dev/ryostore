@@ -9,8 +9,8 @@ import "../content/Logic.js" as Logic
 // one instance alive and hands it to every view as pluginApi.mainInstance, so
 // the bar glyph, the bar panel and the desktop card all bind the same live
 // state. State is polled from the host's own caffeine bridge
-// (~/.config/hypr/scripts/ryoku-cmd-caffeine, the same script the shell's
-// Keep-Awake toggle drives), so Coffee never forks the truth: a change made
+// (the `ryoku-cmd-caffeine` command on PATH, the same one the shell's Keep-Awake
+// toggle drives), so Coffee never forks the truth: a change made
 // from the shell's own Keep-Awake toggle is reflected here on the next poll.
 // The shell reconciles the durable inhibitor to its Keep-Awake flag on a
 // restart, so a hold that must outlive a full shell restart is best driven
@@ -41,8 +41,7 @@ Item {
     // script (same start/stop/status contract) on a system that lacks it.
     readonly property string helperPath: _str("helperPath", "")
 
-    readonly property string home: Quickshell.env("HOME") || ""
-    readonly property string script: Logic.resolveScript(helperPath, home)
+    readonly property string script: Logic.resolveScript(helperPath)
 
     // ── aggregate state the views bind ───────────────────────────────────────
     // True while an idle inhibitor is held. Between a toggle and the first

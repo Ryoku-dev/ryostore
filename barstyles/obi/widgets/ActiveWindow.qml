@@ -1,5 +1,5 @@
 import QtQuick
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import shell.services
 
 // Obi active-window title: the focused window's title, elided. Falls back to a
@@ -7,9 +7,7 @@ import shell.services
 Text {
     id: root
 
-    readonly property var tl: Hyprland.activeToplevel
-    readonly property string title: (root.tl && root.tl.lastIpcObject && root.tl.lastIpcObject.title)
-        ? String(root.tl.lastIpcObject.title) : ""
+    readonly property string title: Wm.focusedWindow ? String(Wm.focusedWindow.title || "") : ""
 
     width: Math.min(implicitWidth, 260)
     text: root.title.length > 0 ? root.title : "Desktop"

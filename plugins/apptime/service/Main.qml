@@ -1,8 +1,10 @@
-// apptime — today's app usage, tracked from Hyprland focus events.
+// apptime — today's app usage, tracked from the window focus the compositor
+// reports.
 //
-// service/Main.qml is the plugin's logic and carries no UI. It watches the raw
-// Hyprland event stream for focus changes (the same source the built-in dock
-// and bar particles use), banks per-app foreground seconds for the current
+// service/Main.qml is the plugin's logic and carries no UI. It watches the
+// focused toplevel over the foreign-toplevel protocol (the same source the
+// shell's own dock and bar particles read, and the only window state a plugin
+// may reach), banks per-app foreground seconds for the current
 // local day, pauses while the user is idle (Wayland ext-idle-notify), archives
 // each finished day to stateDir/usage-YYYY-MM-DD.json and lets the panel
 // browse the archive. Live state is persisted to stateDir/today.json, atomic
@@ -11,7 +13,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 
@@ -23,18 +24,14 @@ Item {
 
     // ---- today's tally (local time) ----
     property string dateKey: ""              // YYYY-MM-DD this tally belongs to
-    property var tally: ({})                 // app class -> banked foreground seconds
-    property var addrClass: ({})             // window address -> app class (cache)
-    property string curAddr: ""              // focused window address
-    property string curClass: ""             // focused window class ("" = none/excluded)
+    property var tally: ({})                 // app id -> banked foreground seconds
+    property string curClass: ""             // focused app id ("" = none/excluded)
     property double curSince: 0              // epoch ms the current segment began
-    property string pendingAddr: ""          // focus addr waiting on the toplevel list
     property bool seeded: false              // warm-start focus resolved
 
     // ---- idle pause ----
     property int idleMinutesV: 5             // from settings, refreshed each tick
     property bool paused: false              // true while the user is idle
-    property string resumeAddr: ""           // window to resume counting after idle
     property string resumeCls: ""
 
     // ---- history / day browsing ----
@@ -77,15 +74,11 @@ Item {
         return MONTHS[m - 1] + " " + d;
     }
 
-    function normAddr(a) {
-        return String(a || "").trim().replace(/^0x/, "").toLowerCase();
-    }
-
     // windows that should never count as "using an app"
     function excluded(cls) {
         const c = String(cls || "").toLowerCase();
-        return c === "" || c === "hyprlock"
-            || c.indexOf("org.quickshell") === 0   // shell surfaces (launcher, settings, store)
+        return c === ""
+            || c.indexOf("org.quickshell") === 0   // shell surfaces (launcher, settings, store, lock)
             || c.indexOf("xdg-desktop-portal") === 0;
     }
 
@@ -129,25 +122,12 @@ Item {
     // ------------------------------------------------------------------
     // focus tracking
     // ------------------------------------------------------------------
-    function classForAddr(addr) {
-        const a = svc.normAddr(addr);
-        if (a === "") return "";
-        const tls = Hyprland.toplevels ? Hyprland.toplevels.values : [];
-        for (let i = 0; i < tls.length; i++) {
-            const o = tls[i] && tls[i].lastIpcObject;
-            if (o && svc.normAddr(o.address) === a)
-                return String(o.class || o.initialClass || "");
-        }
-        return "";
-    }
-
     function closeSegment(now) {
         if (svc.curClass !== "" && svc.curSince > 0 && !svc.excluded(svc.curClass)) {
             const secs = (now - svc.curSince) / 1000;
             if (secs > 0)
                 svc.tally[svc.curClass] = (svc.tally[svc.curClass] || 0) + secs;
         }
-        svc.curAddr = "";
         svc.curClass = "";
         svc.curSince = 0;
     }
@@ -159,77 +139,45 @@ Item {
         return (Date.now() - svc.curSince) / 1000;
     }
 
-    // start counting a known window (used by warm-start seed and idle resume)
-    function beginSegment(addr, cls, now) {
+    // start counting a known app (used by the warm-start seed and idle resume)
+    function beginSegment(cls, now) {
         svc.closeSegment(now);
-        const a = svc.normAddr(addr);
-        if (a === "") return;
-        svc.curAddr = a;
-        if (cls !== "") svc.addrClass[a] = cls;
-        if (svc.excluded(cls)) return;   // keep addr, count nothing
-        svc.curClass = cls;
+        const c = String(cls || "");
+        if (c === "" || svc.excluded(c))
+            return;                      // nothing focused, or a surface we never count
+        svc.curClass = c;
         svc.curSince = now;
-    }
-
-    function onFocus(addrRaw) {
-        const now = Date.now();
-        const addr = svc.normAddr(addrRaw);
-        svc.closeSegment(now);            // bank the previous app
-        if (addr === "") return;          // nothing focused now
         svc.seeded = true;
-        const cached = svc.addrClass[addr];
-        if (cached !== undefined && cached !== "") {
-            if (!svc.excluded(cached)) {
-                svc.curAddr = addr;
-                svc.curClass = cached;
-                svc.curSince = now;
-            } else {
-                svc.curAddr = addr;
-            }
-            return;
-        }
-        svc.curAddr = addr;
-        svc.pendingAddr = addr;
-        resolveTimer.restart();
     }
 
-    // the toplevel list may lag a focus event by a tick; retry once it is fresh
-    function resolvePending() {
-        const addr = svc.pendingAddr;
-        svc.pendingAddr = "";
-        if (addr === "") return;
-        const cls = svc.classForAddr(addr);
-        if (cls === "") return;           // give up; the next event retries
-        svc.addrClass[addr] = cls;
-        if (svc.excluded(cls)) return;
-        svc.curClass = cls;
-        svc.curSince = Date.now();
-    }
-
-    // warm start: hyprctl marks the focused window focusHistoryID 0, but
-    // Quickshell only moves that marker when the list is re-read, and the
-    // refresh itself is async, so retry a few times before giving up.
-    function seedFocus() {
-        const tls = Hyprland.toplevels ? Hyprland.toplevels.values : [];
+    // The focused app id, read from the activated toplevel. The activation flag
+    // is what the protocol marks the focused window with on every compositor, so
+    // this binding re-evaluates on a focus change and on a window closing.
+    readonly property string focusedAppId: {
+        const tls = ToplevelManager.toplevels ? ToplevelManager.toplevels.values : [];
         for (let i = 0; i < tls.length; i++) {
-            const o = tls[i] && tls[i].lastIpcObject;
-            if (o && o.focusHistoryID === 0) {
-                svc.beginSegment(o.address, String(o.class || o.initialClass || ""), Date.now());
-                return o.class || o.initialClass || "";
-            }
+            const t = tls[i];
+            if (t && t.activated === true)
+                return String(t.appId || "");
         }
         return "";
     }
 
+    onFocusedAppIdChanged: svc.onFocus()
+
+    function onFocus() {
+        svc.beginSegment(svc.focusedAppId, Date.now());
+    }
+
+    // warm start: adopt whatever is focused once the toplevel list has arrived.
+    // The list fills asynchronously, so retry briefly instead of polling forever.
     function trySeed() {
         if (svc.seeded) return;
-        try { Hyprland.refreshToplevels(); } catch (e) {}
-        Qt.callLater(function () {
-            if (svc.seeded) return;
-            const cls = svc.seedFocus();
-            if (cls !== "" && !svc.excluded(cls)) { svc.seeded = true; return; }
-            if (cls === "") seedRetryTimer.restart();   // list not fresh yet
-        });
+        if (svc.focusedAppId !== "") {
+            svc.beginSegment(svc.focusedAppId, Date.now());
+            return;
+        }
+        seedRetryTimer.restart();
     }
 
     Timer {
@@ -237,31 +185,6 @@ Item {
         interval: 800
         repeat: false
         onTriggered: svc.trySeed()
-    }
-
-    Connections {
-        target: Hyprland
-        function onRawEvent(event) {
-            const name = event && event.name !== undefined ? String(event.name) : "";
-            const data = event && event.data !== undefined ? String(event.data) : "";
-            if (name === "activewindowv2") {
-                svc.onFocus(data.split(",")[0].trim());
-                Qt.callLater(function () { try { Hyprland.refreshToplevels(); } catch (e) {} });
-            } else if (name === "closewindow") {
-                const addr = svc.normAddr(data);
-                if (addr === "") return;
-                if (addr === svc.pendingAddr) { svc.pendingAddr = ""; resolveTimer.stop(); }
-                if (addr === svc.curAddr) svc.closeSegment(Date.now());
-                delete svc.addrClass[addr];
-            }
-        }
-    }
-
-    Timer {
-        id: resolveTimer
-        interval: 220
-        repeat: false
-        onTriggered: svc.resolvePending()
     }
 
     // ------------------------------------------------------------------
@@ -281,7 +204,6 @@ Item {
             // freeze: bank up to the idle onset, remember what to resume
             const now = Date.now();
             if (svc.curClass !== "") {
-                svc.resumeAddr = svc.curAddr;
                 svc.resumeCls = svc.curClass;
                 svc.closeSegment(now);
             }
@@ -296,8 +218,7 @@ Item {
         if (!svc.paused) return;
         svc.paused = false;
         if (svc.resumeCls !== "") {
-            svc.beginSegment(svc.resumeAddr, svc.resumeCls, Date.now());
-            svc.resumeAddr = "";
+            svc.beginSegment(svc.resumeCls, Date.now());
             svc.resumeCls = "";
         }
     }

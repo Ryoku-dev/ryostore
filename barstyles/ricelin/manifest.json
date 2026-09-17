@@ -97,8 +97,8 @@
       "source": "Keybinds.qml",
       "destination": "Keybinds.qml",
       "mode": "0644",
-      "size": 13907,
-      "sha256": "a83174f604324ac159065e6e04e5ee6e4f3afc8a4babdf347e90c4ce816752f6",
+      "size": 14715,
+      "sha256": "3c775cd0e86f6e5b0433143047f7a759ed14178d91a9baf8f1dbd5cf6a15b7dd",
       "install": true
     },
     {
@@ -137,8 +137,8 @@
       "source": "Look.qml",
       "destination": "Look.qml",
       "mode": "0644",
-      "size": 9926,
-      "sha256": "320165b072dd95065a38713f519e0a56a3ba23ff35608ea343d9eab0936888e4",
+      "size": 9941,
+      "sha256": "ade77bdbefa785045f66377a09c97cdea3cd102a9a4b0d6a71c00cc141341e9f",
       "install": true
     },
     {
@@ -161,8 +161,8 @@
       "source": "MinimizedTray.qml",
       "destination": "MinimizedTray.qml",
       "mode": "0644",
-      "size": 3643,
-      "sha256": "a0c1901d21b570e8697a8655040ca45c5c88b0ccf9730fd354c1e1431114c574",
+      "size": 3767,
+      "sha256": "5a2caa684d1f0637619ff2b0bec61c2d3352492d8f75e5503735f1748baacf36",
       "install": true
     },
     {
@@ -185,8 +185,8 @@
       "source": "Osd.qml",
       "destination": "Osd.qml",
       "mode": "0644",
-      "size": 19462,
-      "sha256": "97459188b1255c152abb3dd841e8ec730a9abe09dba93c76f081eb213db4d0d2",
+      "size": 19335,
+      "sha256": "169ae49fa0786e22b2b6d20e2f088693a4b14ae00a671351da523b63dee14475",
       "install": true
     },
     {
@@ -201,8 +201,8 @@
       "source": "Pill.qml",
       "destination": "Pill.qml",
       "mode": "0644",
-      "size": 89752,
-      "sha256": "1b9888c26935c9d0a08fe990fd6d286b7ca2172c8ec6d2f4640a91a33a2beeb3",
+      "size": 89747,
+      "sha256": "c25ec937acb59b0ce70dcfc0361bd2275d19a6b5a8d4ea25127b7c46c8af1525",
       "install": true
     },
     {
@@ -217,24 +217,24 @@
       "source": "Power.qml",
       "destination": "Power.qml",
       "mode": "0644",
-      "size": 12471,
-      "sha256": "2cdacb080f7a568ee2eb97fe27d1824ca940d9f2605f3e611808227a7a6f1e93",
+      "size": 12447,
+      "sha256": "ecfd3479ed4fa37dc900623e0cd9dc6844542bac7d210ec701fe593fbe831825",
       "install": true
     },
     {
       "source": "Recorder.qml",
       "destination": "Recorder.qml",
       "mode": "0644",
-      "size": 54720,
-      "sha256": "899fc5457bfc91132ef55dbe12c79681ba592a73c88471ce9fbb0bdd2fc9504d",
+      "size": 54711,
+      "sha256": "bc094294af0cdc1264455c44bb8408695fbecbd1fb08ffcacfd137d5bf3126d1",
       "install": true
     },
     {
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 21945,
-      "sha256": "322006823b13da83bc4a614a138f77d2697d4d1da320db354801d6c0680dd8df",
+      "size": 20503,
+      "sha256": "f06efcfcfbf1bd37631984e71c5cc091f91f29ddc990e4a40ca817edf3ad10c2",
       "install": true
     },
     {
@@ -361,8 +361,16 @@
       "source": "Singletons/GameMode.qml",
       "destination": "Singletons/GameMode.qml",
       "mode": "0644",
-      "size": 848,
-      "sha256": "27e1679e766c49035c9a9963a73e85f170cd3cb16af11b88c68bf75e89d7d3fe",
+      "size": 839,
+      "sha256": "680d8e7e96aeef4f0ddf789a966ebfe18cdea25b2709da9a5c9d5a6ac0076b23",
+      "install": true
+    },
+    {
+      "source": "Singletons/MediaShortcuts.qml",
+      "destination": "Singletons/MediaShortcuts.qml",
+      "mode": "0644",
+      "size": 1262,
+      "sha256": "de4b63a785ab858a737f4e3f47902d41fca369be4ac0b83db9ef73408bada216",
       "install": true
     },
     {
@@ -377,24 +385,24 @@
       "source": "Singletons/Notifs.qml",
       "destination": "Singletons/Notifs.qml",
       "mode": "0644",
-      "size": 10618,
-      "sha256": "7c7fe2405e1d515169d97fd14b86dd05929b8a8963b50051164e57c38742aa58",
+      "size": 10336,
+      "sha256": "4137b515ca68c71c9d3529037dd14fab9438c0f51fc71924525d17712b4c35f6",
       "install": true
     },
     {
       "source": "Singletons/Players.qml",
       "destination": "Singletons/Players.qml",
       "mode": "0644",
-      "size": 13452,
-      "sha256": "2ce118baa3b0a33531aa03d49de8d65da1b036e4a1cb0f14acc4e4106a047d78",
+      "size": 13253,
+      "sha256": "f11ec7794b7b21c1414663c0ed294525d95bc83407dc56e8297acc0af1493c02",
       "install": true
     },
     {
       "source": "Singletons/ScreenRec.qml",
       "destination": "Singletons/ScreenRec.qml",
       "mode": "0644",
-      "size": 18898,
-      "sha256": "e5cad9b84e9f9c3333d53ccd319371dd5d6f3adc2b7db40e2e07e8b9d6e8a668",
+      "size": 19412,
+      "sha256": "0109a17b906fa4e39616f38250d7d30cd3a398a667beca25d3eb1328862dfaaf",
       "install": true
     },
     {
@@ -433,16 +441,16 @@
       "source": "Singletons/Workspacerules.qml",
       "destination": "Singletons/Workspacerules.qml",
       "mode": "0644",
-      "size": 1859,
-      "sha256": "70cdee804b297ebdd8bb17f856b29ba97cbdf8254e4a920ed448dd18c45cdfbf",
+      "size": 1308,
+      "sha256": "73218d2150fbb14619101640f2ec20930feebdfecef21a456f53e95cb9eae84f",
       "install": true
     },
     {
       "source": "Singletons/qmldir",
       "destination": "Singletons/qmldir",
       "mode": "0644",
-      "size": 532,
-      "sha256": "1dbad33fa4b0fc7d87122b67c61ddba6cd9b00bc76c465a748487566cbd48166",
+      "size": 570,
+      "sha256": "1297e2f902f1a8f3f7cbe36439fb95033a42334a15c4b271403ca818b6517aa2",
       "install": true
     },
     {
@@ -521,8 +529,8 @@
       "source": "Workspaces.qml",
       "destination": "Workspaces.qml",
       "mode": "0644",
-      "size": 5124,
-      "sha256": "9e613c3780d2229f3c97530da313d67c3fb079bfe249416ab084a7742441e5cc",
+      "size": 4945,
+      "sha256": "2a0f9da77a87fd46d3dc555fa698eebdd26b360c0372f37af815bc2fb22de07e",
       "install": true
     },
     {
@@ -539,14 +547,6 @@
       "mode": "0755",
       "size": 1577,
       "sha256": "b101f2c464f6d582ad9d165dbd9224bef406ad5ac28e9ee6540b09944a93fa96",
-      "install": true
-    },
-    {
-      "source": "lib/binds.js",
-      "destination": "lib/binds.js",
-      "mode": "0644",
-      "size": 15483,
-      "sha256": "880063ea8ecd6af4d7967902f826e699e6d7c7877621b72ce24f625f5429fd1b",
       "install": true
     },
     {

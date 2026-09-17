@@ -39,7 +39,7 @@
       { "key": "barLabel", "type": "choice", "label": "Beside the mark", "group": "Coffee", "default": "none",
         "options": [ { "value": "none", "label": "Nothing" }, { "value": "state", "label": "ON/OFF" } ] },
       { "key": "poll", "type": "int", "label": "Refresh seconds", "group": "Coffee", "default": 10, "min": 3, "max": 60 },
-      { "key": "helperPath", "type": "text", "label": "Inhibitor script (blank = host's caffeine bridge)", "group": "Coffee", "default": "", "placeholder": "~/.config/hypr/scripts/ryoku-cmd-caffeine" }
+      { "key": "helperPath", "type": "text", "label": "Inhibitor script (blank = host's caffeine bridge)", "group": "Coffee", "default": "", "placeholder": "ryoku-cmd-caffeine" }
     ]
   }
 }

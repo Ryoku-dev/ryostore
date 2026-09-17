@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import shell.services
 
 Rectangle {
@@ -9,29 +9,52 @@ Rectangle {
 
     required property var colors
 
-    readonly property int workspaceCount: {
-        let highest = Math.max(5, Workspaces.activeId)
-        const list = Hyprland.workspaces ? Hyprland.workspaces.values : []
+    // The live workspace set, read from the shell's window-manager facade: a
+    // fixed numbered model lays it out as slots, a scrolling model as itself.
+    readonly property bool dynamicModel: Wm.workspaceModel === "dynamic"
+    readonly property string activeName: Wm.focusedWorkspace ? String(Wm.focusedWorkspace.name) : ""
+
+    readonly property var liveNames: {
+        const out = []
+        const list = Wm.workspaces || []
         for (let i = 0; i < list.length; ++i) {
-            const id = Number(list[i] && list[i].id)
+            const w = list[i]
+            if (w && w.special !== true)
+                out.push(String(w.name))
+        }
+        return out
+    }
+
+    readonly property int workspaceCount: {
+        if (dynamicModel)
+            return Math.max(1, liveNames.length)
+        let highest = Math.max(5, root.activeIndex)
+        for (let i = 0; i < liveNames.length; ++i) {
+            const id = Number(liveNames[i])
             if (id > 0 && id <= 10)
                 highest = Math.max(highest, id)
         }
         return Math.min(10, highest)
     }
 
-    function occupied(id) {
-        const toplevels = Hyprland.toplevels ? Hyprland.toplevels.values : []
-        for (let i = 0; i < toplevels.length; ++i) {
-            const data = toplevels[i] && toplevels[i].lastIpcObject || ({})
-            if (data.workspace && Number(data.workspace.id) === id)
-                return true
-        }
-        return false
+    readonly property int activeIndex: {
+        const n = Number(root.activeName)
+        return (Math.floor(n) === n && n > 0) ? n : 1
     }
 
-    function focus(id) {
-        Hyprland.dispatch("hl.dsp.focus({ workspace = " + id + " })")
+    function nameAt(number) {
+        return root.dynamicModel ? String(root.liveNames[number - 1] || "") : String(number)
+    }
+
+    function occupied(number) {
+        const ws = Wm.workspaceByName(root.nameAt(number))
+        return !!ws && ws.occupied === true
+    }
+
+    function focus(number) {
+        const name = root.nameAt(number)
+        if (name !== "")
+            Wm.focusWorkspace(name)
     }
 
     implicitWidth: row.implicitWidth + Theme.paddingMd * 2
@@ -64,8 +87,8 @@ Rectangle {
                 required property int index
 
                 readonly property int number: index + 1
-                readonly property bool active: Workspaces.activeId === number
-                readonly property bool hasWindows: root.occupied(number)
+                readonly property bool active: root.nameAt(slot.number) === root.activeName
+                readonly property bool hasWindows: root.occupied(slot.number)
 
                 width: slot.active
                     ? Theme.iconLg + Theme.paddingMd
@@ -94,7 +117,10 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: slot.number < 10 ? "0" + slot.number : String(slot.number)
+                        readonly property string label: root.dynamicModel
+                            ? root.nameAt(slot.number)
+                            : String(slot.number)
+                        text: /^\d$/.test(label) ? "0" + label : label
                         color: slot.active ? root.colors.accent(slot.index) : root.colors.text
                         font.family: Theme.mono
                         font.pixelSize: Theme.fontSm
@@ -134,8 +160,6 @@ Rectangle {
     }
 
     WheelHandler {
-        onWheel: event => Hyprland.dispatch(
-            event.angleDelta.y > 0 ? "workspace r-1" : "workspace r+1"
-        )
+        onWheel: event => Wm.cycleWorkspace(event.angleDelta.y > 0 ? -1 : 1)
     }
 }

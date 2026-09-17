@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import Quickshell.Io
 import shell.services
 import shell.barkit as Pill
@@ -31,9 +31,7 @@ Item {
     property var spectrumLevels: flatSpectrum()
 
     readonly property string activeWindowTitle: {
-        const top = Hyprland.activeToplevel
-        const data = top && top.lastIpcObject ? top.lastIpcObject : ({})
-        const title = String(data.title || "")
+        const title = Wm.focusedWindow ? String(Wm.focusedWindow.title || "") : ""
         return title.length > 0 ? title : "DESKTOP // IDLE"
     }
 

@@ -43,6 +43,15 @@ the rules it can check.
   listed in manifest `files`.
 - **R3 Id.** Lowercase `[a-z0-9][a-z0-9-]*`, unique, and not a built-in widget
   id.
+- **Which compositor is running is none of your business.** A plugin runs on
+  Hyprland and on niri, through one shell, and the only window and workspace state
+  it may read is what the Wayland protocols report (`ToplevelManager` for the
+  focused window and its app id, `IdleMonitor` for idle): the shell's own
+  singletons are not importable from a plugin, and a plugin that shells out to a
+  compositor (`hyprctl`, `niri msg`), reads a compositor config path, or branches
+  on which compositor is running is broken on the other one. Gate a
+  compositor-only feature on the capability it needs and leave it out where the
+  capability is absent.
 - **R4 Imports.** Only `QtQuick*`, `Quickshell*`, `Ryoku.PluginKit`,
   `Ryoku.PluginKit.Singletons`, and files inside the plugin folder. Never
   `shell.*`, `Ryoku.Ui*` internals, or a relative import that climbs out of the

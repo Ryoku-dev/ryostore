@@ -94,6 +94,15 @@ with you.
   resolved or explicitly reviewed under the security policy.
 - A clear **maintenance contact** and acknowledgement that ongoing maintenance
   belongs to the contributor, not the Ryoku team.
+- **No window manager in the code.** Ryoku runs the same shell on Hyprland and on
+  niri, so an item reaches the desktop through the shell, never through one
+  compositor: no `hyprctl`, no compositor socket, no `Quickshell.Hyprland` (the
+  facade is `Ryoku.Ui.Singletons` -> `Wm` in a bar style, and the Quickshell
+  Wayland protocols in a plugin), no compositor config path, and no branching on
+  which compositor is running. A feature the compositor genuinely cannot do is
+  gated on the capability (`Wm.caps`), not on its name. An item that needs a
+  capability nothing else offers is compositor-exclusive content: say so in the
+  README rather than shipping a control that does nothing.
 
 That is the whole contract. When in doubt, copy the closest existing item and
 change one thing at a time.

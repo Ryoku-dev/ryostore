@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import shell.services
 
 Item {
@@ -10,34 +10,49 @@ Item {
     property real barHeight: 40
     property string workspaceStyle: Config.normalizedNacre.workspaceStyle
     readonly property var kanji: ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
-    readonly property int activeId: Workspaces.activeId
+    readonly property string activeName: Wm.focusedWorkspace ? String(Wm.focusedWorkspace.name) : ""
+    readonly property int activeId: {
+        const id = Number(root.activeName);
+        return (Math.floor(id) === id && id > 0) ? id : 1;
+    }
     readonly property int base: Math.floor((root.activeId - 1) / 10) * 10
 
-    function label(id) {
+    // A dynamic workspace model (a scrolling workspace set with no stable slots)
+    // follows the live list; a fixed model shows the numbered row below.
+    readonly property bool dynamicModel: Wm.workspaceModel === "dynamic"
+
+    function label(name) {
         if (root.workspaceStyle === "dots")
             return "";
-        if (root.workspaceStyle === "kanji" && id >= 1 && id <= 10)
+        const id = Number(name);
+        if (root.workspaceStyle === "kanji" && Math.floor(id) === id && id >= 1 && id <= 10)
             return root.kanji[id];
-        return String(id);
+        return (Math.floor(id) === id) ? String(id) : String(name);
     }
 
-    function occupied(id) {
-        const toplevels = Hyprland.toplevels ? Hyprland.toplevels.values : [];
-        for (const toplevel of toplevels) {
-            const object = toplevel && toplevel.lastIpcObject || {};
-            if (object.workspace && object.workspace.id === id)
-                return true;
-        }
-        return false;
+    function occupied(name) {
+        const ws = Wm.workspaceByName(String(name));
+        return !!ws && ws.occupied === true;
     }
 
     readonly property var entries: {
         const output = [];
+        if (root.dynamicModel) {
+            const list = Wm.workspaces || [];
+            for (let index = 0; index < list.length; index++) {
+                const ws = list[index];
+                if (ws && ws.special !== true)
+                    output.push(String(ws.name));
+            }
+            if (output.length === 0 && root.activeName !== "")
+                output.push(root.activeName);
+            return output;
+        }
         if (Config.normalizedNacre.occupiedWorkspaces) {
             for (let index = 1; index <= 10; index++) {
                 const id = root.base + index;
                 if (id === root.activeId || root.occupied(id))
-                    output.push(id);
+                    output.push(String(id));
             }
         } else {
             let count = 5;
@@ -49,16 +64,16 @@ Item {
                 }
             }
             for (let index = 1; index <= count; index++)
-                output.push(root.base + index);
+                output.push(String(root.base + index));
         }
-        return output.length ? output : [root.activeId];
+        return output.length ? output : [String(root.activeId)];
     }
 
     implicitWidth: content.implicitWidth
     implicitHeight: 26
 
     WheelHandler {
-        onWheel: event => Hyprland.dispatch(event.angleDelta.y > 0 ? "workspace r-1" : "workspace r+1")
+        onWheel: event => Wm.cycleWorkspace(event.angleDelta.y > 0 ? -1 : 1)
     }
 
     Row {
@@ -71,9 +86,10 @@ Item {
             delegate: Rectangle {
                 id: ring
 
-                required property int modelData
-                readonly property bool active: ring.modelData === root.activeId
-                readonly property bool occupied: root.occupied(ring.modelData)
+                required property var modelData
+                readonly property string wsName: String(ring.modelData)
+                readonly property bool active: ring.wsName === root.activeName
+                readonly property bool occupied: !ring.active && root.occupied(ring.wsName)
                 readonly property bool dotMode: root.workspaceStyle === "dots"
 
                 anchors.verticalCenter: parent.verticalCenter
@@ -101,7 +117,7 @@ Item {
                 Text {
                     anchors.centerIn: parent
                     visible: !ring.dotMode
-                    text: root.label(ring.modelData)
+                    text: root.label(ring.wsName)
                     color: ring.active ? Theme.onPrimary
                         : ring.occupied ? Theme.onSurface : Theme.onSurfaceVariant
                     font.family: root.workspaceStyle === "kanji" ? Theme.fontJp : Theme.mono
@@ -111,7 +127,7 @@ Item {
                     anchors.fill: parent
                     anchors.margins: -5
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch('hl.dsp.focus({ workspace = "' + ring.modelData + '" })')
+                    onClicked: Wm.focusWorkspace(ring.wsName)
                 }
             }
         }

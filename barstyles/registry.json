@@ -19,7 +19,7 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "d3af8e0814709ae83c690918a9cca4fc794dc8dd89bbae110162c57e6a6b0ac1"
+      "manifestSha256": "0e09c5d1415c4b66ffbbc5ac21aec79f4e87126fa762132fad40533cc1fa83d6"
     },
     {
       "id": "obi",
@@ -39,7 +39,7 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "b8e6d5be1d73557a7da36896cfe495efee0a2c9f67264739c535c52d0b2e9730"
+      "manifestSha256": "eef9f2b23a6466ff5f131a0ea928593c71a8d7bd50354679cafa2b979adae58b"
     },
     {
       "id": "imi",
@@ -75,8 +75,6 @@
       "author": "feelyourwarmth",
       "summary": "A sleek, customizable pill-style bar for Ryoku.",
       "description": "Ricelin is a modern pill-style bar focused on clean visuals, smooth animations, dynamic theming, and extensive customization. It integrates with Ryoku and supports dynamic colors.",
-      "downloadPaused": true,
-      "downloadPauseReason": "Has known issues. The developer is working on fixes.",
       "tags": [
         "bar",
         "barstyle",
@@ -90,7 +88,7 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "6d610f3e421135271fe9678120ce60b4c807487bb5110345ffa52c0219c7d7ed",
+      "manifestSha256": "3aed7e92fc91f00e1da7dc0c43f50fb653a659b6d77888705984bed1a5332279",
       "official": false,
       "lastUpdated": "2026-09-07"
     },
@@ -114,7 +112,7 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "b31139ff247e8e6f6ef1cbc087e4aa234893a85fce45ec304693542af2f777d8",
+      "manifestSha256": "bab5a9890e45ec75d1d8e98398b9a09b59db571cf747c08415b3f26a9a95e2b4",
       "lastUpdated": "2026-09-10",
       "official": false,
       "license": "MIT"
@@ -140,7 +138,7 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "4cb4519201351565e69ae48b4b1d901cbd0b28b4ec0aee23b2d16b79908567ad",
+      "manifestSha256": "85dfd95d90d0357120c73a3474166c658b4cc27e0e1edbd378110b2410a75133",
       "lastUpdated": "2026-09-11",
       "official": false,
       "license": "GPL-3.0-only"

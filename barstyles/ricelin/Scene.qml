@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import "lib/screens.js" as Screens
 import "."
 import "Singletons"
@@ -32,15 +32,9 @@ Item {
     property string openSurface: ""
     property string peekMon: ""
 
-    function refresh() {
-        Hyprland.refreshMonitors();
-        Hyprland.refreshWorkspaces();
-        Hyprland.refreshToplevels();
-    }
-
     function toggleSurface(mon, surface) {
         if (!mon || mon.length === 0)
-            mon = Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "";
+            mon = Wm.focusedOutput;
         if (root.openMon === mon && root.openSurface === surface) {
             root.close();
             return;
@@ -58,24 +52,10 @@ Item {
         root.peekMon = root.peekMon === mon ? "" : mon;
     }
 
-    readonly property var refreshEvents: ({
-        workspace: true, workspacev2: true,
-        createworkspace: true, createworkspacev2: true,
-        destroyworkspace: true, destroyworkspacev2: true,
-        moveworkspace: true, moveworkspacev2: true,
-        renameworkspace: true, activespecial: true,
-        focusedmon: true, focusedmonv2: true,
-        openwindow: true, closewindow: true,
-        movewindow: true, movewindowv2: true,
-        fullscreen: true,
-        monitoradded: true, monitoraddedv2: true,
-        monitorremoved: true
-    })
-
     // Frame.qml mounts this Scene once PER monitor, so every global-once node --
     // the "pill" IPC handler (whose target must be unique per process), the
-    // keep-awake idle inhibitor and the startup/refresh side-effects -- lives
-    // under one primary-owned Loader. Without the gate a two-monitor session
+    // keep-awake idle inhibitor and the startup side-effects -- lives under one
+    // primary-owned Loader. Without the gate a two-monitor session
     // builds two IpcHandlers fighting for the same target and two idle
     // inhibitors. The visual reserve/overlay Variants below carry their own
     // isPrimary Loader.
@@ -84,17 +64,8 @@ Item {
         sourceComponent: Component {
             Item {
                 Component.onCompleted: {
-                    root.refresh();
                     Devices.restore();
                     void GameMode.active;
-                }
-
-                Connections {
-                    target: Hyprland
-                    function onRawEvent(event) {
-                        if (root.refreshEvents[event.name])
-                            root.refresh();
-                    }
                 }
 
                 // The single Ricelin IPC namespace lives in the active Ryoku
@@ -138,14 +109,18 @@ Item {
                             ScreenRec.quickChoosing = true;
                         }
                     }
+                    // Parked windows are a capability: a compositor with no
+                    // minimised workspace ignores the park instead of failing.
                     function minimizeWindow(addr: string): void {
-                        Hyprland.dispatch('hl.dsp.window.move({ workspace = "special:minimized", follow = false, window = "address:' + addr + '" })');
+                        if (Wm.caps.specialWorkspace !== true)
+                            return;
+                        Wm.moveWindowToWorkspace(addr, "special:minimized");
                     }
                     function restoreWindow(arg: string): void {
                         var p = arg.split("|");
                         if (p.length < 2 || p[0].length === 0)
                             return;
-                        Hyprland.dispatch('hl.dsp.window.move({ workspace = ' + p[1] + ', window = "address:' + p[0] + '" })');
+                        Wm.moveWindowToWorkspace(p[0], p[1]);
                     }
                 }
 
@@ -215,17 +190,7 @@ Item {
                         readonly property bool surfaceOpen: surface.length > 0
                         readonly property bool modal: pill.authPending ? false : (surfaceOpen || pill.held || pill.quickChoosing)
 
-                        readonly property bool monFullscreen: {
-                            var mons = Hyprland.monitors.values;
-                            for (var i = 0; i < mons.length; i++) {
-                                if (mons[i] && mons[i].name === modelData.name) {
-                                    var ws = mons[i].activeWorkspace;
-                                    var o = ws ? ws.lastIpcObject : null;
-                                    return o ? !!o.hasfullscreen : false;
-                                }
-                            }
-                            return false;
-                        }
+                        readonly property bool monFullscreen: Wm.outputHasFullscreen(modelData ? modelData.name : "")
                         readonly property bool summoned: modal || root.peekMon === modelData.name
                         readonly property bool pillHidden: monFullscreen && !summoned
 

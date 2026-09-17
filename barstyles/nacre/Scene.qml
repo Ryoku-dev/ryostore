@@ -2,9 +2,9 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Wayland
 import Ryoku.Blobs
+import Ryoku.Ui.Singletons
 import shell.services
 import "components" as Components
 import "popouts" as NacrePopouts
@@ -97,18 +97,8 @@ Scope {
         id: overlay
         objectName: "nacre-overlay"
 
-        readonly property bool monFullscreen: {
-            if (!root.modelData)
-                return false;
-            const monitors = Hyprland.monitors.values;
-            for (let i = 0; i < monitors.length; ++i) {
-                const monitor = monitors[i];
-                if (monitor.name === root.modelData.name)
-                    return monitor.activeWorkspace
-                        ? Fullscreen.byWs[monitor.activeWorkspace.id] === true : false;
-            }
-            return false;
-        }
+        readonly property bool monFullscreen: root.modelData
+            ? Wm.outputHasFullscreen(root.modelData.name) : false
         readonly property real toastCenter: width - root.frameLip - toastPop.openWidth / 2
 
         onMonFullscreenChanged: if (monFullscreen) {

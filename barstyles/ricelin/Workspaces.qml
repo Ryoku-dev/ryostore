@@ -2,21 +2,20 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import "Singletons"
 
 /**
  * Workspace dots for one monitor. No numbers, no icons. Active one is a larger
  * filled vermillion dot; the rest are small and dim, brightening on hover.
- * Clicking a dot focuses that workspace via the Hyprland-lua dispatcher. Active
- * marker tracks the monitor's live active workspace name from the Hyprland
- * model.
+ * Clicking a dot focuses that workspace through the shell's window-manager
+ * facade. Active marker tracks the monitor's live active workspace name from the
+ * same model.
  *
- * The dot range unions this monitor's workspace rules ([[Workspacerules]]) with
- * the workspaces Hyprland currently has on it, so a rule-driven setup (e.g.
- * monitors.lua splitting 1-5 / 6-10 across two screens) always shows every
- * assigned dot while a workspace outside the rules (r+1 past the last ruled
- * one) still appears instead of vanishing from the strip.
+ * The dot range unions the workspaces this monitor holds ([[Workspacerules]])
+ * with the ones the compositor currently has on it, so a split setup shows every
+ * dot its screen owns while a workspace outside that set (one past the last
+ * named slot) still appears instead of vanishing from the strip.
  */
 Item {
     id: workspaces
@@ -40,12 +39,13 @@ Item {
             }
         }
 
-        var wss = Hyprland.workspaces.values;
+        var wss = Wm.workspaces;
         for (var i = 0; i < wss.length; i++) {
             var w = wss[i];
-            if (w.id >= 1 && w.monitor && w.monitor.name === screenName && !seen[w.id]) {
-                seen[w.id] = true;
-                out.push(w.id);
+            var id = parseInt(String(w.name), 10);
+            if (w.special !== true && id >= 1 && w.output === screenName && !seen[id]) {
+                seen[id] = true;
+                out.push(id);
             }
         }
         var a = parseInt(activeName);
@@ -56,11 +56,8 @@ Item {
     }
 
     readonly property string activeName: {
-        var mons = Hyprland.monitors.values;
-        for (var i = 0; i < mons.length; i++)
-            if (mons[i].name === screenName)
-                return mons[i].activeWorkspace ? mons[i].activeWorkspace.name : "";
-        return "";
+        var mon = Wm.outputByName(screenName);
+        return mon && mon.activeWorkspace ? String(mon.activeWorkspace) : "";
     }
 
     property int hoverIndex: -1
@@ -129,7 +126,7 @@ Item {
                     anchors.bottomMargin: -8 * workspaces.s
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: Hyprland.dispatch('hl.dsp.focus({workspace="' + slot.wsName + '"})')
+                    onClicked: Wm.focusWorkspace(slot.wsName)
                     onContainsMouseChanged: {
                         if (containsMouse)
                             workspaces.hoverIndex = slot.index;

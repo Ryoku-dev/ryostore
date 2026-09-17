@@ -1,61 +1,38 @@
 pragma Singleton
 import QtQuick
 import Quickshell
-import Quickshell.Io
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 
 /**
- * Persistent workspace→monitor map from Hyprland's workspace rules
- * (`hyprctl workspacerules`). This is the single source for the split that
- * monitors.lua declares, so the pill's dots show every assigned workspace on a
- * monitor even before it has been visited, instead of hardcoding monitor
- * names. Empty when a setup has no rules (the usual single-monitor case) and
- * the dots fall back to live workspaces. Re-read on config reload, since
- * editing monitors.lua rewrites the rules.
+ * Which workspaces a monitor holds, read from the shell's window-manager facade
+ * rather than from one compositor's rule readback. The dots use it so a
+ * workspace that lives on a screen but is not the focused one still reads as
+ * part of that screen's strip.
+ *
+ * A compositor that only reports a workspace once it exists (the fixed numbered
+ * model) contributes nothing for an unvisited declared slot, so the strip falls
+ * back to the live set there; a scrolling model reports the whole live set from
+ * the start. Either way the split is what the compositor says it is, never a
+ * hardcoded monitor name.
  */
 Singleton {
     id: root
 
-    property var byMonitor: ({})
-
-    function refresh() {
-        proc.running = true;
-    }
-
-    Process {
-        id: proc
-        command: ["hyprctl", "workspacerules", "-j"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var map = {};
-                try {
-                    var rules = JSON.parse(this.text);
-                    for (var i = 0; i < rules.length; i++) {
-                        var ws = parseInt(rules[i].workspaceString);
-                        var mon = rules[i].monitor;
-                        if (!mon || isNaN(ws))
-                            continue;
-                        if (!map[mon])
-                            map[mon] = [];
-                        map[mon].push(ws);
-                    }
-                } catch (e) {
-                    return;
-                }
-                for (var k in map)
-                    map[k].sort(function (a, b) { return a - b; });
-                root.byMonitor = map;
-            }
+    readonly property var byMonitor: {
+        const map = {};
+        const list = Wm.workspaces || [];
+        for (let i = 0; i < list.length; i++) {
+            const w = list[i];
+            if (!w || w.special === true)
+                continue;
+            const id = parseInt(String(w.name), 10);
+            const mon = String(w.output || "");
+            if (isNaN(id) || mon === "")
+                continue;
+            (map[mon] || (map[mon] = [])).push(id);
         }
+        for (const k in map)
+            map[k].sort((a, b) => a - b);
+        return map;
     }
-
-    Connections {
-        target: Hyprland
-        function onRawEvent(event) {
-            if (event.name === "configreloaded")
-                root.refresh();
-        }
-    }
-
-    Component.onCompleted: refresh()
 }

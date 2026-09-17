@@ -4,18 +4,18 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
-import "lib/binds.js" as Binds
 import "Singletons"
 
 /**
  * 鍵 KEYBINDS surface: a read-only, searchable reference of the keyboard
- * shortcuts parsed from ~/.config/hypr/modules/binds.lua -- each row a combo chip
- * on the left and its name or derived action on the right; hovering a row reveals
- * the underlying command. This surface never writes the file: binds.lua is owned
- * by Ryoku, so editing a shortcut hands off to Ryoku Settings > Keybinds
- * (`ryoku-shell hub open keybinds`) rather than rewriting the compositor's config
- * behind its back. Tapping a row, pressing Return, or the bottom bar opens that
- * page. Reached from its IPC route; morphs back on the back chevron.
+ * shortcuts, read from the shell's own keybind catalogue (`ryoku-hub keybinds`,
+ * the same source the desktop cheatsheet renders) -- each row a combo chip on the
+ * left and its description on the right. The catalogue is the compositor's own
+ * binds resolved against the neutral store, so the surface lists whatever the
+ * running window manager actually offers. It never writes anything: editing a
+ * shortcut hands off to Ryoku Settings > Keybinds (`ryoku-shell hub open
+ * keybinds`). Tapping a row, pressing Return, or the bottom bar opens that page.
+ * Reached from its IPC route; morphs back on the back chevron.
  */
 PillSurface {
     id: root
@@ -28,8 +28,6 @@ PillSurface {
     implicitHeight: content.implicitHeight
 
     signal requestSurface(string name)
-
-    readonly property string bindsPath: Quickshell.env("HOME") + "/.config/hypr/modules/binds.lua"
 
     property var binds: []
     property int focusIndex: 0
@@ -59,10 +57,36 @@ PillSurface {
                 .replace("mouse:273", "RMB");
     }
 
-    function refresh() {
-        root.binds = Binds.parse(bindsFile.text());
+    /**
+     * Flatten the catalogue into rows. The catalogue is grouped by category, so a
+     * row carries the category it came from for search and for the row's name.
+     */
+    function applyLegend(text) {
+        var out = [];
+        try {
+            var legend = JSON.parse(text || "{}");
+            var cats = legend.categories || [];
+            for (var c = 0; c < cats.length; c++) {
+                var cat = cats[c] || {};
+                var rows = cat.binds || [];
+                for (var b = 0; b < rows.length; b++) {
+                    var row = rows[b] || {};
+                    var combo = String(row.combo || "");
+                    if (combo.length === 0)
+                        continue;
+                    out.push({ combo: combo, label: String(row.desc || ""), name: String(cat.name || ""), cmd: "" });
+                }
+            }
+        } catch (e) {
+            return;
+        }
+        root.binds = out;
         if (root.focusIndex >= root.filtered.length)
             root.focusIndex = Math.max(0, root.filtered.length - 1);
+    }
+
+    function refresh() {
+        bindsProc.running = true;
     }
 
     /**
@@ -87,7 +111,6 @@ PillSurface {
 
     onActiveChanged: {
         if (active) {
-            bindsFile.reload();
             refresh();
             focusIndex = 0;
             query = "";
@@ -111,14 +134,12 @@ PillSurface {
     ameForm: rowFocused ? "rowseam" : "off"
     amePoint: rowPoint
 
-    FileView {
-        id: bindsFile
-        path: root.bindsPath
-        blockLoading: true
-        watchChanges: true
-        printErrors: false
-        onLoaded: root.refresh()
-        onFileChanged: reload()
+    Process {
+        id: bindsProc
+        command: ["ryoku-hub", "keybinds"]
+        stdout: StdioCollector {
+            onStreamFinished: root.applyLegend(this.text)
+        }
     }
 
     Column {

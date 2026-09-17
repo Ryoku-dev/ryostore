@@ -1,17 +1,16 @@
 // QML-free helpers shared by the Coffee service and views.
 
-// Single source of truth for the inhibitor the host Ryoku desktop ships:
-// the shell's own Keep-Awake runs `~/.config/hypr/scripts/ryoku-cmd-caffeine`
-// (see the shell's syncCaffeine). Coffee drives that same bridge so its state
-// always agrees with the deck toggle and survives a shell restart.
-// "%HOME%" is a placeholder the service rewrites to pluginApi.home at runtime,
-// and the helperPath setting overrides the whole path when non-blank.
-var defaultCaffeineScript = "%HOME%/.config/hypr/scripts/ryoku-cmd-caffeine";
+// Single source of truth for the inhibitor the host Ryoku desktop ships: the
+// bridge is a bare command on PATH (`ryoku-cmd-caffeine`, shipped with the
+// shell), which is how the shell's own Keep-Awake and the launcher's Keep Awake
+// action call it. Resolving by name keeps the plugin off any one compositor's
+// config tree; the helperPath setting overrides the command when non-blank.
+var defaultCaffeineScript = "ryoku-cmd-caffeine";
 
-function resolveScript(setting, home) {
+function resolveScript(setting) {
   var s = String(setting || "").trim();
   if (s) return s;
-  return defaultCaffeineScript.replace("%HOME%", String(home || ""));
+  return defaultCaffeineScript;
 }
 
 function argvFor(script, action) {

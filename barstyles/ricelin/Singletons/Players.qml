@@ -3,7 +3,6 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
-import Quickshell.Hyprland
 
 /**
  * The one now-playing source the pill views read: the media surface, the source
@@ -346,22 +345,12 @@ Singleton {
         xhr.send();
     }
 
-    GlobalShortcut {
-        appid: "quickshell"
-        name: "mediaToggle"
-        description: "Play or pause the active media player"
-        onPressed: { var a = root.active; if (a && a.canTogglePlaying) a.togglePlaying(); }
-    }
-    GlobalShortcut {
-        appid: "quickshell"
-        name: "mediaNext"
-        description: "Skip to the next track"
-        onPressed: { var a = root.active; if (a && a.canGoNext) a.next(); }
-    }
-    GlobalShortcut {
-        appid: "quickshell"
-        name: "mediaPrev"
-        description: "Skip to the previous track"
-        onPressed: { var a = root.active; if (a && a.canGoPrevious) a.previous(); }
+    // Media transport keys ride their own component: the protocol they need is
+    // the one compositor-specific surface left in the bar (see
+    // Singletons/MediaShortcuts.qml).
+    MediaShortcuts {
+        onToggleRequested: { var a = root.active; if (a && a.canTogglePlaying) a.togglePlaying(); }
+        onNextRequested: { var a = root.active; if (a && a.canGoNext) a.next(); }
+        onPrevRequested: { var a = root.active; if (a && a.canGoPrevious) a.previous(); }
     }
 }

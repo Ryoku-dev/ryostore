@@ -25,8 +25,8 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 743,
-      "sha256": "88123e257714f6afb91134e1896077837a1e1e6a693badbfa8dc4d975f6c9108",
+      "size": 778,
+      "sha256": "38ff996e0f5509235510aead26cafb6c3074416d4e780012020bd4b9fb63be21",
       "install": true
     },
     {
@@ -57,8 +57,8 @@
       "source": "components/MediaModule.qml",
       "destination": "components/MediaModule.qml",
       "mode": "0644",
-      "size": 10573,
-      "sha256": "b2aca28ef6a47f830732b8bd646aae6dd0a5971e38abf899372f92718c41c019",
+      "size": 10492,
+      "sha256": "e60f6a6b28bef1fe8fc00a9b4fa356101a3a0b857979c331ca1cf21cc12ed255",
       "install": true
     },
     {
@@ -89,9 +89,10 @@
       "source": "components/WorkspaceRail.qml",
       "destination": "components/WorkspaceRail.qml",
       "mode": "0644",
-      "size": 4634,
-      "sha256": "cf38db2d17749530d2c6ed8df33aaea63f0d843b88f29431718715b6faea8da3",
+      "size": 5472,
+      "sha256": "2fcb5914a0ff6fd320c2bd0c38456c2461060382d3a815db9223f607ba4ac05e",
       "install": true
     }
-  ]
+  ],
+  "license": "MIT"
 }

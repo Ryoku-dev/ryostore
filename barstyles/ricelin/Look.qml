@@ -7,11 +7,11 @@ import "Singletons"
 /**
  * 飾 LOOK sub-surface: the pill's own geometry and translucency -- the gap above
  * the pill, the gap it leaves for windows below, and how see-through it sits.
- * These are Ricelin's own settings (Flags), so editing them never touches host
- * Hyprland config.
+ * These are Ricelin's own settings (Flags), so editing them never touches the
+ * window manager's own config.
  *
  * Window-decoration knobs (gaps, rounding, border, blur, shadow, opacity, tiling
- * layout) belong to Ryoku, which owns ~/.config/hypr/modules and edits them from
+ * layout) belong to Ryoku, which owns them in its settings store and edits them from
  * Ryoku Settings > Appearance. This surface hands off to that page rather than
  * rewriting the compositor's modules behind its back. Reached from the settings
  * index; morphs back on the back chevron.

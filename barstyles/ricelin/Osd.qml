@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell.Widgets
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import Quickshell.Services.Pipewire
 import "Singletons"
 
@@ -61,11 +61,8 @@ Item {
      * the active one marked, so the OSD would only be a redundant morph.
      */
     readonly property string activeWsName: {
-        var mons = Hyprland.monitors.values;
-        for (var i = 0; i < mons.length; i++)
-            if (mons[i].name === screenName)
-                return mons[i].activeWorkspace ? mons[i].activeWorkspace.name : "";
-        return "";
+        var mon = Wm.outputByName(screenName);
+        return mon && mon.activeWorkspace ? String(mon.activeWorkspace) : "";
     }
     onActiveWsNameChanged: if (activeWsName.length > 0 && !expanded) flash("workspace");
 
@@ -98,7 +95,7 @@ Item {
      * Workspace flashes skip it: those are already keyed to this screen's own
      * active workspace.
      */
-    readonly property bool onFocusedMonitor: !Hyprland.focusedMonitor || Hyprland.focusedMonitor.name === screenName
+    readonly property bool onFocusedMonitor: Wm.focusedOutput === "" || Wm.focusedOutput === screenName
 
     function flash(which) {
         if (!armed || suppressed)

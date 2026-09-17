@@ -169,8 +169,8 @@
       "source": "widgets/ActiveWindow.qml",
       "destination": "widgets/ActiveWindow.qml",
       "mode": "0644",
-      "size": 666,
-      "sha256": "842de8c000ecf18392b4c4bed885588edd695807a271efe7b5788b557bef83cc",
+      "size": 556,
+      "sha256": "6f13a620c03919ce7470078ed5aa1d71d76e1c1e7c6c8d2dc2fedac67ef2162c",
       "install": true
     },
     {
@@ -249,8 +249,8 @@
       "source": "widgets/Workspaces.qml",
       "destination": "widgets/Workspaces.qml",
       "mode": "0644",
-      "size": 3633,
-      "sha256": "b59deb4d0cbc9f83ae0b0cc958a2f2fed598c5428ae42cbdd55c05da8d650471",
+      "size": 3247,
+      "sha256": "8a9c1e8cd15c7994e6940d6b142eb5a3bc0e25f60f6fff64ea9a19439b95d44c",
       "install": true
     }
   ]

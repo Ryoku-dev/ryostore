@@ -22,7 +22,7 @@ import "Singletons"
  * idle opens an in-surface source chooser with two choices — Screen and Window /
  * Region. Screen resolves to a monitor (a sub-chooser of the connected screens
  * when more than one) via ScreenRec.prepareScreen; Window / Region feeds the
- * Hyprland client rectangles to slurp (prepareWindow) so a click snaps to a
+ * window rectangles to slurp (prepareWindow) so a click snaps to a
  * window and a drag draws a freeform region, captured as a static rectangle.
  * Either resolves to ScreenRec.targetReady(token), at which point the
  * Flags.recordCountdown countdown runs (the bar fills over it, tap cancels) and
