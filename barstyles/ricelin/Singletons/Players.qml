@@ -3,7 +3,6 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
-import Quickshell.Hyprland
 
 /**
  * The one now-playing source the pill views read: the media surface, the source

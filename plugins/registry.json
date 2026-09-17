@@ -268,7 +268,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "f863ae7a4fb04a270ec0ad1d81e456012fb4a95b517367bc8cc84d46ee3a7bd6",
+      "manifestSha256": "59b4b3009eb9f600f8159b121d5196d36cc1c3c3d4bc694dc9b4db19aefadd1a",
       "official": false,
       "tagline": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
       "icon": "",
@@ -326,7 +326,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "a608be5647f2c271ed27a78a6854711912a53a9e3189b78eda5a2b37a183d911",
+      "manifestSha256": "314a976257e7ef33ea3ce421881c0ba1c1d72c25adaf062bdd3bd2f8396aeb0e",
       "official": false,
       "tagline": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
       "icon": "coffee",

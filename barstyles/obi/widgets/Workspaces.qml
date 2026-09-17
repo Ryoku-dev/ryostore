@@ -1,56 +1,45 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import shell.services
 
-// Obi workspaces: a centred row of kanji numerals, one per live Hyprland
-// workspace. The focused one is a filled pill, occupied ones read solid, empty
-// ones dim. Click switches; wheel cycles. This is the bar's centre piece.
+// Obi workspaces: a centred row of kanji numerals, one per live workspace. The
+// focused one is a filled pill, occupied ones read solid, empty ones dim. Click
+// switches; wheel cycles. This is the bar's centre piece.
+//
+// The row reads the shell's window-manager facade, so it follows whichever
+// workspace model the running compositor offers instead of assuming a fixed
+// numbered set.
 Item {
     id: root
 
     property real slot: 26
     readonly property var kanji: ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
-    readonly property int activeId: Workspaces.activeId
 
     readonly property var entries: {
-        const list = Hyprland.workspaces ? Hyprland.workspaces.values : [];
+        const list = Wm.workspaces || [];
         const out = [];
-        const seen = {};
         for (let i = 0; i < list.length; i++) {
             const w = list[i];
-            if (!w)
+            if (!w || w.special === true)
                 continue;
-            const o = w.lastIpcObject || {};
-            const id = (typeof w.id === "number" && w.id !== 0) ? w.id : (typeof o.id === "number" ? o.id : 0);
-            if (id <= 0)
-                continue;
-            const name = (typeof w.name === "string" && w.name.length) ? w.name : (o.name || "");
-            if (name.indexOf("special") === 0)
-                continue;
-            if (seen[id])
-                continue;
-            seen[id] = true;
-            out.push(id);
+            out.push(String(w.name));
         }
-        if (out.length === 0 && root.activeId > 0)
-            out.push(root.activeId);
-        out.sort((a, b) => a - b);
+        if (out.length === 0 && Wm.focusedWorkspace)
+            out.push(String(Wm.focusedWorkspace.name));
+        out.sort((a, b) => {
+            const an = Number(a), bn = Number(b);
+            if (!isNaN(an) && !isNaN(bn))
+                return an - bn;
+            return a.localeCompare(b);
+        });
         return out;
     }
 
-    function label(id) { return (id >= 1 && id <= 10) ? root.kanji[id] : String(id); }
-    function focus(id) { Hyprland.dispatch('hl.dsp.focus({ workspace = "' + id + '" })'); }
-    function occupied(id) {
-        const tls = Hyprland.toplevels ? Hyprland.toplevels.values : [];
-        for (let i = 0; i < tls.length; i++) {
-            const o = tls[i] && tls[i].lastIpcObject || {};
-            if (o.workspace && o.workspace.id === id)
-                return true;
-        }
-        return false;
+    function label(name) {
+        const id = Number(name);
+        return (Math.floor(id) === id && id >= 1 && id <= 10) ? root.kanji[id] : String(name);
     }
 
     implicitWidth: rowr.implicitWidth
@@ -59,7 +48,7 @@ Item {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.NoButton
-        onWheel: e => Hyprland.dispatch(e.angleDelta.y > 0 ? "workspace r-1" : "workspace r+1")
+        onWheel: e => Wm.cycleWorkspace(e.angleDelta.y > 0 ? -1 : 1)
     }
 
     Row {
@@ -73,9 +62,11 @@ Item {
             delegate: Rectangle {
                 id: cell
                 required property var modelData
-                readonly property int wsId: cell.modelData
-                readonly property bool active: cell.wsId === root.activeId
-                readonly property bool occ: root.occupied(cell.wsId)
+                readonly property string wsName: String(cell.modelData)
+                readonly property var ws: Wm.workspaceByName(cell.wsName)
+                readonly property bool active: Wm.focusedWorkspace !== null
+                    && Wm.focusedWorkspace.name === cell.wsName
+                readonly property bool occ: !cell.active && !!cell.ws && cell.ws.occupied === true
 
                 width: root.slot
                 height: root.slot
@@ -87,7 +78,7 @@ Item {
 
                 Text {
                     anchors.centerIn: parent
-                    text: root.label(cell.wsId)
+                    text: root.label(cell.wsName)
                     color: cell.active ? Theme.onPrimary : (cell.occ ? Theme.onSurface : Theme.onSurfaceVariant)
                     font.family: Theme.fontJp
                     font.pixelSize: 15
@@ -96,7 +87,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: root.focus(cell.wsId)
+                    onClicked: Wm.focusWorkspace(cell.wsName)
                 }
             }
         }

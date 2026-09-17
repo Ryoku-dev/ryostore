@@ -8,7 +8,7 @@ Keep the Ryoku desktop awake: a coffee-cup bar glyph that toggles the idle inhib
 
 Coffee puts a small cup on the QS Bar. While it is lit, the desktop does not idle: no screen blank, no lock, no suspend. Tap the glyph for a panel that shows the state and how long it has been awake, and flip it from there — the panel is the only place that changes anything; a bar click never mutates.
 
-Coffee drives the host desktop's **own caffeine bridge** (`~/.config/hypr/scripts/ryoku-cmd-caffeine`, the same script Ryoku's built-in Keep-Awake toggle runs), so it shares one source of truth with the shell rather than forking its own: Coffee reads state by polling the bridge's `status`, applies the optimistic flip immediately, and confirms or corrects it on the next poll, so a change made from the shell's own Keep-Awake toggle shows up here too. The shell reconciles the durable inhibitor to its Keep-Awake flag when it restarts, so for a hold that must outlive a full shell restart, use the shell's Keep-Awake toggle.
+Coffee drives the host desktop's **own caffeine bridge** (`ryoku-cmd-caffeine` on PATH, the same bridge Ryoku's built-in Keep-Awake toggle runs), so it shares one source of truth with the shell rather than forking its own: Coffee reads state by polling the bridge's `status`, applies the optimistic flip immediately, and confirms or corrects it on the next poll, so a change made from the shell's own Keep-Awake toggle shows up here too. The shell reconciles the durable inhibitor to its Keep-Awake flag when it restarts, so for a hold that must outlive a full shell restart, use the shell's Keep-Awake toggle.
 
 ## Install
 

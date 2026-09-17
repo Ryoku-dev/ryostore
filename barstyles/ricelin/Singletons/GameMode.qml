@@ -5,8 +5,8 @@ import Quickshell
 
 /**
  * Pill-local game/focus mode: quiet notifications, keep the session awake and
- * pause the visualizer, restoring the previous flags on exit. Hyprland window
- * effects remain owned by Ryoku Settings; no compositor configuration is changed.
+ * pause the visualizer, restoring the previous flags on exit. Window effects
+ * remain owned by Ryoku Settings; no compositor configuration is changed.
  */
 Singleton {
     id: root

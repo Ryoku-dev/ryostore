@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Ryoku.Ui.Singletons
 
 /**
  * Screen-recorder backend, shared by the 録 RECORD surface, the pill's hover
@@ -16,9 +17,11 @@ import Quickshell.Io
  * two resolvers, each emitting `targetReady(token)` on a valid pick or
  * `targetAborted()` on cancel: `prepareScreen(name)` resolves synchronously to a
  * monitor connector name (`-w DP-1`, falling back to `-w screen`);
- * `prepareWindow()` feeds the Hyprland client rectangles to `slurp` for one
+ * `prepareWindow()` feeds each live window's rectangle to `slurp` for one
  * combined Window / Region pick — clicking a window snaps to it, dragging draws
- * a freeform region — and resolves to that `WxH+X+Y` geometry. Only after
+ * a freeform region — and resolves to that `WxH+X+Y` geometry. A compositor that
+ * reports no window geometry has nothing to snap to, so the pick degrades to the
+ * freeform region. Only after
  * `targetReady` does the surface run its countdown and call `start(token)`, so
  * the order is pick → countdown → record. Audio uses gsr's device aliases (`default_output` for desktop,
  * `default_input` for the mic) so no device id is ever hardcoded; the surface's
@@ -206,6 +209,16 @@ Singleton {
         lossless: "ultra"
     })
 
+    readonly property string hintPath: (Quickshell.env("XDG_RUNTIME_DIR") || "/tmp") + "/ricelin-slurp-hints"
+
+    FileView {
+        id: hintFile
+        path: root.hintPath
+        blockLoading: true
+        printErrors: false
+        atomicWrites: true
+    }
+
     function timestamp() {
         return Qt.formatDateTime(new Date(), "yyyy-MM-dd_HH-mm-ss");
     }
@@ -238,15 +251,17 @@ Singleton {
     }
 
     /**
-     * Feed the Hyprland client rectangles to `slurp` so the user picks at
-     * leisure with nothing recording yet: clicking a window snaps to that
-     * window, dragging draws a freeform region (one combined Window / Region
-     * pick, like a screenshot tool). Announces the chosen `WxH+X+Y` geometry, or
-     * aborts on cancel / non-zero exit (the user pressed Escape).
+     * Feed the live window rectangles to `slurp` so the user picks at leisure
+     * with nothing recording yet: clicking a window snaps to that window,
+     * dragging draws a freeform region (one combined Window / Region pick, like a
+     * screenshot tool). Announces the chosen `WxH+X+Y` geometry, or aborts on
+     * cancel / non-zero exit (the user pressed Escape).
      */
     function prepareWindow() {
         if (busy)
             return;
+        // No per-window rectangles to hint with: the pick is the freeform region.
+        hintFile.setText(Wm.caps.windowGeometry === true ? root.windowHints() + "\n" : "");
         windowProc.running = true;
     }
 
@@ -349,7 +364,7 @@ Singleton {
     }
 
     /**
-     * Combined Window / Region picker: feeds each Hyprland client's current
+     * Combined Window / Region picker: feeds each live window's current
      * rectangle to `slurp`, so clicking a window snaps to its `WxH+X+Y` geometry
      * while dragging draws a freeform region. The rectangle is captured
      * statically, so a window moved or resized after the pick is not followed.
@@ -357,7 +372,7 @@ Singleton {
      */
     Process {
         id: windowProc
-        command: ["sh", "-c", "hyprctl clients -j | jq -r '.[] | \"\\(.at[0]),\\(.at[1]) \\(.size[0])x\\(.size[1])\"' | slurp -f \"%wx%h+%x+%y\""]
+        command: ["sh", "-c", "slurp -f \"%wx%h+%x+%y\" < \"" + root.hintPath + "\""]
         stdout: StdioCollector {
             onStreamFinished: {
                 var geom = this.text.trim();

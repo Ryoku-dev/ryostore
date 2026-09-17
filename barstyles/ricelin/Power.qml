@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Widgets
+import shell.services
 import "Singletons"
 
 /**
@@ -47,19 +47,21 @@ PillSurface {
     ameForm: holdingIndex >= 0 ? "dock" : (soulKey.length ? "soul" : "off")
     amePoint: Qt.point(heatX, heatY)
 
+    // Session ends ride the shell's own session actions (the same path its
+    // confirmation dialog uses), so no compositor dispatch is named here.
     readonly property var actions: [
-        { key: "lock",     glyph: "lock",     label: "Lock",     confirm: false, dispatch: "",             argv: ["ryoku-shell", "lock"] },
-        { key: "logout",   glyph: "logout",   label: "Logout",   confirm: true,  dispatch: "hl.dsp.exit()", argv: [] },
-        { key: "suspend",   glyph: "suspend",   label: "Suspend",  confirm: true,  dispatch: "",             argv: ["systemctl", "suspend"] },
-        { key: "reboot",   glyph: "reboot",   label: "Restart",  confirm: true,  dispatch: "",             argv: ["systemctl", "reboot"] },
-        { key: "shutdown", glyph: "shutdown", label: "Shutdown", confirm: true,  dispatch: "",             argv: ["systemctl", "poweroff"] }
+        { key: "lock",     glyph: "lock",     label: "Lock",     confirm: false, argv: ["ryoku-shell", "lock"] },
+        { key: "logout",   glyph: "logout",   label: "Logout",   confirm: true,  session: "logout" },
+        { key: "suspend",  glyph: "suspend",  label: "Suspend",  confirm: true,  argv: ["systemctl", "suspend"] },
+        { key: "reboot",   glyph: "reboot",   label: "Restart",  confirm: true,  session: "reboot" },
+        { key: "shutdown", glyph: "shutdown", label: "Shutdown", confirm: true,  session: "shutdown" }
     ]
 
     readonly property int splitAfter: 2
 
     function run(a) {
-        if (a.dispatch && a.dispatch.length)
-            Hyprland.dispatch(a.dispatch);
+        if (a.session)
+            SessionActions.run(a.session);
         else
             Quickshell.execDetached(a.argv);
         root.requestClose();

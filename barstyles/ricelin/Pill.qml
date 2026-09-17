@@ -7,7 +7,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Networking
 import Quickshell.Bluetooth
-import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import "Singletons"
 
 /**
@@ -67,8 +67,8 @@ Item {
     property bool hoverLatch: false
 
     /**
-     * False for the first seconds after the shell maps. Hyprland hands pointer
-     * focus to a freshly mapped layer surface at the cursor's position, which
+     * False for the first seconds after the shell maps. The compositor hands
+     * pointer focus to a freshly mapped layer surface at the cursor's position, which
      * the window-level HoverHandler reads as a pill hover and latches the pill
      * open (issue #20). Latching only after boot settles filters that spurious
      * enter; a real hover during the window just expands late, harmlessly.
@@ -93,20 +93,23 @@ Item {
      * or the private space rather than your real desktop. Empty in the normal case.
      */
     readonly property string specialView: {
-        var ms = Hyprland.monitors.values;
-        for (var i = 0; i < ms.length; i++) {
-            if (ms[i] && ms[i].name === pill.screenName) {
-                var o = ms[i].lastIpcObject;
-                var sw = (o && o.specialWorkspace) ? o.specialWorkspace.name : "";
-                if (sw && sw.indexOf("special:") === 0) {
-                    var id = sw.slice("special:".length);
-                    if (id === "minimized") return "Minimized";
-                    if (id === "private") return "Private";
-                    if (id === "stash") return "Stash";
-                    return id.charAt(0).toUpperCase() + id.slice(1);
-                }
-                return "";
-            }
+        if (Wm.caps.specialWorkspace !== true)
+            return "";
+        var list = Wm.workspaces;
+        for (var i = 0; i < list.length; i++) {
+            var w = list[i];
+            if (!w || w.special !== true || w.active !== true)
+                continue;
+            if (w.output && w.output !== pill.screenName)
+                continue;
+            var name = String(w.name);
+            if (name.indexOf("special:") !== 0)
+                continue;
+            var id = name.slice("special:".length);
+            if (id === "minimized") return "Minimized";
+            if (id === "private") return "Private";
+            if (id === "stash") return "Stash";
+            return id.charAt(0).toUpperCase() + id.slice(1);
         }
         return "";
     }
@@ -823,7 +826,7 @@ Item {
             installProc.command = ["python3", pill.localPath(Qt.resolvedUrl("bin/install-font.py")), next];
         } else {
             pill.installKind = "app";
-            installProc.command = ["bash", Quickshell.env("HOME") + "/.config/hypr/scripts/stash-install.sh", next];
+            installProc.command = ["bash", "stash-install.sh", next];
         }
         installProc.running = true;
     }
