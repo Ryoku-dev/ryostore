@@ -25,8 +25,8 @@
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 22749,
-      "sha256": "1da6193004e034d290eb590d1d24a2403759ab789c763a16ae383c549f185663",
+      "size": 23383,
+      "sha256": "08ad65b0bc4b9cf22e44b429d7505f4ba19fe0f1487bb8e1aab088c998b7edf3",
       "install": true
     },
     {
@@ -141,5 +141,6 @@
       "sha256": "2f6ae8dee045d2f1da4cd852063069aca564c9cf018e5d78820fadeaed8e05ce",
       "install": true
     }
-  ]
+  ],
+  "license": "GPL-3.0-only"
 }

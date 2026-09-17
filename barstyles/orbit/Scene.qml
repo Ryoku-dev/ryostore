@@ -3,10 +3,10 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
-import Quickshell.Hyprland
 import Quickshell.Wayland
 import Quickshell.Widgets
 
+import Ryoku.Ui.Singletons
 import shell.services
 import shell.barkit as Pill
 
@@ -49,13 +49,9 @@ Scope {
     readonly property string timeText: Qt.formatTime(root.now, "HH:mm")
     readonly property string dateText: Qt.formatDate(root.now, "ddd d MMM").toUpperCase()
 
-    readonly property string activeTitle: {
-        const tl = Hyprland.activeToplevel;
-        if (!tl || !tl.lastIpcObject)
-            return "";
-
-        return String(tl.lastIpcObject.title || "");
-    }
+    readonly property string activeTitle: Wm.focusedWindow
+        ? String(Wm.focusedWindow.title || "")
+        : ""
 
     readonly property var mediaPlayer: Media.player
 
@@ -96,27 +92,40 @@ Scope {
         return count;
     }
 
-    function occupied(workspaceId) {
-        const toplevels = Hyprland.toplevels ? Hyprland.toplevels.values : [];
+    // Workspace state comes from the shell's window-manager facade, so the strip
+    // shows whatever model the running compositor offers: numbered slots on a
+    // fixed model, the live set on a scrolling one.
+    readonly property bool dynamicModel: Wm.workspaceModel === "dynamic"
+    readonly property string activeName: Wm.focusedWorkspace ? String(Wm.focusedWorkspace.name) : ""
+    readonly property var liveNames: {
+        const out = [];
+        const list = Wm.workspaces || [];
 
-        for (let i = 0; i < toplevels.length; ++i) {
-            const object = toplevels[i] && toplevels[i].lastIpcObject
-                ? toplevels[i].lastIpcObject
-                : {};
-
-            if (object.workspace && object.workspace.id === workspaceId)
-                return true;
+        for (let i = 0; i < list.length; ++i) {
+            const w = list[i];
+            if (w && w.special !== true)
+                out.push(String(w.name));
         }
 
-        return false;
+        return out;
+    }
+    readonly property int slotCount: dynamicModel ? Math.max(1, liveNames.length) : 5
+
+    function nameAt(index) {
+        return root.dynamicModel ? String(root.liveNames[index] || "") : String(index + 1);
     }
 
-    function focusWorkspace(workspaceId) {
+    function occupied(index) {
+        const ws = Wm.workspaceByName(root.nameAt(index));
+        return !!ws && ws.occupied === true;
+    }
+
+    function focusWorkspace(index) {
         root.selectedPopup = "";
 
-        Hyprland.dispatch(
-            'hl.dsp.focus({ workspace = "' + workspaceId + '" })'
-        );
+        const name = root.nameAt(index);
+        if (name !== "")
+            Wm.focusWorkspace(name);
     }
 
     function togglePopup(name) {
@@ -302,15 +311,15 @@ Scope {
             z: 20
 
             Repeater {
-                model: 5
+                model: root.slotCount
 
                 delegate: Item {
                     id: workspaceNode
                     required property int index
 
                     readonly property int workspaceId: index + 1
-                    readonly property bool active: Workspaces.activeId === workspaceId
-                    readonly property bool hasWindows: root.occupied(workspaceId)
+                    readonly property bool active: root.nameAt(index) === root.activeName
+                    readonly property bool hasWindows: root.occupied(index)
 
                     width: 30
                     height: 32
@@ -350,7 +359,9 @@ Scope {
                         Text {
                             anchors.centerIn: parent
                             visible: workspaceNode.active
-                            text: workspaceNode.workspaceId
+                            text: root.dynamicModel
+                                ? root.nameAt(workspaceNode.index)
+                                : String(workspaceNode.workspaceId)
                             color: Theme.onPrimary
                             font.family: Theme.mono
                             font.pixelSize: 10
@@ -363,7 +374,7 @@ Scope {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.focusWorkspace(workspaceNode.workspaceId)
+                        onClicked: root.focusWorkspace(workspaceNode.index)
                     }
                 }
             }
