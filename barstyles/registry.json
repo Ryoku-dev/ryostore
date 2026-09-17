@@ -49,6 +49,8 @@
       "author": "dodo986",
       "summary": "Material 3 Island Bar",
       "description": "Material 3-Like design with morphing popouts, kanji workspaces, audio visualizer, and customizable widget pills.",
+      "windowManager": "hyprland",
+      "windowManagerReason": "Written against Hyprland's own window and workspace model, so it does not run on niri yet.",
       "tags": [
         "top",
         "material3",
