@@ -409,7 +409,7 @@
         "command": "easyeffects --hide-window --service-mode"
       },
       {
-        "command": "hyprsunset"
+        "command": "ryoku-cmd-nightlight on"
       },
       {
         "command": "gsr-ui"
