@@ -657,11 +657,11 @@
     {
       "id": "spiceflow",
       "name": "Ryoku Palette Bridge",
-      "version": "2.0.2",
+      "version": "2.1.0",
       "path": "bundles/spiceflow",
       "author": "Rayyan",
       "summary": "wallpaper · Zen · Spotify · Discord",
-      "description": "Keeps Zen, Spotify, and Discord matched to your Ryoku wallpaper. It updates Zen's browser theme, Spotify through Spicetify, and Discord through Vesktop's Midnight theme whenever your wallpaper colours change.",
+      "description": "Wallpaper colours for Spotify and Vesktop, with optional Zen live theming through a separately installed signed extension. Installs and starts the bridge user service.",
       "tags": [
         "zen browser",
         "spotify",
@@ -678,7 +678,7 @@
         "assets/preview.png"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "b6daee432d2b59d1b229f30528449933f34947a4fac9b7d706416eabfa8f4587",
+      "manifestSha256": "af4a0d0939264f21fd099dd1847d75cd18c6491e96f31c6955e394beddedbaaa",
       "components": [
         {
           "type": "package",
@@ -707,17 +707,17 @@
         {
           "type": "script",
           "name": "ryoku-palette-bridge",
-          "detect": "ryoku-palette-bridge",
+          "detect": "ryoku-palette-bridge-store-2-1-0",
           "tier": "core",
           "interactive": false,
           "summary": "Apply your wallpaper colours to Zen, Spotify, and Discord."
         }
       ],
-      "tagline": "one palette · three apps · zero reloads",
+      "tagline": "wallpaper colours · optional app integrations",
       "sources": "GitHub / MIT",
       "icon": "palette",
       "official": false,
-      "lastUpdated": "2026-09-12"
+      "lastUpdated": "2026-09-13"
     },
     {
       "id": "cachyos-layer",
