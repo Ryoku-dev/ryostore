@@ -9,6 +9,8 @@ Rectangle {
     id: root
 
     required property var colors
+    required property real s
+    property string screenName: ""
 
     readonly property real outputVolume: Audio.sink && Audio.sink.audio
         ? Math.max(0, Math.min(1, Audio.sink.audio.volume))
@@ -16,10 +18,10 @@ Rectangle {
     readonly property bool outputMuted: !!(Audio.sink && Audio.sink.audio && Audio.sink.audio.muted)
     readonly property int notificationCount: Notifs.history.length
 
-    implicitWidth: row.implicitWidth + Theme.paddingMd * 2
-    implicitHeight: Theme.iconLg + Theme.paddingLg
+    implicitWidth: row.implicitWidth + Theme.paddingMd * 2 * root.s
+    implicitHeight: (Theme.iconLg + Theme.paddingLg) * root.s
 
-    radius: Theme.radiusWidget
+    radius: Config.chromaRadius(Theme.radiusWidget) * root.s
     color: root.colors.backgroundAlt
     border.width: 0
 
@@ -29,15 +31,17 @@ Rectangle {
             left: parent.left
             right: parent.right
             verticalCenter: parent.verticalCenter
-            leftMargin: Theme.paddingMd
-            rightMargin: Theme.paddingMd
+            leftMargin: Theme.paddingMd * root.s
+            rightMargin: Theme.paddingMd * root.s
         }
         height: parent.height
-        spacing: Theme.paddingSm
+        spacing: Theme.paddingSm * root.s
 
         C.UtilityButton {
+            visible: Config.chromaWidgetEnabled("notifications", root.screenName)
             height: parent.height
             colors: root.colors
+            s: root.s
             icon: root.notificationCount > 0 ? "notifications_active" : "notifications_none"
             label: root.notificationCount > 0 ? String(root.notificationCount) : ""
             active: root.notificationCount > 0
@@ -46,16 +50,20 @@ Rectangle {
         }
 
         C.UtilityButton {
+            visible: Config.chromaWidgetEnabled("wallpaper", root.screenName)
             height: parent.height
             colors: root.colors
+            s: root.s
             icon: "palette"
             accentIndex: 2
             onClicked: ShellState.requestSurfaceActive("wallpaper", undefined)
         }
 
         C.UtilityButton {
+            visible: Config.chromaWidgetEnabled("network", root.screenName)
             height: parent.height
             colors: root.colors
+            s: root.s
             icon: Network.kind === "ethernet" ? "lan" : Network.kind === "wifi" ? "wifi" : "wifi_off"
             active: Network.kind !== ""
             accentIndex: 3
@@ -63,8 +71,10 @@ Rectangle {
         }
 
         C.UtilityButton {
+            visible: Config.chromaWidgetEnabled("audio", root.screenName)
             height: parent.height
             colors: root.colors
+            s: root.s
             icon: root.outputMuted || root.outputVolume <= 0.001
                 ? "volume_off"
                 : root.outputVolume > 0.66
@@ -78,9 +88,10 @@ Rectangle {
         }
 
         C.UtilityButton {
-            visible: Battery.present
+            visible: Config.chromaWidgetEnabled("battery", root.screenName) && Battery.present
             height: parent.height
             colors: root.colors
+            s: root.s
             icon: Battery.charging || Battery.full ? "battery_charging_full" : "battery_full"
             label: Battery.pct + "%"
             active: Battery.low
@@ -89,8 +100,10 @@ Rectangle {
         }
 
         C.UtilityButton {
+            visible: Config.chromaWidgetEnabled("settings", root.screenName)
             height: parent.height
             colors: root.colors
+            s: root.s
             icon: "tune"
             accentIndex: 4
             onClicked: ShellState.requestSurfaceActive("quick-settings", undefined)

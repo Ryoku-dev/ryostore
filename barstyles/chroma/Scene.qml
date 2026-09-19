@@ -3,25 +3,26 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Ryoku.Ui.Singletons
 import shell.services
 import shell.barkit as Pill
 import "components" as C
 
-// CHROMA bar for Ryoku.
-//
-// This is a visual/layout port of aethctl/chroma-shell's ChromaBar.qml onto
-// Ryoku's native data plane. It intentionally does not import CHROMA's old
-// settings/theme/runtime stack: all state comes from shell.services and every
-// colour comes from Ryoku's live Theme/Matugen roles.
 PanelWindow {
     id: win
 
     property var modelData
     screen: modelData
 
-    readonly property int barHeight: Theme.iconLg + Theme.paddingLg
-    readonly property int outerMargin: Theme.paddingMd
-    readonly property int gap: Theme.paddingMd
+    readonly property string outputName: modelData && modelData.name
+        ? String(modelData.name)
+        : ""
+    readonly property real s: Config.chromaScale()
+        * Tokens.uiScaleFor(outputName)
+    readonly property int barHeight: Math.round((Theme.iconLg + Theme.paddingLg) * s)
+    readonly property int outerMargin: Math.round(Theme.paddingMd * s)
+    readonly property int gap: Math.round(Config.chromaGap(Theme.paddingMd) * s)
+    readonly property string edge: Config.chromaPosition()
 
     color: "transparent"
     exclusionMode: ExclusionMode.Normal
@@ -32,7 +33,8 @@ PanelWindow {
     WlrLayershell.namespace: "ryoku-chroma-bar"
 
     anchors {
-        top: true
+        top: win.edge === "top"
+        bottom: win.edge === "bottom"
         left: true
         right: true
     }
@@ -40,23 +42,21 @@ PanelWindow {
     margins {
         left: outerMargin
         right: outerMargin
-        top: outerMargin
+        top: win.edge === "top" ? outerMargin : 0
+        bottom: win.edge === "bottom" ? outerMargin : 0
     }
 
     implicitHeight: barHeight
 
     C.Palette {
         id: chroma
+        surfaceOpacity: Config.chromaOpacity()
     }
 
-    // CHROMA's bar is a set of discrete modules floating in one horizontal
-    // signal strip. Keeping the zones independently anchored preserves the
-    // centred media card even when the left/right clusters change width.
     Item {
         anchors.fill: parent
 
         Row {
-            id: leftCluster
             anchors {
                 left: parent.left
                 top: parent.top
@@ -66,9 +66,10 @@ PanelWindow {
 
             Rectangle {
                 id: identityBlock
+                visible: Config.chromaWidgetEnabled("identity", win.outputName)
                 width: win.barHeight
                 height: parent.height
-                radius: Theme.radiusWidget
+                radius: Config.chromaRadius(Theme.radiusWidget) * win.s
                 color: identityMouse.containsMouse ? chroma.accent(4) : chroma.accent(0)
                 border.width: 0
 
@@ -79,7 +80,7 @@ PanelWindow {
 
                 Pill.BrandMark {
                     anchors.centerIn: parent
-                    size: Theme.iconMd
+                    size: Theme.iconMd * win.s
                     color: chroma.inkOn(identityBlock.color)
                     scale: identityMouse.containsMouse ? 1.12 : 1.0
 
@@ -103,24 +104,27 @@ PanelWindow {
             }
 
             C.WorkspaceRail {
+                visible: Config.chromaWidgetEnabled("workspaces", win.outputName)
                 height: parent.height
                 colors: chroma
+                s: win.s
+                screenName: win.outputName
             }
         }
 
         C.MediaModule {
-            id: mediaModule
+            visible: Config.chromaWidgetEnabled("media", win.outputName)
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 top: parent.top
                 bottom: parent.bottom
             }
-            width: Math.min(430, Math.max(300, parent.width * 0.30))
+            width: Math.min(430 * win.s, Math.max(300 * win.s, parent.width * 0.30))
             colors: chroma
+            s: win.s
         }
 
         Row {
-            id: rightCluster
             anchors {
                 right: parent.right
                 top: parent.top
@@ -129,13 +133,24 @@ PanelWindow {
             spacing: win.gap
 
             C.StatusCluster {
+                visible:
+                    Config.chromaWidgetEnabled("notifications", win.outputName)
+                    || Config.chromaWidgetEnabled("wallpaper", win.outputName)
+                    || Config.chromaWidgetEnabled("network", win.outputName)
+                    || Config.chromaWidgetEnabled("audio", win.outputName)
+                    || Config.chromaWidgetEnabled("settings", win.outputName)
+                    || (Config.chromaWidgetEnabled("battery", win.outputName) && Battery.present)
                 height: parent.height
                 colors: chroma
+                s: win.s
+                screenName: win.outputName
             }
 
             C.ClockModule {
+                visible: Config.chromaWidgetEnabled("clock", win.outputName)
                 height: parent.height
                 colors: chroma
+                s: win.s
             }
         }
     }

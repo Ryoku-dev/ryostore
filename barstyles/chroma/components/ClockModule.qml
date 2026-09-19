@@ -7,16 +7,16 @@ Rectangle {
     id: root
 
     required property var colors
+    required property real s
 
     property date now: new Date()
 
-    implicitWidth: Theme.iconLg * 4 + Theme.paddingLg
-    implicitHeight: Theme.iconLg + Theme.paddingLg
+    implicitWidth: (Theme.iconLg * (Config.chromaClockSeconds()
+        ? 6
+        : Config.chromaClock24H() ? 4 : 5) + Theme.paddingLg) * root.s
+    implicitHeight: (Theme.iconLg + Theme.paddingLg) * root.s
 
-    radius: Theme.radiusWidget
-
-    // Keep the clock on one Matugen role. It still retints live with the
-    // wallpaper, but no longer snaps back to palette slot zero between steps.
+    radius: Config.chromaRadius(Theme.radiusWidget) * root.s
     color: colors.accent(0)
 
     readonly property color contentColor: colors.inkOn(color)
@@ -27,7 +27,7 @@ Rectangle {
     }
 
     Timer {
-        interval: 1000
+        interval: Config.chromaClockSeconds() ? 1000 : 30000
         running: true
         repeat: true
         onTriggered: root.now = new Date()
@@ -36,18 +36,20 @@ Rectangle {
     Column {
         anchors {
             left: parent.left
-            leftMargin: Theme.paddingLg
+            leftMargin: Theme.paddingLg * root.s
             verticalCenter: parent.verticalCenter
         }
-        spacing: 0
 
         Text {
-            text: Qt.formatDateTime(root.now, "HH:mm")
+            text: Qt.formatDateTime(root.now,
+                Config.chromaClock24H()
+                    ? (Config.chromaClockSeconds() ? "HH:mm:ss" : "HH:mm")
+                    : (Config.chromaClockSeconds() ? "h:mm:ss AP" : "h:mm AP"))
             color: root.contentColor
             font.family: Theme.mono
-            font.pixelSize: 21
+            font.pixelSize: 21 * root.s
             font.weight: Font.Black
-            font.letterSpacing: 1
+            font.letterSpacing: root.s
         }
 
         Text {
@@ -55,20 +57,20 @@ Rectangle {
             color: root.contentColor
             opacity: 0.68
             font.family: Theme.mono
-            font.pixelSize: 8
+            font.pixelSize: 8 * root.s
             font.weight: Font.Bold
-            font.letterSpacing: 1.1
+            font.letterSpacing: 1.1 * root.s
         }
     }
 
     Rectangle {
         anchors {
             right: parent.right
-            rightMargin: Theme.paddingLg
+            rightMargin: Theme.paddingLg * root.s
             verticalCenter: parent.verticalCenter
         }
-        width: Theme.paddingMd
-        height: Theme.iconMd
+        width: Theme.paddingMd * root.s
+        height: Theme.iconMd * root.s
         radius: width / 2
         color: root.contentColor
         opacity: 0.9

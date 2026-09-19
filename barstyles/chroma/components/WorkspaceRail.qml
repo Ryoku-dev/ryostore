@@ -1,149 +1,148 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Ryoku.Ui.Singletons
 import shell.services
 
 Rectangle {
     id: root
 
     required property var colors
+    required property real s
+    property string screenName: ""
 
-    // The live workspace set, read from the shell's window-manager facade: a
-    // fixed numbered model lays it out as slots, a scrolling model as itself.
     readonly property bool dynamicModel: Wm.workspaceModel === "dynamic"
-    readonly property string activeName: Wm.focusedWorkspace ? String(Wm.focusedWorkspace.name) : ""
-
-    readonly property var liveNames: {
-        const out = []
-        const list = Wm.workspaces || []
-        for (let i = 0; i < list.length; ++i) {
-            const w = list[i]
-            if (w && w.special !== true)
-                out.push(String(w.name))
-        }
-        return out
-    }
-
+    readonly property string labelMode: Config.chromaWorkspaceMode()
+    readonly property var localWorkspaces: Wm.workspaces.filter(ws =>
+        !ws.special && (!root.screenName || ws.output === root.screenName))
     readonly property int workspaceCount: {
-        if (dynamicModel)
-            return Math.max(1, liveNames.length)
-        let highest = Math.max(5, root.activeIndex)
-        for (let i = 0; i < liveNames.length; ++i) {
-            const id = Number(liveNames[i])
-            if (id > 0 && id <= 10)
-                highest = Math.max(highest, id)
+        if (root.dynamicModel)
+            return root.localWorkspaces.length
+        let highest = 5
+        for (const ws of Wm.workspaces) {
+            const number = Number(ws.name)
+            if (!ws.special && number >= 1 && number <= 10)
+                highest = Math.max(highest, number)
         }
         return Math.min(10, highest)
     }
 
-    readonly property int activeIndex: {
-        const n = Number(root.activeName)
-        return (Math.floor(n) === n && n > 0) ? n : 1
+    function workspace(slot) {
+        return root.dynamicModel ? root.localWorkspaces[slot - 1]
+                                 : Wm.workspaceByName(String(slot))
+    }
+    function isActive(slot) { const ws = workspace(slot); return !!ws && ws.active }
+    function isOccupied(slot) { const ws = workspace(slot); return !!ws && ws.occupied }
+    function focus(slot) {
+        const ws = workspace(slot)
+        if (ws || !root.dynamicModel)
+            Wm.focusWorkspace(ws ? Wm.workspaceKey(ws) : String(slot))
+    }
+    function cycle(delta) {
+        if (!root.dynamicModel) { Wm.cycleWorkspace(delta); return }
+        const list = root.localWorkspaces
+        if (!list.length) return
+        const current = Math.max(0, list.findIndex(ws => ws.active))
+        root.focus((current + delta + list.length) % list.length + 1)
     }
 
-    function nameAt(number) {
-        return root.dynamicModel ? String(root.liveNames[number - 1] || "") : String(number)
-    }
+    readonly property int cellWidth: Math.round((root.labelMode === "names" ? 58 : 30) * root.s)
+    readonly property int cellGap: Math.round(4 * root.s)
+    readonly property int horizontalPadding: Math.round(8 * root.s)
 
-    function occupied(number) {
-        const ws = Wm.workspaceByName(root.nameAt(number))
-        return !!ws && ws.occupied === true
-    }
+    width:
+        root.workspaceCount * root.cellWidth
+        + Math.max(0, root.workspaceCount - 1) * root.cellGap
+        + root.horizontalPadding * 2
 
-    function focus(number) {
-        const name = root.nameAt(number)
-        if (name !== "")
-            Wm.focusWorkspace(name)
-    }
+    implicitWidth: width
+    implicitHeight: Math.round(44 * root.s)
 
-    implicitWidth: row.implicitWidth + Theme.paddingMd * 2
-    implicitHeight: Theme.iconLg + Theme.paddingLg
-
-    radius: Theme.radiusWidget
-    color: root.colors.backgroundAlt
+    radius: Config.chromaRadius(14) * root.s
+    color: root.colors.surface
     border.width: 0
     clip: true
 
     Row {
-        id: row
-
         anchors {
-            left: parent.left
-            right: parent.right
-            verticalCenter: parent.verticalCenter
-            leftMargin: Theme.paddingMd
-            rightMargin: Theme.paddingMd
+            fill: parent
+            leftMargin: root.horizontalPadding
+            rightMargin: root.horizontalPadding
         }
 
-        height: parent.height
-        spacing: Theme.paddingSm
+        spacing: root.cellGap
 
         Repeater {
             model: root.workspaceCount
 
-            Item {
-                id: slot
+            delegate: Item {
+                id: cell
                 required property int index
 
                 readonly property int number: index + 1
-                readonly property bool active: root.nameAt(slot.number) === root.activeName
-                readonly property bool hasWindows: root.occupied(slot.number)
+                readonly property bool active: root.isActive(number)
+                readonly property bool occupied: root.isOccupied(number)
+                readonly property var workspace: root.workspace(number)
+                readonly property string workspaceLabel: {
+                    if (root.labelMode === "dots")
+                        return "";
+                    if (root.labelMode === "names" && cell.workspace && cell.workspace.name)
+                        return String(cell.workspace.name).toUpperCase();
+                    return cell.number < 10 ? "0" + cell.number : String(cell.number);
+                }
 
-                width: slot.active
-                    ? Theme.iconLg + Theme.paddingMd
-                    : Theme.iconLg
+                width: root.cellWidth
                 height: parent.height
 
                 Rectangle {
-                    id: button
-
-                    anchors.fill: parent
-                    radius: Theme.radiusWidget
-                    color: slot.active
-                        ? root.colors.alpha(root.colors.accent(slot.index), 0.22)
-                        : hover.containsMouse
-                            ? root.colors.surfaceHover
-                            : "transparent"
-                    border.width: 0
-
-                    Behavior on color {
-                        enabled: !Motion.reduce
-                        ColorAnimation {
-                            duration: Motion.fast
-                            easing.type: Motion.easeStandard
-                        }
+                    anchors {
+                        fill: parent
+                        topMargin: 6 * root.s
+                        bottomMargin: 6 * root.s
                     }
+
+                    radius: 9 * root.s
+
+                    color: cell.active
+                        ? root.colors.alpha(root.colors.accent(cell.index), 0.28)
+                        : hover.containsMouse
+                            ? root.colors.alpha(root.colors.accent(cell.index), 0.12)
+                            : root.colors.alpha(
+                                root.colors.inkOn(root.colors.surface),
+                                cell.occupied ? 0.08 : 0.035
+                            )
 
                     Text {
                         anchors.centerIn: parent
-                        readonly property string label: root.dynamicModel
-                            ? root.nameAt(slot.number)
-                            : String(slot.number)
-                        text: /^\d$/.test(label) ? "0" + label : label
-                        color: slot.active ? root.colors.accent(slot.index) : root.colors.text
+                        visible: root.labelMode !== "dots"
+                        text: cell.workspaceLabel
+                        color: cell.active
+                            ? root.colors.inkOn(root.colors.accent(cell.index))
+                            : root.colors.inkOn(root.colors.surface)
+                        opacity: cell.active ? 1.0 : (cell.occupied ? 0.78 : 0.48)
                         font.family: Theme.mono
-                        font.pixelSize: Theme.fontSm
-                        font.weight: Font.Black
+                        font.pixelSize: 11 * root.s
+                        font.weight: cell.active ? Font.Black : Font.DemiBold
                     }
 
                     Rectangle {
                         anchors {
                             horizontalCenter: parent.horizontalCenter
                             bottom: parent.bottom
-                            bottomMargin: Theme.paddingSm
+                            bottomMargin: root.labelMode === "dots"
+                                ? (parent.height - height) / 2
+                                : 3 * root.s
                         }
 
-                        width: slot.hasWindows ? Theme.paddingMd : Theme.borderWidth
-                        height: Theme.borderWidth
-                        radius: Theme.borderWidth / 2
-                        color: root.colors.accent(slot.index)
-                        opacity: slot.active ? 1.0 : slot.hasWindows ? 0.72 : 0.20
+                        width: (root.labelMode === "dots" ? (cell.active ? 12 : 5) : (cell.occupied ? 10 : 3)) * root.s
+                        height: Math.max(1, (root.labelMode === "dots" ? 5 : 2) * root.s)
+                        radius: height / 2
 
-                        Behavior on opacity {
-                            enabled: !Motion.reduce
-                            NumberAnimation { duration: Motion.fast }
-                        }
+                        color: root.colors.accent(cell.index)
+                        opacity: cell.active
+                            ? 1.0
+                            : cell.occupied
+                                ? 0.75
+                                : 0.18
                     }
 
                     MouseArea {
@@ -152,7 +151,7 @@ Rectangle {
                         hoverEnabled: true
                         acceptedButtons: Qt.LeftButton
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.focus(slot.number)
+                        onClicked: root.focus(cell.number)
                     }
                 }
             }
@@ -160,6 +159,9 @@ Rectangle {
     }
 
     WheelHandler {
-        onWheel: event => Wm.cycleWorkspace(event.angleDelta.y > 0 ? -1 : 1)
+        onWheel: event => {
+            if (event.angleDelta.y !== 0)
+                root.cycle(event.angleDelta.y > 0 ? -1 : 1)
+        }
     }
 }

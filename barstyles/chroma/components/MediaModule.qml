@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Ryoku.Ui.Singletons
 import Quickshell.Io
 import shell.services
 import shell.barkit as Pill
@@ -12,6 +11,7 @@ Item {
     id: root
 
     required property var colors
+    required property real s
 
     readonly property var player: Media.player
     readonly property bool hasMedia: Media.present && player !== null
@@ -31,7 +31,8 @@ Item {
     property var spectrumLevels: flatSpectrum()
 
     readonly property string activeWindowTitle: {
-        const title = Wm.focusedWindow ? String(Wm.focusedWindow.title || "") : ""
+        const top = Wm.focusedWindow
+        const title = String(top && top.title ? top.title : "")
         return title.length > 0 ? title : "DESKTOP // IDLE"
     }
 
@@ -126,7 +127,7 @@ Item {
     Rectangle {
         id: canvas
         anchors.fill: parent
-        radius: Theme.radiusWidget
+        radius: Config.chromaRadius(Theme.radiusWidget) * root.s
         color: hover.containsMouse ? root.colors.surface : root.colors.backgroundAlt
         border.width: 0
         clip: true
@@ -143,12 +144,12 @@ Item {
                 left: parent.left
                 right: parent.right
                 bottom: parent.bottom
-                leftMargin: Theme.paddingMd
-                rightMargin: Theme.paddingMd
-                bottomMargin: Theme.paddingSm
+                leftMargin: Theme.paddingMd * root.s
+                rightMargin: Theme.paddingMd * root.s
+                bottomMargin: Theme.paddingSm * root.s
             }
-            height: Theme.borderWidth
-            radius: Theme.borderWidth / 2
+            height: Math.max(1, Theme.borderWidth * root.s)
+            radius: Math.max(0.5, Theme.borderWidth * root.s / 2)
             color: root.colors.surfaceHover
 
             Rectangle {
@@ -158,7 +159,7 @@ Item {
                     bottom: parent.bottom
                 }
                 width: parent.width * root.progress
-                radius: Theme.borderWidth / 2
+                radius: Math.max(0.5, Theme.borderWidth * root.s / 2)
                 color: root.accent
 
                 Behavior on width {
@@ -171,17 +172,17 @@ Item {
         RowLayout {
             anchors {
                 fill: parent
-                leftMargin: Theme.paddingMd
-                rightMargin: Theme.paddingMd
-                bottomMargin: Theme.borderWidth
+                leftMargin: Theme.paddingMd * root.s
+                rightMargin: Theme.paddingMd * root.s
+                bottomMargin: Theme.borderWidth * root.s
             }
-            spacing: Theme.paddingMd
+            spacing: Theme.paddingMd * root.s
 
             Rectangle {
-                Layout.preferredWidth: Theme.iconLg
-                Layout.preferredHeight: Theme.iconLg
+                Layout.preferredWidth: Theme.iconLg * root.s
+                Layout.preferredHeight: Theme.iconLg * root.s
                 Layout.alignment: Qt.AlignVCenter
-                radius: Theme.radiusWidget
+                radius: Theme.radiusWidget * root.s
                 color: root.colors.surface
                 border.width: 0
                 clip: true
@@ -201,7 +202,7 @@ Item {
                     visible: !album.visible
                     text: root.hasMedia ? "music_note" : "desktop_windows"
                     color: root.accent
-                    font.pixelSize: Theme.iconMd
+                    font.pixelSize: Theme.iconMd * root.s
                     fill: 1
                 }
             }
@@ -216,7 +217,7 @@ Item {
                     text: root.title
                     color: root.colors.text
                     font.family: Theme.mono
-                    font.pixelSize: Theme.fontSm
+                    font.pixelSize: Theme.fontSm * root.s
                     font.weight: Font.Black
                     elide: Text.ElideRight
                 }
@@ -226,7 +227,7 @@ Item {
                     text: root.subtitle.toUpperCase()
                     color: root.colors.muted
                     font.family: Theme.mono
-                    font.pixelSize: Math.max(Theme.paddingMd, Theme.fontSm - Theme.paddingSm - Theme.borderWidth)
+                    font.pixelSize: Math.max(Theme.paddingMd, Theme.fontSm - Theme.paddingSm - Theme.borderWidth) * root.s
                     font.weight: Font.Bold
                     font.letterSpacing: 1.2
                     elide: Text.ElideRight
@@ -235,8 +236,8 @@ Item {
 
             Item {
                 visible: root.hasMedia
-                Layout.preferredWidth: visible ? Theme.iconLg * 2 : 0
-                Layout.preferredHeight: Theme.iconMd
+                Layout.preferredWidth: visible ? Theme.iconLg * 2 * root.s : 0
+                Layout.preferredHeight: Theme.iconMd * root.s
                 Layout.alignment: Qt.AlignVCenter
 
                 Row {
@@ -244,22 +245,22 @@ Item {
                         right: parent.right
                         bottom: parent.bottom
                     }
-                    spacing: Theme.borderWidth
+                    spacing: Theme.borderWidth * root.s
 
                     Repeater {
                         model: 12
 
                         Item {
                             required property int index
-                            width: 3
-                            height: Theme.iconMd
+                            width: Math.max(2, 3 * root.s)
+                            height: Theme.iconMd * root.s
 
                             Rectangle {
                                 anchors {
                                     horizontalCenter: parent.horizontalCenter
                                     bottom: parent.bottom
                                 }
-                                width: 3
+                                width: Math.max(2, 3 * root.s)
                                 height: {
                                     const levels = root.spectrumLevels || []
                                     if (levels.length === 0)
@@ -268,9 +269,9 @@ Item {
                                         levels.length - 1,
                                         Math.floor(index * levels.length / 12)
                                     )
-                                    return Theme.borderWidth
+                                    return Theme.borderWidth * root.s
                                         + Math.max(0, Math.min(1, Number(levels[sourceIndex]) || 0))
-                                            * (Theme.iconMd - Theme.borderWidth)
+                                            * (Theme.iconMd - Theme.borderWidth) * root.s
                                 }
                                 radius: width / 2
                                 color: root.colors.accent(index)
