@@ -15,9 +15,9 @@ actual PR contributor.
 ## Evidence
 
 ### 1. The target shell is GPL-3.0
-`/home/nero/Work/ryoku-arch/LICENSE` is the verbatim GNU GPL v3
-(sha256 `3972dc97…b36986`). The plugin is styled for and ships against the Ryoku
-shell, which is GPL-3.0.
+The [Ryoku LICENSE](https://github.com/ryoku-dev/ryoku/blob/main/LICENSE) is the
+verbatim GNU GPL v3 (sha256 `3972dc97…b36986`). The plugin is styled for and
+ships against the Ryoku shell, which is GPL-3.0.
 
 ### 2. The UI widgets are derived from end-4/dots-hyprland ("illogical-impulse")
 Upstream repository: <https://github.com/end-4/dots-hyprland> — LICENSE is GNU
