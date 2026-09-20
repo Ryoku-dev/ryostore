@@ -335,6 +335,38 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "kotoba",
+      "name": "Kotoba",
+      "version": "1.4.0",
+      "path": "plugins/kotoba",
+      "author": "CratusGod <nghiabigg652@gmail.com>",
+      "summary": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule.",
+      "description": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule. Pick the scripts you can read, reveal, and grade yourself; FSRS decides when each word comes back.",
+      "tags": [
+        "japanese",
+        "flashcards",
+        "srs",
+        "fsrs",
+        "learning",
+        "desktop-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "3736282ff0fd9aa2ccb78e35627a859c544cbde700ac64dc4340ee871b3af574",
+      "official": false,
+      "tagline": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule.",
+      "icon": "translate",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-20"
     }
   ]
 }
