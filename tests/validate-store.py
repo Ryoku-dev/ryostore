@@ -19,15 +19,17 @@ CATEGORIES = (
 REQUIRED_ENTRY_FIELDS = (
     "id", "name", "version", "path", "author", "summary", "description",
     "tags", "accent", "surface", "preview", "screenshots", "manifest",
-    "manifestSha256",
+    "manifestSha256", "upstream",
 )
 TEXT_FIELDS = (
     "id", "name", "version", "path", "author", "summary", "description",
-    "accent", "surface", "preview", "manifest", "manifestSha256",
+    "accent", "surface", "preview", "manifest", "manifestSha256", "upstream",
 )
 ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 HEX_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 COLOR_PATTERN = re.compile(r"^#[0-9A-Fa-f]{6}$")
+UPSTREAM_PATTERN = re.compile(r"^https://[^\s/]+\.[^\s/]+/\S+$")
+DISCORD_PATTERN = re.compile(r"^https://(?:discord\.gg|discord\.com/invite)/[A-Za-z0-9-]+$")
 MAX_FILE_SIZE = 256 * 1024 * 1024
 MAX_PRODUCT_SIZE = 512 * 1024 * 1024
 MAX_FILES = 2048
@@ -451,6 +453,15 @@ def validate_entry(category: str, entry: object, root: Path, errors: list[str], 
         value = entry.get(field)
         if isinstance(value, str) and value and not COLOR_PATTERN.fullmatch(value):
             errors.append(f"{label}: {field} must be a six-digit hex colour")
+
+    upstream = entry.get("upstream")
+    if isinstance(upstream, str) and upstream:
+        control = any(ord(char) < 0x20 or ord(char) == 0x7f for char in upstream)
+        if control or not UPSTREAM_PATTERN.fullmatch(upstream):
+            errors.append(f"{label}: upstream must be an https project URL with a host and a path")
+    discord = entry.get("discord")
+    if discord is not None and (not isinstance(discord, str) or not DISCORD_PATTERN.fullmatch(discord)):
+        errors.append(f"{label}: discord must be a discord.gg or discord.com/invite invite link")
 
     path_value = entry.get("path")
     if not safe_relative(path_value):

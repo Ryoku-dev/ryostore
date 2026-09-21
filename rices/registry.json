@@ -7,6 +7,8 @@
       "version": "1.0.0",
       "path": "rices/aperture",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/rices/aperture",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "A crisp, brutalist instrument. Square corners, tight gaps, a hard-edged frame…",
       "description": "A crisp, brutalist instrument. Square corners, tight gaps, a hard-edged frame and no glass; colours track your wallpaper through matugen, so any wall becomes a sharp technical desktop.",
       "tags": [
@@ -32,6 +34,8 @@
       "version": "1.0.0",
       "path": "rices/lumen",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/rices/lumen",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Soft and airy. Rounded corners, generous gaps, a glassy blur and a gentle lift…",
       "description": "Soft and airy. Rounded corners, generous gaps, a glassy blur and a gentle lift; colours track your wallpaper through matugen, so any wall becomes a calm, luminous desktop.",
       "tags": [
@@ -57,6 +61,8 @@
       "version": "1.0.0",
       "path": "rices/evangelion",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/rices/evangelion",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Unit-01. Purple and neon green on a black void, a hard-edged frame, NERV decor…",
       "description": "Unit-01. Purple and neon green on a black void, a hard-edged frame, NERV decor and a rebranded seal. The wallpaper carries the beast; the chrome runs the operation.",
       "tags": [
@@ -89,6 +95,7 @@
       "version": "1.0.0",
       "path": "rices/yuk",
       "author": "feelyourwarmth",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/rices/yuk",
       "summary": "Warm autumn tones, glass and rounded windows",
       "description": "A Japanese autumn desktop with warm wallpaper colours, translucent surfaces, rounded windows and a restrained frame.",
       "tags": [
@@ -122,6 +129,7 @@
       "version": "1.0.0",
       "path": "rices/monolith",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/rices/monolith",
       "summary": "A restrained architectural Ryoku desktop built around sharp geometry, negative…",
       "description": "A restrained architectural Ryoku desktop built around sharp geometry, negative space, mechanical motion and a structural two-axis frame.",
       "tags": [

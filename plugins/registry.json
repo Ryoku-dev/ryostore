@@ -7,6 +7,8 @@
       "version": "1.3.1",
       "path": "plugins/obsidian",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/obsidian",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Quick-capture into your Obsidian vault, right from the desktop.",
       "description": "A desktop-widget plugin that adopts your existing Obsidian vault and settings, then turns the everyday moves into two views: a Board of tappable workflow blocks and a Graph of your vault. Create or open today's daily note (with your folder, filename format, and template), open any note, and append text, tasks, links, pasted images, or voice memos - with a live elapsed timer, a discard, and attachments filed next to the target note. Capture retargets are one-off (the default inbox stays a setting), delete asks with a second tap, Enter drives the pickers, and the Graph runs its layout only when the vault changes - tap a node to spotlight it, tap again to open. Local-first and opt-in - nothing runs until you pick a vault, and notes are written straight to disk.",
       "tags": [
@@ -39,6 +41,7 @@
       "version": "0.1.0",
       "path": "plugins/key-visualizer",
       "author": "Himanshu",
+      "upstream": "https://github.com/h-jangra/key-visualizer",
       "summary": "Shows the keys you press on screen in a customizable overlay.",
       "description": "A topbar-glyph plugin and screen overlay for Hyprland that displays real-time keyboard presses and shortcuts on screen. Features configurable screen positioning (corners/center), margin, linger duration, and chord history stack, with a topbar icon to quickly toggle or pause display.",
       "tags": [
@@ -70,6 +73,8 @@
       "version": "1.1.1",
       "path": "plugins/market",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/market",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Track a watchlist of stocks, indices, and crypto on your desktop.",
       "description": "A desktop-widget plugin that tracks a watchlist of up to six Yahoo Finance symbols - crypto pairs (BTC-USD), stocks (AAPL), indices (^GSPC) - and renders the active one's live price, change, and history in one of four faces: a dossier hero with a layered 2.5D ridgeline chart and the watchlist rows, a gridded line, a gradient area, or a compact ticker board. Timeframe chips (1D/1W/1M/1Y) live on the tile, the change always matches the window under the chart, hovering a chart reads out the exact sample, and the tile tells the truth about its data: fetching, error, session state, as-of stamp, and a stale flag. Rising is green, falling is vermilion, on any wallpaper. Free data, no API key.",
       "tags": [
@@ -99,6 +104,8 @@
       "version": "1.4.0",
       "path": "plugins/photo-frame",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/photo-frame",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Pin a photo to your desktop, framed the way you like it.",
       "description": "A desktop-widget plugin that pins any photo to your wallpaper in a chosen frame style - rounded, square, polaroid, framed, or film - with a tunable drop shadow and live colour filters (mono, noir, sepia, warm, cool, vivid, fade). Drag, resize, and place it alongside your clock and weather; it ships with a sample photo so it looks right the moment you enable it.",
       "tags": [
@@ -127,6 +134,8 @@
       "version": "1.1.2",
       "path": "plugins/stargate",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/stargate",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "A living Stargate that dials the time on your desktop.",
       "description": "A desktop-widget plugin that turns the clock into a dialing Stargate: it encodes the time as a seven-glyph gate address and dials it live - the ring turns, the chevrons lock in sequence, the event horizon opens, and it re-dials each minute. Four faces: Naquadah, a cinematic Milky Way ring with engraved glyphs, red chevrons and a liquid event horizon; Hologram, an Ancient cyan projection with a scan beam and amber-energised locks; Dossier, a declassified SGC dialing log with a rotated ink stamp and a printed address block; and Inscription, which drops the clock and carves any sentence you type into gate glyphs on a stone tablet. Built-in procedural glyphs need no font; add a cap_resources Stargate font for the authentic symbols.",
       "tags": [
@@ -161,6 +170,8 @@
       "version": "2.0.0",
       "path": "plugins/vpn",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/vpn",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles,...",
       "description": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles, in a bar panel or a desktop card.",
       "tags": [
@@ -194,6 +205,7 @@
       "version": "1.1.0",
       "path": "plugins/emoji",
       "author": "hypruser",
+      "upstream": "https://github.com/Kavy-Codes/ryostore",
       "summary": "A keyboard-first emoji picker with search and arrow-key selection.",
       "description": "A frame popout that lists every emoji, searchable by name and keyword, with arrow-key selection and a one-key pick: copy to the clipboard or type into the focused window. Loads its own 3,900+ item catalogue, themes with the wallpaper, and shows per-group counts.",
       "tags": [
@@ -225,6 +237,7 @@
       "version": "1.0.0",
       "path": "plugins/gmail",
       "author": "Yash Parmar",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/gmail",
       "summary": "Industrial noir Gmail client and notification reader for Ryoku.",
       "description": "Native Gmail client for the Ryoku shell with live Matugen color scheme integration, OAuth 2.0 PKCE, folder navigation, search, compose, and noir spec decor. Browse your Inbox, Sent, Spam, and Trash, read threads, and compose emails directly from a frame popout.",
       "tags": [
@@ -256,6 +269,7 @@
       "version": "0.2.0",
       "path": "plugins/apptime",
       "author": "ran",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/apptime",
       "summary": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
       "description": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
       "tags": [
@@ -283,6 +297,7 @@
       "version": "1.0.0",
       "path": "plugins/bluetooth-profiles",
       "author": "itsKontra <derntl@gmx.net>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/bluetooth-profiles",
       "summary": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
       "description": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
       "tags": [
@@ -310,6 +325,7 @@
       "version": "0.1.0",
       "path": "plugins/coffee",
       "author": "Ankur <ankur@localhost>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/coffee",
       "summary": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
       "description": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
       "tags": [
@@ -342,6 +358,7 @@
       "version": "1.4.0",
       "path": "plugins/kotoba",
       "author": "CratusGod <nghiabigg652@gmail.com>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/kotoba",
       "summary": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule.",
       "description": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule. Pick the scripts you can read, reveal, and grade yourself; FSRS decides when each word comes back.",
       "tags": [
@@ -374,6 +391,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-battery",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
       "description": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
       "tags": [
@@ -404,6 +423,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-calc",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Material-style desktop calculator with a safe expression evaluator.",
       "description": "Material-style desktop calculator with a safe expression evaluator.",
       "tags": [
@@ -434,6 +455,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-calendar",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Compact monthly calendar that highlights today's date.",
       "description": "Compact monthly calendar that highlights today's date.",
       "tags": [
@@ -464,6 +487,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-clipboard",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
       "description": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
       "tags": [
@@ -493,6 +518,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-clock",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
       "description": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
       "tags": [
@@ -523,6 +550,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-clock-world",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
       "description": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
       "tags": [
@@ -554,6 +583,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-crypto",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
       "description": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
       "tags": [
@@ -584,6 +615,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-git-dashboard",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
       "description": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
       "tags": [
@@ -614,6 +647,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-habits",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
       "description": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
       "tags": [
@@ -644,6 +679,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-media",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
       "description": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
       "tags": [
@@ -675,6 +712,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-network",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
       "description": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
       "tags": [
@@ -705,6 +744,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-notes",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
       "description": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
       "tags": [
@@ -735,6 +776,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-ping",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
       "description": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
       "tags": [
@@ -765,6 +808,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-poster",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
       "description": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
       "tags": [
@@ -795,6 +840,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-quote",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
       "description": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
       "tags": [
@@ -825,6 +872,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-resource-wheel",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
       "description": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
       "tags": [
@@ -855,6 +904,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-storage-map",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
       "description": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
       "tags": [
@@ -885,6 +936,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-system-info",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
       "description": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
       "tags": [
@@ -915,6 +968,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-thermal",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
       "description": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
       "tags": [
@@ -945,6 +1000,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-timer",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
       "description": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
       "tags": [
@@ -975,6 +1032,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-todo",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Desktop task list with a progress bar and per-task completion, saved locally.",
       "description": "Desktop task list with a progress bar and per-task completion, saved locally.",
       "tags": [
@@ -1005,6 +1064,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-visualizer",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
       "description": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
       "tags": [
@@ -1035,6 +1096,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-volume-brightness",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
       "description": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
       "tags": [
@@ -1066,6 +1129,8 @@
       "version": "1.0.0",
       "path": "plugins/awe-weather",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
       "description": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
       "tags": [

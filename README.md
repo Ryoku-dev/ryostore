@@ -41,6 +41,12 @@ clients keep the item visible as **Under construction**, block installs and
 updates, and still allow removal. Older clients do not enforce this flag.
 Remove these fields after the contributor's fix is ready to release.
 
+Every item carries an `upstream`: the https project it comes from - an author's
+repo, or the catalogue folder in this repo when there is no separate home. The
+Store shows it as a link icon on the item so you can read the source before you
+install. An item may also carry an optional `discord` invite, shown as a Discord
+icon for reaching its author.
+
 **Users remain responsible for reviewing the code they install and its updates.**
 Plugins and bar styles run inside your desktop with your user permissions; being
 listed is not sandboxing, an endorsement, or a promise of safety. Review external

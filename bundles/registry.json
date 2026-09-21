@@ -7,6 +7,8 @@
       "version": "1.0.0",
       "path": "bundles/gaming",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/gaming",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "proton · overlays · emulators",
       "description": "The native Linux gaming stack: launchers, Wine and Proton, performance overlays, controller support, and console emulators for every system with a proven package. Ryoku installs the matching 32-bit GPU drivers for full hardware capacity.",
       "tags": [
@@ -376,6 +378,8 @@
       "version": "1.0.0",
       "path": "bundles/the-influencer",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/the-influencer",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "stream · record · edit · publish",
       "description": "A complete stream, record, edit, reformat, and publish kit: recorders, editors, audio and thumbnail tools, plus a right-click video toolkit in the file manager.",
       "tags": [
@@ -660,6 +664,7 @@
       "version": "2.0.2",
       "path": "bundles/spiceflow",
       "author": "Rayyan",
+      "upstream": "https://github.com/Sipper1236/ryoku-palette-bridge",
       "summary": "wallpaper · Zen · Spotify · Discord",
       "description": "Keeps Zen, Spotify, and Discord matched to your Ryoku wallpaper. It updates Zen's browser theme, Spotify through Spicetify, and Discord through Vesktop's Midnight theme whenever your wallpaper colours change.",
       "tags": [
@@ -725,6 +730,8 @@
       "version": "1.0.0",
       "path": "bundles/cachyos-layer",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/cachyos-layer",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "kernel · tuning · schedulers · proton",
       "description": "Turn Ryoku into CachyOS: the performance-tuned kernel, cachyos-settings tuning, sched-ext schedulers, the ananicy-cpp auto-nice daemon and ruleset, and the CachyOS Proton build. Adds the CachyOS repos above Arch's, so opting in goes full CachyOS; the stock kernel stays as the boot fallback. Install all, or pick individual tools. Every item but scx-scheds needs the CachyOS repo.",
       "tags": [
@@ -805,6 +812,8 @@
       "version": "1.0.0",
       "path": "bundles/developer-essentials",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/developer-essentials",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "build · debug · runtimes · containers",
       "description": "A practical workstation bootstrap for developers: Arch build basics, Git and GitHub CLI, fast shell search tools, terminal workflow helpers, C/C++ build and debug tools, major language runtimes, Docker, and Visual Studio Code.",
       "tags": [
@@ -1066,6 +1075,8 @@
       "version": "1.0.0",
       "path": "bundles/web-browsers",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/web-browsers",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "firefox · chromium · privacy browsers",
       "description": "A browser shelf for daily use, web development, privacy testing, and Chromium/Firefox compatibility checks: Firefox, Firefox Developer Edition, Chromium, Brave, LibreWolf, and Zen Browser.",
       "tags": [
@@ -1147,6 +1158,8 @@
       "version": "1.0.0",
       "path": "bundles/vpn-networking",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/vpn-networking",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "wireguard · openvpn · vpn clients",
       "description": "VPN basics and desktop clients for WireGuard, OpenVPN, IPsec/IKEv2, Proton VPN, Mullvad VPN, and Cloudflare WARP.",
       "tags": [
@@ -1237,6 +1250,8 @@
       "version": "1.0.0",
       "path": "bundles/rice-showcase",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/rice-showcase",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "cmatrix · bonsai · visualizers",
       "description": "Terminal toys and visual tools for showing off a desktop rice: Matrix rain, bonsai, audio visualizers, system readouts, ASCII banners, and classic terminal animations.",
       "tags": [
@@ -1381,6 +1396,7 @@
       "version": "1.0.0",
       "path": "bundles/ryotunes",
       "author": "ashmitvoid",
+      "upstream": "https://github.com/ryoku-dev/ryotunes",
       "summary": "Native music · live Ryoku colours · MPRIS",
       "description": "The Ryoku-native music player, originally contributed by ashmitvoid. Installs the current distribution package, with native playback, MPRIS and live desktop theming.",
       "tags": [
@@ -1419,6 +1435,8 @@
       "version": "1.0.0",
       "path": "bundles/awe-widgets",
       "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "24 Material 3 desktop widgets, in one install",
       "description": "The full Awe suite: 24 Material 3 desktop widgets for your wallpaper - clocks, calendar, notes, habits, media, weather, thermals and more - ported to run as Ryoku plugins. Install the set, then toggle each one from the desktop's Add widget menu.",
       "tags": [
