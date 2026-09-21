@@ -1,0 +1,355 @@
+import QtQuick
+import Quickshell
+import Quickshell.Io
+import "."
+
+Item {
+    id: root
+    implicitWidth: 320
+    implicitHeight: 140
+
+    // Network properties
+    property string ssid: "Connected"
+    property string ipAddress: "127.0.0.1"
+    property bool hideIp: false
+    property string downSpeedStr: "0 KB/s"
+    property string upSpeedStr: "0 KB/s"
+    property int signalPercent: 88
+    property bool isConnected: true
+
+    // Internal speed tracking
+    property var lastNet: ({ rx: 0, tx: 0, time: 0 })
+    property var historyData: [10, 15, 8, 25, 40, 20, 60, 45, 80, 55, 30, 70]
+
+    // ─── Network Info Process ───
+    Process {
+        id: netProc
+        command: ["sh", "-c", "ssid=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes:' | cut -d: -f2 | head -1); ip=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7}' | head -1); rx=0; tx=0; while read -r line; do if echo \"$line\" | grep -qv 'lo:'; then r=$(echo \"$line\" | awk '{print $2}'); t=$(echo \"$line\" | awk '{print $10}'); rx=$((rx + r)); tx=$((tx + t)); fi; done < <(tail -n +3 /proc/net/dev); echo \"${ssid:-Online};;${ip:-127.0.0.1};;$rx;;$tx\""]
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                var line = text.trim()
+                if (line.includes(";;")) {
+                    var parts = line.split(";;")
+                    root.ssid = parts[0] || "Connected"
+                    root.ipAddress = parts[1] || "127.0.0.1"
+
+                    var rxNow = parseInt(parts[2]) || 0
+                    var txNow = parseInt(parts[3]) || 0
+                    var now = Date.now()
+
+                    if (root.lastNet.time > 0 && now > root.lastNet.time) {
+                        var dt = (now - root.lastNet.time) / 1000.0
+                        var rxDiff = Math.max(0, rxNow - root.lastNet.rx) / dt
+                        var txDiff = Math.max(0, txNow - root.lastNet.tx) / dt
+
+                        // Format string
+                        if (rxDiff >= 1048576) root.downSpeedStr = (rxDiff / 1048576).toFixed(1) + " MB/s"
+                        else root.downSpeedStr = Math.round(rxDiff / 1024) + " KB/s"
+
+                        if (txDiff >= 1048576) root.upSpeedStr = (txDiff / 1048576).toFixed(1) + " MB/s"
+                        else root.upSpeedStr = Math.round(txDiff / 1024) + " KB/s"
+
+                        // Push to history for sparkline graph
+                        var val = Math.min(100, Math.max(5, Math.round(rxDiff / 20480)))
+                        var hist = root.historyData.slice(1)
+                        hist.push(val)
+                        root.historyData = hist
+                        sparkCanvas.requestPaint()
+                    }
+
+                    root.lastNet = { rx: rxNow, tx: txNow, time: now }
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: 2000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: netProc.running = true
+    }
+
+    // Theme Palette
+    readonly property color colBg: Theme.colBgTile
+    readonly property color colBadgeBg: Theme.colPillBg
+    readonly property color colAccent: Theme.colAccent
+    readonly property color colAccentGreen: Theme.colAccentGreen
+    readonly property color colTextPrimary: Theme.colTextPrimary
+    readonly property color colTextSecondary: Theme.colTextSecondary
+
+    // ─── Scaled Visual Content ───
+    Item {
+        id: scaledContent
+        width: 320
+        height: 140
+        transformOrigin: Item.TopLeft
+
+        // Main Card
+        Rectangle {
+            anchors.fill: parent
+            color: root.colBg
+            radius: 32
+            border.color: Theme.borderColor
+            border.width: Theme.borderWidth
+            clip: true
+            antialiasing: true
+
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 1.5
+                color: Theme.glassGloss
+                visible: Theme.isGlass
+            }
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 14
+                spacing: 8
+
+                // Header Row: Network Badge Pill + IP Address (Double-click to Hide/Show)
+                Row {
+                    width: parent.width
+
+                    Rectangle {
+                        height: 22
+                        width: badgeRow.implicitWidth + 16
+                        radius: 11
+                        color: root.colBadgeBg
+                        antialiasing: true
+
+                        Row {
+                            id: badgeRow
+                            anchors.centerIn: parent
+                            spacing: 6
+
+                            Rectangle {
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 7
+                                height: 7
+                                radius: 3.5
+                                color: root.colAccentGreen
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "NETWORK"
+                                color: root.colTextPrimary
+                                font.pixelSize: 9
+                                font.bold: true
+                                font.letterSpacing: 0.6
+                                font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                            }
+                        }
+                    }
+
+                    Item {
+                        width: Math.max(0, parent.width - parent.children[0].width - ipPill.width)
+                        height: 1
+                    }
+
+                    // IP Badge Pill (Clickable / Double-clickable to toggle hidden state)
+                    Rectangle {
+                        id: ipPill
+                        height: 22
+                        width: ipRow.implicitWidth + 14
+                        radius: 11
+                        color: ipMouseArea.containsMouse ? "#55626A" : root.colBadgeBg
+                        antialiasing: true
+
+                        Row {
+                            id: ipRow
+                            anchors.centerIn: parent
+                            spacing: 5
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: root.hideIp ? "•••.•••.•••.•••" : root.ipAddress
+                                color: root.hideIp ? "#88979E" : root.colTextSecondary
+                                font.pixelSize: 10
+                                font.bold: true
+                                font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                            }
+                        }
+
+                        MouseArea {
+                            id: ipMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.hideIp = !root.hideIp
+                            }
+                        }
+                    }
+                }
+
+                // Middle Row: Wi-Fi Icon Badge + SSID Name + Live Sparkline
+                Row {
+                    width: parent.width
+                    height: 46
+                    spacing: 10
+
+                    // Wi-Fi Vector Icon Badge
+                    Rectangle {
+                        width: 42
+                        height: 42
+                        radius: 21
+                        color: root.colBadgeBg
+                        anchors.verticalCenter: parent.verticalCenter
+                        antialiasing: true
+
+                        Canvas {
+                            anchors.fill: parent
+                            antialiasing: true
+                            onPaint: {
+                                var ctx = getContext("2d")
+                                ctx.reset()
+                                var cx = width / 2
+                                var cy = height / 2 + 5
+
+                                ctx.fillStyle = "#FFFFFF"
+                                ctx.beginPath()
+                                ctx.arc(cx, cy - 2, 2.5, 0, Math.PI * 2)
+                                ctx.fill()
+
+                                ctx.strokeStyle = "#FFFFFF"
+                                ctx.lineWidth = 1.8
+                                ctx.beginPath()
+                                ctx.arc(cx, cy - 2, 7, -Math.PI * 0.75, -Math.PI * 0.25)
+                                ctx.stroke()
+
+                                ctx.beginPath()
+                                ctx.arc(cx, cy - 2, 12, -Math.PI * 0.75, -Math.PI * 0.25)
+                                ctx.stroke()
+                            }
+                        }
+                    }
+
+                    // SSID & Status Column
+                    Column {
+                        width: 120
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+
+                        Text {
+                            text: root.ssid
+                            color: root.colTextPrimary
+                            font.pixelSize: 14
+                            font.bold: true
+                            elide: Text.ElideRight
+                            width: parent.width
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+
+                        Text {
+                            text: "Online · Stable"
+                            color: root.colTextSecondary
+                            font.pixelSize: 10
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+                    }
+
+                    // Sparkline Activity Graph Canvas
+                    Canvas {
+                        id: sparkCanvas
+                        width: parent.width - 42 - 120 - 20
+                        height: 38
+                        anchors.verticalCenter: parent.verticalCenter
+                        antialiasing: true
+
+                        onPaint: {
+                            var ctx = getContext("2d")
+                            ctx.reset()
+                            var data = root.historyData
+                            if (!data || data.length < 2) return
+
+                            var step = width / (data.length - 1)
+                            ctx.strokeStyle = root.colAccent
+                            ctx.lineWidth = 2
+                            ctx.lineCap = "round"
+                            ctx.lineJoin = "round"
+
+                            ctx.beginPath()
+                            for (var i = 0; i < data.length; i++) {
+                                var x = i * step
+                                var y = height - (data[i] / 100.0) * (height - 6) - 3
+                                if (i === 0) ctx.moveTo(x, y)
+                                else ctx.lineTo(x, y)
+                            }
+                            ctx.stroke()
+                        }
+                    }
+                }
+
+                // Bottom Row: Download & Upload Speed Pill Badges
+                Row {
+                    width: parent.width
+                    spacing: 8
+
+                    // Download Pill
+                    Rectangle {
+                        height: 24
+                        width: (parent.width - 8) / 2
+                        radius: 12
+                        color: root.colBadgeBg
+                        antialiasing: true
+
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 6
+
+                            Text {
+                                text: "↓"
+                                color: root.colAccent
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: root.downSpeedStr
+                                color: root.colTextPrimary
+                                font.pixelSize: 10
+                                font.bold: true
+                                font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                            }
+                        }
+                    }
+
+                    // Upload Pill
+                    Rectangle {
+                        height: 24
+                        width: (parent.width - 8) / 2
+                        radius: 12
+                        color: root.colBadgeBg
+                        antialiasing: true
+
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 6
+
+                            Text {
+                                text: "↑"
+                                color: root.colAccentGreen
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            Text {
+                                text: root.upSpeedStr
+                                color: root.colTextPrimary
+                                font.pixelSize: 10
+                                font.bold: true
+                                font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

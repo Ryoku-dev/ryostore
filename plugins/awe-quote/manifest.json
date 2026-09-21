@@ -1,0 +1,46 @@
+{
+  "id": "awe-quote",
+  "name": "Quote",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "quote",
+    "inspiration",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/QuoteWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "format_quote",
+    "label": "Quote"
+  },
+  "dependencies": {
+    "commands": []
+  }
+}

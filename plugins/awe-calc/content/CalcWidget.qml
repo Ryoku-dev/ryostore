@@ -1,0 +1,393 @@
+import QtQuick
+import Quickshell.Io
+import "."
+
+Item {
+    id: root
+    property real scaleFactor: 1.0
+
+    implicitWidth: 250
+    implicitHeight: 320
+
+    // Calculator State
+    property string expr: ""
+    property string result: "0"
+    property string copyToast: ""
+
+    // safe arithmetic evaluator: recursive descent over + - * / ( ) and numbers
+    function _eval(s) {
+        var pos = 0
+        function skip() { while (pos < s.length && s[pos] === " ") pos++ }
+        function parseExpr() {
+            var v = parseTerm()
+            skip()
+            while (pos < s.length && (s[pos] === "+" || s[pos] === "-")) {
+                var op = s[pos]; pos++
+                var rhs = parseTerm()
+                v = op === "+" ? v + rhs : v - rhs
+                skip()
+            }
+            return v
+        }
+        function parseTerm() {
+            var v = parseFactor()
+            skip()
+            while (pos < s.length && (s[pos] === "*" || s[pos] === "/")) {
+                var op = s[pos]; pos++
+                var rhs = parseFactor()
+                v = op === "*" ? v * rhs : v / rhs
+                skip()
+            }
+            return v
+        }
+        function parseFactor() {
+            skip()
+            if (s[pos] === "+") { pos++; return parseFactor() }
+            if (s[pos] === "-") { pos++; return -parseFactor() }
+            if (s[pos] === "(") {
+                pos++
+                var v = parseExpr()
+                skip()
+                if (s[pos] === ")") pos++
+                return v
+            }
+            return parseNumber()
+        }
+        function parseNumber() {
+            skip()
+            var start = pos
+            while (pos < s.length && ((s[pos] >= "0" && s[pos] <= "9") || s[pos] === ".")) pos++
+            if (pos === start) return NaN
+            return parseFloat(s.substring(start, pos))
+        }
+        var out = parseExpr()
+        skip()
+        if (pos < s.length) return NaN
+        return out
+    }
+
+    function pushKey(key) {
+        if (key === "C") {
+            root.expr = ""
+            root.result = "0"
+        } else if (key === "⌫") {
+            if (root.expr.length > 0) {
+                root.expr = root.expr.slice(0, -1)
+                evaluatePartial()
+            }
+        } else if (key === "=") {
+            evaluateFinal()
+        } else if (key === "±") {
+            if (root.result !== "0" && root.result !== "Error") {
+                if (root.result.startsWith("-")) {
+                    root.result = root.result.slice(1)
+                    root.expr = root.result
+                } else {
+                    root.result = "-" + root.result
+                    root.expr = root.result
+                }
+            }
+        } else if (key === "%") {
+            try {
+                var v = parseFloat(root.result) / 100.0
+                root.result = v.toString()
+                root.expr = root.result
+            } catch (e) {}
+        } else {
+            root.expr += key
+            evaluatePartial()
+        }
+    }
+
+    function evaluatePartial() {
+        try {
+            var safe = root.expr.replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-")
+            if (/^[0-9+\-*/().\s]+$/.test(safe) && !/[+\-*/.]$/.test(safe)) {
+                var val = root._eval(safe)
+                if (!isNaN(val) && isFinite(val)) {
+                    root.result = (Math.round(val * 100000000) / 100000000).toString()
+                }
+            }
+        } catch (e) {}
+    }
+
+    function evaluateFinal() {
+        try {
+            var safe = root.expr.replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-")
+            if (/^[0-9+\-*/().\s]+$/.test(safe)) {
+                var val = root._eval(safe)
+                if (!isNaN(val) && isFinite(val)) {
+                    var finalVal = (Math.round(val * 100000000) / 100000000).toString()
+                    root.result = finalVal
+                    root.expr = finalVal
+                } else {
+                    root.result = "Error"
+                }
+            }
+        } catch (e) {
+            root.result = "Error"
+        }
+    }
+
+    // Process to copy result to clipboard
+    Process {
+        id: copyProc
+        running: false
+    }
+
+    function copyResult() {
+        copyProc.command = ["wl-copy", root.result]
+        copyProc.running = true
+        root.copyToast = "Copied!"
+        toastTimer.restart()
+    }
+
+    Timer {
+        id: toastTimer
+        interval: 1400
+        onTriggered: root.copyToast = ""
+    }
+
+    // Theme Palette
+    readonly property color colBg: Theme.colBg
+    readonly property color colDisplayBg: Theme.colBgTile
+    readonly property color colPillBg: Theme.colPillBg
+    readonly property color colNumBg: Theme.colPillBg
+    readonly property color colOpBg: Theme.colBgTile
+    readonly property color colAccent: Theme.colAccent
+    readonly property color colAccentGreen: Theme.colAccentGreen
+    readonly property color colClearBg: Theme.colPillBg
+    readonly property color colClearText: Theme.colAccentWarm
+    readonly property color colTextPrimary: Theme.colTextPrimary
+    readonly property color colTextSecondary: Theme.colTextSecondary
+
+    // ─── Scaled Visual Content ───
+    Item {
+        id: scaledContent
+        width: 250
+        height: 320
+        scale: root.scaleFactor
+        transformOrigin: Item.TopLeft
+
+        // Main Elevated Card
+        Rectangle {
+            anchors.fill: parent
+            color: root.colBg
+            radius: 32
+            border.color: Theme.borderColor
+            border.width: Theme.borderWidth
+            clip: true
+            antialiasing: true
+
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 1.5
+                color: Theme.glassGloss
+                visible: Theme.isGlass
+            }
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 8
+
+                // Header Row: CALCULATOR Pill Badge + Copy Toast
+                Row {
+                    width: parent.width
+
+                    Rectangle {
+                        height: 22
+                        width: badgeRow.implicitWidth + 14
+                        radius: 11
+                        color: root.colPillBg
+                        antialiasing: true
+
+                        Row {
+                            id: badgeRow
+                            anchors.centerIn: parent
+                            spacing: 5
+
+                            Rectangle {
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 6
+                                height: 6
+                                radius: 3
+                                color: root.colAccent
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "CALCULATOR"
+                                color: "#FFFFFF"
+                                font.pixelSize: 9
+                                font.bold: true
+                                font.letterSpacing: 0.6
+                                font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                            }
+                        }
+                    }
+
+                    Item {
+                        width: Math.max(0, parent.width - parent.children[0].width - toastLabel.width)
+                        height: 1
+                    }
+
+                    Text {
+                        id: toastLabel
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.copyToast
+                        color: root.colAccentGreen
+                        font.pixelSize: 9
+                        font.bold: true
+                        font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                    }
+                }
+
+                // Expression & Result Screen
+                Rectangle {
+                    width: parent.width
+                    height: 58
+                    radius: 18
+                    color: root.colDisplayBg
+                    border.color: "#1AFFFFFF"
+                    border.width: 1
+                    antialiasing: true
+
+                    Column {
+                        anchors.fill: parent
+                        anchors.margins: 8
+                        spacing: 1
+
+                        // Expression
+                        Text {
+                            width: parent.width
+                            text: root.expr.length > 0 ? root.expr : " "
+                            color: root.colTextSecondary
+                            font.pixelSize: 11
+                            horizontalAlignment: Text.AlignRight
+                            elide: Text.ElideLeft
+                            font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                        }
+
+                        // Main Big Result
+                        Text {
+                            width: parent.width
+                            text: root.result
+                            color: "#FFFFFF"
+                            font.pixelSize: (root.result.length > 10 ? 18 : 22)
+                            font.bold: true
+                            horizontalAlignment: Text.AlignRight
+                            elide: Text.ElideLeft
+                            font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.copyResult()
+                    }
+                }
+
+                // Material 3 Keypad Rows
+                Column {
+                    width: parent.width
+                    spacing: 5
+
+                    // Row 1: C, ⌫, %, ÷
+                    Row {
+                        spacing: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        CalcBtn { label: "C"; btnColor: root.colClearBg; labelColor: root.colClearText; onClicked: root.pushKey("C") }
+                        CalcBtn { label: "⌫"; btnColor: root.colClearBg; labelColor: root.colClearText; onClicked: root.pushKey("⌫") }
+                        CalcBtn { label: "%"; btnColor: root.colOpBg; labelColor: root.colAccent; onClicked: root.pushKey("%") }
+                        CalcBtn { label: "÷"; btnColor: root.colOpBg; labelColor: root.colAccent; onClicked: root.pushKey("÷") }
+                    }
+
+                    // Row 2: 7, 8, 9, ×
+                    Row {
+                        spacing: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        CalcBtn { label: "7"; onClicked: root.pushKey("7") }
+                        CalcBtn { label: "8"; onClicked: root.pushKey("8") }
+                        CalcBtn { label: "9"; onClicked: root.pushKey("9") }
+                        CalcBtn { label: "×"; btnColor: root.colOpBg; labelColor: root.colAccent; onClicked: root.pushKey("×") }
+                    }
+
+                    // Row 3: 4, 5, 6, −
+                    Row {
+                        spacing: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        CalcBtn { label: "4"; onClicked: root.pushKey("4") }
+                        CalcBtn { label: "5"; onClicked: root.pushKey("5") }
+                        CalcBtn { label: "6"; onClicked: root.pushKey("6") }
+                        CalcBtn { label: "−"; btnColor: root.colOpBg; labelColor: root.colAccent; onClicked: root.pushKey("−") }
+                    }
+
+                    // Row 4: 1, 2, 3, +
+                    Row {
+                        spacing: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        CalcBtn { label: "1"; onClicked: root.pushKey("1") }
+                        CalcBtn { label: "2"; onClicked: root.pushKey("2") }
+                        CalcBtn { label: "3"; onClicked: root.pushKey("3") }
+                        CalcBtn { label: "+"; btnColor: root.colOpBg; labelColor: root.colAccent; onClicked: root.pushKey("+") }
+                    }
+
+                    // Row 5: ±, 0, ., =
+                    Row {
+                        spacing: 5
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        CalcBtn { label: "±"; btnColor: root.colNumBg; labelColor: root.colTextSecondary; onClicked: root.pushKey("±") }
+                        CalcBtn { label: "0"; onClicked: root.pushKey("0") }
+                        CalcBtn { label: "."; onClicked: root.pushKey(".") }
+                        CalcBtn { label: "="; btnColor: root.colAccent; labelColor: "#1E2A30"; isBold: true; onClicked: root.pushKey("=") }
+                    }
+                }
+            }
+        }
+    }
+
+    // Material 3 Tonal Button Component
+    component CalcBtn: Rectangle {
+        property string label: ""
+        property color btnColor: root.colNumBg
+        property color labelColor: root.colTextPrimary
+        property bool isBold: false
+        signal clicked()
+
+        width: 52
+        height: 34
+        radius: 17
+        color: btnArea.pressed ? "#4A5A66" : (btnArea.containsMouse ? "#3A4A54" : btnColor)
+        scale: btnArea.pressed ? 0.93 : (btnArea.containsMouse ? 1.04 : 1.0)
+        antialiasing: true
+
+        Behavior on scale { NumberAnimation { duration: 90; easing.type: Easing.OutQuad } }
+        Behavior on color { ColorAnimation { duration: 90 } }
+
+        Text {
+            anchors.centerIn: parent
+            text: label
+            color: labelColor
+            font.pixelSize: (label === "=" || label === "+" || label === "−" || label === "×" || label === "÷") ? 14 : 12
+            font.bold: isBold || (label === "=")
+            font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+        }
+
+        MouseArea {
+            id: btnArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: parent.clicked()
+        }
+    }
+}

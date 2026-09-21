@@ -367,6 +367,727 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-09-20"
+    },
+    {
+      "id": "awe-battery",
+      "name": "Battery",
+      "version": "1.0.0",
+      "path": "plugins/awe-battery",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
+      "description": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
+      "tags": [
+        "battery",
+        "power",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "47b5adc63bc819d24d83fed35b30fb85e7c7d62468b63b7da6cc33f5fd9fd65b",
+      "official": false,
+      "tagline": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
+      "icon": "battery_full",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-calc",
+      "name": "Calculator",
+      "version": "1.0.0",
+      "path": "plugins/awe-calc",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Material-style desktop calculator with a safe expression evaluator.",
+      "description": "Material-style desktop calculator with a safe expression evaluator.",
+      "tags": [
+        "calculator",
+        "math",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "da713d3a8844b8d848b36a3c37dc9e6df615467d4f38f6a07acc7676b1369c0f",
+      "official": false,
+      "tagline": "Material-style desktop calculator with a safe expression evaluator.",
+      "icon": "calculate",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-calendar",
+      "name": "Calendar",
+      "version": "1.0.0",
+      "path": "plugins/awe-calendar",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Compact monthly calendar that highlights today's date.",
+      "description": "Compact monthly calendar that highlights today's date.",
+      "tags": [
+        "calendar",
+        "date",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c7a2d5c6648dd430f27cf5ba8f7324b92e283bb180825a12f950604604b06b35",
+      "official": false,
+      "tagline": "Compact monthly calendar that highlights today's date.",
+      "icon": "calendar_month",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-clipboard",
+      "name": "Clipboard",
+      "version": "1.0.0",
+      "path": "plugins/awe-clipboard",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
+      "description": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
+      "tags": [
+        "clipboard",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "9b638974e8d9ea9317f9300166a7dbccf5614f67a54b6a44f6b8c664cb84565e",
+      "official": false,
+      "tagline": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
+      "icon": "content_paste",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-clock",
+      "name": "Clock",
+      "version": "1.0.0",
+      "path": "plugins/awe-clock",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
+      "description": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
+      "tags": [
+        "clock",
+        "time",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "9eea7140354e6e49df5ad6f7504b97349f7f1f1518044fd3bf6ef8db5ffe2d12",
+      "official": false,
+      "tagline": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
+      "icon": "schedule",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-clock-world",
+      "name": "World Clock",
+      "version": "1.0.0",
+      "path": "plugins/awe-clock-world",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
+      "description": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
+      "tags": [
+        "clock",
+        "time",
+        "world",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "336cce93876d715c4d4fcc406336a37a9d77fb6e6782768b0854a4f1284b2bdc",
+      "official": false,
+      "tagline": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
+      "icon": "public",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-crypto",
+      "name": "Crypto",
+      "version": "1.0.0",
+      "path": "plugins/awe-crypto",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
+      "description": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
+      "tags": [
+        "crypto",
+        "markets",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "ad364a5ecea1977f06153ad9d3aff435f27a3b89d8e35570404307e2b361210b",
+      "official": false,
+      "tagline": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
+      "icon": "trending_up",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-git-dashboard",
+      "name": "Git Dashboard",
+      "version": "1.0.0",
+      "path": "plugins/awe-git-dashboard",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
+      "description": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
+      "tags": [
+        "git",
+        "developer",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "efe09be2d4986b45496d6d1247019b3e88fdac702ff535562f3b020947d90029",
+      "official": false,
+      "tagline": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
+      "icon": "code",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-habits",
+      "name": "Habits",
+      "version": "1.0.0",
+      "path": "plugins/awe-habits",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
+      "description": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
+      "tags": [
+        "habits",
+        "tracker",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "3e9a260dfbbb6d3fd2535eed43c1613b651dfaf03fadb12e3c6f117b3275877e",
+      "official": false,
+      "tagline": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
+      "icon": "repeat",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-media",
+      "name": "Media",
+      "version": "1.0.0",
+      "path": "plugins/awe-media",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
+      "description": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
+      "tags": [
+        "media",
+        "player",
+        "mpris",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "0429af8b033719d6d7e853e6c165768a517fabbc85c347e14c4f23063e7a0a41",
+      "official": false,
+      "tagline": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
+      "icon": "play_circle",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-network",
+      "name": "Network",
+      "version": "1.0.0",
+      "path": "plugins/awe-network",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
+      "description": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
+      "tags": [
+        "network",
+        "wifi",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "22dfb8b7eb3ac92df2fe902fe15f4c94422c36824de979fa2d8b6f4411c78fec",
+      "official": false,
+      "tagline": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
+      "icon": "wifi",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-notes",
+      "name": "Notes",
+      "version": "1.0.0",
+      "path": "plugins/awe-notes",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
+      "description": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
+      "tags": [
+        "notes",
+        "memo",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "2a2d965722aec3b663588e9683e438aa74f1617f41ec844fe59c4af8c5ebbd5b",
+      "official": false,
+      "tagline": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
+      "icon": "sticky_note_2",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-ping",
+      "name": "Ping",
+      "version": "1.0.0",
+      "path": "plugins/awe-ping",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
+      "description": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
+      "tags": [
+        "network",
+        "ping",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "2f95010320a1b6cad5e0f14968d95e36a41f09e635f01dca276379ad7e3e6944",
+      "official": false,
+      "tagline": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
+      "icon": "settings_ethernet",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-poster",
+      "name": "Poster",
+      "version": "1.0.0",
+      "path": "plugins/awe-poster",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
+      "description": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
+      "tags": [
+        "image",
+        "decorative",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "47aaa2a8237d2c99d45c2256be1474329dea112f50201756a125e12b7c32977d",
+      "official": false,
+      "tagline": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
+      "icon": "image",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-quote",
+      "name": "Quote",
+      "version": "1.0.0",
+      "path": "plugins/awe-quote",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
+      "description": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
+      "tags": [
+        "quote",
+        "inspiration",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "b01125902398f3f2027ca8b14089b22177e3822068a47119a0c53c6f76e2f1bb",
+      "official": false,
+      "tagline": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
+      "icon": "format_quote",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-resource-wheel",
+      "name": "Resource Wheel",
+      "version": "1.0.0",
+      "path": "plugins/awe-resource-wheel",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
+      "description": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
+      "tags": [
+        "system",
+        "monitor",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "b54a0028c0c53aeb9143eca9eb2475e0076ce5da4fb84b74335870305b9b0f3c",
+      "official": false,
+      "tagline": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
+      "icon": "speed",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-storage-map",
+      "name": "Storage Map",
+      "version": "1.0.0",
+      "path": "plugins/awe-storage-map",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
+      "description": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
+      "tags": [
+        "storage",
+        "disk",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "4a87f2e1dc33989e7d25773cf8b60888bc1e9660f75923025fc328e77bc118bb",
+      "official": false,
+      "tagline": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
+      "icon": "storage",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-system-info",
+      "name": "System Info",
+      "version": "1.0.0",
+      "path": "plugins/awe-system-info",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
+      "description": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
+      "tags": [
+        "system",
+        "monitor",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "1b7a1f1fe8df43df5ef92a82cd6bfbadf30c35c29fc8848b5f4e6f20b343e9f4",
+      "official": false,
+      "tagline": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
+      "icon": "info",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-thermal",
+      "name": "Thermal",
+      "version": "1.0.0",
+      "path": "plugins/awe-thermal",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
+      "description": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
+      "tags": [
+        "thermal",
+        "temperature",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "448fd8be92e43dacb848bba6e1354aa28f7ab431dd2ce36ae414ca087d18a940",
+      "official": false,
+      "tagline": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
+      "icon": "thermostat",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-timer",
+      "name": "Timer",
+      "version": "1.0.0",
+      "path": "plugins/awe-timer",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
+      "description": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
+      "tags": [
+        "timer",
+        "pomodoro",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "57de4e5f30a004bc2795a7ed165cf154745e42688a4a744a6f17eeef3bad5973",
+      "official": false,
+      "tagline": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
+      "icon": "timer",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-todo",
+      "name": "Todo",
+      "version": "1.0.0",
+      "path": "plugins/awe-todo",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Desktop task list with a progress bar and per-task completion, saved locally.",
+      "description": "Desktop task list with a progress bar and per-task completion, saved locally.",
+      "tags": [
+        "todo",
+        "tasks",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "2b5764327a501a1696b3661573b2d504d54369ac0c15ba5b8019dd0bab213f51",
+      "official": false,
+      "tagline": "Desktop task list with a progress bar and per-task completion, saved locally.",
+      "icon": "check_square",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-visualizer",
+      "name": "Visualizer",
+      "version": "1.0.0",
+      "path": "plugins/awe-visualizer",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
+      "description": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
+      "tags": [
+        "audio",
+        "visualizer",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c5e23005be25993a5537ca5a0d0f90ae1918b9599642cd070d72ee31e896d2fc",
+      "official": false,
+      "tagline": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
+      "icon": "graphic_eq",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-volume-brightness",
+      "name": "Volume & Brightness",
+      "version": "1.0.0",
+      "path": "plugins/awe-volume-brightness",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
+      "description": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
+      "tags": [
+        "audio",
+        "brightness",
+        "controls",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "64fc07ba08d982e5f6b0eda921c5f6b988a4ce84937b9654599499cc9cbcff1b",
+      "official": false,
+      "tagline": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
+      "icon": "volume_up",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "awe-weather",
+      "name": "Weather",
+      "version": "1.0.0",
+      "path": "plugins/awe-weather",
+      "author": "neur0map <hello@ryoku.dev>",
+      "summary": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
+      "description": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
+      "tags": [
+        "weather",
+        "desktop-widget",
+        "awe"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "e1750c14be2712afaca939d1d3d357e44603c7273d5e8f6f96ae12fb15d1b05d",
+      "official": false,
+      "tagline": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
+      "icon": "partly_cloudy_day",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-21"
     }
   ]
 }

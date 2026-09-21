@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "awe-crypto",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/awe-crypto",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "mode": "0644",
+      "size": 1338,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "11874c81505e3aa16f341ec07e46dc6a85058bce749b9072e3e5a39911258420",
+      "mode": "0644",
+      "size": 386,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "51805c2e7703b13336b12209c44720b53920e269a323af0e3eb8903a51c13c4f",
+      "mode": "0644",
+      "size": 25803,
+      "install": false
+    },
+    {
+      "source": "content/CryptoWidget.qml",
+      "destination": "content/CryptoWidget.qml",
+      "sha256": "4420e307865443c5c273390f771d83f19a28320a5e81b20f6ee45246daf25be4",
+      "mode": "0644",
+      "size": 11267,
+      "install": true
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "content/Theme.qml",
+      "sha256": "e7b1b160d8e2efa108421dd1c48f1217f5284fac770cbed7b323f7130ceaf7bb",
+      "mode": "0644",
+      "size": 12429,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "ee76014cffa11f7337af9d7e370250249ccd89ffb598513d8271830d7a8876cd",
+      "mode": "0644",
+      "size": 602,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "d7c05c1a7270287d406bd6602f5aa375899b10d74391139aef212593aeacdb5c",
+      "mode": "0644",
+      "size": 60,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "ee60518bee9c509e2c7d3b409467dc025f59d7127a6b621841192b3f374d4ade",
+      "mode": "0644",
+      "size": 945,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "49d5233fd543e6c5e6100d96ad21c484c2606e5da1f734b70c42ccd8615f41ac",
+      "mode": "0644",
+      "size": 97,
+      "install": true
+    }
+  ]
+}

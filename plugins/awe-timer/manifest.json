@@ -1,0 +1,49 @@
+{
+  "id": "awe-timer",
+  "name": "Timer",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "timer",
+    "pomodoro",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/Store.qml",
+    "content/TimerWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "timer",
+    "label": "Timer"
+  },
+  "dependencies": {
+    "commands": [
+      "mkdir"
+    ]
+  }
+}

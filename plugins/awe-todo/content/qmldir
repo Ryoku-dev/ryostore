@@ -1,0 +1,3 @@
+singleton Theme Theme.qml
+singleton Store Store.qml
+TodoWidget 1.0 TodoWidget.qml

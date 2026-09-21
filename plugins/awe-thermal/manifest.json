@@ -1,0 +1,52 @@
+{
+  "id": "awe-thermal",
+  "name": "Thermal",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "thermal",
+    "temperature",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/ThermalWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "thermostat",
+    "label": "Thermal"
+  },
+  "dependencies": {
+    "commands": [
+      "cat",
+      "awk",
+      "sensors",
+      "grep",
+      "tr"
+    ]
+  }
+}

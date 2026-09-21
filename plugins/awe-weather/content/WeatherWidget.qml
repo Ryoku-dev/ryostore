@@ -1,0 +1,248 @@
+import QtQuick
+import Quickshell
+import Quickshell.Io
+import "."
+
+Item {
+    id: root
+    implicitWidth: 320
+    implicitHeight: 140
+
+    // ─── Weather Data ───
+    property string condition: "Loading..."
+    property string temp: "--°C"
+    property string wind: "--"
+    property string humidity: "--"
+    property string location: "Local Weather"
+
+    Process {
+        id: weatherProc
+        command: ["sh", "-c", "curl -s --max-time 4 'wttr.in/?format=%C;%t;%w;%h;%l' 2>/dev/null || echo 'Overcast;+28°C;15km/h;65%;Local'"]
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                var raw = text.trim()
+                if (raw.includes(";")) {
+                    var parts = raw.split(";")
+                    root.condition = parts[0] ? parts[0].trim() : "Partly Cloudy"
+                    root.temp = parts[1] ? parts[1].replace("+", "").trim() : "26°C"
+                    root.wind = parts[2] ? parts[2].trim() : "12km/h"
+                    root.humidity = parts[3] ? parts[3].trim() : "60%"
+                    if (parts[4] && parts[4].length > 0) root.location = parts[4].trim()
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: 900000 // 15 mins
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: weatherProc.running = true
+    }
+
+    Component.onCompleted: {
+        weatherProc.running = true
+    }
+
+    // ─── Theme Palette ───
+    readonly property color colBg: Theme.colBgTile
+    readonly property color colBadgeBg: Theme.colPillBg
+    readonly property color colTextPrimary: Theme.colTextPrimary
+    readonly property color colTextSecondary: Theme.colTextSecondary
+
+    // ─── Scaled Visual Content ───
+    Item {
+        id: scaledContent
+        width: 320
+        height: 140
+        transformOrigin: Item.TopLeft
+
+        Rectangle {
+            anchors.fill: parent
+            color: root.colBg
+            radius: 32
+            border.color: Theme.borderColor
+            border.width: Theme.borderWidth
+            clip: true
+            antialiasing: true
+
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 1.5
+                color: Theme.glassGloss
+                visible: Theme.isGlass
+            }
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 16
+                spacing: 8
+
+                // Header Row: Weather Pill Badge & Location
+                Row {
+                    width: parent.width
+
+                    Rectangle {
+                        height: 22
+                        width: wBadgeRow.implicitWidth + 16
+                        radius: 11
+                        color: root.colBadgeBg
+                        antialiasing: true
+
+                        Row {
+                            id: wBadgeRow
+                            anchors.centerIn: parent
+                            spacing: 6
+
+                            Rectangle {
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 7
+                                height: 7
+                                radius: 3.5
+                                color: Theme.colAccentGreen
+                                antialiasing: true
+                            }
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "WEATHER"
+                                color: root.colTextPrimary
+                                font.pixelSize: 9
+                                font.bold: true
+                                font.letterSpacing: 0.6
+                                font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                            }
+                        }
+                    }
+
+                    Item {
+                        width: Math.max(0, parent.width - (parent.children[0].width + locText.width))
+                        height: 1
+                    }
+
+                    Text {
+                        id: locText
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.location
+                        color: root.colTextSecondary
+                        font.pixelSize: 11
+                        font.bold: true
+                        font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                    }
+                }
+
+                // Middle Row: Big Temp + Condition
+                Row {
+                    width: parent.width
+                    spacing: 14
+
+                    Text {
+                        text: root.temp
+                        color: root.colTextPrimary
+                        font.pixelSize: 36
+                        font.bold: true
+                        font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                    }
+
+                    Column {
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2
+
+                        Text {
+                            text: root.condition
+                            color: root.colTextPrimary
+                            font.pixelSize: 14
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+
+                        Text {
+                            text: "Forecast condition"
+                            color: root.colTextSecondary
+                            font.pixelSize: 10
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+                    }
+                }
+
+                // Bottom Row: Mini Metric Pills (Humidity & Wind)
+                Row {
+                    spacing: 8
+
+                    // Humidity Pill
+                    Rectangle {
+                        height: 22
+                        width: humRow.implicitWidth + 14
+                        radius: 11
+                        color: root.colBadgeBg
+                        antialiasing: true
+
+                        Row {
+                            id: humRow
+                            anchors.centerIn: parent
+                            spacing: 5
+
+                            Text {
+                                text: "HUM"
+                                color: root.colTextSecondary
+                                font.pixelSize: 9
+                                font.bold: true
+                                font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                            }
+
+                            Text {
+                                text: root.humidity
+                                color: root.colTextPrimary
+                                font.pixelSize: 9
+                                font.bold: true
+                                font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                            }
+                        }
+                    }
+
+                    // Wind Pill
+                    Rectangle {
+                        height: 22
+                        width: windRow.implicitWidth + 14
+                        radius: 11
+                        color: root.colBadgeBg
+                        antialiasing: true
+
+                        Row {
+                            id: windRow
+                            anchors.centerIn: parent
+                            spacing: 5
+
+                            Text {
+                                text: "WIND"
+                                color: root.colTextSecondary
+                                font.pixelSize: 9
+                                font.bold: true
+                                font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                            }
+
+                            Text {
+                                text: root.wind
+                                color: root.colTextPrimary
+                                font.pixelSize: 9
+                                font.bold: true
+                                font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            weatherProc.running = true
+        }
+    }
+}

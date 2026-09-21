@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "awe-clock-world",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/awe-clock-world",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "mode": "0644",
+      "size": 1338,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "a377b021d0e5301c9146758a7a1d7daefe2eb03c3c2b5b6778caadf907ef4177",
+      "mode": "0644",
+      "size": 983,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "739aee6d7d6ec1ecf54d576281e6bdae40abc128d753e8b56b01bdd71c69f3bf",
+      "mode": "0644",
+      "size": 28096,
+      "install": false
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "content/Theme.qml",
+      "sha256": "e7b1b160d8e2efa108421dd1c48f1217f5284fac770cbed7b323f7130ceaf7bb",
+      "mode": "0644",
+      "size": 12429,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "1283654ba1e592d16de14944a0b8ffdd01711e9069c8b4eee1937b841498f599",
+      "mode": "0644",
+      "size": 606,
+      "install": true
+    },
+    {
+      "source": "content/WorldClockWidget.qml",
+      "destination": "content/WorldClockWidget.qml",
+      "sha256": "9cdce341f1c5d0794ebf6503d65c40a74a73d1f1cb284e636c37606af7c70682",
+      "mode": "0644",
+      "size": 26444,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "154754843e597dc70369be39cee44047233c5208cd7598581fd2e1ed13df45ce",
+      "mode": "0644",
+      "size": 68,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "b3207349dc9d24d0a1558d380ea5f06f2b2cbf5008db7f4a2a330f92fb37f51e",
+      "mode": "0644",
+      "size": 890,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "49d5233fd543e6c5e6100d96ad21c484c2606e5da1f734b70c42ccd8615f41ac",
+      "mode": "0644",
+      "size": 97,
+      "install": true
+    }
+  ]
+}

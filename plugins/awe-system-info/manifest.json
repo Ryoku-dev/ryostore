@@ -1,0 +1,51 @@
+{
+  "id": "awe-system-info",
+  "name": "System Info",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "system",
+    "monitor",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/SystemInfo.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "info",
+    "label": "System Info"
+  },
+  "dependencies": {
+    "commands": [
+      "cat",
+      "df",
+      "tail",
+      "awk"
+    ]
+  }
+}

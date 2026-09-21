@@ -1,0 +1,3 @@
+singleton Theme Theme.qml
+singleton Store Store.qml
+TimerWidget 1.0 TimerWidget.qml
