@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "chroma",
   "category": "barstyles",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "destination": "ryoku/barstyles/chroma",
   "files": [
     {
@@ -25,16 +25,16 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 1205,
-      "sha256": "bb5ba3c552ed3df3e45c2eba4bdd70832d377c055e5e2951bece39b8f1170f8e",
+      "size": 778,
+      "sha256": "38ff996e0f5509235510aead26cafb6c3074416d4e780012020bd4b9fb63be21",
       "install": true
     },
     {
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 5023,
-      "sha256": "aca4e487dfcd37ae4fd5c1f6ac99b8c275bf426a3aa0029eae15ea81b1aaff95",
+      "size": 4050,
+      "sha256": "5adfea079e084298b51d96612456c17e785a3debd0df016e06e64faee5075f92",
       "install": true
     },
     {
@@ -49,48 +49,48 @@
       "source": "components/ClockModule.qml",
       "destination": "components/ClockModule.qml",
       "mode": "0644",
-      "size": 2169,
-      "sha256": "5d74af6eab5a79fb0a5c531c6cfe7ed20d85195bac4b96b00c0ba91a77ef4e2c",
+      "size": 1887,
+      "sha256": "7a2f3ae4b82902c579772511f71a7b4299d58427cae9a69c48d2bd74279ecd06",
       "install": true
     },
     {
       "source": "components/MediaModule.qml",
       "destination": "components/MediaModule.qml",
       "mode": "0644",
-      "size": 10827,
-      "sha256": "70b0c627f34273ef03a13c0ca426713b3fc7b59ee65fae6300e95d9be319384d",
+      "size": 10492,
+      "sha256": "e60f6a6b28bef1fe8fc00a9b4fa356101a3a0b857979c331ca1cf21cc12ed255",
       "install": true
     },
     {
       "source": "components/Palette.qml",
       "destination": "components/Palette.qml",
       "mode": "0644",
-      "size": 1909,
-      "sha256": "29a757a118850e733fb0627ec3b859f72bd291471609ff937a9c7b6bc12fc2b6",
+      "size": 1757,
+      "sha256": "d6ab86c55831424850684e5f2081f07b8a1c396b06a90d713586476aa08adf42",
       "install": true
     },
     {
       "source": "components/StatusCluster.qml",
       "destination": "components/StatusCluster.qml",
       "mode": "0644",
-      "size": 4012,
-      "sha256": "7942f48d9ec089862a3089c693223968b5d859636463c647f392d77b816f9256",
+      "size": 3294,
+      "sha256": "4b8187186035ec998b483911a448f7ffc00aab4d28c20d5fb5c5f75584c067ee",
       "install": true
     },
     {
       "source": "components/UtilityButton.qml",
       "destination": "components/UtilityButton.qml",
       "mode": "0644",
-      "size": 2062,
-      "sha256": "d5109d48f747136ab3535ac96414d3faaee5c236334c84327ced0da46b1c74ed",
+      "size": 1945,
+      "sha256": "a7dabd3a41dcf7d67c44880c3395380936ebf238db43bb34c3dad580923588f1",
       "install": true
     },
     {
       "source": "components/WorkspaceRail.qml",
       "destination": "components/WorkspaceRail.qml",
       "mode": "0644",
-      "size": 6269,
-      "sha256": "c252fe036beb291d02314f7abf8518e6a22ef0851a2ddd82fe25e4c8ae1f6759",
+      "size": 5472,
+      "sha256": "2fcb5914a0ff6fd320c2bd0c38456c2461060382d3a815db9223f607ba4ac05e",
       "install": true
     }
   ],
