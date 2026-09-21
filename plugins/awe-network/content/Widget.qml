@@ -10,6 +10,13 @@ Item {
     property string density: "compact"
     property real s: 1
     property real widthBudget: 0
+
+    // Accent handoff: the host sets accentColor and flips accentFromHost; only push the override
+    // while the flag is on, otherwise clear it so the theme keeps its own palette.
+    property color accentColor: "transparent"
+    property bool accentFromHost: false
+    onAccentColorChanged: Theme.accentOverride = root.accentFromHost ? root.accentColor : "transparent"
+    onAccentFromHostChanged: Theme.accentOverride = root.accentFromHost ? root.accentColor : "transparent"
     implicitWidth: wdg.implicitWidth
     implicitHeight: wdg.implicitHeight
     readonly property real sc: (root.widthBudget > 0 && wdg.implicitWidth > 0)

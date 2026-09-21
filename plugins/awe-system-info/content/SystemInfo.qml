@@ -411,11 +411,13 @@ Item {
     // ─── Interactive MouseArea ───
     MouseArea {
         anchors.fill: parent
-        hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+        propagateComposedEvents: true
 
-        onDoubleClicked: {
+        // Flip orientation, then release the event so the host still gets the press to drag the tile.
+        onDoubleClicked: (mouse) => {
             root.isVertical = !root.isVertical
+            mouse.accepted = false
         }
     }
 }

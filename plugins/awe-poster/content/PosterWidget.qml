@@ -262,9 +262,13 @@ Item {
         }
     }
 
-    // Double-click cycles the display shape (in-memory only)
+    // Double-click cycles the display shape (in-memory only); press still falls through for host drag.
     MouseArea {
         anchors.fill: parent
-        onDoubleClicked: root.shapeIndex = (root.shapeIndex + 1) % root.shapeNames.length
+        propagateComposedEvents: true
+        onDoubleClicked: (mouse) => {
+            root.shapeIndex = (root.shapeIndex + 1) % root.shapeNames.length
+            mouse.accepted = false
+        }
     }
 }

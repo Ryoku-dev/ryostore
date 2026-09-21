@@ -32,25 +32,25 @@
     {
       "source": "content/Theme.qml",
       "destination": "content/Theme.qml",
-      "sha256": "e7b1b160d8e2efa108421dd1c48f1217f5284fac770cbed7b323f7130ceaf7bb",
+      "sha256": "c08c09387c91028f02552346793a7a960bffd9c7307294ee7ea4fca4179a3c84",
       "mode": "0644",
-      "size": 12429,
+      "size": 13387,
       "install": true
     },
     {
       "source": "content/WeatherWidget.qml",
       "destination": "content/WeatherWidget.qml",
-      "sha256": "187415189c3f10db82eede3648c87f1fe0988716a3ac38889984e40de9ca07cc",
+      "sha256": "1270ea4be66f0b207f09156dd60b4e9ed6844c11202c08c275319fef174849c0",
       "mode": "0644",
-      "size": 8689,
+      "size": 8855,
       "install": true
     },
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "45f6b997acd157a8a6f8d29c1b08c7542d9fc05068d4f9cd865c705848120570",
+      "sha256": "5a3f94954e52df0c353a4b4bc3dfdd5a345631cc1bbe79d330221aedac617df4",
       "mode": "0644",
-      "size": 603,
+      "size": 1083,
       "install": true
     },
     {
@@ -64,9 +64,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "29b166639df18168627f8dfbb9f4ee43e81b6455cb8ab27e9c16e6ab61c2f357",
+      "sha256": "9c4c0764c2e4293284574dc72f3cdd230a77071d0b75c14b500500ef93227b6d",
       "mode": "0644",
-      "size": 937,
+      "size": 1035,
       "install": true
     },
     {

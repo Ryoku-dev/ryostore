@@ -48,17 +48,17 @@
     {
       "source": "content/Theme.qml",
       "destination": "content/Theme.qml",
-      "sha256": "20c1ed192503f940547212112c8c2434aef12041f0b3679b88b0478f59c61419",
+      "sha256": "679a78816db7eb853f7e30cf54a2225cc4a6807ca4c0166bd052a5b0611abc72",
       "mode": "0644",
-      "size": 12563,
+      "size": 13521,
       "install": true
     },
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "d7980e7786eddcbd26e8ac762347e29bb09a0c87896a4354bfadddf093a31774",
+      "sha256": "8461c574f0d4f29469f290ec44eff01cce665b3f4c669ec4c9a62849d6f502bf",
       "mode": "0644",
-      "size": 800,
+      "size": 1280,
       "install": true
     },
     {
@@ -72,9 +72,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "b131c67ce7d39a9c4b89168cb99cbfe34006eaba735960baa6f9a23561292baf",
+      "sha256": "8839bd958c4060b0a54c5441c7f8db763c961a744109583589eadc4849539e09",
       "mode": "0644",
-      "size": 921,
+      "size": 1020,
       "install": true
     },
     {
