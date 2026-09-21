@@ -125,7 +125,7 @@ An adaptive design may record the intended system roles as a comment:
 // ryoku:recolor keys=primary title=foreground separator=outline
 ```
 
-**Compatibility note:** the current `ryoku-arch` Fastfetch apply path copies the
+**Compatibility note:** the current Ryoku Fastfetch apply path copies the
 configuration verbatim; it does not consume this marker or automatically rewrite
 these slots when the wallpaper changes. Keep readable literal colours in
 `display.color`. The marker records recolouring intent for tooling that supports
