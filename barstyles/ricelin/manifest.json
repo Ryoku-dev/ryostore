@@ -233,8 +233,8 @@
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 20503,
-      "sha256": "f06efcfcfbf1bd37631984e71c5cc091f91f29ddc990e4a40ca817edf3ad10c2",
+      "size": 20707,
+      "sha256": "d0e1d75b2436d61bc13bd2d8a94faba3213f3789e182fceebd9e1ac3cb8d30df",
       "install": true
     },
     {
@@ -358,6 +358,14 @@
       "install": true
     },
     {
+      "source": "Singletons/Fullscreen.qml",
+      "destination": "Singletons/Fullscreen.qml",
+      "mode": "0644",
+      "size": 5789,
+      "sha256": "835733a44151fa9811e80bc38fcb4979c0c7f94febb1ca08620212261b285d4c",
+      "install": true
+    },
+    {
       "source": "Singletons/GameMode.qml",
       "destination": "Singletons/GameMode.qml",
       "mode": "0644",
@@ -449,8 +457,8 @@
       "source": "Singletons/qmldir",
       "destination": "Singletons/qmldir",
       "mode": "0644",
-      "size": 570,
-      "sha256": "1297e2f902f1a8f3f7cbe36439fb95033a42334a15c4b271403ca818b6517aa2",
+      "size": 606,
+      "sha256": "44a2933446876c063d595532c8a4e5da108ee2265f5012c00426a0cc73b13331",
       "install": true
     },
     {
