@@ -1,0 +1,169 @@
+{
+  "schema": 1,
+  "id": "kotoba",
+  "category": "plugins",
+  "version": "1.4.0",
+  "destination": "ryoku/plugins/kotoba",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "6b9f20b26bcd5a7db7411faba95d63155e7a096902e18b9de8e4d9876ddba6ee",
+      "mode": "0644",
+      "size": 41,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "e09b6ccaa6e45ab312fec9ab870f52faf4da5418613dd01ffed7d36abc5700da",
+      "mode": "0644",
+      "size": 3955,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "159e233883012069640d32b100042037e6665fb6b20deff98f26804a0146e105",
+      "mode": "0644",
+      "size": 1066,
+      "install": false
+    },
+    {
+      "source": "NOTICE",
+      "destination": "NOTICE",
+      "sha256": "b21406fe8ec7d180ca47b91c68d240282678594d37165ac406a6f6588dfd32ee",
+      "mode": "0644",
+      "size": 2706,
+      "install": false
+    },
+    {
+      "source": "PROVENANCE.md",
+      "destination": "PROVENANCE.md",
+      "sha256": "747289541dc60dad44d466c4b2603c1e6b8aecc3a1425456376fa19b1340d3be",
+      "mode": "0644",
+      "size": 4393,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "9e687df08222a98645460f4ac6d7354cf6fb2687ba3eb64dbafb76aaf13af8f6",
+      "mode": "0644",
+      "size": 9408,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "cf2712cf8a61ba477d3b4f1d18fb5b05556d752a5570bdddc92c4e6884aa88d5",
+      "mode": "0644",
+      "size": 53472,
+      "install": false
+    },
+    {
+      "source": "bin/kotoba",
+      "destination": "bin/kotoba",
+      "sha256": "e38b9c1823e225e55cf3a466b862d36fdb7fd0867f646b99858816914beea55f",
+      "mode": "0755",
+      "size": 46692,
+      "install": true
+    },
+    {
+      "source": "content/CardFace.qml",
+      "destination": "content/CardFace.qml",
+      "sha256": "ecad16d5cbe07b2c7d8994b94562b970bf5f31e2bd68ad27ae4da4faad146c4f",
+      "mode": "0644",
+      "size": 5222,
+      "install": true
+    },
+    {
+      "source": "content/EmptyState.qml",
+      "destination": "content/EmptyState.qml",
+      "sha256": "6147db2f25b9afa8c0e5866fb3e16c45ee46a6751f5a9a87dcb9e5f31346bda2",
+      "mode": "0644",
+      "size": 4140,
+      "install": true
+    },
+    {
+      "source": "content/Furigana.qml",
+      "destination": "content/Furigana.qml",
+      "sha256": "5858ca520ee91c54077ef19ada0c7d18d5a3bed2f8aa8cb8fce6a39cf9faf573",
+      "mode": "0644",
+      "size": 1664,
+      "install": true
+    },
+    {
+      "source": "content/GradeRow.qml",
+      "destination": "content/GradeRow.qml",
+      "sha256": "46a9f65aec50dee23ada8c3e85e97bbdb0d8557484bc54c862a5f900e6fff058",
+      "mode": "0644",
+      "size": 3360,
+      "install": true
+    },
+    {
+      "source": "content/LookupField.qml",
+      "destination": "content/LookupField.qml",
+      "sha256": "82f792f5116b218c4676be81fe5c4e3da4ed3ec36175bcd14e9d1c1ef947e90d",
+      "mode": "0644",
+      "size": 6333,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "dfb8db4e3110b2878b9312970cc7352bd90dd1d2b2602353d87ed072e7b483b7",
+      "mode": "0644",
+      "size": 14937,
+      "install": true
+    },
+    {
+      "source": "data/decks/TEMPLATE.json",
+      "destination": "data/decks/TEMPLATE.json",
+      "sha256": "949bc279fcd9a2f1149299662fad233a852b47a93552f4b4099038756bca3014",
+      "mode": "0644",
+      "size": 1905,
+      "install": true
+    },
+    {
+      "source": "data/decks/core-vocab.json",
+      "destination": "data/decks/core-vocab.json",
+      "sha256": "f28549b19b67bb6421d5e7531d5c12162a95e390b4f4037a28bfa9cd24928740",
+      "mode": "0644",
+      "size": 237147,
+      "install": true
+    },
+    {
+      "source": "data/decks/kana-hiragana.json",
+      "destination": "data/decks/kana-hiragana.json",
+      "sha256": "7f57f9d9d7394868a2ff62df5900b62ff724f65f0e73f358faa7b631b2fa89fe",
+      "mode": "0644",
+      "size": 6724,
+      "install": true
+    },
+    {
+      "source": "data/decks/kana-katakana.json",
+      "destination": "data/decks/kana-katakana.json",
+      "sha256": "f3b289810536337c994cadd1a0ad3648b003ab49dd8700154e1334d551fdb513",
+      "mode": "0644",
+      "size": 6724,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "a5ebda0ae1772015c6f8f4403cf705eee33a68f960d968009852427106efb42e",
+      "mode": "0644",
+      "size": 4611,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "e985dc9e0ca8e7cb39cd9e32509714a163b4efec5c102e71fe85c09be15e5117",
+      "mode": "0644",
+      "size": 23005,
+      "install": true
+    }
+  ]
+}

@@ -8,7 +8,6 @@ Rectangle {
     id: root
 
     required property var colors
-    required property real s
 
     property string icon: "circle"
     property string label: ""
@@ -20,11 +19,11 @@ Rectangle {
     signal scrolled(int steps)
 
     implicitWidth: label.length > 0
-        ? (Theme.iconLg + Theme.paddingLg + Theme.paddingMd) * root.s
-        : Theme.iconLg * root.s
-    implicitHeight: (Theme.iconLg + Theme.paddingLg) * root.s
+        ? Theme.iconLg + Theme.paddingLg + Theme.paddingMd
+        : Theme.iconLg
+    implicitHeight: Theme.iconLg + Theme.paddingLg
 
-    radius: Config.chromaRadius(Theme.radiusWidget) * root.s
+    radius: Theme.radiusWidget
     color: active
         ? colors.alpha(colors.accent(accentIndex), 0.18)
         : mouse.containsMouse
@@ -42,13 +41,13 @@ Rectangle {
 
     Row {
         anchors.centerIn: parent
-        spacing: Theme.paddingSm * root.s
+        spacing: Theme.paddingSm
 
         Pill.MaterialIcon {
             anchors.verticalCenter: parent.verticalCenter
             text: root.icon
             color: root.contentColor
-            font.pixelSize: Theme.iconSm * root.s
+            font.pixelSize: Theme.iconSm
             fill: root.active ? 1 : 0
         }
 
@@ -58,7 +57,7 @@ Rectangle {
             text: root.label
             color: root.contentColor
             font.family: Theme.mono
-            font.pixelSize: Theme.fontSm * root.s
+            font.pixelSize: Theme.fontSm
             font.weight: Font.Bold
         }
     }
