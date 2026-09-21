@@ -1,0 +1,70 @@
+Kotoba
+======
+
+Plugin code (QML, bin/kotoba) is MIT licensed. See LICENSE.
+
+The bundled card data and the scheduling algorithm come from third parties and
+carry their own terms. Those terms are reproduced here and the relevant credit
+is also shown on the widget itself.
+
+
+1. JMdict / KANJIDIC2 -- the core vocabulary deck
+-------------------------------------------------
+
+data/decks/core-vocab.json is DERIVED from JMdict_e and KANJIDIC2, produced and
+distributed by the Electronic Dictionary Research and Development Group (EDRDG),
+Monash University, under the direction of Jim Breen.
+
+    https://www.edrdg.org/jmdict/j_jmdict.html
+    https://www.edrdg.org/wiki/index.php/KANJIDIC_Project
+    Licence: https://www.edrdg.org/edrdg/licence.html
+
+Both are licensed Creative Commons Attribution-ShareAlike 4.0 International
+(CC BY-SA 4.0). Because core-vocab.json is a derived and reformatted subset of
+that data, the file itself is likewise distributed under CC BY-SA 4.0, and any
+redistribution of it must keep that licence and this attribution.
+
+This ShareAlike obligation attaches to the DATA FILE, not to the plugin's own
+source code, which remains MIT.
+
+The kana decks (data/decks/kana-hiragana.json, kana-katakana.json) are not
+derived from EDRDG data. They were authored for this plugin and are released
+CC0-1.0: the syllabary itself is not copyrightable.
+
+
+2. FSRS -- the scheduling algorithm
+------------------------------------
+
+bin/kotoba implements the Free Spaced Repetition Scheduler memory model and
+uses its published default parameters.
+
+    https://github.com/open-spaced-repetition/fsrs4anki
+    Algorithm and reference implementations: MIT
+
+The implementation in bin/kotoba was written for this plugin; the model,
+formulas and default parameters are the FSRS project's work.
+
+
+3. The downloadable dictionary
+-------------------------------
+
+The optional dictionary pack is downloaded at the user's request from EDRDG:
+
+    JMdict_e.gz        http://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz
+    kanjidic2.xml.gz   http://ftp.edrdg.org/pub/Nihongo/kanjidic2.xml.gz
+    examples.utf.gz    http://ftp.edrdg.org/pub/Nihongo/examples.utf.gz
+
+JMdict and KANJIDIC2 are CC BY-SA 4.0, as above. examples.utf is the Tanaka
+Corpus, distributed by EDRDG under CC BY 2.0.
+
+These are downloaded to the user's own cache and imported into a local
+database. They are not redistributed by this plugin, so no ShareAlike
+obligation attaches to the plugin tree on their account; the attribution is
+given here and on the widget regardless.
+
+
+4. Fonts
+--------
+
+Japanese text is rendered with Noto Sans CJK JP, which ships with the system
+(package noto-fonts-cjk, SIL Open Font License 1.1). No font is bundled.

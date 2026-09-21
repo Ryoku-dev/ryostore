@@ -1,0 +1,1317 @@
+#!/usr/bin/env python3
+"""kotoba - the scheduler and card store behind the Kotoba Ryoku widget.
+
+Every subcommand prints exactly one JSON object on stdout. Success exits 0;
+failure prints {"error": "..."} and exits 1. The QML service never parses
+anything but this JSON, and never builds a shell string to call us (R9).
+
+Writes go only to $XDG_STATE_HOME/ryoku/plugins/kotoba (R8). Bundled decks are
+read from the plugin's own data/decks; user decks are read from --decks-dir.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import os
+import sqlite3
+import sys
+import time
+import unicodedata
+from pathlib import Path
+
+SCHEMA_VERSION = 4
+CTYPES = ("recog", "reading", "recall", "kana")
+
+# ---------------------------------------------------------------------------
+# paths
+# ---------------------------------------------------------------------------
+
+PLUGIN_DIR = Path(__file__).resolve().parent.parent
+
+
+def state_dir() -> Path:
+    base = os.environ.get("XDG_STATE_HOME") or (Path.home() / ".local" / "state")
+    return Path(base) / "ryoku" / "plugins" / "kotoba"
+
+
+def db_path() -> Path:
+    return state_dir() / "kotoba.db"
+
+
+def dict_path() -> Path:
+    """The dictionary lives in its OWN database. A re-import replaces this file
+    and can never put review history at risk."""
+    return state_dir() / "dict.db"
+
+
+def cache_dir() -> Path:
+    base = os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache")
+    d = Path(base) / "ryoku" / "plugins" / "kotoba"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+# Every source is EDRDG, CC BY-SA 4.0 (examples.utf is CC BY 2.0). One host.
+EDRDG = "http://ftp.edrdg.org/pub/Nihongo/"
+PACKS = {
+    "basic": ["JMdict_e.gz", "kanjidic2.xml.gz"],
+    "full": ["JMdict_e.gz", "kanjidic2.xml.gz", "examples.utf.gz"],
+}
+
+
+# ---------------------------------------------------------------------------
+# Japanese text helpers
+# ---------------------------------------------------------------------------
+
+HIRAGANA = (0x3041, 0x309F)
+KATAKANA = (0x30A0, 0x30FF)
+KANJI = (0x4E00, 0x9FFF)
+KANJI_EXT = (0x3400, 0x4DBF)
+
+
+def _in(cp: int, rng: tuple[int, int]) -> bool:
+    return rng[0] <= cp <= rng[1]
+
+
+def script_of(text: str) -> str:
+    """Classify a word. Kanji wins over kana, katakana over hiragana.
+
+    A word containing any CJK ideograph is 'kanji' however much kana trails it,
+    because that is what makes it hard to read.
+    """
+    has_kanji = has_kata = has_hira = False
+    for ch in text:
+        cp = ord(ch)
+        if _in(cp, KANJI) or _in(cp, KANJI_EXT):
+            has_kanji = True
+        elif _in(cp, KATAKANA):
+            has_kata = True
+        elif _in(cp, HIRAGANA):
+            has_hira = True
+    if has_kanji:
+        return "kanji"
+    if has_kata:
+        return "katakana"
+    if has_hira:
+        return "hiragana"
+    return "other"
+
+
+def kata_to_hira(text: str) -> str:
+    out = []
+    for ch in text:
+        cp = ord(ch)
+        if 0x30A1 <= cp <= 0x30F6:
+            out.append(chr(cp - 0x60))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+# Hepburn. Digraphs must be tried before single kana.
+_ROMA_DIGRAPH = {
+    "きゃ": "kya", "きゅ": "kyu", "きょ": "kyo",
+    "しゃ": "sha", "しゅ": "shu", "しょ": "sho",
+    "ちゃ": "cha", "ちゅ": "chu", "ちょ": "cho",
+    "にゃ": "nya", "にゅ": "nyu", "にょ": "nyo",
+    "ひゃ": "hya", "ひゅ": "hyu", "ひょ": "hyo",
+    "みゃ": "mya", "みゅ": "myu", "みょ": "myo",
+    "りゃ": "rya", "りゅ": "ryu", "りょ": "ryo",
+    "ぎゃ": "gya", "ぎゅ": "gyu", "ぎょ": "gyo",
+    "じゃ": "ja", "じゅ": "ju", "じょ": "jo",
+    "ぢゃ": "ja", "ぢゅ": "ju", "ぢょ": "jo",
+    "びゃ": "bya", "びゅ": "byu", "びょ": "byo",
+    "ぴゃ": "pya", "ぴゅ": "pyu", "ぴょ": "pyo",
+    "ふぁ": "fa", "ふぃ": "fi", "ふぇ": "fe", "ふぉ": "fo",
+    "うぃ": "wi", "うぇ": "we", "うぉ": "wo",
+    "ゔぁ": "va", "ゔぃ": "vi", "ゔぇ": "ve", "ゔぉ": "vo",
+    "てぃ": "ti", "でぃ": "di", "とぅ": "tu", "どぅ": "du",
+    "しぇ": "she", "ちぇ": "che", "じぇ": "je",
+}
+
+_ROMA_SINGLE = {
+    "あ": "a", "い": "i", "う": "u", "え": "e", "お": "o",
+    "か": "ka", "き": "ki", "く": "ku", "け": "ke", "こ": "ko",
+    "さ": "sa", "し": "shi", "す": "su", "せ": "se", "そ": "so",
+    "た": "ta", "ち": "chi", "つ": "tsu", "て": "te", "と": "to",
+    "な": "na", "に": "ni", "ぬ": "nu", "ね": "ne", "の": "no",
+    "は": "ha", "ひ": "hi", "ふ": "fu", "へ": "he", "ほ": "ho",
+    "ま": "ma", "み": "mi", "む": "mu", "め": "me", "も": "mo",
+    "や": "ya", "ゆ": "yu", "よ": "yo",
+    "ら": "ra", "り": "ri", "る": "ru", "れ": "re", "ろ": "ro",
+    "わ": "wa", "ゐ": "wi", "ゑ": "we", "を": "wo", "ん": "n",
+    "が": "ga", "ぎ": "gi", "ぐ": "gu", "げ": "ge", "ご": "go",
+    "ざ": "za", "じ": "ji", "ず": "zu", "ぜ": "ze", "ぞ": "zo",
+    "だ": "da", "ぢ": "ji", "づ": "zu", "で": "de", "ど": "do",
+    "ば": "ba", "び": "bi", "ぶ": "bu", "べ": "be", "ぼ": "bo",
+    "ぱ": "pa", "ぴ": "pi", "ぷ": "pu", "ぺ": "pe", "ぽ": "po",
+    "ゔ": "vu",
+    "ぁ": "a", "ぃ": "i", "ぅ": "u", "ぇ": "e", "ぉ": "o",
+    "ゃ": "ya", "ゅ": "yu", "ょ": "yo", "ー": "-",
+    "、": ", ", "。": ".", "　": " ",
+}
+
+_VOWELS = set("aiueo")
+
+
+def to_romaji(kana: str) -> str:
+    """Deterministic Hepburn. Good enough to read; not a linguistic authority.
+
+    Handles digraphs, the small-tsu gemination, syllabic n before vowels and
+    y, and the katakana long mark.
+    """
+    src = kata_to_hira(kana)
+    out: list[str] = []
+    i = 0
+    n = len(src)
+    while i < n:
+        ch = src[i]
+        pair = src[i:i + 2]
+
+        if ch == "っ":
+            # gemination: double the next consonant
+            nxt = src[i + 1:i + 3]
+            syl = _ROMA_DIGRAPH.get(nxt) or _ROMA_SINGLE.get(src[i + 1:i + 2], "")
+            if syl and syl[0] not in _VOWELS:
+                out.append("tch" if syl.startswith("ch") else syl[0])
+            i += 1
+            continue
+
+        if ch == "ー":
+            # long mark: lengthen the previous vowel
+            if out and out[-1] and out[-1][-1] in _VOWELS:
+                out.append(out[-1][-1])
+            i += 1
+            continue
+
+        if pair in _ROMA_DIGRAPH:
+            out.append(_ROMA_DIGRAPH[pair])
+            i += 2
+            continue
+
+        if ch in _ROMA_SINGLE:
+            syl = _ROMA_SINGLE[ch]
+            if syl == "n":
+                # syllabic n takes an apostrophe before a vowel or y
+                nxt = src[i + 1:i + 2]
+                nxt_syl = _ROMA_DIGRAPH.get(src[i + 1:i + 3]) or _ROMA_SINGLE.get(nxt, "")
+                if nxt_syl and (nxt_syl[0] in _VOWELS or nxt_syl[0] == "y"):
+                    syl = "n'"
+            out.append(syl)
+            i += 1
+            continue
+
+        out.append(ch)
+        i += 1
+
+    return "".join(out).replace("--", "-").strip()
+
+
+# ---------------------------------------------------------------------------
+# FSRS
+# ---------------------------------------------------------------------------
+#
+# The FSRS memory model (Jarrett Ye / open-spaced-repetition, MIT). These are
+# the published default parameters for the v4.5/v5 core formulas; w17 and w18
+# drive the same-day (short-term) step. See PROVENANCE.md.
+
+W = (
+    0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046,
+    1.54575, 0.1192, 1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315,
+    2.9898, 0.51655, 0.6621,
+)
+
+DECAY = -0.5
+FACTOR = 19.0 / 81.0
+DESIRED_RETENTION = 0.9
+
+MIN_S, MAX_S = 0.01, 36500.0
+DAY = 86400.0
+
+# Stability keeps its true value, but the scheduled gap is capped: a widget
+# that puts a word 30 years out has effectively deleted it. Anki does the
+# same thing, clamping the interval rather than the memory state.
+MAX_INTERVAL_DAYS = 365.0
+
+# card.state
+NEW, LEARNING, REVIEW, RELEARNING = 0, 1, 2, 3
+
+# ratings
+AGAIN, HARD, GOOD, EASY = 1, 2, 3, 4
+
+
+def _clamp(x: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, x))
+
+
+def retrievability(elapsed_days: float, stability: float) -> float:
+    if stability <= 0:
+        return 0.0
+    return (1.0 + FACTOR * elapsed_days / stability) ** DECAY
+
+
+def interval_days(stability: float) -> float:
+    """Days until retrievability decays to DESIRED_RETENTION, capped."""
+    raw = (stability / FACTOR) * (DESIRED_RETENTION ** (1.0 / DECAY) - 1.0)
+    return _clamp(raw, 0.0, MAX_INTERVAL_DAYS)
+
+
+def init_stability(rating: int) -> float:
+    return _clamp(W[rating - 1], MIN_S, MAX_S)
+
+
+def init_difficulty(rating: int) -> float:
+    return _clamp(W[4] - math.exp(W[5] * (rating - 1)) + 1.0, 1.0, 10.0)
+
+
+def next_difficulty(d: float, rating: int) -> float:
+    # linear damping: a card near D=10 moves less than one near D=1
+    delta = -W[6] * (rating - 3)
+    damped = d + delta * (10.0 - d) / 9.0
+    # mean reversion toward the difficulty an "easy" first answer would give
+    reverted = W[7] * init_difficulty(EASY) + (1.0 - W[7]) * damped
+    return _clamp(reverted, 1.0, 10.0)
+
+
+def stability_after_recall(d: float, s: float, r: float, rating: int) -> float:
+    hard = W[15] if rating == HARD else 1.0
+    easy = W[16] if rating == EASY else 1.0
+    growth = (
+        math.exp(W[8])
+        * (11.0 - d)
+        * (s ** -W[9])
+        * (math.exp(W[10] * (1.0 - r)) - 1.0)
+        * hard
+        * easy
+    )
+    return _clamp(s * (1.0 + growth), MIN_S, MAX_S)
+
+
+def stability_after_lapse(d: float, s: float, r: float) -> float:
+    sf = (
+        W[11]
+        * (d ** -W[12])
+        * (((s + 1.0) ** W[13]) - 1.0)
+        * math.exp(W[14] * (1.0 - r))
+    )
+    # a lapse never makes a card more stable than it already was
+    return _clamp(min(sf, s), MIN_S, MAX_S)
+
+
+def stability_short_term(s: float, rating: int) -> float:
+    """Same-day repeat: the card has not had time to decay."""
+    return _clamp(s * math.exp(W[17] * (rating - 3 + W[18])), MIN_S, MAX_S)
+
+
+def schedule(card: dict, rating: int, now: float) -> dict:
+    """Return the card's new scheduling state. Pure; the caller persists it."""
+    state = card["state"]
+    s = card["stability"] or 0.0
+    d = card["difficulty"] or 0.0
+    last = card["last_review"] or 0.0
+
+    if state == NEW:
+        s = init_stability(rating)
+        d = init_difficulty(rating)
+        if rating == AGAIN:
+            new_state, due = LEARNING, now + 60.0
+        elif rating == HARD:
+            new_state, due = LEARNING, now + 330.0
+        elif rating == GOOD:
+            new_state, due = LEARNING, now + 600.0
+        else:
+            new_state, due = REVIEW, now + max(DAY, interval_days(s) * DAY)
+        return _state(new_state, now + fuzz(due - now), s, d, now)
+
+    elapsed_days = max(0.0, (now - last) / DAY) if last else 0.0
+    r = retrievability(elapsed_days, s)
+    d = next_difficulty(d, rating)
+
+    if state in (LEARNING, RELEARNING):
+        s = stability_short_term(s, rating)
+        if rating == AGAIN:
+            return _state(state, now + fuzz(60.0), s, d, now)
+        if rating == HARD:
+            return _state(state, now + fuzz(480.0), s, d, now)
+        # GOOD or EASY graduates the card into review
+        return _state(REVIEW, now + fuzz(max(DAY, interval_days(s) * DAY)), s, d, now)
+
+    # REVIEW
+    if rating == AGAIN:
+        s = stability_after_lapse(d, s, r)
+        return _state(RELEARNING, now + fuzz(600.0), s, d, now, lapse=True)
+    s = stability_after_recall(d, s, r, rating)
+    return _state(REVIEW, now + fuzz(max(DAY, interval_days(s) * DAY)), s, d, now)
+
+
+def fuzz(seconds: float) -> float:
+    """Jitter a scheduled gap so two cards graded in the same moment cannot
+    come due in the same second.
+
+    Without this, a word's cards are answered together, land on an identical
+    due timestamp, and then arrive together on every future review - which is
+    exactly the "it showed me the same word twice" complaint. Anki calls this
+    fuzz. Only the GAP is jittered; stability and difficulty keep their exact
+    values, the same way the 365-day interval cap works.
+    """
+    import random
+    if seconds <= 0:
+        return seconds
+    # Learning steps (under 10 minutes) are transient and already minutes
+    # apart; fuzzing them only produces scruffy previews like "58s".
+    if seconds < 600:
+        return seconds
+    if seconds < DAY:
+        spread = 0.10
+    else:
+        spread = 0.05
+    delta = seconds * spread
+    if seconds >= DAY:
+        delta = max(delta, 3600.0)
+    return max(30.0, seconds + random.uniform(-delta, delta))
+
+
+def _state(state, due, s, d, now, lapse=False) -> dict:
+    return {
+        "state": state,
+        "due": due,
+        "stability": s,
+        "difficulty": d,
+        "last_review": now,
+        "lapse": lapse,
+    }
+
+
+# ---------------------------------------------------------------------------
+# database
+# ---------------------------------------------------------------------------
+
+DDL = """
+CREATE TABLE IF NOT EXISTS decks (
+    id       TEXT PRIMARY KEY,
+    name     TEXT NOT NULL,
+    source   TEXT,
+    license  TEXT,
+    builtin  INTEGER NOT NULL DEFAULT 0,
+    enabled  INTEGER NOT NULL DEFAULT 1,
+    path     TEXT
+);
+CREATE TABLE IF NOT EXISTS notes (
+    id      INTEGER PRIMARY KEY,
+    deck_id TEXT NOT NULL REFERENCES decks(id) ON DELETE CASCADE,
+    jp      TEXT NOT NULL,
+    kana    TEXT NOT NULL,
+    romaji  TEXT NOT NULL,
+    en      TEXT NOT NULL,
+    script  TEXT NOT NULL,
+    tags    TEXT NOT NULL DEFAULT '',
+    freq    INTEGER,
+    grade   INTEGER,
+    UNIQUE(deck_id, jp, kana, en)
+);
+CREATE TABLE IF NOT EXISTS cards (
+    id          INTEGER PRIMARY KEY,
+    note_id     INTEGER NOT NULL REFERENCES notes(id) ON DELETE CASCADE,
+    ctype       TEXT NOT NULL,
+    due         REAL NOT NULL DEFAULT 0,
+    stability   REAL NOT NULL DEFAULT 0,
+    difficulty  REAL NOT NULL DEFAULT 0,
+    state       INTEGER NOT NULL DEFAULT 0,
+    reps        INTEGER NOT NULL DEFAULT 0,
+    lapses      INTEGER NOT NULL DEFAULT 0,
+    last_review REAL NOT NULL DEFAULT 0,
+    UNIQUE(note_id, ctype)
+);
+CREATE TABLE IF NOT EXISTS reviews (
+    id         INTEGER PRIMARY KEY,
+    card_id    INTEGER NOT NULL REFERENCES cards(id) ON DELETE CASCADE,
+    ts         REAL NOT NULL,
+    rating     INTEGER NOT NULL,
+    state      INTEGER NOT NULL,
+    stability  REAL NOT NULL,
+    difficulty REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
+CREATE INDEX IF NOT EXISTS idx_cards_due ON cards(due);
+CREATE INDEX IF NOT EXISTS idx_cards_state ON cards(state);
+CREATE INDEX IF NOT EXISTS idx_notes_script ON notes(script);
+"""
+
+
+def connect() -> sqlite3.Connection:
+    sd = state_dir()
+    sd.mkdir(parents=True, exist_ok=True)
+    con = sqlite3.connect(str(db_path()))
+    con.row_factory = sqlite3.Row
+    con.execute("PRAGMA foreign_keys = ON")
+    con.execute("PRAGMA journal_mode = WAL")
+    con.executescript(DDL)
+    migrate(con)
+    con.execute(
+        "INSERT INTO meta(key, value) VALUES('schema', ?) "
+        "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+        (str(SCHEMA_VERSION),),
+    )
+    # Commit explicitly: a read-only command (stats, next) never commits on its
+    # own, so without this the version write is rolled back at close and every
+    # migration re-runs on every single invocation.
+    con.commit()
+    return con
+
+
+def migrate(con: sqlite3.Connection) -> None:
+    """Upgrade an existing store in place.
+
+    STRICTLY ADDITIVE. `cards` and `reviews` carry the user's real review
+    history and are never dropped, rebuilt or rewritten here. Enrichment data
+    goes in its own table so a re-enrich cannot touch a scheduled card.
+    """
+    row = con.execute("SELECT value FROM meta WHERE key = 'schema'").fetchone()
+    have = int(row["value"]) if row else 0
+
+    if have < 2:
+        con.executescript("""
+            CREATE TABLE IF NOT EXISTS note_extra (
+                note_id     INTEGER PRIMARY KEY REFERENCES notes(id) ON DELETE CASCADE,
+                sentence    TEXT,
+                sentence_en TEXT,
+                senses      TEXT,
+                updated     REAL
+            );
+            CREATE TABLE IF NOT EXISTS deck_filters (
+                id      TEXT PRIMARY KEY,
+                name    TEXT NOT NULL,
+                axis    TEXT NOT NULL,
+                expr    TEXT NOT NULL,
+                enabled INTEGER NOT NULL DEFAULT 1
+            );
+        """)
+        con.commit()
+
+    if have < 3:
+        # Remove the redundant kana cards described in cards_for_note(). These
+        # duplicated the kana drill exactly, so dropping them loses nothing a
+        # user was actually learning. The drill card's own history survives,
+        # and vocabulary decks are untouched.
+        con.execute("""
+            DELETE FROM cards WHERE ctype IN ('recog','recall') AND note_id IN (
+                SELECT id FROM notes
+                WHERE length(kana) = 1 AND script IN ('hiragana','katakana'))
+        """)
+        con.commit()
+
+    if have < 4:
+        # Undo needs the state a card was in BEFORE it was graded; reviews only
+        # ever recorded the state after. Purely additive: existing rows get
+        # NULLs and are simply not undoable, which is honest - their prior
+        # state was never captured.
+        for col, typ in (("prev_due", "REAL"), ("prev_stability", "REAL"),
+                         ("prev_difficulty", "REAL"), ("prev_state", "INTEGER"),
+                         ("prev_reps", "INTEGER"), ("prev_lapses", "INTEGER"),
+                         ("prev_last_review", "REAL")):
+            try:
+                con.execute(f"ALTER TABLE reviews ADD COLUMN {col} {typ}")
+            except sqlite3.OperationalError:
+                pass  # already present
+        con.commit()
+
+
+# ---------------------------------------------------------------------------
+# deck loading
+# ---------------------------------------------------------------------------
+
+
+def cards_for_note(jp: str, kana: str, script: str) -> list[str]:
+    """Which card types a note earns.
+
+    - a single kana character earns the kana drill and NOTHING else. Its
+      "meaning" is its romaji, so a recog card would ask the identical
+      question as the drill, and a recall card would just be it backwards.
+      Generating those made the widget appear to repeat itself.
+    - otherwise recog and recall always apply: you can be asked the meaning,
+      and asked to produce the word.
+    - reading only when the written form differs from its kana, i.e. there is
+      actually a reading to recall.
+    """
+    if len(kana) == 1 and script in ("hiragana", "katakana"):
+        return ["kana"]
+
+    types = ["recog", "recall"]
+    if jp != kana and script == "kanji":
+        types.append("reading")
+    return types
+
+
+def load_deck(con: sqlite3.Connection, payload: dict, path: str, builtin: bool) -> dict:
+    deck_id = str(payload.get("id") or "").strip()
+    if not deck_id:
+        raise ValueError(f"deck at {path} has no id")
+    name = str(payload.get("name") or deck_id)
+    lic = str(payload.get("license") or "unknown")
+    source = str(payload.get("source") or "")
+    cards = payload.get("cards")
+    if not isinstance(cards, list):
+        raise ValueError(f"deck {deck_id} has no cards array")
+
+    con.execute(
+        "INSERT INTO decks(id, name, source, license, builtin, enabled, path) "
+        "VALUES(?,?,?,?,?,1,?) "
+        "ON CONFLICT(id) DO UPDATE SET name=excluded.name, source=excluded.source, "
+        "license=excluded.license, path=excluded.path",
+        (deck_id, name, source, lic, 1 if builtin else 0, path),
+    )
+
+    added = 0
+    for raw in cards:
+        if not isinstance(raw, dict):
+            continue
+        kana = str(raw.get("kana") or "").strip()
+        en = str(raw.get("en") or "").strip()
+        if not kana or not en:
+            continue
+        jp = str(raw.get("jp") or kana).strip()
+        romaji = str(raw.get("romaji") or "").strip() or to_romaji(kana)
+        script = script_of(jp)
+        tags = ",".join(str(t) for t in (raw.get("tags") or []))
+        freq = raw.get("freq")
+        grade = raw.get("grade")
+
+        cur = con.execute(
+            "INSERT INTO notes(deck_id, jp, kana, romaji, en, script, tags, freq, grade) "
+            "VALUES(?,?,?,?,?,?,?,?,?) ON CONFLICT(deck_id, jp, kana, en) DO NOTHING",
+            (deck_id, jp, kana, romaji, en, script, tags, freq, grade),
+        )
+        if cur.rowcount == 0:
+            continue
+        note_id = cur.lastrowid
+        added += 1
+        for ctype in cards_for_note(jp, kana, script):
+            con.execute(
+                "INSERT INTO cards(note_id, ctype) VALUES(?,?) "
+                "ON CONFLICT(note_id, ctype) DO NOTHING",
+                (note_id, ctype),
+            )
+
+    return {"id": deck_id, "name": name, "added": added, "license": lic}
+
+
+def scan_dir(con: sqlite3.Connection, directory: Path, builtin: bool) -> list[dict]:
+    out = []
+    if not directory.is_dir():
+        return out
+    for path in sorted(directory.glob("*.json")):
+        if path.name == "TEMPLATE.json":
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            out.append(load_deck(con, payload, str(path), builtin))
+        except Exception as exc:  # a bad user deck must not break the widget
+            out.append({"id": path.stem, "error": str(exc), "added": 0})
+    return out
+
+
+# ---------------------------------------------------------------------------
+# subcommands
+# ---------------------------------------------------------------------------
+
+
+def expand(p: str) -> Path:
+    return Path(os.path.expanduser(os.path.expandvars(p)))
+
+
+def cmd_init(args) -> dict:
+    con = connect()
+    with con:
+        built = scan_dir(con, PLUGIN_DIR / "data" / "decks", builtin=True)
+        user = []
+        if args.decks_dir:
+            user = scan_dir(con, expand(args.decks_dir), builtin=False)
+    totals = con.execute(
+        "SELECT (SELECT COUNT(*) FROM notes) AS notes, (SELECT COUNT(*) FROM cards) AS cards"
+    ).fetchone()
+    return {
+        "ok": True,
+        "db": str(db_path()),
+        "bundled": built,
+        "user": user,
+        "notes": totals["notes"],
+        "cards": totals["cards"],
+    }
+
+
+def _filters(args) -> tuple[list[str], list[str]]:
+    """An ABSENT flag means "no filter"; a PRESENT but empty one means the
+    user switched everything off, and must select nothing rather than
+    silently falling back to everything."""
+    if args.scripts is None:
+        scripts = ["hiragana", "katakana", "kanji"]
+    else:
+        scripts = [s for s in args.scripts.split(",") if s]
+    if args.types is None:
+        types = list(CTYPES)
+    else:
+        types = [t for t in args.types.split(",") if t in CTYPES]
+    return scripts, types
+
+
+def _card_row(row: sqlite3.Row) -> dict:
+    return {
+        "id": row["id"],
+        "ctype": row["ctype"],
+        "state": row["state"],
+        "due": row["due"],
+        "stability": row["stability"],
+        "difficulty": row["difficulty"],
+        "reps": row["reps"],
+        "lapses": row["lapses"],
+        "last_review": row["last_review"],
+        "jp": row["jp"],
+        "kana": row["kana"],
+        "romaji": row["romaji"],
+        "en": row["en"],
+        "script": row["script"],
+        "deck": row["deck_id"],
+    }
+
+
+SELECT_CARD = """
+SELECT c.*, n.jp, n.kana, n.romaji, n.en, n.script, n.deck_id
+FROM cards c
+JOIN notes n ON n.id = c.note_id
+JOIN decks d ON d.id = n.deck_id
+WHERE d.enabled = 1
+"""
+
+
+def day_start(now: float) -> float:
+    """Local midnight. Siblings stay buried until the next day, like Anki."""
+    lt = time.localtime(now)
+    return time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, 0, 0, 0, 0, 0, -1))
+
+
+# Introduce every word's primary card before any word's second angle, so the
+# first session never shows one word three times running.
+CTYPE_ORDER = ("CASE c.ctype WHEN 'recog' THEN 0 WHEN 'kana' THEN 0 "
+               "WHEN 'reading' THEN 1 ELSE 2 END")
+
+# A card is buried while a DIFFERENT card of the same word was answered today.
+BURY = ("""AND NOT EXISTS (SELECT 1 FROM cards sib
+           WHERE sib.note_id = c.note_id AND sib.id != c.id
+             AND sib.last_review >= ?)""")
+
+
+def preview_intervals(card: dict, now: float) -> dict:
+    """What each button would actually do to THIS card, right now.
+
+    schedule() is pure, so it can be run for all four ratings without
+    persisting anything. This is what the grade buttons display.
+    """
+    out = {}
+    for rating in (AGAIN, HARD, GOOD, EASY):
+        nxt = schedule(dict(card), rating, now)
+        out[str(rating)] = human_gap(nxt["due"] - now)
+    return out
+
+
+def human_gap(seconds: float) -> str:
+    if seconds < 60:
+        return "%ds" % max(1, int(seconds))
+    if seconds < 3600:
+        return "%dm" % round(seconds / 60)
+    if seconds < DAY:
+        return "%dh" % round(seconds / 3600)
+    days = seconds / DAY
+    if days < 30:
+        return "%dd" % round(days)
+    if days < 365:
+        return "%dmo" % round(days / 30)
+    return "%.1fy" % (days / 365)
+
+
+def cmd_next(args) -> dict:
+    con = connect()
+    scripts, types = _filters(args)
+    if not scripts or not types:
+        return {"ok": True, "card": None, "reason": "empty", "next_due": None}
+
+    now = time.time()
+    cutoff = day_start(now)
+    sp = ",".join("?" * len(scripts))
+    tp = ",".join("?" * len(types))
+    base = list(scripts) + list(types)
+    where = f" AND n.script IN ({sp}) AND c.ctype IN ({tp})"
+
+    def pick(bury: bool):
+        b = BURY if bury else ""
+        extra = [cutoff] if bury else []
+        # a card that is due right now, oldest first
+        row = con.execute(
+            SELECT_CARD + where + b + " AND c.state != 0 AND c.due <= ?"
+            " ORDER BY c.due ASC LIMIT 1", base + extra + [now]).fetchone()
+        if row:
+            return row, "due"
+        # nothing due: introduce a new one, primary card types first
+        row = con.execute(
+            SELECT_CARD + where + b + " AND c.state = 0 ORDER BY "
+            + CTYPE_ORDER + ", n.freq IS NULL, n.freq ASC, c.note_id ASC LIMIT 1",
+            base + extra).fetchone()
+        if row:
+            return row, "new"
+        return None, None
+
+    row, reason = pick(bury=True)
+    relaxed = False
+    if row is None:
+        # Starvation guard: burying must never produce a false "all caught up".
+        # A buried card is better than an empty widget.
+        row, reason = pick(bury=False)
+        relaxed = row is not None
+
+    if row:
+        card = _card_row(row)
+        card["preview"] = preview_intervals(dict(row), now)
+        return {"ok": True, "card": card, "reason": reason, "relaxed": relaxed}
+
+    nxt = con.execute(
+        SELECT_CARD + where + " AND c.state != 0 ORDER BY c.due ASC LIMIT 1",
+        base).fetchone()
+    return {
+        "ok": True, "card": None,
+        "reason": "caught-up" if nxt else "empty",
+        "next_due": nxt["due"] if nxt else None,
+    }
+
+
+def cmd_grade(args) -> dict:
+    if args.rating not in (AGAIN, HARD, GOOD, EASY):
+        raise ValueError("rating must be 1, 2, 3 or 4")
+    con = connect()
+    row = con.execute("SELECT * FROM cards WHERE id = ?", (args.card,)).fetchone()
+    if not row:
+        raise ValueError(f"no card {args.card}")
+
+    now = time.time()
+    card = dict(row)
+    nxt = schedule(card, args.rating, now)
+
+    with con:
+        con.execute(
+            "UPDATE cards SET due=?, stability=?, difficulty=?, state=?, "
+            "reps = reps + 1, lapses = lapses + ?, last_review=? WHERE id=?",
+            (
+                nxt["due"], nxt["stability"], nxt["difficulty"], nxt["state"],
+                1 if nxt["lapse"] else 0, nxt["last_review"], args.card,
+            ),
+        )
+        con.execute(
+            "INSERT INTO reviews(card_id, ts, rating, state, stability, difficulty,"
+            " prev_due, prev_stability, prev_difficulty, prev_state, prev_reps,"
+            " prev_lapses, prev_last_review) "
+            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (args.card, now, args.rating, nxt["state"], nxt["stability"], nxt["difficulty"],
+             card["due"], card["stability"], card["difficulty"], card["state"],
+             card["reps"], card["lapses"], card["last_review"]),
+        )
+
+    return {
+        "ok": True,
+        "card": args.card,
+        "state": nxt["state"],
+        "due": nxt["due"],
+        "due_in_seconds": max(0.0, nxt["due"] - now),
+        "stability": nxt["stability"],
+        "difficulty": nxt["difficulty"],
+    }
+
+
+def cmd_stats(args) -> dict:
+    con = connect()
+    scripts, types = _filters(args)
+    if not scripts or not types:
+        return {"ok": True, "due": 0, "new": 0, "learning": 0, "review": 0,
+                "total": 0, "next_due": None, "next_due_in_seconds": None,
+                "reviews_today": 0}
+    now = time.time()
+    sp = ",".join("?" * len(scripts))
+    tp = ",".join("?" * len(types))
+    params = list(scripts) + list(types)
+    where = f" AND n.script IN ({sp}) AND c.ctype IN ({tp})"
+
+    def count(extra: str, extra_params=()) -> int:
+        sql = (
+            "SELECT COUNT(*) AS n FROM cards c JOIN notes n ON n.id = c.note_id "
+            "JOIN decks d ON d.id = n.deck_id WHERE d.enabled = 1" + where + extra
+        )
+        return con.execute(sql, params + list(extra_params)).fetchone()["n"]
+
+    nxt = con.execute(
+        SELECT_CARD + where + " AND c.state != 0 AND c.due > ? ORDER BY c.due ASC LIMIT 1",
+        params + [now],
+    ).fetchone()
+
+    return {
+        "ok": True,
+        "due": count(" AND c.state != 0 AND c.due <= ?", (now,)),
+        "new": count(" AND c.state = 0"),
+        "learning": count(" AND c.state IN (1,3)"),
+        "review": count(" AND c.state = 2"),
+        "total": count(""),
+        "next_due": nxt["due"] if nxt else None,
+        "next_due_in_seconds": max(0.0, nxt["due"] - now) if nxt else None,
+        "reviews_today": con.execute(
+            "SELECT COUNT(*) AS n FROM reviews WHERE ts >= ?",
+            (day_start(now),),
+        ).fetchone()["n"],
+        "reviews_total": con.execute(
+            "SELECT COUNT(*) AS n FROM reviews").fetchone()["n"],
+        "undo": _undoable(con),
+    }
+
+
+def _undoable(con: sqlite3.Connection):
+    """What the undo chip should say, or None when there is nothing to undo."""
+    r = con.execute(
+        "SELECT r.rating, n.jp FROM reviews r "
+        "JOIN cards c ON c.id = r.card_id JOIN notes n ON n.id = c.note_id "
+        "WHERE r.prev_state IS NOT NULL ORDER BY r.id DESC LIMIT 1").fetchone()
+    return {"jp": r["jp"], "rating": r["rating"]} if r else None
+
+
+def cmd_decks(args) -> dict:
+    con = connect()
+    rows = con.execute(
+        "SELECT d.*, "
+        "(SELECT COUNT(*) FROM notes n WHERE n.deck_id = d.id) AS notes "
+        "FROM decks d ORDER BY d.builtin DESC, d.id"
+    ).fetchall()
+    return {
+        "ok": True,
+        "decks": [
+            {
+                "id": r["id"], "name": r["name"], "license": r["license"],
+                "source": r["source"], "builtin": bool(r["builtin"]),
+                "enabled": bool(r["enabled"]), "notes": r["notes"],
+            }
+            for r in rows
+        ],
+    }
+
+
+
+# ---------------------------------------------------------------------------
+# the dictionary
+# ---------------------------------------------------------------------------
+
+DICT_DDL = """
+CREATE TABLE IF NOT EXISTS entries (
+    id     INTEGER PRIMARY KEY,
+    jp     TEXT NOT NULL,
+    kana   TEXT NOT NULL,
+    en     TEXT NOT NULL,
+    freq   INTEGER,
+    grade  INTEGER,
+    pos    TEXT NOT NULL DEFAULT '',
+    field  TEXT NOT NULL DEFAULT '',
+    script TEXT NOT NULL DEFAULT ''
+);
+CREATE INDEX IF NOT EXISTS idx_entries_jp   ON entries(jp);
+CREATE INDEX IF NOT EXISTS idx_entries_kana ON entries(kana);
+CREATE INDEX IF NOT EXISTS idx_entries_freq ON entries(freq);
+CREATE TABLE IF NOT EXISTS examples (
+    word TEXT NOT NULL,
+    jp   TEXT NOT NULL,
+    en   TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_examples_word ON examples(word);
+CREATE TABLE IF NOT EXISTS dict_meta (key TEXT PRIMARY KEY, value TEXT);
+"""
+
+NF_RE = __import__("re").compile(r"^nf(\d\d)$")
+
+
+def _download(name: str, dest: Path) -> int:
+    """Fetch one EDRDG file. stdlib only: no curl, no shell (R6/R9)."""
+    import urllib.request
+    url = EDRDG + name
+    req = urllib.request.Request(url, headers={"User-Agent": "kotoba-ryoku-plugin"})
+    tmp = dest.with_suffix(dest.suffix + ".part")
+    with urllib.request.urlopen(req, timeout=120) as r, open(tmp, "wb") as f:
+        while True:
+            chunk = r.read(262144)
+            if not chunk:
+                break
+            f.write(chunk)
+    os.replace(tmp, dest)
+    return dest.stat().st_size
+
+
+def _parse_kanjidic(path: Path) -> dict:
+    import gzip, xml.etree.ElementTree as ET
+    grades = {}
+    with gzip.open(path, "rb") as fh:
+        for _, el in ET.iterparse(fh, events=("end",)):
+            if el.tag != "character":
+                continue
+            lit, g = el.findtext("literal"), el.findtext("misc/grade")
+            if lit and g:
+                grades[lit] = int(g)
+            el.clear()
+    return grades
+
+
+def _nf(entry) -> int | None:
+    best = None
+    for pri in entry.iter():
+        if pri.tag not in ("ke_pri", "re_pri") or not pri.text:
+            continue
+        m = NF_RE.match(pri.text.strip())
+        if m:
+            n = int(m.group(1))
+            best = n if best is None else min(best, n)
+    return best
+
+
+def _import_jmdict(path: Path, grades: dict, dcon: sqlite3.Connection) -> int:
+    """Stream JMdict_e into the dictionary. Keeps the axes the deck filters
+    need: nf frequency band, KANJIDIC grade, part of speech, and field/topic."""
+    import gzip, xml.etree.ElementTree as ET
+    n = 0
+    rows = []
+    with gzip.open(path, "rb") as fh:
+        for _, entry in ET.iterparse(fh, events=("end",)):
+            if entry.tag != "entry":
+                continue
+            r_eles = entry.findall("r_ele")
+            if not r_eles:
+                entry.clear(); continue
+            kana = (r_eles[0].findtext("reb") or "").strip()
+            k_eles = entry.findall("k_ele")
+            jp = (k_eles[0].findtext("keb") or "").strip() if k_eles else kana
+            if not kana or not jp:
+                entry.clear(); continue
+            sense = entry.find("sense")
+            if sense is None:
+                entry.clear(); continue
+            gl = [g.text.strip() for g in sense.findall("gloss") if g.text]
+            if not gl:
+                entry.clear(); continue
+            en = ", ".join(gl[:2])
+            if len(en) > 70:
+                en = gl[0][:70]
+            pos = ",".join(sorted({(p.text or "").strip() for p in sense.findall("pos") if p.text}))
+            fld = ",".join(sorted({(f.text or "").strip() for f in sense.findall("field") if f.text}))
+            band = _nf(entry)
+            grade = max((grades[c] for c in jp if c in grades), default=None)
+            rows.append((jp, kana, en, band * 500 if band else None,
+                         grade, pos, fld, script_of(jp)))
+            n += 1
+            if len(rows) >= 5000:
+                dcon.executemany(
+                    "INSERT INTO entries(jp,kana,en,freq,grade,pos,field,script)"
+                    " VALUES(?,?,?,?,?,?,?,?)", rows)
+                rows.clear()
+            entry.clear()
+    if rows:
+        dcon.executemany(
+            "INSERT INTO entries(jp,kana,en,freq,grade,pos,field,script)"
+            " VALUES(?,?,?,?,?,?,?,?)", rows)
+    return n
+
+
+def _import_examples(path: Path, dcon: sqlite3.Connection) -> int:
+    """Tanaka corpus. Paired lines: A: holds the sentence, B: the words used,
+    each optionally with a reading and a surface form in braces."""
+    import gzip
+    n = 0
+    pending = None
+    batch = []
+    with gzip.open(path, "rt", encoding="utf-8", errors="replace") as fh:
+        for line in fh:
+            if line.startswith("A: "):
+                body = line[3:].rstrip("\n")
+                jp, _, rest = body.partition("\t")
+                en = rest.split("#ID=")[0].strip()
+                pending = (jp.strip(), en)
+            elif line.startswith("B: ") and pending:
+                for tok in line[3:].split():
+                    word = tok.split("(")[0].split("{")[0].split("[")[0].strip("~")
+                    if word:
+                        batch.append((word, pending[0], pending[1]))
+                        n += 1
+                pending = None
+                if len(batch) >= 20000:
+                    dcon.executemany("INSERT INTO examples(word,jp,en) VALUES(?,?,?)", batch)
+                    batch.clear()
+    if batch:
+        dcon.executemany("INSERT INTO examples(word,jp,en) VALUES(?,?,?)", batch)
+    return n
+
+
+def cmd_dict_status(args) -> dict:
+    p = dict_path()
+    if not p.exists():
+        return {"ok": True, "installed": False}
+    dcon = sqlite3.connect(str(p))
+    dcon.row_factory = sqlite3.Row
+    try:
+        meta = {r["key"]: r["value"] for r in dcon.execute("SELECT * FROM dict_meta")}
+        entries = dcon.execute("SELECT COUNT(*) n FROM entries").fetchone()["n"]
+        ex = dcon.execute("SELECT COUNT(*) n FROM examples").fetchone()["n"]
+    except sqlite3.Error as exc:
+        return {"ok": True, "installed": False, "error": str(exc)}
+    finally:
+        dcon.close()
+    return {
+        "ok": True, "installed": True, "entries": entries, "examples": ex,
+        "pack": meta.get("pack", "?"), "built": meta.get("built"),
+        "bytes": p.stat().st_size,
+    }
+
+
+def cmd_dict_fetch(args) -> dict:
+    pack = args.pack if args.pack in PACKS else "basic"
+    cache = cache_dir()
+
+    got = {}
+    for name in PACKS[pack]:
+        target = cache / name
+        if not target.exists() or args.refresh:
+            got[name] = _download(name, target)
+        else:
+            got[name] = target.stat().st_size
+
+    # Build into a TEMP database and swap it in atomically: an interrupted
+    # import must never leave half a dictionary behind (plan risk 5).
+    tmp = dict_path().with_suffix(".db.building")
+    if tmp.exists():
+        tmp.unlink()
+    dcon = sqlite3.connect(str(tmp))
+    dcon.executescript(DICT_DDL)
+    try:
+        grades = _parse_kanjidic(cache / "kanjidic2.xml.gz")
+        entries = _import_jmdict(cache / "JMdict_e.gz", grades, dcon)
+        examples = 0
+        if "examples.utf.gz" in PACKS[pack]:
+            examples = _import_examples(cache / "examples.utf.gz", dcon)
+        dcon.executemany(
+            "INSERT INTO dict_meta(key,value) VALUES(?,?)",
+            [("pack", pack), ("built", str(int(time.time()))),
+             ("source", "JMdict_e + KANJIDIC2 (EDRDG, CC BY-SA 4.0)"),
+             ("entries", str(entries))])
+        dcon.commit()
+    finally:
+        dcon.close()
+
+    os.replace(tmp, dict_path())
+    return {"ok": True, "pack": pack, "entries": entries, "examples": examples,
+            "downloaded": got, "db": str(dict_path()),
+            "bytes": dict_path().stat().st_size}
+
+
+def _dict_con() -> sqlite3.Connection:
+    p = dict_path()
+    if not p.exists():
+        raise ValueError("no dictionary installed - run dict-fetch first")
+    c = sqlite3.connect(str(p))
+    c.row_factory = sqlite3.Row
+    return c
+
+
+def cmd_lookup(args) -> dict:
+    """Entirely offline: the pack was imported once, nothing is fetched here."""
+    w = (args.word or "").strip()
+    if not w:
+        raise ValueError("no word given")
+    dcon = _dict_con()
+    rows = dcon.execute(
+        "SELECT * FROM entries WHERE jp = ? OR kana = ? "
+        "ORDER BY freq IS NULL, freq ASC LIMIT 8", (w, w)).fetchall()
+    if not rows:
+        rows = dcon.execute(
+            "SELECT * FROM entries WHERE jp LIKE ? OR kana LIKE ? "
+            "ORDER BY freq IS NULL, freq ASC LIMIT 8",
+            (w + "%", w + "%")).fetchall()
+    out = []
+    for r in rows:
+        out.append({"jp": r["jp"], "kana": r["kana"], "romaji": to_romaji(r["kana"]),
+                    "en": r["en"], "freq": r["freq"], "grade": r["grade"],
+                    "pos": r["pos"], "field": r["field"], "script": r["script"]})
+    dcon.close()
+    return {"ok": True, "word": w, "results": out, "count": len(out)}
+
+
+
+SAVED_DECK_FILE = "kotoba-saved.json"
+
+
+def short_tag(text: str) -> str:
+    """JMdict's XML entities expand to prose - "noun (common) (futsuumeishi)".
+    Keep the head of it so a tag reads as a tag."""
+    head = text.split("(")[0].strip().rstrip(",").strip()
+    return head.split(",")[0].strip() or text.strip()
+
+
+def cmd_save(args) -> dict:
+    """Append a looked-up word to the user's saved deck.
+
+    The plugin OWNS this one file and rewrites it whole, atomically. It never
+    merges into a deck the user hand-maintains, so an editor open on mine.json
+    can never be clobbered by a capture. A corrupt saved file is rebuilt rather
+    than allowed to break deck loading (plan risk 3).
+    """
+    if not args.decks_dir:
+        raise ValueError("no deck folder set - set it in Ryoku Hub > Addons > Kotoba")
+    folder = expand(args.decks_dir)
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / SAVED_DECK_FILE
+
+    w = (args.word or "").strip()
+    if not w:
+        raise ValueError("no word given")
+
+    dcon = _dict_con()
+    row = dcon.execute(
+        "SELECT * FROM entries WHERE jp = ? OR kana = ? "
+        "ORDER BY freq IS NULL, freq ASC LIMIT 1", (w, w)).fetchone()
+    dcon.close()
+    if not row:
+        raise ValueError(f"{w} is not in the dictionary")
+
+    deck = {"$schema": "kotoba-deck-1", "id": "kotoba-saved",
+            "name": "Saved words", "license": "CC BY-SA 4.0",
+            "source": "JMdict/EDRDG, captured via Kotoba lookup", "cards": []}
+    if path.exists():
+        try:
+            existing = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(existing.get("cards"), list):
+                deck["cards"] = existing["cards"]
+        except Exception:
+            pass  # unreadable: rebuild rather than fail the capture
+
+    card = {"jp": row["jp"], "kana": row["kana"], "en": row["en"]}
+    if row["freq"]:
+        card["freq"] = row["freq"]
+    if row["grade"]:
+        card["grade"] = row["grade"]
+    tags = []
+    for t in (row["pos"] or "").split(",")[:3]:
+        s = short_tag(t)
+        if s and s not in tags:
+            tags.append(s)
+    for t in (row["field"] or "").split(",")[:2]:
+        s = short_tag(t)
+        if s and s not in tags:
+            tags.append(s)
+    if tags:
+        card["tags"] = tags
+
+    if any(c.get("jp") == card["jp"] and c.get("kana") == card["kana"]
+           for c in deck["cards"]):
+        return {"ok": True, "word": w, "added": False, "reason": "already saved",
+                "file": str(path), "total": len(deck["cards"])}
+
+    deck["cards"].append(card)
+
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(deck, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    os.replace(tmp, path)
+
+    return {"ok": True, "word": w, "added": True, "card": card,
+            "file": str(path), "total": len(deck["cards"])}
+
+
+
+def cmd_undo(args) -> dict:
+    """Put the most recent answer back exactly as it was.
+
+    Restoring prev_last_review matters beyond the card itself: sibling burying
+    keys off last_review, so undoing also un-buries the word's other cards.
+    Deleting the review row rolls back the "done today" counter too.
+    """
+    con = connect()
+    row = con.execute(
+        "SELECT r.*, n.jp, n.kana, c.ctype FROM reviews r "
+        "JOIN cards c ON c.id = r.card_id JOIN notes n ON n.id = c.note_id "
+        "WHERE r.prev_state IS NOT NULL ORDER BY r.id DESC LIMIT 1"
+    ).fetchone()
+
+    if not row:
+        # Not an error: the UI should stay quiet, not flash a failure.
+        return {"ok": True, "undone": False, "reason": "nothing to undo"}
+
+    with con:
+        con.execute(
+            "UPDATE cards SET due=?, stability=?, difficulty=?, state=?, "
+            "reps=?, lapses=?, last_review=? WHERE id=?",
+            (row["prev_due"], row["prev_stability"], row["prev_difficulty"],
+             row["prev_state"], row["prev_reps"], row["prev_lapses"],
+             row["prev_last_review"], row["card_id"]),
+        )
+        con.execute("DELETE FROM reviews WHERE id = ?", (row["id"],))
+
+    return {
+        "ok": True, "undone": True,
+        "card": row["card_id"], "jp": row["jp"], "kana": row["kana"],
+        "ctype": row["ctype"], "rating": row["rating"],
+    }
+
+
+
+def main(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(prog="kotoba", description=__doc__)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+
+    p = sub.add_parser("init", help="create the store and load decks")
+    p.add_argument("--decks-dir", default="")
+    p.set_defaults(fn=cmd_init)
+
+    for name, fn, helptext in (
+        ("next", cmd_next, "the next card to show"),
+        ("stats", cmd_stats, "due counts and the next due time"),
+    ):
+        p = sub.add_parser(name, help=helptext)
+        p.add_argument("--scripts", default=None)
+        p.add_argument("--types", default=None)
+        p.set_defaults(fn=fn)
+
+    p = sub.add_parser("grade", help="record an answer and reschedule")
+    p.add_argument("--card", type=int, required=True)
+    p.add_argument("--rating", type=int, required=True)
+    p.set_defaults(fn=cmd_grade)
+
+    p = sub.add_parser("undo", help="revert the most recent answer")
+    p.set_defaults(fn=cmd_undo)
+
+    p = sub.add_parser("decks", help="list decks and their licences")
+    p.set_defaults(fn=cmd_decks)
+
+    p = sub.add_parser("dict-status", help="is a dictionary installed")
+    p.set_defaults(fn=cmd_dict_status)
+
+    p = sub.add_parser("dict-fetch", help="download and import a dictionary pack")
+    p.add_argument("--pack", default="basic", choices=sorted(PACKS))
+    p.add_argument("--refresh", action="store_true", help="re-download cached files")
+    p.set_defaults(fn=cmd_dict_fetch)
+
+    p = sub.add_parser("lookup", help="look a word up offline")
+    p.add_argument("--word", required=True)
+    p.set_defaults(fn=cmd_lookup)
+
+    p = sub.add_parser("save", help="save a looked-up word to your deck folder")
+    p.add_argument("--word", required=True)
+    p.add_argument("--decks-dir", default="")
+    p.set_defaults(fn=cmd_save)
+
+    args = ap.parse_args(argv)
+    try:
+        print(json.dumps(args.fn(args), ensure_ascii=False))
+        return 0
+    except Exception as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False))
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

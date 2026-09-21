@@ -1,0 +1,435 @@
+{
+  "$schema": "kotoba-deck-1",
+  "id": "kana-katakana",
+  "name": "Katakana",
+  "source": "Authored for Kotoba; the kana syllabary is not copyrightable.",
+  "license": "CC0-1.0",
+  "cards": [
+    {
+      "jp": "ア",
+      "kana": "ア",
+      "romaji": "a",
+      "en": "a"
+    },
+    {
+      "jp": "イ",
+      "kana": "イ",
+      "romaji": "i",
+      "en": "i"
+    },
+    {
+      "jp": "ウ",
+      "kana": "ウ",
+      "romaji": "u",
+      "en": "u"
+    },
+    {
+      "jp": "エ",
+      "kana": "エ",
+      "romaji": "e",
+      "en": "e"
+    },
+    {
+      "jp": "オ",
+      "kana": "オ",
+      "romaji": "o",
+      "en": "o"
+    },
+    {
+      "jp": "カ",
+      "kana": "カ",
+      "romaji": "ka",
+      "en": "ka"
+    },
+    {
+      "jp": "キ",
+      "kana": "キ",
+      "romaji": "ki",
+      "en": "ki"
+    },
+    {
+      "jp": "ク",
+      "kana": "ク",
+      "romaji": "ku",
+      "en": "ku"
+    },
+    {
+      "jp": "ケ",
+      "kana": "ケ",
+      "romaji": "ke",
+      "en": "ke"
+    },
+    {
+      "jp": "コ",
+      "kana": "コ",
+      "romaji": "ko",
+      "en": "ko"
+    },
+    {
+      "jp": "サ",
+      "kana": "サ",
+      "romaji": "sa",
+      "en": "sa"
+    },
+    {
+      "jp": "シ",
+      "kana": "シ",
+      "romaji": "shi",
+      "en": "shi"
+    },
+    {
+      "jp": "ス",
+      "kana": "ス",
+      "romaji": "su",
+      "en": "su"
+    },
+    {
+      "jp": "セ",
+      "kana": "セ",
+      "romaji": "se",
+      "en": "se"
+    },
+    {
+      "jp": "ソ",
+      "kana": "ソ",
+      "romaji": "so",
+      "en": "so"
+    },
+    {
+      "jp": "タ",
+      "kana": "タ",
+      "romaji": "ta",
+      "en": "ta"
+    },
+    {
+      "jp": "チ",
+      "kana": "チ",
+      "romaji": "chi",
+      "en": "chi"
+    },
+    {
+      "jp": "ツ",
+      "kana": "ツ",
+      "romaji": "tsu",
+      "en": "tsu"
+    },
+    {
+      "jp": "テ",
+      "kana": "テ",
+      "romaji": "te",
+      "en": "te"
+    },
+    {
+      "jp": "ト",
+      "kana": "ト",
+      "romaji": "to",
+      "en": "to"
+    },
+    {
+      "jp": "ナ",
+      "kana": "ナ",
+      "romaji": "na",
+      "en": "na"
+    },
+    {
+      "jp": "ニ",
+      "kana": "ニ",
+      "romaji": "ni",
+      "en": "ni"
+    },
+    {
+      "jp": "ヌ",
+      "kana": "ヌ",
+      "romaji": "nu",
+      "en": "nu"
+    },
+    {
+      "jp": "ネ",
+      "kana": "ネ",
+      "romaji": "ne",
+      "en": "ne"
+    },
+    {
+      "jp": "ノ",
+      "kana": "ノ",
+      "romaji": "no",
+      "en": "no"
+    },
+    {
+      "jp": "ハ",
+      "kana": "ハ",
+      "romaji": "ha",
+      "en": "ha"
+    },
+    {
+      "jp": "ヒ",
+      "kana": "ヒ",
+      "romaji": "hi",
+      "en": "hi"
+    },
+    {
+      "jp": "フ",
+      "kana": "フ",
+      "romaji": "fu",
+      "en": "fu"
+    },
+    {
+      "jp": "ヘ",
+      "kana": "ヘ",
+      "romaji": "he",
+      "en": "he"
+    },
+    {
+      "jp": "ホ",
+      "kana": "ホ",
+      "romaji": "ho",
+      "en": "ho"
+    },
+    {
+      "jp": "マ",
+      "kana": "マ",
+      "romaji": "ma",
+      "en": "ma"
+    },
+    {
+      "jp": "ミ",
+      "kana": "ミ",
+      "romaji": "mi",
+      "en": "mi"
+    },
+    {
+      "jp": "ム",
+      "kana": "ム",
+      "romaji": "mu",
+      "en": "mu"
+    },
+    {
+      "jp": "メ",
+      "kana": "メ",
+      "romaji": "me",
+      "en": "me"
+    },
+    {
+      "jp": "モ",
+      "kana": "モ",
+      "romaji": "mo",
+      "en": "mo"
+    },
+    {
+      "jp": "ヤ",
+      "kana": "ヤ",
+      "romaji": "ya",
+      "en": "ya"
+    },
+    {
+      "jp": "ユ",
+      "kana": "ユ",
+      "romaji": "yu",
+      "en": "yu"
+    },
+    {
+      "jp": "ヨ",
+      "kana": "ヨ",
+      "romaji": "yo",
+      "en": "yo"
+    },
+    {
+      "jp": "ラ",
+      "kana": "ラ",
+      "romaji": "ra",
+      "en": "ra"
+    },
+    {
+      "jp": "リ",
+      "kana": "リ",
+      "romaji": "ri",
+      "en": "ri"
+    },
+    {
+      "jp": "ル",
+      "kana": "ル",
+      "romaji": "ru",
+      "en": "ru"
+    },
+    {
+      "jp": "レ",
+      "kana": "レ",
+      "romaji": "re",
+      "en": "re"
+    },
+    {
+      "jp": "ロ",
+      "kana": "ロ",
+      "romaji": "ro",
+      "en": "ro"
+    },
+    {
+      "jp": "ワ",
+      "kana": "ワ",
+      "romaji": "wa",
+      "en": "wa"
+    },
+    {
+      "jp": "ヲ",
+      "kana": "ヲ",
+      "romaji": "wo",
+      "en": "wo"
+    },
+    {
+      "jp": "ン",
+      "kana": "ン",
+      "romaji": "n",
+      "en": "n"
+    },
+    {
+      "jp": "ガ",
+      "kana": "ガ",
+      "romaji": "ga",
+      "en": "ga"
+    },
+    {
+      "jp": "ギ",
+      "kana": "ギ",
+      "romaji": "gi",
+      "en": "gi"
+    },
+    {
+      "jp": "グ",
+      "kana": "グ",
+      "romaji": "gu",
+      "en": "gu"
+    },
+    {
+      "jp": "ゲ",
+      "kana": "ゲ",
+      "romaji": "ge",
+      "en": "ge"
+    },
+    {
+      "jp": "ゴ",
+      "kana": "ゴ",
+      "romaji": "go",
+      "en": "go"
+    },
+    {
+      "jp": "ザ",
+      "kana": "ザ",
+      "romaji": "za",
+      "en": "za"
+    },
+    {
+      "jp": "ジ",
+      "kana": "ジ",
+      "romaji": "ji",
+      "en": "ji"
+    },
+    {
+      "jp": "ズ",
+      "kana": "ズ",
+      "romaji": "zu",
+      "en": "zu"
+    },
+    {
+      "jp": "ゼ",
+      "kana": "ゼ",
+      "romaji": "ze",
+      "en": "ze"
+    },
+    {
+      "jp": "ゾ",
+      "kana": "ゾ",
+      "romaji": "zo",
+      "en": "zo"
+    },
+    {
+      "jp": "ダ",
+      "kana": "ダ",
+      "romaji": "da",
+      "en": "da"
+    },
+    {
+      "jp": "ヂ",
+      "kana": "ヂ",
+      "romaji": "ji",
+      "en": "ji"
+    },
+    {
+      "jp": "ヅ",
+      "kana": "ヅ",
+      "romaji": "zu",
+      "en": "zu"
+    },
+    {
+      "jp": "デ",
+      "kana": "デ",
+      "romaji": "de",
+      "en": "de"
+    },
+    {
+      "jp": "ド",
+      "kana": "ド",
+      "romaji": "do",
+      "en": "do"
+    },
+    {
+      "jp": "バ",
+      "kana": "バ",
+      "romaji": "ba",
+      "en": "ba"
+    },
+    {
+      "jp": "ビ",
+      "kana": "ビ",
+      "romaji": "bi",
+      "en": "bi"
+    },
+    {
+      "jp": "ブ",
+      "kana": "ブ",
+      "romaji": "bu",
+      "en": "bu"
+    },
+    {
+      "jp": "ベ",
+      "kana": "ベ",
+      "romaji": "be",
+      "en": "be"
+    },
+    {
+      "jp": "ボ",
+      "kana": "ボ",
+      "romaji": "bo",
+      "en": "bo"
+    },
+    {
+      "jp": "パ",
+      "kana": "パ",
+      "romaji": "pa",
+      "en": "pa"
+    },
+    {
+      "jp": "ピ",
+      "kana": "ピ",
+      "romaji": "pi",
+      "en": "pi"
+    },
+    {
+      "jp": "プ",
+      "kana": "プ",
+      "romaji": "pu",
+      "en": "pu"
+    },
+    {
+      "jp": "ペ",
+      "kana": "ペ",
+      "romaji": "pe",
+      "en": "pe"
+    },
+    {
+      "jp": "ポ",
+      "kana": "ポ",
+      "romaji": "po",
+      "en": "po"
+    }
+  ]
+}
