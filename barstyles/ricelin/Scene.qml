@@ -164,11 +164,13 @@ Item {
                         readonly property real restHeight: 38 * s
                         readonly property real reservedH: Math.max(0, restHeight + topGap - 12 * (1 - Flags.appGap) * s)
                         readonly property real gameBarH: 34 * s
+                        readonly property bool monFullscreen: Fullscreen.outputHasFullscreen(modelData ? modelData.name : "")
 
                         screen: modelData
+                        visible: !monFullscreen
                         color: "transparent"
                         exclusionMode: ExclusionMode.Normal
-                        exclusiveZone: Flags.gameMode ? gameBarH : reservedH
+                        exclusiveZone: monFullscreen ? 0 : (Flags.gameMode ? gameBarH : reservedH)
                         aboveWindows: true
                         anchors { top: true; left: true; right: true }
                         implicitHeight: Flags.gameMode ? gameBarH : reservedH
@@ -190,7 +192,7 @@ Item {
                         readonly property bool surfaceOpen: surface.length > 0
                         readonly property bool modal: pill.authPending ? false : (surfaceOpen || pill.held || pill.quickChoosing)
 
-                        readonly property bool monFullscreen: Wm.outputHasFullscreen(modelData ? modelData.name : "")
+                        readonly property bool monFullscreen: Fullscreen.outputHasFullscreen(modelData ? modelData.name : "")
                         readonly property bool summoned: modal || root.peekMon === modelData.name
                         readonly property bool pillHidden: monFullscreen && !summoned
 

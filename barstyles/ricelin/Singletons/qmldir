@@ -17,3 +17,4 @@ singleton Cava Cava.qml
 singleton Players Players.qml
 singleton GameMode GameMode.qml
 MediaShortcuts 1.0 MediaShortcuts.qml
+singleton Fullscreen Fullscreen.qml
