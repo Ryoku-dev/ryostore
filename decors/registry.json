@@ -7,6 +7,7 @@
       "version": "1.0.0",
       "path": "decors/carceri",
       "author": "Giovanni Battista Piranesi (c.1750)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/decors/carceri",
       "summary": "A Piranesi imaginary prison vaulting into bone shadow.",
       "description": "The Drawbridge, a plate from Piranesi's Carceri d'Invenzione (c.1750) - impossible stairs, bridges, and engines of stone - dithered into stark Ryoku bone.",
       "tags": [
@@ -29,6 +30,7 @@
       "version": "1.0.0",
       "path": "decors/melencolia",
       "author": "Albrecht Dürer (1514)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/decors/melencolia",
       "summary": "Dürer's brooding angel of genius, drawn in bone stipple.",
       "description": "Albrecht Dürer's 1514 master engraving Melencolia I - the winged figure, the magic square, and the scattered instruments of thought - reduced to Ryoku's one-bit bone line.",
       "tags": [
@@ -51,6 +53,7 @@
       "version": "1.0.0",
       "path": "decors/muybridge-deer",
       "author": "Eadweard Muybridge (1887)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/decors/muybridge-deer",
       "summary": "Muybridge's deer, caught mid-stride across the frame.",
       "description": "A plate from Eadweard Muybridge's Animal Locomotion (1887) - fallow deer stepping through a wooded run, frame by frame - baked to Ryoku bone.",
       "tags": [
@@ -73,6 +76,7 @@
       "version": "1.0.0",
       "path": "decors/pillars",
       "author": "NASA, ESA / STScI (Hubble)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/decors/pillars",
       "summary": "The Eagle Nebula's Pillars of Creation in bone light.",
       "description": "The Hubble Space Telescope's Pillars of Creation - towers of interstellar gas and dust in the Eagle Nebula - dithered so the starlight reads as Ryoku bone.",
       "tags": [
@@ -95,6 +99,7 @@
       "version": "1.0.0",
       "path": "decors/red-fuji",
       "author": "Katsushika Hokusai (c.1830)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/decors/red-fuji",
       "summary": "Hokusai's Red Fuji under a streaked morning sky.",
       "description": "Fine Wind, Clear Morning (Red Fuji) from Hokusai's Thirty-six Views of Mount Fuji - the bare peak and its cloud-banded sky - reduced to Ryoku's one-bit bone.",
       "tags": [
@@ -117,6 +122,7 @@
       "version": "1.0.0",
       "path": "decors/rhinoceros",
       "author": "Albrecht Dürer (1515)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/decors/rhinoceros",
       "summary": "Dürer's armoured rhinoceros woodcut, one-bit and bone.",
       "description": "The Rhinoceros (1515), Dürer's famous woodcut of a beast he never saw, plated in riveted armour - baked to bone-on-transparent stipple.",
       "tags": [
@@ -139,6 +145,7 @@
       "version": "1.0.0",
       "path": "decors/trebonianus",
       "author": "Roman bronze, The Met (Open Access, CC0)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/decors/trebonianus",
       "summary": "A bronze Roman emperor, arm raised, cast in bone.",
       "description": "The Metropolitan Museum's over-life-size bronze of the emperor Trebonianus Gallus (251-253 CE), his silhouette reduced to Ryoku's one-bit bone.",
       "tags": [

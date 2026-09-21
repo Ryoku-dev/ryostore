@@ -326,6 +326,7 @@ Settings -> Plugins -> Discover:
   "path": "plugins/my-plugin",
   "version": "0.1.0",
   "author": "Your Name",
+  "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/my-plugin",
   "official": false,
   "tagline": "One short line.",
   "description": "One sentence.",
@@ -346,6 +347,10 @@ Keep `path` as `plugins/<id>`, `hosts` in sync with the manifest, and
   ALL / BAR / DESKTOP subtabs filter on this and on `hosts`.
 - `hosts` is copied from the manifest. It is what tells the shell, and the Store
   filter, whether the plugin is a bar mark, a desktop tile, or both.
+- `upstream` (required) is the https project the plugin comes from - your repo,
+  or the catalogue folder if there is no separate home. The Store shows it as a
+  link icon on the detail page. `discord` (optional) is an author-contact invite
+  (`discord.gg/<code>` or `discord.com/invite/<code>`), shown as a Discord icon.
 - `official: true` is for plugins the Ryoku team maintains. Community plugins
   leave it `false` (or omit it). A community plugin shows this warning in the
   Store detail and under QS Bar Settings > Community, verbatim:

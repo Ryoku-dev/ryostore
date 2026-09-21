@@ -605,10 +605,11 @@ Item {
     // ─── Interactive MouseArea (Style Switch) ───
     MouseArea {
         anchors.fill: parent
-        hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+        propagateComposedEvents: true
 
-        onDoubleClicked: {
+        // Cycle the face, then release the event so the host still gets the press to drag the tile.
+        onDoubleClicked: (mouse) => {
             if (root.clockStyle === "cookie") {
                 root.clockStyle = "nothing"
             } else if (root.clockStyle === "nothing") {
@@ -618,6 +619,7 @@ Item {
             } else {
                 root.clockStyle = "cookie"
             }
+            mouse.accepted = false
         }
     }
 }

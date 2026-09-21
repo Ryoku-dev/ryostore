@@ -32,7 +32,7 @@
   "$defs": {
     "registryEntry": {
       "type": "object",
-      "required": ["id", "name", "version", "path", "author", "summary", "description", "tags", "accent", "surface", "preview", "screenshots", "manifest", "manifestSha256"],
+      "required": ["id", "name", "version", "path", "author", "summary", "description", "tags", "accent", "surface", "preview", "screenshots", "manifest", "manifestSha256", "upstream"],
       "additionalProperties": true,
       "properties": {
         "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
@@ -53,7 +53,9 @@
         "downloadPaused": {"type": "boolean", "description": "Pause new downloads without delisting the item: the Store keeps it listed and removable and refuses install and update."},
         "downloadPauseReason": {"type": "string", "minLength": 1, "description": "User-facing note shown with a paused item."},
         "windowManager": {"type": "string", "minLength": 1, "description": "The window manager this item is written for, named the way `ryoku wm use <name>` names one (for example \"hyprland\"). Absent means it runs on any; on any other window manager the Store greys the item out and refuses the install."},
-        "windowManagerReason": {"type": "string", "minLength": 1, "description": "User-facing note shown when the item cannot run on the current window manager."}
+        "windowManagerReason": {"type": "string", "minLength": 1, "description": "User-facing note shown when the item cannot run on the current window manager."},
+        "upstream": {"type": "string", "pattern": "^https://[^\\s/]+\\.[^\\s/]+/\\S+$", "description": "The project this item comes from: an https URL with a host and a path. The Store shows it as a link icon on the item."},
+        "discord": {"type": "string", "pattern": "^https://(?:discord\\.gg|discord\\.com/invite)/[A-Za-z0-9-]+$", "description": "Optional author contact: a Discord invite (discord.gg/<code> or discord.com/invite/<code>). The Store shows it as a Discord icon on the item."}
       }
     }
   }

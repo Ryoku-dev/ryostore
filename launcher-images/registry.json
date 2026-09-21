@@ -7,6 +7,7 @@
       "version": "1.0.0",
       "path": "launcher-images/carina-nebula",
       "author": "NASA, ESA / STScI (Hubble)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/launcher-images/carina-nebula",
       "summary": "A wide Hubble panorama of the Carina Nebula in bone light.",
       "description": "The Hubble Space Telescope's panorama of the Carina Nebula (NGC 3372) - towers and clouds of glowing gas around unstable young stars - dithered so the nebular light reads as Ryoku bone.",
       "tags": [
@@ -29,6 +30,7 @@
       "version": "1.0.0",
       "path": "launcher-images/great-wave",
       "author": "Katsushika Hokusai (c.1831)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/launcher-images/great-wave",
       "summary": "Hokusai's great wave curling over a distant Fuji, in bone.",
       "description": "Under the Wave off Kanagawa (The Great Wave) from Hokusai's Thirty-six Views of Mount Fuji - the towering breaker and its claw of foam above a small Fuji - reduced to Ryoku's one-bit bone.",
       "tags": [
@@ -51,6 +53,7 @@
       "version": "1.0.0",
       "path": "launcher-images/ninth-wave",
       "author": "Ivan Aivazovsky (1850)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/launcher-images/ninth-wave",
       "summary": "Aivazovsky's dawn breaking over survivors and a vast swell.",
       "description": "The Ninth Wave - Ivan Aivazovsky's shipwreck survivors clinging to a mast as a warm dawn breaks over the towering sea - reduced to Ryoku's one-bit bone.",
       "tags": [
@@ -73,6 +76,7 @@
       "version": "1.0.0",
       "path": "launcher-images/sea-of-ice",
       "author": "Caspar David Friedrich (1823-1824)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/launcher-images/sea-of-ice",
       "summary": "Friedrich's shattered polar ice heaved over a lost ship.",
       "description": "The Sea of Ice (Das Eismeer) - Caspar David Friedrich's slabs of polar ice piled into a jagged pyramid above a crushed hull - reduced to Ryoku's one-bit bone.",
       "tags": [
@@ -95,6 +99,7 @@
       "version": "1.0.0",
       "path": "launcher-images/shono",
       "author": "Utagawa Hiroshige (c.1833)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/launcher-images/shono",
       "summary": "Hiroshige's travellers bent under a grey downpour at Shono.",
       "description": "Driving Rain at Shono (Shono hakuu), station 46 of Hiroshige's Fifty-three Stations of the Tokaido - porters and a palanquin hurrying through slanting rain - baked to Ryoku's one-bit bone.",
       "tags": [
@@ -117,6 +122,7 @@
       "version": "1.0.0",
       "path": "launcher-images/wheatfield-crows",
       "author": "Vincent van Gogh (1890)",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/launcher-images/wheatfield-crows",
       "summary": "Van Gogh's crows scattering over a storm-dark wheatfield.",
       "description": "Wheatfield with Crows - Van Gogh's turbulent sky, golden wheat, and a flock of black crows over three diverging paths - baked to Ryoku's one-bit bone.",
       "tags": [

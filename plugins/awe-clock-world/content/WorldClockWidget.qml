@@ -60,10 +60,14 @@ Item {
         height: (root.shapeStyleIndex === 2 ? 80 + Math.ceil(root.cities.length / 2) * 68 : (root.shapeStyleIndex === 1 ? 60 + root.cities.length * 42 : 70 + Math.max(2, root.cities.length) * 34))
         transformOrigin: Item.TopLeft
 
-        // Double-click cycles the layout style (in-memory only)
+        // Double-click cycles the layout style (in-memory only); press still falls through for host drag.
         MouseArea {
             anchors.fill: parent
-            onDoubleClicked: root.shapeStyleIndex = (root.shapeStyleIndex + 1) % 4
+            propagateComposedEvents: true
+            onDoubleClicked: (mouse) => {
+                root.shapeStyleIndex = (root.shapeStyleIndex + 1) % 4
+                mouse.accepted = false
+            }
         }
 
         // ════════════════════════════════════════════════════════════════

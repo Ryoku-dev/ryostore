@@ -7,6 +7,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/2b",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "2b emblem for the terminal readout",
       "description": "2b, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -28,6 +29,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/miku",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Miku emblem for the terminal readout",
       "description": "Miku, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -49,6 +51,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/tsukikko",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Tsukikko emblem for the terminal readout",
       "description": "Tsukikko, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -70,6 +73,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/aisaka",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Aisaka emblem for the terminal readout",
       "description": "Aisaka, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -91,6 +95,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/arch",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Arch emblem for the terminal readout",
       "description": "Arch, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -112,6 +117,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/archlinux",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Archlinux emblem for the terminal readout",
       "description": "Archlinux, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -133,6 +139,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/bazzite",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Bazzite emblem for the terminal readout",
       "description": "Bazzite, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -154,6 +161,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/boss-shinchan",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Boss Shinchan emblem for the terminal readout",
       "description": "Boss Shinchan, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -175,6 +183,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/cat",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Cat emblem for the terminal readout",
       "description": "Cat, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -196,6 +205,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/gojo",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Gojo emblem for the terminal readout",
       "description": "Gojo, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -217,6 +227,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/gudetama",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Gudetama emblem for the terminal readout",
       "description": "Gudetama, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -238,6 +249,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/hyde",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Hyde emblem for the terminal readout",
       "description": "Hyde, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -259,6 +271,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/hypr",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Hypr emblem for the terminal readout",
       "description": "Hypr, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -280,6 +293,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/inoue",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Inoue emblem for the terminal readout",
       "description": "Inoue, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -301,6 +315,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/iusearchbtw",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Iusearchbtw emblem for the terminal readout",
       "description": "Iusearchbtw, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -322,6 +337,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/l",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "L emblem for the terminal readout",
       "description": "L, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -343,6 +359,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/loli",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Loli emblem for the terminal readout",
       "description": "Loli, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -364,6 +381,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/luffy-shinchan",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Luffy Shinchan emblem for the terminal readout",
       "description": "Luffy Shinchan, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -385,6 +403,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/madara",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Madara emblem for the terminal readout",
       "description": "Madara, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -406,6 +425,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/monarch",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Monarch emblem for the terminal readout",
       "description": "Monarch, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -427,6 +447,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/nyarch",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Nyarch emblem for the terminal readout",
       "description": "Nyarch, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -448,6 +469,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/orf",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Orf emblem for the terminal readout",
       "description": "Orf, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -469,6 +491,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/pink",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Pink emblem for the terminal readout",
       "description": "Pink, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -490,6 +513,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/pochita",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Pochita emblem for the terminal readout",
       "description": "Pochita, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -511,6 +535,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/pusheen",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Pusheen emblem for the terminal readout",
       "description": "Pusheen, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -532,6 +557,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/red-ranger",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Red Ranger emblem for the terminal readout",
       "description": "Red Ranger, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -553,6 +579,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/ror-fetch",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Ror Fetch emblem for the terminal readout",
       "description": "Ror Fetch, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -574,6 +601,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/ruyk",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Ruyk emblem for the terminal readout",
       "description": "Ruyk, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -595,6 +623,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/ryuzaki",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Ryuzaki emblem for the terminal readout",
       "description": "Ryuzaki, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -616,6 +645,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/sasuke",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Sasuke emblem for the terminal readout",
       "description": "Sasuke, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -637,6 +667,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/shinchan-with-gun",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Shinchan With Gun emblem for the terminal readout",
       "description": "Shinchan With Gun, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -658,6 +689,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/sukuna",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Sukuna emblem for the terminal readout",
       "description": "Sukuna, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -679,6 +711,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/teto",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Teto emblem for the terminal readout",
       "description": "Teto, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -700,6 +733,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/yoo",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Yoo emblem for the terminal readout",
       "description": "Yoo, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -721,6 +755,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/girl",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Girl emblem for the terminal readout",
       "description": "Girl, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -742,6 +777,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/snoppy-mugiwara",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Snoppy Mugiwara emblem for the terminal readout",
       "description": "Snoppy Mugiwara, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -763,6 +799,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/arch-3",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Arch 3 emblem for the terminal readout",
       "description": "Arch 3, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -784,6 +821,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/arch-4",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Arch 4 emblem for the terminal readout",
       "description": "Arch 4, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -805,6 +843,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/arch-5",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Arch 5 emblem for the terminal readout",
       "description": "Arch 5, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -826,6 +865,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/arch-6",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Arch 6 emblem for the terminal readout",
       "description": "Arch 6, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -847,6 +887,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/arch-7",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Arch 7 emblem for the terminal readout",
       "description": "Arch 7, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -868,6 +909,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/dot-face",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Dot Face emblem for the terminal readout",
       "description": "Dot Face, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -889,6 +931,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/nyarch-2",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Nyarch 2 emblem for the terminal readout",
       "description": "Nyarch 2, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -910,6 +953,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/oie-transparent",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Oie Transparent emblem for the terminal readout",
       "description": "Oie Transparent, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [
@@ -931,6 +975,7 @@
       "version": "1.0.0",
       "path": "fastfetch-emblems/oh-hello-soldier",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "OH Hello Soldier emblem for the terminal readout",
       "description": "OH Hello Soldier, packaged as a fastfetch emblem: capped at 512 px for a terminal logo box and installed into ~/Pictures/ryoemblems, where Settings -> Fastfetch picks it up.",
       "tags": [

@@ -90,6 +90,11 @@ with you.
   licensed for redistribution. Say so in the item's README or manifest.
 - A **`registry.json` entry** with the fields your catalogue's guide lists,
   `lastUpdated` in `YYYY-MM-DD`, and (for community work) `official: false`.
+- An **`upstream`** on that entry: the https project the item comes from - your
+  repo, or the catalogue folder (`.../tree/main/<category>/<id>`) when there is no
+  separate home. The Store shows it as a link icon on the item. Add an optional
+  **`discord`** invite (`discord.gg/<code>` or `discord.com/invite/<code>`) to
+  offer author contact; leave it out if you have none.
 - **Catalogue integrity and security screening passing**, with every finding
   resolved or explicitly reviewed under the security policy.
 - A clear **maintenance contact** and acknowledgement that ongoing maintenance

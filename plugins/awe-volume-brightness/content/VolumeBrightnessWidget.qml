@@ -274,6 +274,7 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
+                            preventStealing: true
                             onPositionChanged: (mouse) => {
                                 if (pressed) {
                                     root.setVolume(mouse.x / width)
@@ -370,6 +371,7 @@ Item {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
+                            preventStealing: true
                             onPositionChanged: (mouse) => {
                                 if (pressed) {
                                     root.setBrightness(mouse.x / width)

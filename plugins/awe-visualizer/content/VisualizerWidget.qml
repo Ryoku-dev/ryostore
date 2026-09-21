@@ -63,16 +63,17 @@ Item {
         height: 150
         transformOrigin: Item.TopLeft
 
-        // Drag & Double-Click Mode MouseArea
+        // Double-click cycles the mode; press falls through so the host can drag the tile.
         MouseArea {
             anchors.fill: parent
-            hoverEnabled: true
             acceptedButtons: Qt.LeftButton
             cursorShape: Qt.PointingHandCursor
+            propagateComposedEvents: true
 
-            onDoubleClicked: {
+            onDoubleClicked: (mouse) => {
                 root.modeIndex = (root.modeIndex + 1) % root.modeList.length
                 root.vizMode = root.modeList[root.modeIndex]
+                mouse.accepted = false
             }
         }
 

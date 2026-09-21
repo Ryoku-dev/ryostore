@@ -30,12 +30,17 @@
     "densities": [
       "compact"
     ],
-    "network": []
+    "network": [],
+    "colors": true
   },
   "defaults": {
     "host": "desktopWidget",
     "desktopWidget": {
-      "bg": "none"
+      "bg": "none",
+      "autoEnable": true,
+      "x": 460,
+      "y": 110,
+      "scale": 0.8
     },
     "icon": "calculate",
     "label": "Calc"

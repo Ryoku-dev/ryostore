@@ -7,6 +7,7 @@
       "version": "1.0.0",
       "path": "lockscreens/clockwork-tape",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "Clockwork mechanics drift across warm magnetic tape.",
       "description": "A complete qylock scene with a tactile clock face, deep shadow, and an amber tape-era palette.",
       "tags": [
@@ -27,6 +28,7 @@
       "version": "1.0.0",
       "path": "lockscreens/dog-samurai",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A painterly samurai hound under drifting red petals.",
       "description": "A cinematic video lock: a straw-hatted samurai dog with a sheathed katana as crimson petals fall, paired with a bold clock and a minimal login.",
       "tags": [
@@ -49,6 +51,7 @@
       "version": "1.0.0",
       "path": "lockscreens/enfield",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "Golden hour spilling through a plant-framed window.",
       "description": "A warm, atmospheric lock: late sun pours past ivy and a weathered window frame, with a quiet login.",
       "tags": [
@@ -71,6 +74,7 @@
       "version": "1.0.0",
       "path": "lockscreens/field",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "An open pasture under soft light with a feather-light clock.",
       "description": "A serene qylock scene: a wide field, a thin Orbitron clock, and a quiet amber login tucked into the corner.",
       "tags": [
@@ -94,6 +98,7 @@
       "version": "1.0.0",
       "path": "lockscreens/forest",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "Sunbeams pouring through a misty autumn canopy.",
       "description": "A tranquil video lock: light rays drift over an aerial autumn forest wrapped in fog, with a soft clock and an unobtrusive login.",
       "tags": [
@@ -116,6 +121,7 @@
       "version": "1.0.0",
       "path": "lockscreens/genshin",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A moonlit abyss of drifting pillars in deep blue.",
       "description": "A Genshin Impact inspired lock: towering ruins beneath a pale moon, slow-drifting clouds, and a clean login on the descending path.",
       "tags": [
@@ -138,6 +144,7 @@
       "version": "1.0.0",
       "path": "lockscreens/girl-coffee",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A cosy hand-drawn morning with a warm mug in hand.",
       "description": "A lo-fi illustrated character taking a coffee break, paired with the rounded Itim typeface and a soft, unobtrusive login.",
       "tags": [
@@ -161,6 +168,7 @@
       "version": "1.0.0",
       "path": "lockscreens/girl-pillow",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A soft illustrated scene, curled up and half awake.",
       "description": "A relaxed lo-fi illustration with the rounded Itim font and a gentle right-aligned login - quiet, warm, and unhurried.",
       "tags": [
@@ -184,6 +192,7 @@
       "version": "1.0.0",
       "path": "lockscreens/last-of-us",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A lone blossom tree adrift in cold grey mist.",
       "description": "A The Last of Us inspired lock: a solitary cherry tree on a rocky outcrop among fog-veiled cliffs, with a spare, moody login.",
       "tags": [
@@ -206,6 +215,7 @@
       "version": "1.0.0",
       "path": "lockscreens/man-bicycle",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A lone cyclist against a wide illustrated sky.",
       "description": "A cinematic lo-fi ride with the Itim typeface and a minimal login tucked into the frame.",
       "tags": [
@@ -229,6 +239,7 @@
       "version": "1.0.0",
       "path": "lockscreens/material-you",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "Google's Material You language, clean and adaptive.",
       "description": "A crisp Material You lock with the Google Sans typeface, rounded surfaces, and a tidy centred login.",
       "tags": [
@@ -252,6 +263,7 @@
       "version": "1.0.0",
       "path": "lockscreens/minecraft",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "The blocky main-menu look, splash text and all.",
       "description": "A nostalgic Minecraft title-screen lock: stone-button widgets, a random yellow splash line, and the classic logo.",
       "tags": [
@@ -275,6 +287,7 @@
       "version": "1.0.0",
       "path": "lockscreens/nier-automata",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "The stark beige-and-black UI of YoRHa.",
       "description": "A faithful NieR: Automata lock with bordered YoRHa buttons, the signature muted palette, and a precise login.",
       "tags": [
@@ -298,6 +311,7 @@
       "version": "1.0.0",
       "path": "lockscreens/ninja-gaiden",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "High-contrast action styling with the Tektur face.",
       "description": "A sharp Ninja Gaiden lock: bold Tektur type, a dark cinematic background, and a decisive login.",
       "tags": [
@@ -321,6 +335,7 @@
       "version": "1.0.0",
       "path": "lockscreens/nothing",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "Dot-matrix minimalism in red and black.",
       "description": "A Nothing-inspired lock: NDot dot-matrix numerals, twin rounded widgets, and a bright, airy backdrop.",
       "tags": [
@@ -343,6 +358,7 @@
       "version": "1.0.0",
       "path": "lockscreens/osu",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "The osu! rhythm game, tap-circles and all.",
       "description": "An osu! inspired lock with difficulty menus, neon tap-circles, and a playful, score-driven login.",
       "tags": [
@@ -365,6 +381,7 @@
       "version": "1.0.0",
       "path": "lockscreens/osumania",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A four-key note highway glowing in neon green.",
       "description": "An osu!mania inspired lock: vertical scrolling notes, key-binding widgets, and PERFECT combos over a dark stage.",
       "tags": [
@@ -387,6 +404,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-coffee",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A warm pixel cafe glowing after dark.",
       "description": "A cosy pixel-art lock: amber lamps over a late-night cafe, city lights through the window, and a tidy login.",
       "tags": [
@@ -409,6 +427,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-cyberpunk",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A neon pixel-art cityscape humming with rain and signage.",
       "description": "An animated pixel-art cyberpunk street, all neon reflections and drizzle, with a crisp login.",
       "tags": [
@@ -431,6 +450,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-dusk-city",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A red-lit pixel skyline smouldering at dusk.",
       "description": "A pixel-art lock: a silhouetted city under a burning dusk sky, framed by dark leaves and tangled wires, with a minimal login.",
       "tags": [
@@ -453,6 +473,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-emerald",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A seaside cycling route in bright pixel green.",
       "description": "A Pokemon inspired pixel lock: a cyclist on a fenced coastal path amid lush fields and creatures, with a cheerful login.",
       "tags": [
@@ -475,6 +496,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-hollowknight",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A horned knight silhouetted against embered dark.",
       "description": "A Hollow Knight inspired pixel lock: a pale-horned figure above drifting orange embers in the deep, with a stark login.",
       "tags": [
@@ -497,6 +519,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-munchlax",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A little companion on a grassy hill under summer clouds.",
       "description": "A bright pixel-art lock: a small creature resting on green grass beneath towering white clouds, with a clean login.",
       "tags": [
@@ -519,6 +542,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-night-city",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A glittering pixel skyline humming after dark.",
       "description": "A pixel-art lock: dense neon-lit towers over shadowed rooftops, cool and electric, with a crisp login.",
       "tags": [
@@ -541,6 +565,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-rainyroom",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A rainy night at the desk, monitor aglow.",
       "description": "A lo-fi pixel lock: rain on the window and a blue monitor glow across a dim bedroom, with a quiet login.",
       "tags": [
@@ -563,6 +588,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-sakura",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A pixel-art courtyard under drifting cherry blossom.",
       "description": "An animated pixel-art scene of falling sakura petals, warm and unhurried, with a tidy login.",
       "tags": [
@@ -585,6 +611,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-skyscrapers",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A pastel dawn washing over a layered skyline.",
       "description": "A pixel-art lock: peach-and-mauve skies and a soft sun behind stacked skyscrapers, with a calm login.",
       "tags": [
@@ -607,6 +634,7 @@
       "version": "1.0.0",
       "path": "lockscreens/pixel-waterfall",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A tranquil pixel-art waterfall in a mossy glen.",
       "description": "An animated pixel-art waterfall scene, cool and green, with a calm minimal login.",
       "tags": [
@@ -629,6 +657,7 @@
       "version": "1.0.0",
       "path": "lockscreens/r1999-1",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A pensive period portrait bathed in soft sepia light.",
       "description": "A Reverse: 1999 inspired lock centred on a wistful character portrait in warm vintage tones, with an understated login.",
       "tags": [
@@ -651,6 +680,7 @@
       "version": "1.0.0",
       "path": "lockscreens/r1999-2",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "Vintage flourish with an animated period backdrop.",
       "description": "A Reverse: 1999 inspired lock with an animated vintage backdrop, a period logo, and an elegant login.",
       "tags": [
@@ -673,6 +703,7 @@
       "version": "1.0.0",
       "path": "lockscreens/star-rail",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "An astral, animated backdrop for the trailblazers.",
       "description": "A Honkai: Star Rail inspired lock with an animated cosmic backdrop and a clean, modern login.",
       "tags": [
@@ -695,6 +726,7 @@
       "version": "1.0.0",
       "path": "lockscreens/sword",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A lone blade planted in a misty grove.",
       "description": "A moody, near-monochrome lock: a katana standing point-down among blurred dark trees, with a spare login.",
       "tags": [
@@ -717,6 +749,7 @@
       "version": "1.0.0",
       "path": "lockscreens/terraria",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "The Terraria main menu, pixel logo and all.",
       "description": "A Terraria title-screen lock with the pixel logo, a tree-lined horizon, and wood-panel buttons.",
       "tags": [
@@ -739,6 +772,7 @@
       "version": "1.0.0",
       "path": "lockscreens/windows-7",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "The nostalgic Windows 7 welcome screen.",
       "description": "A throwback Windows 7 lock: a round avatar, a glassy credential field, and the familiar blue welcome mood.",
       "tags": [
@@ -762,6 +796,7 @@
       "version": "1.0.0",
       "path": "lockscreens/winter",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A quiet, animated snowfall in cold blue.",
       "description": "A calm winter lock: soft, drifting snow over a cold-blue scene with an understated login.",
       "tags": [
@@ -784,6 +819,7 @@
       "version": "1.0.0",
       "path": "lockscreens/women-umbrella",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "An illustrated figure under an umbrella in gentle rain.",
       "description": "A moody lo-fi illustration of a walk in the rain, with a calm, understated login.",
       "tags": [
@@ -807,6 +843,7 @@
       "version": "1.0.0",
       "path": "lockscreens/world-machine",
       "author": "CratusGod",
+      "upstream": "https://github.com/CratusGod/Oneshot-themed-Ryoku",
       "summary": "Niko's lightbulb over a OneShot sunset, with music.",
       "description": "A OneShot lock: Avolicis' pixel-art sunset animation (used with permission) with its soundtrack, Niko's lightbulb as your avatar, THE WORLD MACHINE wordmark, Terminus type and a Num Lock indicator. The matching shell reload cover and boot screen live at https://github.com/CratusGod/Oneshot-themed-Ryoku.",
       "tags": [
@@ -832,6 +869,7 @@
       "version": "1.0.0",
       "path": "lockscreens/wuwa",
       "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
       "summary": "A lone figure amid drifting ruins under pale light.",
       "description": "A Wuthering Waves inspired lock: a desolate greyscale expanse of floating debris cut by a single beam of light, with a modern login.",
       "tags": [

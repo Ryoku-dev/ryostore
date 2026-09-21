@@ -7,6 +7,8 @@
       "version": "1.1.0",
       "path": "fastfetch/ryoku-dossier",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/ryoku-dossier",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Editorial system dossier",
       "description": "A structured Ryoku readout with grouped vitals, system, and session sections in vermillion and warm paper tones.",
       "tags": [
@@ -27,6 +29,8 @@
       "version": "1.1.0",
       "path": "fastfetch/minimal-grid",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/minimal-grid",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Compact terminal inventory",
       "description": "A quiet, logo-free grid that keeps the essential machine facts legible in narrow terminal panes.",
       "tags": [
@@ -47,6 +51,7 @@
       "version": "1.0.1",
       "path": "fastfetch/spectrum",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Tri-colour sectioned system readout",
       "description": "The distro logo beside VITALS, SYSTEM and hardware blocks, each key inked in its own blue, magenta or yellow with Nerd Font glyphs.",
       "tags": [
@@ -68,6 +73,7 @@
       "version": "1.1.0",
       "path": "fastfetch/system-console",
       "author": "MiZentUi",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Boxed multi-panel dashboard",
       "description": "A dense dashboard grouping System, Terminal, Hardware and Media into framed tables beside a compact Arch mark.",
       "tags": [
@@ -89,6 +95,7 @@
       "version": "1.0.0",
       "path": "fastfetch/arc-reactor",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Industrial HUD readout with magenta labels",
       "description": "A two-column heads-up display: the Arch logo beside magenta section labels with Nerd Font icons, red divider rules and a green ONLINE/THREATS status line. Shows OS, kernel, uptime, CPU, GPU, memory, disk, shell, WM, terminal and battery.",
       "tags": [
@@ -111,6 +118,7 @@
       "version": "1.0.0",
       "path": "fastfetch/block-banner",
       "author": "kuruma-config",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "ARCH block banner over a green/blue labeled card",
       "description": "A large ANSI-Shadow ARCH block-letter banner sits above a closed rounded label card. The card lists OS, kernel, packages and shell, a blue DE/WM group, and a green hardware group (host, CPU, GPU, disk, memory, swap, uptime, display). Green primary accent with a blue secondary band on a near-black surface.",
       "tags": [
@@ -133,6 +141,7 @@
       "version": "1.1.0",
       "path": "fastfetch/bulkhead",
       "author": "Cmdr_Scotty",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Yellow-framed hardware and software tree",
       "description": "A three-section readout - Hardware, Software, Miscellaneous - drawn as a branch tree inside a yellow box frame beside the Arch logo. Keys are red for hardware, green for software, blue for the desktop and magenta for the misc block over the terminal palette.",
       "tags": [
@@ -155,6 +164,7 @@
       "version": "1.0.0",
       "path": "fastfetch/cassette",
       "author": "esplatanukis2-wq",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Twin-box readout with a rainbow mini-box column",
       "description": "A twin-box layout: a narrow mini-box column (magenta, green, blue, yellow and red with Nerd Font tree icons) beside a wide framed panel of values covering title, system, hardware and a cassette now-playing line.",
       "tags": [
@@ -177,6 +187,7 @@
       "version": "1.0.0",
       "path": "fastfetch/control-room",
       "author": "rorfetch",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Four-panel boxed system dashboard with dotted rails",
       "description": "A closed box divided into SYSTEM, DESKTOP, RESOURCES and SOFTWARE panels, every row padded with a dotted rail to one shared right border. Uses a 256-colour scheme: a dark-red frame, green/cyan/yellow/purple section accents, green-on-grey usage bars, and a red skull gradient beneath.",
       "tags": [
@@ -199,6 +210,7 @@
       "version": "1.0.0",
       "path": "fastfetch/day-brief",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Datetime header over a colour-coded system rundown",
       "description": "A datetime header followed by colour-coded sections (blue system, yellow hardware, cyan disk, green software, white network, red audio); every key is an icon plus an English label at a fixed 20-column width, set beside a small Arch logo.",
       "tags": [
@@ -221,6 +233,7 @@
       "version": "1.1.0",
       "path": "fastfetch/deep-specs",
       "author": "ghosttree",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Arrow tree with detailed CPU, GPU and monitor rows",
       "description": "An arrow-separated three-section tree - system (red), desktop (green), hardware (yellow) - with Nerd Font branch keys. The hardware block carries a detailed CPU row (cores and clock) plus per-GPU, host, memory, disk and monitor rows over a near-black background.",
       "tags": [
@@ -243,6 +256,7 @@
       "version": "1.0.0",
       "path": "fastfetch/dog-tag",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Military stencil readout, gold keys and red gauges",
       "description": "A compact readout beside the small Arch mark with gold keys, a ' ~> ' separator rail and red percentage gauges on RAM and storage. Shows OS, shell, CPU, dual GPUs, memory, storage, now-playing media and a colour row.",
       "tags": [
@@ -265,6 +279,7 @@
       "version": "1.0.0",
       "path": "fastfetch/dual-panel",
       "author": "kuruma-config",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Magenta System and cyan Hardware panels with arrows",
       "description": "Two open panels stacked beside a small Arch logo: a magenta System panel (user, OS, kernel, uptime, WM, shell) above a cyan Hardware panel (CPU, GPU, RAM, display, battery). Each row is an aligned label column ending in a divider and an arrow readout. Magenta primary accent, cyan secondary, on a near-black surface.",
       "tags": [
@@ -287,6 +302,7 @@
       "version": "1.0.0",
       "path": "fastfetch/full-audit",
       "author": "LainOS",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Tree-bracketed system, software and hardware audit",
       "description": "Three tree-bracketed sections - system (magenta), software (green) and hardware (yellow) - with box-drawing keys and Nerd Font icons, closed by a two-tone ANSI palette bar. The hardware block is an inventory of host, CPU, GPU, display, memory, swap and uptime.",
       "tags": [
@@ -309,6 +325,7 @@
       "version": "1.1.0",
       "path": "fastfetch/full-frame",
       "author": "sofijacom",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Wide grey box framing blue-dot system lines",
       "description": "A single wide grey frame wraps the readout beside a blue-tinted Arch logo, each line marked with a uniform blue dot and a triangle separator. Three stacked panels group software, hardware and session info, closing with a circle color bar.",
       "tags": [
@@ -331,6 +348,7 @@
       "version": "1.0.0",
       "path": "fastfetch/grimoire",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Rounded monochrome card, right-aligned values",
       "description": "A rounded card beside the Arch mark with left-hand labels and right-aligned values. Shows OS, kernel, uptime, shell, WM, RAM, CPU, disk, packages and owner, closed by a centred banner line.",
       "tags": [
@@ -353,6 +371,7 @@
       "version": "1.0.0",
       "path": "fastfetch/install-log",
       "author": "harilvfs",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Nerd Font icon list with cyan keys and swatch footer",
       "description": "An icon-led key/value list where every row is keyed by a Nerd Font glyph: OS, kernel, packages, shell, terminal, WM, display, CPU/GPU, memory, swap, disk and uptime, ending in an eight-dot ANSI palette bar. Cyan keys on a near-black background.",
       "tags": [
@@ -375,6 +394,7 @@
       "version": "1.0.0",
       "path": "fastfetch/key-cards",
       "author": "Beastboy999cr",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Twin rounded red panels beside the Arch logo",
       "description": "Two rounded box panels in red sit to the right of the Arch logo, the first listing identity and the second hardware, with green accents on the display and uptime rows. Keys, borders and icons share one red accent while values use the terminal foreground.",
       "tags": [
@@ -397,6 +417,7 @@
       "version": "1.0.0",
       "path": "fastfetch/pastel-brief",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Airy Catppuccin readout with pastel nerd-font keys",
       "description": "A short, spacious readout beside a small Arch mark. OS, CPU, board, memory and disk rows carry pastel Catppuccin key icons, a coloured user@host title, and a trailing row of colour dots.",
       "tags": [
@@ -419,6 +440,7 @@
       "version": "1.1.0",
       "path": "fastfetch/pill-box",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Boxed Nerd Font label column, straw-yellow icons",
       "description": "A boxed pill column of Nerd Font labels with values trailing to the right. Straw-yellow icons with cyan and magenta section heads across system, hardware, storage, media, date and palette rows.",
       "tags": [
@@ -441,6 +463,7 @@
       "version": "1.0.0",
       "path": "fastfetch/pit-wall",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "F1 pit-wall telemetry with navy bars and dot leaders",
       "description": "A telemetry board with a boxed header, navy bar markers on every line, yellow and red field labels, dotted leaders and white values. Sections cover team/chassis, powertrain (CPU, GPU, memory, disk, battery), session data and a now-playing radio line.",
       "tags": [
@@ -463,6 +486,7 @@
       "version": "1.0.0",
       "path": "fastfetch/plain-column",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Clean no-icon key/value list with palette swatch footer",
       "description": "A plain single-column key/value readout with no key icons: title, OS, host, kernel, uptime, packages, shell, resolution, desktop/theming, terminal, CPU/GPU and memory, closed by the 16-colour palette swatch. Blue keys on a near-black background.",
       "tags": [
@@ -485,6 +509,7 @@
       "version": "1.0.0",
       "path": "fastfetch/pocket-card",
       "author": "kuruma-config",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Compact blue card headed with the hostname",
       "description": "A small blue card beside a compact Arch logo, headed by a hostname bar and listing OS, user, kernel, uptime, packages and memory with lowercase labels. Each row is an aligned label column plus its value. Blue primary accent on a near-black surface.",
       "tags": [
@@ -507,6 +532,7 @@
       "version": "1.0.0",
       "path": "fastfetch/service-manual",
       "author": "awesome-fastfetch-collection",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Red double-ruled diagnostics table with a left wall",
       "description": "A dense, service-manual style readout framed by red double-line rules with aligned top/cross/bottom junctions and a left wall. Sections for identity, time, software, hardware, storage and power/net each sit under a ruled divider, every row keyed by a coloured Nerd Font icon and a red column bar.",
       "tags": [
@@ -529,6 +555,7 @@
       "version": "1.1.0",
       "path": "fastfetch/soft-column",
       "author": "aayushchalise",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Titled icon list framed by ANSI palette swatch bars",
       "description": "A titled Nerd Font key/value list wrapped top and bottom by eight-dot ANSI palette bars, using a single-space separator and mauve keys. Shows OS, kernel, packages, shell, terminal, WM, display, CPU/GPU, memory, swap, disk and uptime over a near-black background.",
       "tags": [
@@ -551,6 +578,7 @@
       "version": "1.1.0",
       "path": "fastfetch/terminal-online",
       "author": "kitty-cachyos",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "TERMINAL ONLINE banner over two bordered panels",
       "description": "A bold TERMINAL ONLINE banner of colored sparkles tops two bordered panels beside the Arch logo - one for OS and desktop, one for CPU, GPU and memory - with a magenta user@host title between them and a circle color bar below. Red keys lead, joined by green, yellow, blue and magenta sections.",
       "tags": [
@@ -573,6 +601,7 @@
       "version": "1.0.0",
       "path": "fastfetch/wide-card",
       "author": "kuruma-config",
+      "upstream": "https://github.com/Chintanpatel24/awesome-fastfetch-collection",
       "summary": "Two stacked blue rounded boxes, identity and hardware",
       "description": "Two stacked rounded blue boxes beside the built-in Arch logo: an identity box (user, OS, kernel, DE, WM, packages) above a hardware box (memory, disk, swap, CPU, GPU, chassis, battery), with values trailing each closed label column. Blue primary accent on a near-black surface.",
       "tags": [
@@ -595,6 +624,7 @@
       "version": "1.0.0",
       "path": "fastfetch/ryoku-mono",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/ryoku-mono",
       "summary": "Editorial Matugen system dossier",
       "description": "A structured Ryoku readout pairing the detected distro mark with grouped identity, session, machine and live system information in a restrained Matugen-driven palette. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -619,6 +649,7 @@
       "version": "1.0.0",
       "path": "fastfetch/chroma",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/chroma",
       "summary": "Matugen-first everyday system readout",
       "description": "A colourful everyday summary built around Ryoku's live Material palette, with distinct system, desktop and hardware sections beside a compact distro mark. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -643,6 +674,7 @@
       "version": "1.0.0",
       "path": "fastfetch/monolith",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/monolith",
       "summary": "Large-logo neutral machine inventory",
       "description": "A bold detected distro mark beside a compact neutral inventory of host, hardware and desktop information with restrained horizontal rails.",
       "tags": [
@@ -667,6 +699,7 @@
       "version": "1.0.0",
       "path": "fastfetch/glassline",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/glassline",
       "summary": "Open-rail minimalist system card",
       "description": "A lightweight precision readout using open rails rather than rigid boxes, keeping system, desktop and hardware information clean even when values vary in width. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -691,6 +724,7 @@
       "version": "1.0.0",
       "path": "fastfetch/gridline",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/gridline",
       "summary": "Dense Matugen technical tree",
       "description": "A continuous technical rail grouping system, desktop, hardware and live status information into a dense but readable Matugen-coloured tree. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -715,6 +749,7 @@
       "version": "1.0.0",
       "path": "fastfetch/cascade",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/cascade",
       "summary": "Stepped hierarchical machine readout",
       "description": "A distinctive descending hierarchy that cascades from system information through the desktop and into machine hardware, driven by the active Ryoku palette. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -739,6 +774,7 @@
       "version": "1.0.0",
       "path": "fastfetch/signal",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/signal",
       "summary": "Compact live-status system readout",
       "description": "A focused status display for identity, session, network, compute, storage and time, designed as a compact alternative to full hardware inventories. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -763,6 +799,7 @@
       "version": "1.0.0",
       "path": "fastfetch/vector",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/vector",
       "summary": "Angular Matugen hardware profile",
       "description": "A compact angular machine readout using sharp separators and a small distro mark to present core system, hardware and compositor information. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -787,6 +824,7 @@
       "version": "1.0.0",
       "path": "fastfetch/terminal-84",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/terminal-84",
       "summary": "Amber retro boot monitor",
       "description": "A fixed warm-amber terminal display with original monitor ASCII and an old-computer boot-monitor personality covering the essential machine statistics.",
       "tags": [
@@ -811,6 +849,7 @@
       "version": "1.0.0",
       "path": "fastfetch/crt",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/crt",
       "summary": "Phosphor-green terminal readout",
       "description": "A fixed phosphor-green system display with original CRT ASCII, abbreviated labels and a cursor-style footer inspired by classic monochrome terminals.",
       "tags": [
@@ -835,6 +874,7 @@
       "version": "1.0.0",
       "path": "fastfetch/blueprint",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/blueprint",
       "summary": "Cyan technical specification sheet",
       "description": "A fixed cyan and blue machine specification layout with a fully recoloured distro mark and labelled system, hardware and environment reference rows.",
       "tags": [
@@ -859,6 +899,7 @@
       "version": "1.0.0",
       "path": "fastfetch/orbit",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/orbit",
       "summary": "Circular Matugen system summary",
       "description": "A compact everyday readout built around restrained circular motifs, separating system, hardware and session information through the active Ryoku palette. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -883,6 +924,7 @@
       "version": "1.0.0",
       "path": "fastfetch/flow",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/flow",
       "summary": "Soft diagonal system progression",
       "description": "A clean Matugen readout that moves diagonally from identity into hardware and session information with minimal decoration and generous spacing. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [
@@ -907,6 +949,7 @@
       "version": "1.0.0",
       "path": "fastfetch/neon-grid",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/neon-grid",
       "summary": "Fixed cyan-magenta cyber readout",
       "description": "A deliberately non-Matugen cyber display using fixed cyan, magenta and violet tones across both the system readout and detected distro mark.",
       "tags": [
@@ -931,6 +974,7 @@
       "version": "1.0.0",
       "path": "fastfetch/zero",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/zero",
       "summary": "Bare-minimum Matugen inventory",
       "description": "A deliberately tiny logo-free preset showing only the essential operating system, kernel, processor, graphics, memory and uptime information. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
       "tags": [

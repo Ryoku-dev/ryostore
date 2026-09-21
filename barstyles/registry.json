@@ -7,6 +7,8 @@
       "version": "1.0.1",
       "path": "barstyles/nacre",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/nacre",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Instrument archipelago",
       "description": "Configurable islands whose widgets and spacing compose into a technical top bar.",
       "tags": [
@@ -27,6 +29,8 @@
       "version": "1.0.1",
       "path": "barstyles/obi",
       "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/obi",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Floating sash",
       "description": "A compact floating top bar with kanji workspaces, paper groups, and live popouts.",
       "tags": [
@@ -47,6 +51,7 @@
       "version": "1.0.1",
       "path": "barstyles/imi",
       "author": "dodo986",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/imi",
       "summary": "Material 3 Island Bar",
       "description": "Material 3-Like design with morphing popouts, kanji workspaces, audio visualizer, and customizable widget pills.",
       "windowManager": "hyprland",
@@ -75,6 +80,7 @@
       "version": "1.1.0",
       "path": "barstyles/ricelin",
       "author": "feelyourwarmth",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/ricelin",
       "summary": "A sleek, customizable pill-style bar for Ryoku.",
       "description": "Ricelin is a modern pill-style bar focused on clean visuals, smooth animations, dynamic theming, and extensive customization. It integrates with Ryoku and supports dynamic colors.",
       "tags": [
@@ -100,6 +106,7 @@
       "version": "1.0.0",
       "path": "barstyles/chroma",
       "author": "aethctl",
+      "upstream": "https://github.com/aethctl/chroma-shell",
       "summary": "Matugen signal bar",
       "description": "A colourful modular Ryoku top bar with wallpaper-driven theming, workspace controls, media integration, utilities, and playback visualisation.",
       "tags": [
@@ -125,6 +132,7 @@
       "version": "1.0.0",
       "path": "barstyles/orbit",
       "author": "aethctl",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/orbit",
       "summary": "Animated trajectory bar",
       "description": "A motion-led top bar built around a live trajectory, adaptive media core, workspace satellites, native tray, and docked system popouts.",
       "tags": [

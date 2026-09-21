@@ -7,6 +7,15 @@ Item {
     // Active theme key
     property string currentTheme: "liquid_glass"
 
+    // Host accent override; transparent = off, so every value below keeps its per-theme default.
+    property color accentOverride: "transparent"
+    readonly property bool hasAccent: root.accentOverride.a > 0
+
+    // Panel and tile fills borrow the override hue so the whole tile recolours, not just accent text.
+    function accentTint(light, alpha) {
+        return Qt.hsla(root.accentOverride.hslHue, Math.min(0.55, root.accentOverride.hslSaturation), light, alpha)
+    }
+
     // Theme metadata list for the UI picker
     readonly property var themes: [
         { id: "system",          name: "System Dynamic", icon: "crosshair", desc: "Material 3 palette extracted from wallpaper via Matugen" },
@@ -53,6 +62,7 @@ Item {
     // ─── Dynamic Palette Properties ───
     // Primary Panel Background
     readonly property color colBg: {
+        if (root.hasAccent) return root.accentTint(0.10, 0.85)
         if (currentTheme === "system") {
             return (root.systemColors && root.systemColors.colBg) ? root.systemColors.colBg : "#D9221A14"
         }
@@ -73,6 +83,7 @@ Item {
 
     // Inner Sub-Card / Tile Background
     readonly property color colBgTile: {
+        if (root.hasAccent) return root.accentTint(0.14, 0.90)
         if (currentTheme === "system") {
             return (root.systemColors && root.systemColors.colBgTile) ? root.systemColors.colBgTile : "#E6261E18"
         }
@@ -93,6 +104,7 @@ Item {
 
     // Pill / Button / Badge Background
     readonly property color colPillBg: {
+        if (root.hasAccent) return root.accentTint(0.22, 0.94)
         if (currentTheme === "system") {
             return (root.systemColors && root.systemColors.colPillBg) ? root.systemColors.colPillBg : "#F0312822"
         }
@@ -113,6 +125,7 @@ Item {
 
     // Main Accent Color
     readonly property color colAccent: {
+        if (root.hasAccent) return root.accentOverride
         if (currentTheme === "system") {
             return (root.systemColors && root.systemColors.colAccent) ? root.systemColors.colAccent : "#FFB77E"
         }
@@ -228,6 +241,7 @@ Item {
 
     // Border Color
     readonly property color borderColor: {
+        if (root.hasAccent) return Qt.rgba(root.accentOverride.r, root.accentOverride.g, root.accentOverride.b, 0.32)
         if (currentTheme === "system") {
             return (root.systemColors && root.systemColors.borderColor) ? root.systemColors.borderColor : "#33FFB77E"
         }
@@ -262,6 +276,7 @@ Item {
 
     // Specular Glass Top Highlight Gradient
     readonly property color glassGloss: {
+        if (root.hasAccent) return Qt.rgba(root.accentOverride.r, root.accentOverride.g, root.accentOverride.b, 0.14)
         if (currentTheme === "system") {
             return (root.systemColors && root.systemColors.glassGloss) ? root.systemColors.glassGloss : "#18FFB77E"
         }

@@ -7,6 +7,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/catppuccin-frappe",
       "author": "Ryoku",
+      "upstream": "https://github.com/catppuccin/catppuccin",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Catppuccin Frappe colour scheme as a Ryotunes skin",
       "description": "Catppuccin Frappe for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -28,6 +30,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/catppuccin-latte",
       "author": "Ryoku",
+      "upstream": "https://github.com/catppuccin/catppuccin",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Catppuccin Latte colour scheme as a Ryotunes skin",
       "description": "Catppuccin Latte for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -49,6 +53,7 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/catppuccin-lavender",
       "author": "Noctalia",
+      "upstream": "https://github.com/catppuccin/catppuccin",
       "summary": "Catppuccin Lavender colour scheme as a Ryotunes skin",
       "description": "Catppuccin Lavender for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -70,6 +75,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/catppuccin-macchiato",
       "author": "Ryoku",
+      "upstream": "https://github.com/catppuccin/catppuccin",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Catppuccin Macchiato colour scheme as a Ryotunes skin",
       "description": "Catppuccin Macchiato for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -91,6 +98,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/everforest-dark-hard",
       "author": "Ryoku",
+      "upstream": "https://github.com/sainnhe/everforest",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Everforest Dark Hard colour scheme as a Ryotunes skin",
       "description": "Everforest Dark Hard for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -112,6 +121,7 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/github-dark",
       "author": "Noctalia",
+      "upstream": "https://github.com/primer/github-vscode-theme",
       "summary": "GitHub Dark colour scheme as a Ryotunes skin",
       "description": "GitHub Dark for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -133,6 +143,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/gruvbox-dark-hard",
       "author": "Ryoku",
+      "upstream": "https://github.com/morhetz/gruvbox",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Gruvbox Dark Hard colour scheme as a Ryotunes skin",
       "description": "Gruvbox Dark Hard for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -154,6 +166,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/gruvbox-light-medium",
       "author": "Ryoku",
+      "upstream": "https://github.com/morhetz/gruvbox",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Gruvbox Light Medium colour scheme as a Ryotunes skin",
       "description": "Gruvbox Light Medium for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -175,6 +189,7 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/hancore-blackgold",
       "author": "HANCORE-linux",
+      "upstream": "https://github.com/HANCORE-linux/omarchy-blackgold-theme",
       "summary": "Blackgold colour scheme as a Ryotunes skin",
       "description": "Blackgold for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -196,6 +211,7 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/kanagawa-dragon",
       "author": "Noctalia",
+      "upstream": "https://github.com/rebelot/kanagawa.nvim",
       "summary": "Kanagawa Dragon colour scheme as a Ryotunes skin",
       "description": "Kanagawa Dragon for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -217,6 +233,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/monokai-classic",
       "author": "Ryoku",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/ryotunes-skins/monokai-classic",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Monokai Classic colour scheme as a Ryotunes skin",
       "description": "Monokai Classic for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -238,6 +256,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/nord-light",
       "author": "Ryoku",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/ryotunes-skins/nord-light",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Nord Light colour scheme as a Ryotunes skin",
       "description": "Nord Light for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -259,6 +279,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/oceanic-next",
       "author": "Ryoku",
+      "upstream": "https://github.com/voronianski/oceanic-next-color-scheme",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Oceanic Next colour scheme as a Ryotunes skin",
       "description": "Oceanic Next for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -280,6 +302,7 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/one-dark-two",
       "author": "Noctalia",
+      "upstream": "https://github.com/atom/atom",
       "summary": "One Dark Two colour scheme as a Ryotunes skin",
       "description": "One Dark Two for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -301,6 +324,7 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/osaka-jade",
       "author": "Noctalia",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/ryotunes-skins/osaka-jade",
       "summary": "Osaka jade colour scheme as a Ryotunes skin",
       "description": "Osaka jade for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -322,6 +346,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/poimandres",
       "author": "Ryoku",
+      "upstream": "https://github.com/drcmda/poimandres-theme",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Poimandres colour scheme as a Ryotunes skin",
       "description": "Poimandres for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -343,6 +369,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/rose-pine-dawn",
       "author": "Ryoku",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/ryotunes-skins/rose-pine-dawn",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Rose Pine Dawn colour scheme as a Ryotunes skin",
       "description": "Rose Pine Dawn for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -364,6 +392,7 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/rose-pine-moon",
       "author": "Noctalia",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/ryotunes-skins/rose-pine-moon",
       "summary": "Rose Pine Moon colour scheme as a Ryotunes skin",
       "description": "Rose Pine Moon for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -385,6 +414,7 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/solarized",
       "author": "Noctalia",
+      "upstream": "https://ethanschoonover.com/solarized/",
       "summary": "Solarized colour scheme as a Ryotunes skin",
       "description": "Solarized for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [
@@ -406,6 +436,8 @@
       "version": "1.0.0",
       "path": "ryotunes-skins/tokyo-night-storm",
       "author": "Ryoku",
+      "upstream": "https://github.com/enkia/tokyo-night-vscode-theme",
+      "discord": "https://discord.gg/8KjBmUEyKA",
       "summary": "Tokyo Night Storm colour scheme as a Ryotunes skin",
       "description": "Tokyo Night Storm for Ryotunes, from the Ryoku colour-scheme catalogue.",
       "tags": [

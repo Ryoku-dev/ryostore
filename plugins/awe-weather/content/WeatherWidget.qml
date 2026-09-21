@@ -239,10 +239,13 @@ Item {
         }
     }
 
+    // Tap anywhere refreshes; press falls through so the host can drag the tile.
     MouseArea {
         anchors.fill: parent
-        onClicked: {
+        propagateComposedEvents: true
+        onClicked: (mouse) => {
             weatherProc.running = true
+            mouse.accepted = false
         }
     }
 }
