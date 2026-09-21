@@ -1,7 +1,7 @@
 {
   "id": "awe-poster",
   "name": "Poster",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
   "license": "BSL-1.0",

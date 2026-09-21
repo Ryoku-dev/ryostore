@@ -1,7 +1,7 @@
 {
   "id": "awe-visualizer",
   "name": "Visualizer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
   "license": "BSL-1.0",

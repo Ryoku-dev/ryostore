@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-git-dashboard",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-git-dashboard",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "c5661e4238270e0e1ca6f3535d00141c78ec1b69cc8ba61867acb3df4c2b9b49",
+      "sha256": "9e5edf51629183290fce220b85dbbeb14284e7ebefbca363e363f3ef132c9da0",
       "mode": "0644",
       "size": 1017,
       "install": true

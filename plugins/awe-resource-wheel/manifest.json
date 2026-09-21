@@ -1,7 +1,7 @@
 {
   "id": "awe-resource-wheel",
   "name": "Resource Wheel",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
   "license": "BSL-1.0",

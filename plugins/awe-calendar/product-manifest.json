@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-calendar",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-calendar",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "22bc1641080276c2acd6ef23c4d1f2a69747a998e32f9e1f9ed90c34d6ff1ae0",
+      "sha256": "b5b2119bf08502b36571148479773e8b9fc7a7bc33efe84d732a01e15fc5a4de",
       "mode": "0644",
       "size": 967,
       "install": true

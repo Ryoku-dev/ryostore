@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-battery",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-battery",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "d4037cf07f3c719102f054bbd17289e307854bc4469dd679a402d77aa2e1da61",
+      "sha256": "b9c149d91fe049a54d4c75394515d07f4ee19aa420f9d0ec0f56f33499a4ef93",
       "mode": "0644",
       "size": 1035,
       "install": true

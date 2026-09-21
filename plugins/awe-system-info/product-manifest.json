@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-system-info",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-system-info",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "5c9b58bb2b7a2f9901576b1857f4caa6526ce7e50b5b232ab1f4fe7554b3f8f8",
+      "sha256": "4a6e2b205b15e2057c8e68d19855e98a75f109edf398d0649b50508ac0b3a26c",
       "mode": "0644",
       "size": 1077,
       "install": true

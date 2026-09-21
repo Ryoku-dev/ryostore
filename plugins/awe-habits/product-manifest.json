@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-habits",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-habits",
   "files": [
     {
@@ -72,7 +72,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "a01a4369bf447a8b0d4ed8b84bb62d5303cf2296d67fb981f006bb4487e4aea9",
+      "sha256": "e5c61a86dd56f37b491e7321ea5251455cafd12ee625f9ae631c1a787428d9a6",
       "mode": "0644",
       "size": 1021,
       "install": true

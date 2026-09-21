@@ -1,7 +1,7 @@
 {
   "id": "awe-todo",
   "name": "Todo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Desktop task list with a progress bar and per-task completion, saved locally.",
   "license": "BSL-1.0",

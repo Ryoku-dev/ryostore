@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-crypto",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-crypto",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "bc02ff0f2f8e806b8f2284e804e428d68af9e44da5625c315c7c59d23a80a811",
+      "sha256": "2db72aeffdf50e26769985a12ca0cee971e4fde9a517eed5504ac93696d1108b",
       "mode": "0644",
       "size": 1042,
       "install": true

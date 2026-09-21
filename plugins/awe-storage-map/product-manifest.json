@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-storage-map",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-storage-map",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "3b0b233ecd4b1b96f06196941253f3646573ca525fbf5975e77d0109e2d87ef3",
+      "sha256": "b9d1142ffd3e2fc113caa6135f869475a7aedd740bd5798f27fefc137ad284db",
       "mode": "0644",
       "size": 1045,
       "install": true

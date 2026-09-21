@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-calc",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-calc",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "8e324dfba93b3d9d15849c1fa85e1a4501c68b27ee684f05e539d51e0d7bc66f",
+      "sha256": "1f5321a7bfd48057ac4a0647a782f33d20f874d1b32f7d1ff0053773893baa4c",
       "mode": "0644",
       "size": 988,
       "install": true

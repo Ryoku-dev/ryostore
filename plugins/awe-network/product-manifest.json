@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-network",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-network",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "0b61ee0e7c65b99c66c3bcf7c1c340f636bb2ca74f5a460e5eb0b4fc86c90a2f",
+      "sha256": "2ecfe1e575d19ffd9d9d334ef91f290fabd482480d8121238027b103c634e26c",
       "mode": "0644",
       "size": 1030,
       "install": true

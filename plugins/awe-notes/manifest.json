@@ -1,7 +1,7 @@
 {
   "id": "awe-notes",
   "name": "Notes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
   "license": "BSL-1.0",
