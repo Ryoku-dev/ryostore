@@ -1,0 +1,44 @@
+{
+  "$schema": "kotoba-deck-1",
+
+  "_help": [
+    "Copy this file into your deck folder, rename it, and edit the cards list.",
+    "Set the folder in the widget's right-click menu under Decks, then reload.",
+    "Kotoba re-reads the folder on every shell start. TEMPLATE.json itself is",
+    "always skipped, so it is safe to leave a copy of it lying around.",
+    "",
+    "id       required, unique, lowercase. Changing it makes a NEW deck and",
+    "         your review history for the old one is kept under the old id.",
+    "name     required, what you see in the deck list.",
+    "license  free text. Anything that is not CC0-1.0 gets credited on the",
+    "         tile, so put the real source here if the words came from one.",
+    "",
+    "Each card needs kana and en. Everything else is optional:",
+    "  jp      the written form. Leave it out and the word IS the kana, which",
+    "          means no reading card is generated for it.",
+    "  romaji  only as an override. It is derived from the kana automatically",
+    "          and you do not need to write it unless the reading is irregular.",
+    "  tags    free labels, for your own use.",
+    "  freq    a number. Lower comes first when new cards are introduced.",
+    "",
+    "Which cards a word earns:",
+    "  meaning  always          reading  only when jp differs from kana",
+    "  recall   always          kana     only for a single kana character"
+  ],
+
+  "id": "my-words",
+  "name": "Words I met in the wild",
+  "license": "CC0-1.0",
+
+  "cards": [
+    { "jp": "猫", "kana": "ねこ", "en": "cat", "tags": ["animal"] },
+
+    { "jp": "図書館", "kana": "としょかん", "en": "library", "freq": 1200 },
+
+    { "kana": "たぶん", "en": "probably, perhaps" },
+
+    { "jp": "一人", "kana": "ひとり", "romaji": "hitori", "en": "one person, alone" },
+
+    { "jp": "珈琲", "kana": "コーヒー", "en": "coffee" }
+  ]
+}

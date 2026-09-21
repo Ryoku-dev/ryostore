@@ -1,0 +1,206 @@
+{
+  "id": "kotoba",
+  "name": "Kotoba",
+  "version": "1.4.0",
+  "author": "CratusGod <nghiabigg652@gmail.com>",
+  "description": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule. Pick the scripts you can read, reveal, and grade yourself; FSRS decides when each word comes back.",
+  "license": "MIT AND CC-BY-SA-4.0",
+  "official": false,
+  "tags": [
+    "japanese",
+    "flashcards",
+    "srs",
+    "fsrs",
+    "learning",
+    "desktop-widget"
+  ],
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "NOTICE",
+    "PROVENANCE.md",
+    "assets/preview-widget.png",
+    "bin/kotoba",
+    "content/CardFace.qml",
+    "content/EmptyState.qml",
+    "content/Furigana.qml",
+    "content/GradeRow.qml",
+    "content/LookupField.qml",
+    "data/decks/TEMPLATE.json",
+    "data/decks/core-vocab.json",
+    "data/decks/kana-hiragana.json",
+    "data/decks/kana-katakana.json"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [
+      "ftp.edrdg.org"
+    ]
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "card"
+    },
+    "icon": "translate",
+    "label": "Kotoba"
+  },
+  "commands": [
+    "bin/kotoba"
+  ],
+  "dependencies": {
+    "commands": [
+      "notify-send",
+      "python3"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "intervalMin",
+        "type": "slider",
+        "label": "Minutes",
+        "group": "Timing",
+        "default": 10,
+        "min": 1,
+        "max": 120,
+        "step": 1,
+        "decimals": 0
+      },
+      {
+        "key": "autoAdvance",
+        "type": "toggle",
+        "label": "Auto-advance",
+        "group": "Timing",
+        "default": false
+      },
+      {
+        "key": "scriptHiragana",
+        "type": "toggle",
+        "label": "Hiragana",
+        "group": "Scripts",
+        "default": true
+      },
+      {
+        "key": "scriptKatakana",
+        "type": "toggle",
+        "label": "Katakana",
+        "group": "Scripts",
+        "default": true
+      },
+      {
+        "key": "scriptKanji",
+        "type": "toggle",
+        "label": "Kanji",
+        "group": "Scripts",
+        "default": true
+      },
+      {
+        "key": "typeRecognition",
+        "type": "toggle",
+        "label": "Meaning (猫 → cat)",
+        "group": "Card types",
+        "default": true
+      },
+      {
+        "key": "typeReading",
+        "type": "toggle",
+        "label": "Reading (猫 → ねこ)",
+        "group": "Card types",
+        "default": true
+      },
+      {
+        "key": "typeRecall",
+        "type": "toggle",
+        "label": "Recall (cat → 猫)",
+        "group": "Card types",
+        "default": false
+      },
+      {
+        "key": "typeKana",
+        "type": "toggle",
+        "label": "Kana drill (ツ → tsu)",
+        "group": "Card types",
+        "default": true
+      },
+      {
+        "key": "showRomaji",
+        "type": "toggle",
+        "label": "Romaji on answer",
+        "group": "Display",
+        "default": true
+      },
+      {
+        "key": "showFurigana",
+        "type": "toggle",
+        "label": "Furigana on kanji",
+        "group": "Display",
+        "default": true
+      },
+      {
+        "key": "showIntervals",
+        "type": "toggle",
+        "label": "Show intervals on buttons",
+        "group": "Display",
+        "default": true
+      },
+      {
+        "key": "notify",
+        "type": "toggle",
+        "label": "Notify on new cards",
+        "group": "Display",
+        "default": false
+      },
+      {
+        "key": "fontScale",
+        "type": "slider",
+        "label": "Text size",
+        "group": "Display",
+        "default": 1.0,
+        "min": 0.8,
+        "max": 1.6,
+        "step": 0.05,
+        "decimals": 2
+      },
+      {
+        "key": "online",
+        "type": "toggle",
+        "label": "Allow download",
+        "group": "Dictionary",
+        "default": false
+      },
+      {
+        "key": "dictPack",
+        "type": "choice",
+        "label": "Pack",
+        "group": "Dictionary",
+        "default": "basic",
+        "options": [
+          {
+            "value": "basic",
+            "label": "Words + kanji (12 MB)"
+          },
+          {
+            "value": "full",
+            "label": "Adds example sentences (21 MB)"
+          }
+        ]
+      },
+      {
+        "key": "decksDir",
+        "type": "text",
+        "label": "Your deck folder",
+        "group": "Decks",
+        "default": "",
+        "placeholder": "~/Documents/kotoba-decks"
+      }
+    ]
+  }
+}
