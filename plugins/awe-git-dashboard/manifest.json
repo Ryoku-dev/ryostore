@@ -1,7 +1,7 @@
 {
   "id": "awe-git-dashboard",
   "name": "Git Dashboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
   "license": "BSL-1.0",

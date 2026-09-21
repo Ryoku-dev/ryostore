@@ -1,7 +1,7 @@
 {
   "id": "awe-clock-world",
   "name": "World Clock",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
   "license": "BSL-1.0",

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-notes",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-notes",
   "files": [
     {
@@ -72,7 +72,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "8839bd958c4060b0a54c5441c7f8db763c961a744109583589eadc4849539e09",
+      "sha256": "f46f62fa249c81b9e1812124eb73a2d828ee580a3fd47176b048ea6102a6f7f9",
       "mode": "0644",
       "size": 1020,
       "install": true

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-weather",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-weather",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "9c4c0764c2e4293284574dc72f3cdd230a77071d0b75c14b500500ef93227b6d",
+      "sha256": "24c44b8477f12cebb3f89bed4c9370c897bb5d0ce32accb7eb62b4c62107b155",
       "mode": "0644",
       "size": 1035,
       "install": true

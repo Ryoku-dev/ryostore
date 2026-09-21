@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-timer",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-timer",
   "files": [
     {
@@ -72,7 +72,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "f4d952f008d27d7484d0696246de509ea06919838a83303c4b758fbbd4be6c1a",
+      "sha256": "8ca014255d10f71737133052c5e85e7bf6e5d7b1ea3815279558c75b0b6154c1",
       "mode": "0644",
       "size": 1032,
       "install": true

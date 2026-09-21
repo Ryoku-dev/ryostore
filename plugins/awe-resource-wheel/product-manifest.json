@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-resource-wheel",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-resource-wheel",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "a2db900a4319bb53ac691f0479f8875955a4da88b15aeb309de432a9246ab0da",
+      "sha256": "0fb6280cb2c5dbee204998a6b1591eda7a40fe79255f557ad410e7d7a3d6f66e",
       "mode": "0644",
       "size": 1104,
       "install": true

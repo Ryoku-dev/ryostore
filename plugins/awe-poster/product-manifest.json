@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-poster",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-poster",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "e6e432f168a322fee962d6fa173ff02eb7ca579bc0d332e3893d80731c3c2711",
+      "sha256": "d5ea6181e04018562609dde9ae8899e7ec596cb9121bbb4a08226480a6c4405c",
       "mode": "0644",
       "size": 963,
       "install": true

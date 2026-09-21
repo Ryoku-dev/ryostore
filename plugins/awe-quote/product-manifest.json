@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-quote",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-quote",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "fc7150595106170e2b60049991fde763077db8190bacf2b440ebe8821175d213",
+      "sha256": "c8f7db3dbb4981de66a8b5800857a90dd19b5da3397dd5c73a7bc054699a77ab",
       "mode": "0644",
       "size": 992,
       "install": true

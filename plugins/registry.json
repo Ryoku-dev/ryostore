@@ -388,7 +388,7 @@
     {
       "id": "awe-battery",
       "name": "Battery",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-battery",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -408,7 +408,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "e3bb0ece5fc174aa1f392ba690dc59b8efc35c985405e9ed417cade87f8a6c42",
+      "manifestSha256": "bca730ada5c2a3ff4e3d7e51b78a81f3766f96127107fff7c812f298c180c069",
       "official": false,
       "tagline": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
       "icon": "battery_full",
@@ -420,7 +420,7 @@
     {
       "id": "awe-calc",
       "name": "Calculator",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-calc",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -440,7 +440,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "30bf84e8c2c27e8374da08fdda2351572be3dce84f194f267b6c2b2726fd3fdb",
+      "manifestSha256": "8faf2878738ac36c26388161505fe64de397c29deb9151fdc4768eebb8c4aaf2",
       "official": false,
       "tagline": "Material-style desktop calculator with a safe expression evaluator.",
       "icon": "calculate",
@@ -452,7 +452,7 @@
     {
       "id": "awe-calendar",
       "name": "Calendar",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-calendar",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -472,7 +472,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "0c5f680b17d32d6b6a8f4e5eab554d67fa0b18f3025015c07b79e659a8a0bd33",
+      "manifestSha256": "ec20b42d44f609a09ebd1c90c53ca8a142552979338c87fd5561c55a3d65c5ed",
       "official": false,
       "tagline": "Compact monthly calendar that highlights today's date.",
       "icon": "calendar_month",
@@ -484,7 +484,7 @@
     {
       "id": "awe-clipboard",
       "name": "Clipboard",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-clipboard",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -503,7 +503,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "f3614b71eb6114135a44b550b6b0e0d8032ae5a51e4e400fe8f7bef8b2930cde",
+      "manifestSha256": "b7ad07efaa1893729b2e9f160349d84d25dd6797af3ffcdb2423932bb195604d",
       "official": false,
       "tagline": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
       "icon": "content_paste",
@@ -515,7 +515,7 @@
     {
       "id": "awe-clock",
       "name": "Clock",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-clock",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -535,7 +535,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "1fa9e7f8dfb0bf507567fea14145cc037c01abd28a29889ed95c67a57c252484",
+      "manifestSha256": "c09accef4780b4b666536e6289b72576aa986478b6d9a0397fb760acc642749e",
       "official": false,
       "tagline": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
       "icon": "schedule",
@@ -547,7 +547,7 @@
     {
       "id": "awe-clock-world",
       "name": "World Clock",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-clock-world",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -568,7 +568,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "3dadc75671159adb3be125ae8fc53c2df33e0cc1763aa82a207a43d60de16aa3",
+      "manifestSha256": "0bb210fa760decddf5084a5624356c8a2df2fee9cbba40718ead3784f5c614cc",
       "official": false,
       "tagline": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
       "icon": "public",
@@ -580,7 +580,7 @@
     {
       "id": "awe-crypto",
       "name": "Crypto",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-crypto",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -600,7 +600,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "d2bfdc1127831024de83299bf4cbf3fa996edd5fc287a0d9db75cb1fe441eeef",
+      "manifestSha256": "cf3c6f727a23666a9a0085bcaaa99a5bc8b269cf936deba04aa8bba426047dc8",
       "official": false,
       "tagline": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
       "icon": "trending_up",
@@ -612,7 +612,7 @@
     {
       "id": "awe-git-dashboard",
       "name": "Git Dashboard",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-git-dashboard",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -632,7 +632,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "3f29240a02ddbd493ea943a42b774aa3add1eec54429c82b7278fa493652403b",
+      "manifestSha256": "701a61013c63b7fcf27b25cdb32f48e321c326556492fd640975accb7eb742bc",
       "official": false,
       "tagline": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
       "icon": "code",
@@ -644,7 +644,7 @@
     {
       "id": "awe-habits",
       "name": "Habits",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-habits",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -664,7 +664,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "a8d976ed48f25c3b4021104febe0b09f3a07009a37d70f49929268730986e624",
+      "manifestSha256": "98fb2cd79d1c0b228f60124a973ee596e53c0ec134eace5bb1489a85222cc54f",
       "official": false,
       "tagline": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
       "icon": "repeat",
@@ -676,7 +676,7 @@
     {
       "id": "awe-media",
       "name": "Media",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-media",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -697,7 +697,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "d917de28c9a3608714526092d7679e9d7073f58f6070d6e5b916d2004c5e7d9f",
+      "manifestSha256": "c1eb76e76f234ae591410c475d2f72f045906cf830e7fca59bb95b1e70c7d4da",
       "official": false,
       "tagline": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
       "icon": "play_circle",
@@ -709,7 +709,7 @@
     {
       "id": "awe-network",
       "name": "Network",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-network",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -729,7 +729,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "13a379877511846e53da450f8785f65e90cdd8d57aadb311d8c0a7b4e6d23fc5",
+      "manifestSha256": "2289540db9871ea13ac8d8db17e24c0e5e338048bd9c8eedba15c4bc4b7336e5",
       "official": false,
       "tagline": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
       "icon": "wifi",
@@ -741,7 +741,7 @@
     {
       "id": "awe-notes",
       "name": "Notes",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-notes",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -761,7 +761,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "e022de68a2dcb1339953f0ce09ba50802d2a46a739b3609e61d81a8a2ec6c9a7",
+      "manifestSha256": "6c6815db3a5674e67857ef7da1834be1ca009189c76351c2d7884bb7cee81f37",
       "official": false,
       "tagline": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
       "icon": "sticky_note_2",
@@ -773,7 +773,7 @@
     {
       "id": "awe-ping",
       "name": "Ping",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-ping",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -793,7 +793,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "17d64c976bae580d001505386152c0a212c70a54a4f95efea82f82fc8bf1f7cd",
+      "manifestSha256": "f26346c3ff70362bb9e679461d3199de95722ce9ec6296e169a4348afd657057",
       "official": false,
       "tagline": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
       "icon": "settings_ethernet",
@@ -805,7 +805,7 @@
     {
       "id": "awe-poster",
       "name": "Poster",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-poster",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -825,7 +825,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "0af58e1ff27390bf13ac149c9934440de674b8b8a4d91e3a65ebe733b10e7f7a",
+      "manifestSha256": "c7cd7732aba7aed4a85527d44206714874b4ead3f7c14394f21a9d7c5e2a3604",
       "official": false,
       "tagline": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
       "icon": "image",
@@ -837,7 +837,7 @@
     {
       "id": "awe-quote",
       "name": "Quote",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-quote",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -857,7 +857,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "261fed4192bfdbef3baa40a99f55d88ce14664ce8fdaf74cfaecdd23c7914b13",
+      "manifestSha256": "5950c23bd5636c75b42bf0229f128cf7352080a65749d3ab462a39c703f5b934",
       "official": false,
       "tagline": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
       "icon": "format_quote",
@@ -869,7 +869,7 @@
     {
       "id": "awe-resource-wheel",
       "name": "Resource Wheel",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-resource-wheel",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -889,7 +889,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "047ce49ed4a91b07c6d803c552cb83a1f0ffd43620358dd5e6fb0d927b66fdd0",
+      "manifestSha256": "bb4c587a1ea6f040ac184bc5814c6e2792766e58d9d6885bf1b5c286dc4af1d8",
       "official": false,
       "tagline": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
       "icon": "speed",
@@ -901,7 +901,7 @@
     {
       "id": "awe-storage-map",
       "name": "Storage Map",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-storage-map",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -921,7 +921,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "ea7022859eef35c5882a0e08a0e686cab7d1acd1f235c25c5c86a7e0cfe4462b",
+      "manifestSha256": "d21dcc5754d88de44adcc20b807ed4f5364bba6b74e69d1c3771eac128c1f569",
       "official": false,
       "tagline": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
       "icon": "storage",
@@ -933,7 +933,7 @@
     {
       "id": "awe-system-info",
       "name": "System Info",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-system-info",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -953,7 +953,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "5c91567079ef4d9a22e97d13320c6ff053102d7a979aef6b9d7e78fb3191a10b",
+      "manifestSha256": "4f84056d16b84573bf24ec5f0509ba4614f5c02f5cdfd5a395b4dff463be9eb2",
       "official": false,
       "tagline": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
       "icon": "info",
@@ -965,7 +965,7 @@
     {
       "id": "awe-thermal",
       "name": "Thermal",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-thermal",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -985,7 +985,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "8906ed7b048a2ea30f9d9397e5e01d9a22b88c9f4e3daa70f94fb555d069ed31",
+      "manifestSha256": "847a679a5ef2575dc7b151fdd3959b3388e7d9469e1134bf86f8119c87d8d91b",
       "official": false,
       "tagline": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
       "icon": "thermostat",
@@ -997,7 +997,7 @@
     {
       "id": "awe-timer",
       "name": "Timer",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-timer",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1017,7 +1017,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "ff80ff397d20d19dc41e41d35cf5b26cd7cf14e17b3583ef8877f1f3d041605f",
+      "manifestSha256": "2e0b328f2113ec0a1048afb83115b503c2721e2bb2666e9ee45ff3c787cf95bf",
       "official": false,
       "tagline": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
       "icon": "timer",
@@ -1029,7 +1029,7 @@
     {
       "id": "awe-todo",
       "name": "Todo",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-todo",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1049,7 +1049,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "a6413e25eeeb23ae691878e0d2e439fe675bf26f1d624da8003294795f8be949",
+      "manifestSha256": "9551656ef27cadd11008599a874d5d9de087fc936aec9204ec2c3e2d450398e6",
       "official": false,
       "tagline": "Desktop task list with a progress bar and per-task completion, saved locally.",
       "icon": "check_square",
@@ -1061,7 +1061,7 @@
     {
       "id": "awe-visualizer",
       "name": "Visualizer",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-visualizer",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1081,7 +1081,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "a7c54c1ab8ce47e2ef0505f3b0e032eaa9f541f34b5731626b52d10ea90fb529",
+      "manifestSha256": "4ebfa1be2a602f03f43713c2f083215fe100dd87523aadfc162b54a430db101b",
       "official": false,
       "tagline": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
       "icon": "graphic_eq",
@@ -1093,7 +1093,7 @@
     {
       "id": "awe-volume-brightness",
       "name": "Volume & Brightness",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-volume-brightness",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1114,7 +1114,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "e29735384baa71539a81fcd5cb1fef9d7475b4a8af61c6c578102b039bf86b9c",
+      "manifestSha256": "3eddd71fb3b2a9cda7c28750f1c238c503d2f42ff9a89d9d9e50b0c5bd3ba934",
       "official": false,
       "tagline": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
       "icon": "volume_up",
@@ -1126,7 +1126,7 @@
     {
       "id": "awe-weather",
       "name": "Weather",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "plugins/awe-weather",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1145,7 +1145,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "2f5285c806379b4e18e3afb592809b7942db5aa9e66d5ef0deac76232b6cc601",
+      "manifestSha256": "29b23ee43f024563d1f0bc2058020ef7ceec33877209cc03e1ecefc8b6c834fd",
       "official": false,
       "tagline": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
       "icon": "partly_cloudy_day",

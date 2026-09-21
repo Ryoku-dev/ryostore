@@ -1,7 +1,7 @@
 {
   "id": "awe-timer",
   "name": "Timer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
   "license": "BSL-1.0",

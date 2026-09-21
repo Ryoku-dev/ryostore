@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-thermal",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-thermal",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "4567a3d9c97d426bd1aec246129bde942de24a1c6fa8dd0fbda49d87930d0827",
+      "sha256": "d9b155f7c5fef3728638fc499401efb5e2f5b499cb8969d4abb3342db80e67c9",
       "mode": "0644",
       "size": 1093,
       "install": true

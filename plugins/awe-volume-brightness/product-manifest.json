@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-volume-brightness",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-volume-brightness",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "2f863def085b8f2c557d11bff3a00d60b1b3d37be7dcae37693a8fe34fd01dc1",
+      "sha256": "72b721b6174049a30670e4e346bcad2998c12bc7a435cb07b5b9fa55b37cdbc7",
       "mode": "0644",
       "size": 1072,
       "install": true

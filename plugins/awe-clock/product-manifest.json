@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-clock",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-clock",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "441d9f5190a605e182c874255eabde50e384eb8902281bd2570d4c6e4cd6bc66",
+      "sha256": "6ace7e9df4d1ec5e81c6c2d58b3b4d2237623123892625851391018683149574",
       "mode": "0644",
       "size": 969,
       "install": true

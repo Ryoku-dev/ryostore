@@ -1,7 +1,7 @@
 {
   "id": "awe-weather",
   "name": "Weather",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
   "license": "BSL-1.0",

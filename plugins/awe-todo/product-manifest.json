@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-todo",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-todo",
   "files": [
     {
@@ -72,7 +72,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "69bcef2d907e9312051f78de966c34f39f375968e79ed1cb32cf5091d4a4e8c4",
+      "sha256": "10cbc5865584b2fd5f49c18f303bf7c9b5c46133cbe52db17cfae501e97642a2",
       "mode": "0644",
       "size": 1014,
       "install": true

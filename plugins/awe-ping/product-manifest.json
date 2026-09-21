@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-ping",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-ping",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "017896026b6f570e6137c29791da98e192194944361bbc1c10e922904348af05",
+      "sha256": "95c566eb48b0d529340731cc72cbbd28423362ee578a3bb2e93647f385935de6",
       "mode": "0644",
       "size": 1048,
       "install": true

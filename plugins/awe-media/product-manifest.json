@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-media",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-media",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "9170dc3e5583c5adf41d3ed6fdbd383b22dd941534f0898f2dab915f4b437c13",
+      "sha256": "878b5f94e1a35b9d8368f754a61763aa97e78cddaf7138f2105d57ccb32ae669",
       "mode": "0644",
       "size": 1033,
       "install": true

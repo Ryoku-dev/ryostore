@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-visualizer",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-visualizer",
   "files": [
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "ef7f3cba5c77d62bbac506f6ea7db6000f562a3747feb5cee85062523793d849",
+      "sha256": "f9af339e2157f586abac5f7af3ebdea3d0409032f0171ab6c90f02924e1e2a7d",
       "mode": "0644",
       "size": 1037,
       "install": true

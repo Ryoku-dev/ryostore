@@ -1,7 +1,7 @@
 {
   "id": "awe-clock",
   "name": "Clock",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
   "license": "BSL-1.0",

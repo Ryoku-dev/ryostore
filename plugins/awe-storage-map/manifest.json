@@ -1,7 +1,7 @@
 {
   "id": "awe-storage-map",
   "name": "Storage Map",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "neur0map <hello@ryoku.dev>",
   "description": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
   "license": "BSL-1.0",

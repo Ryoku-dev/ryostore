@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-clipboard",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/awe-clipboard",
   "files": [
     {
@@ -72,7 +72,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "9712e7eb1c4c769eb5ab1eb4e1845b8841f773e93c9d4361c9bdfbfa15098f36",
+      "sha256": "c44ccae64d2bf223501f01b9c49426691d145f6a6d12978969c3e7e682595dff",
       "mode": "0644",
       "size": 1077,
       "install": true
