@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "awe-volume-brightness",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/awe-volume-brightness",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "mode": "0644",
+      "size": 1338,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "91d64f603333afde05e1f6fc5a0dda00dc153f000cc7964fc49981e9aaa60052",
+      "mode": "0644",
+      "size": 867,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "ff83ab7aceaf921e83664d3a3a3114666d505bdfc40bb0aeca06717b6f4ca1cb",
+      "mode": "0644",
+      "size": 20382,
+      "install": false
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "content/Theme.qml",
+      "sha256": "e7b1b160d8e2efa108421dd1c48f1217f5284fac770cbed7b323f7130ceaf7bb",
+      "mode": "0644",
+      "size": 12429,
+      "install": true
+    },
+    {
+      "source": "content/VolumeBrightnessWidget.qml",
+      "destination": "content/VolumeBrightnessWidget.qml",
+      "sha256": "03946b61064ea1d4de0e6419c8d38390f9406c74691398ec3057903eeba25b91",
+      "mode": "0644",
+      "size": 15525,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "55e581c17ec5a98f238db8e82e18ec8d450765cf088ccfb9c3f9959af7523add",
+      "mode": "0644",
+      "size": 612,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "8ecfb3dc8d467739a330669e8866a531c33b81f05b0158c4441259ed54cba5af",
+      "mode": "0644",
+      "size": 80,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "f2e8310971b3ff1ab4c8462ac7ac5a42c75cf6faa0e171cf8f30fd1b5d96da01",
+      "mode": "0644",
+      "size": 973,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "49d5233fd543e6c5e6100d96ad21c484c2606e5da1f734b70c42ccd8615f41ac",
+      "mode": "0644",
+      "size": 97,
+      "install": true
+    }
+  ]
+}

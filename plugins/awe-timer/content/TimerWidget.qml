@@ -1,0 +1,410 @@
+import QtQuick
+import Quickshell
+import Quickshell.Io
+import "."
+
+Item {
+    id: root
+    implicitWidth: 240
+    implicitHeight: 230
+
+    // Timer State
+    property string timerMode: "focus" // "focus" (25m), "break" (5m), "custom", "stopwatch"
+    property int totalSec: 1500
+    property int remainingSec: 1500
+    property bool isRunning: false
+
+    function getFormattedTime() {
+        var m = Math.floor(root.remainingSec / 60)
+        var s = Math.floor(root.remainingSec % 60)
+        return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s)
+    }
+
+    function setMode(mode) {
+        root.timerMode = mode
+        root.isRunning = false
+        if (mode === "focus") {
+            root.totalSec = 1500
+            root.remainingSec = 1500
+        } else if (mode === "break") {
+            root.totalSec = 300
+            root.remainingSec = 300
+        } else if (mode === "custom") {
+            if (root.totalSec < 60) root.totalSec = 600
+            root.remainingSec = root.totalSec
+        } else if (mode === "stopwatch") {
+            root.totalSec = 3600
+            root.remainingSec = 0
+        }
+        ringCanvas.requestPaint()
+        Store.save("timer", { mode: root.timerMode, totalSec: root.totalSec })
+    }
+
+    function adjustTime(deltaSec) {
+        if (root.timerMode === "stopwatch") return
+        var newSec = Math.max(60, Math.min(7200, (root.isRunning ? root.remainingSec : root.totalSec) + deltaSec))
+        if (!root.isRunning) {
+            root.totalSec = newSec
+            root.remainingSec = newSec
+            if (root.timerMode !== "focus" && root.timerMode !== "break") {
+                root.timerMode = "custom"
+            }
+        } else {
+            root.remainingSec = newSec
+            if (newSec > root.totalSec) root.totalSec = newSec
+        }
+        ringCanvas.requestPaint()
+        Store.save("timer", { mode: root.timerMode, totalSec: root.totalSec })
+    }
+
+    Timer {
+        interval: 1000
+        running: root.isRunning
+        repeat: true
+        onTriggered: {
+            if (root.timerMode === "stopwatch") {
+                root.remainingSec++
+            } else {
+                if (root.remainingSec > 0) {
+                    root.remainingSec--
+                } else {
+                    root.isRunning = false
+                }
+            }
+            ringCanvas.requestPaint()
+        }
+    }
+
+    Component.onCompleted: {
+        var t = Store.doc.timer
+        if (t) {
+            if (t.mode !== undefined) root.timerMode = t.mode
+            if (t.totalSec !== undefined) {
+                root.totalSec = t.totalSec
+                root.remainingSec = t.totalSec
+            }
+        }
+    }
+
+    // Theme Palette
+    readonly property color colBg: Theme.colBg
+    readonly property color colPillBg: Theme.colPillBg
+    readonly property color colAccent: Theme.colAccent
+    readonly property color colAccentGreen: Theme.colAccentGreen
+    readonly property color colAccentAmber: Theme.colAccentWarning
+    readonly property color colTextPrimary: Theme.colTextPrimary
+    readonly property color colTextSecondary: Theme.colTextSecondary
+
+    // ─── Scaled Visual Content ───
+    Item {
+        id: scaledContent
+        width: 240
+        height: 230
+        transformOrigin: Item.TopLeft
+
+        // Main Card
+        Rectangle {
+            anchors.fill: parent
+            color: root.colBg
+            radius: 32
+            border.color: Theme.borderColor
+            border.width: Theme.borderWidth
+            clip: true
+            antialiasing: true
+
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 1.5
+                color: Theme.glassGloss
+                visible: Theme.isGlass
+            }
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 14
+                spacing: 8
+
+                // Header Mode Pills (Focus / Break / Watch)
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 6
+
+                    // Focus Pill (25m)
+                    Rectangle {
+                        height: 22
+                        width: 60
+                        radius: 11
+                        color: root.timerMode === "focus" ? root.colAccent : root.colPillBg
+                        antialiasing: true
+                        Text {
+                            anchors.centerIn: parent
+                            text: "25m"
+                            color: root.timerMode === "focus" ? "#1E2A30" : root.colTextSecondary
+                            font.pixelSize: 10
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.setMode("focus")
+                        }
+                    }
+
+                    // Break Pill (5m)
+                    Rectangle {
+                        height: 22
+                        width: 60
+                        radius: 11
+                        color: root.timerMode === "break" ? root.colAccentGreen : root.colPillBg
+                        antialiasing: true
+                        Text {
+                            anchors.centerIn: parent
+                            text: "5m"
+                            color: root.timerMode === "break" ? "#1E2A30" : root.colTextSecondary
+                            font.pixelSize: 10
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.setMode("break")
+                        }
+                    }
+
+                    // Stopwatch Pill
+                    Rectangle {
+                        height: 22
+                        width: 60
+                        radius: 11
+                        color: root.timerMode === "stopwatch" ? root.colAccentAmber : root.colPillBg
+                        antialiasing: true
+                        Text {
+                            anchors.centerIn: parent
+                            text: "Watch"
+                            color: root.timerMode === "stopwatch" ? "#1E2A30" : root.colTextSecondary
+                            font.pixelSize: 10
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.setMode("stopwatch")
+                        }
+                    }
+                }
+
+                // Middle: Circular Progress Ring with Interactive Time Adjustment Buttons
+                Item {
+                    width: parent.width
+                    height: 116
+
+                    // Circular Progress Canvas
+                    Canvas {
+                        id: ringCanvas
+                        width: 116
+                        height: 116
+                        anchors.centerIn: parent
+                        antialiasing: true
+
+                        onPaint: {
+                            var ctx = getContext("2d")
+                            ctx.reset()
+                            var cx = width / 2
+                            var cy = height / 2
+                            var r = 50
+
+                            // Inactive Base Ring
+                            ctx.strokeStyle = root.colPillBg
+                            ctx.lineWidth = 6
+                            ctx.beginPath()
+                            ctx.arc(cx, cy, r, 0, Math.PI * 2)
+                            ctx.stroke()
+
+                            // Active Progress Arc
+                            var ratio = (root.totalSec > 0) ? (root.remainingSec / root.totalSec) : 0
+                            if (root.timerMode === "stopwatch") ratio = (root.remainingSec % 60) / 60.0
+
+                            ctx.strokeStyle = (root.timerMode === "break") ? root.colAccentGreen : (root.timerMode === "stopwatch" ? root.colAccentAmber : root.colAccent)
+                            ctx.lineWidth = 6
+                            ctx.lineCap = "round"
+                            ctx.beginPath()
+                            ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + (ratio * Math.PI * 2), false)
+                            ctx.stroke()
+                        }
+                    }
+
+                    // Left Minus Button (-1m / -5m)
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 26
+                        height: 26
+                        radius: 13
+                        color: minusArea.containsMouse ? "#33FFFFFF" : root.colPillBg
+                        visible: root.timerMode !== "stopwatch"
+                        antialiasing: true
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "-1m"
+                            color: "#FFFFFF"
+                            font.pixelSize: 9
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                        }
+
+                        MouseArea {
+                            id: minusArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.adjustTime(-60)
+                        }
+                    }
+
+                    // Center Time Display
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 0
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: root.getFormattedTime()
+                            color: root.colTextPrimary
+                            font.pixelSize: 21
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                        }
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: root.isRunning ? "RUNNING" : (root.timerMode === "custom" ? "CUSTOM" : "PAUSED")
+                            color: root.isRunning ? root.colAccent : root.colTextSecondary
+                            font.pixelSize: 8
+                            font.bold: true
+                            font.letterSpacing: 0.6
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+                    }
+
+                    // Right Plus Button (+1m / +5m)
+                    Rectangle {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 26
+                        height: 26
+                        radius: 13
+                        color: plusArea.containsMouse ? "#33FFFFFF" : root.colPillBg
+                        visible: root.timerMode !== "stopwatch"
+                        antialiasing: true
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "+1m"
+                            color: "#FFFFFF"
+                            font.pixelSize: 9
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                        }
+
+                        MouseArea {
+                            id: plusArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.adjustTime(60)
+                        }
+                    }
+                }
+
+                // Bottom Controls: Play/Pause + Reset + +5m Quick Pill
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 8
+
+                    // Play / Pause Button
+                    Rectangle {
+                        width: 68
+                        height: 28
+                        radius: 14
+                        color: root.isRunning ? "#FFB4AB" : root.colAccent
+                        antialiasing: true
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: root.isRunning ? "Pause" : "Start"
+                            color: "#1E2A30"
+                            font.pixelSize: 11
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                root.isRunning = !root.isRunning
+                                ringCanvas.requestPaint()
+                            }
+                        }
+                    }
+
+                    // Reset Button
+                    Rectangle {
+                        width: 58
+                        height: 28
+                        radius: 14
+                        color: root.colPillBg
+                        antialiasing: true
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "Reset"
+                            color: "#FFFFFF"
+                            font.pixelSize: 11
+                            font.family: "Google Sans Flex, Google Sans, Inter, sans-serif"
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.setMode(root.timerMode)
+                        }
+                    }
+
+                    // +5m Quick Adjustment Pill
+                    Rectangle {
+                        width: 44
+                        height: 28
+                        radius: 14
+                        color: root.colPillBg
+                        visible: root.timerMode !== "stopwatch"
+                        antialiasing: true
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "+5m"
+                            color: root.colAccent
+                            font.pixelSize: 10
+                            font.bold: true
+                            font.family: "Google Sans Flex, Google Sans, Inter, monospace"
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.adjustTime(300)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

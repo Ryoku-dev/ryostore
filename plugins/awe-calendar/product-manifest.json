@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "awe-calendar",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/awe-calendar",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "mode": "0644",
+      "size": 1338,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "4958327a049d63af4ebb0f8841ca6ae6dbdd378a114787cfca73ad80cc23ff99",
+      "mode": "0644",
+      "size": 517,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "4c39ac3f9c973828a85f70abdb09019ff6a9c6e1f278a067ca89486689ce290a",
+      "mode": "0644",
+      "size": 30307,
+      "install": false
+    },
+    {
+      "source": "content/CalendarWidget.qml",
+      "destination": "content/CalendarWidget.qml",
+      "sha256": "b6842928b05d7b99b080199317faaab110be7efdc6c83aa2d7dfab4f57a0f097",
+      "mode": "0644",
+      "size": 8479,
+      "install": true
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "content/Theme.qml",
+      "sha256": "20c1ed192503f940547212112c8c2434aef12041f0b3679b88b0478f59c61419",
+      "mode": "0644",
+      "size": 12563,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "248e1f2481332eea5e4ee7972586543fe4092a0154998a0cb53553900dc4974c",
+      "mode": "0644",
+      "size": 803,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "a1a72b4a75af53b12e8bbf697d1da15684a1719c6356bd8b101c435d8849610e",
+      "mode": "0644",
+      "size": 64,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "9c798a504b7b44c714b2fb4aedbeda07856627249312769426213dafb0c25fee",
+      "mode": "0644",
+      "size": 869,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "49d5233fd543e6c5e6100d96ad21c484c2606e5da1f734b70c42ccd8615f41ac",
+      "mode": "0644",
+      "size": 97,
+      "install": true
+    }
+  ]
+}

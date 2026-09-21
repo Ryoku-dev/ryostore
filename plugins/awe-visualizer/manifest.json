@@ -1,0 +1,48 @@
+{
+  "id": "awe-visualizer",
+  "name": "Visualizer",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "audio",
+    "visualizer",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/VisualizerWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "graphic_eq",
+    "label": "Visualizer"
+  },
+  "dependencies": {
+    "commands": [
+      "playerctl"
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "id": "awe-clipboard",
+  "name": "Clipboard",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "clipboard",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/Store.qml",
+    "content/ClipboardWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "content_paste",
+    "label": "Clipboard"
+  },
+  "dependencies": {
+    "commands": [
+      "wl-paste",
+      "wl-copy",
+      "mkdir"
+    ]
+  }
+}

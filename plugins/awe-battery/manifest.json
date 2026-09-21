@@ -1,0 +1,49 @@
+{
+  "id": "awe-battery",
+  "name": "Battery",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "battery",
+    "power",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/BatteryWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "battery_full",
+    "label": "Battery"
+  },
+  "dependencies": {
+    "commands": [
+      "cat",
+      "head"
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "id": "awe-calendar",
+  "name": "Calendar",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Compact monthly calendar that highlights today's date.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "calendar",
+    "date",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/CalendarWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "calendar_month",
+    "label": "Calendar"
+  },
+  "dependencies": {
+    "commands": []
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "id": "awe-clock",
+  "name": "Clock",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "clock",
+    "time",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/Clock.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "schedule",
+    "label": "Clock"
+  },
+  "dependencies": {
+    "commands": []
+  }
+}

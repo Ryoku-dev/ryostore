@@ -1,0 +1,49 @@
+{
+  "id": "awe-weather",
+  "name": "Weather",
+  "version": "1.0.0",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "weather",
+    "desktop-widget",
+    "awe"
+  ],
+  "set": "Awe",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/WeatherWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [
+      "wttr.in"
+    ]
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "partly_cloudy_day",
+    "label": "Weather"
+  },
+  "dependencies": {
+    "commands": [
+      "curl"
+    ]
+  }
+}

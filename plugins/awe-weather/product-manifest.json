@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "awe-weather",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/awe-weather",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "mode": "0644",
+      "size": 1338,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "300fa6792b60d93c3df0149834cf959deff6ef3e1686e765ebfbeae5d2d805d2",
+      "mode": "0644",
+      "size": 428,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "9375a9caf51755c634b26622996fb8b1840ad94dc95d1a78071f9d030404b9ca",
+      "mode": "0644",
+      "size": 26977,
+      "install": false
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "content/Theme.qml",
+      "sha256": "e7b1b160d8e2efa108421dd1c48f1217f5284fac770cbed7b323f7130ceaf7bb",
+      "mode": "0644",
+      "size": 12429,
+      "install": true
+    },
+    {
+      "source": "content/WeatherWidget.qml",
+      "destination": "content/WeatherWidget.qml",
+      "sha256": "187415189c3f10db82eede3648c87f1fe0988716a3ac38889984e40de9ca07cc",
+      "mode": "0644",
+      "size": 8689,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "45f6b997acd157a8a6f8d29c1b08c7542d9fc05068d4f9cd865c705848120570",
+      "mode": "0644",
+      "size": 603,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "af04ab708288d23e16d690fb0f5ff6fb88fceee8a9327246582bd58192c89a38",
+      "mode": "0644",
+      "size": 62,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "29b166639df18168627f8dfbb9f4ee43e81b6455cb8ab27e9c16e6ab61c2f357",
+      "mode": "0644",
+      "size": 937,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "49d5233fd543e6c5e6100d96ad21c484c2606e5da1f734b70c42ccd8615f41ac",
+      "mode": "0644",
+      "size": 97,
+      "install": true
+    }
+  ]
+}
