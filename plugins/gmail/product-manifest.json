@@ -24,25 +24,25 @@
     {
       "source": "NOTICE",
       "destination": "NOTICE",
-      "sha256": "9eea088b869206e9148c703d395bed30970b62705fa62b45571f067702dd7a14",
+      "sha256": "9e5e742575473228462d9290050e428378d4ea0c5bbcb0e62bf3049e7be4d964",
       "mode": "0644",
-      "size": 3471,
+      "size": 3466,
       "install": false
     },
     {
       "source": "PROVENANCE.md",
       "destination": "PROVENANCE.md",
-      "sha256": "6279d9df0922bc542bd230f02feba46c98e289ff6496be3a7dac19396b6480c4",
+      "sha256": "12cc6c7d512e6a2e81f04f4e36172c7a677d2e3bcfe0b6614cc2349c9e68fa0d",
       "mode": "0644",
-      "size": 3734,
+      "size": 3771,
       "install": true
     },
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "6325dcd07ca155ab4861a1fae76d7e25d5a15761c52d2217ba96e50ca1a32bcc",
+      "sha256": "dcb1f1898bc156be7b695605eadce235f2a43910924ae31a99605a69fc89aa0e",
       "mode": "0644",
-      "size": 5084,
+      "size": 5074,
       "install": false
     },
     {
