@@ -61,8 +61,8 @@ Item {
      * the active one marked, so the OSD would only be a redundant morph.
      */
     readonly property string activeWsName: {
-        var mon = Wm.outputByName(screenName);
-        return mon && mon.activeWorkspace ? String(mon.activeWorkspace) : "";
+        var key = Workspacerules.activeKeyFor(screenName);
+        return key !== null ? String(key) : "";
     }
     onActiveWsNameChanged: if (activeWsName.length > 0 && !expanded) flash("workspace");
 

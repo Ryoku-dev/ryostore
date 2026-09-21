@@ -16,6 +16,13 @@ import "Singletons"
  * with the ones the compositor currently has on it, so a split setup shows every
  * dot its screen owns while a workspace outside that set (one past the last
  * named slot) still appears instead of vanishing from the strip.
+ *
+ * Workspace identity is resolved through [[Workspacerules.workspaceKey]]
+ * rather than read straight off [[name]]: Hyprland names a workspace after
+ * its numeric id, but niri workspaces are usually unnamed and are otherwise
+ * identified by their per-output position or global id. Using the same
+ * fallback everywhere here (range, active detection, click targeting) keeps
+ * the strip populated and the active dot correct on both.
  */
 Item {
     id: workspaces
@@ -42,27 +49,26 @@ Item {
         var wss = Wm.workspaces;
         for (var i = 0; i < wss.length; i++) {
             var w = wss[i];
-            var id = parseInt(String(w.name), 10);
-            if (w.special !== true && id >= 1 && w.output === screenName && !seen[id]) {
+            if (w.special === true || w.output !== screenName)
+                continue;
+            var id = Workspacerules.workspaceKey(w);
+            if (id !== null && !seen[id]) {
                 seen[id] = true;
                 out.push(id);
             }
         }
-        var a = parseInt(activeName);
-        if (a >= 1 && !seen[a])
-            out.push(a);
+        if (activeKey !== null && !seen[activeKey])
+            out.push(activeKey);
         out.sort(function (x, y) { return x - y; });
         return out;
     }
 
-    readonly property string activeName: {
-        var mon = Wm.outputByName(screenName);
-        return mon && mon.activeWorkspace ? String(mon.activeWorkspace) : "";
-    }
+    readonly property var activeKey: Workspacerules.activeKeyFor(screenName)
+    readonly property string activeName: activeKey !== null ? String(activeKey) : ""
 
     property int hoverIndex: -1
 
-    readonly property int activeIndex: range.indexOf(parseInt(activeName))
+    readonly property int activeIndex: activeKey !== null ? range.indexOf(activeKey) : -1
 
     /**
      * Centre x of a dot slot from target layout widths (active stick is wider).
@@ -82,6 +88,46 @@ Item {
         return Qt.point(slotCenterX(Math.max(0, activeIndex)), height / 2);
     }
 
+    /**
+     * [[range]] is a freshly-built JS array on every recompute, and a plain
+     * array model gives Repeater no way to tell "the same dots, one value
+     * changed" apart from "a different set of dots" -- any change to its
+     * value destroys and recreates every delegate from scratch, which skips
+     * the width [[Behavior]] entirely (there is nothing to transition from
+     * on a brand new item). Hyprland rarely notices because its workspace
+     * set is stable across a plain focus switch; niri keeps one empty
+     * trailing workspace per output and garbage-collects it as you leave,
+     * so the set itself churns on nearly every switch. Mirroring [[range]]
+     * into this ListModel with a targeted insert/remove diff -- instead of
+     * handing Repeater the array directly -- keeps untouched dots' delegate
+     * items alive (and animating) and only pops the genuinely added/removed
+     * one in or out.
+     */
+    ListModel { id: wsModel }
+
+    function syncWsModel() {
+        var target = workspaces.range;
+        for (var i = wsModel.count - 1; i >= 0; i--) {
+            if (target.indexOf(wsModel.get(i).wsId) === -1)
+                wsModel.remove(i);
+        }
+        for (var j = 0; j < target.length; j++) {
+            var id = target[j];
+            var present = false;
+            for (var k = 0; k < wsModel.count; k++) {
+                if (wsModel.get(k).wsId === id) {
+                    present = true;
+                    break;
+                }
+            }
+            if (!present)
+                wsModel.insert(j, { wsId: id });
+        }
+    }
+
+    onRangeChanged: syncWsModel()
+    Component.onCompleted: syncWsModel()
+
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight
 
@@ -92,15 +138,15 @@ Item {
         spacing: workspaces.gap
 
         Repeater {
-            model: workspaces.range
+            model: wsModel
 
             delegate: Item {
                 id: slot
 
-                required property var modelData
+                required property int wsId
                 required property int index
 
-                readonly property string wsName: String(modelData)
+                readonly property string wsName: String(wsId)
                 readonly property bool isActive: workspaces.activeName === wsName
 
                 Layout.preferredWidth: slot.isActive ? workspaces.stickW : workspaces.dotW
@@ -126,6 +172,10 @@ Item {
                     anchors.bottomMargin: -8 * workspaces.s
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
+                    // Same resolved key used to build the range and match the
+                    // active dot (see the file doc comment), so an unnamed
+                    // niri workspace is targeted by its idx/id instead of a
+                    // blank name.
                     onClicked: Wm.focusWorkspace(slot.wsName)
                     onContainsMouseChanged: {
                         if (containsMouse)

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "ricelin",
   "category": "barstyles",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "destination": "ryoku/barstyles/ricelin",
   "files": [
     {
@@ -185,8 +185,8 @@
       "source": "Osd.qml",
       "destination": "Osd.qml",
       "mode": "0644",
-      "size": 19335,
-      "sha256": "169ae49fa0786e22b2b6d20e2f088693a4b14ae00a671351da523b63dee14475",
+      "size": 19317,
+      "sha256": "1221d42ffc4fee9089a564832f0c0f27be337b564de69ddaac751a006b96f980",
       "install": true
     },
     {
@@ -441,8 +441,8 @@
       "source": "Singletons/Workspacerules.qml",
       "destination": "Singletons/Workspacerules.qml",
       "mode": "0644",
-      "size": 1308,
-      "sha256": "73218d2150fbb14619101640f2ec20930feebdfecef21a456f53e95cb9eae84f",
+      "size": 4454,
+      "sha256": "0d481bd6fce5c1ef1dce673db5516bfcd8db0b0bc0405e0d6f5e81f15041cd2c",
       "install": true
     },
     {
@@ -529,8 +529,8 @@
       "source": "Workspaces.qml",
       "destination": "Workspaces.qml",
       "mode": "0644",
-      "size": 4945,
-      "sha256": "2a0f9da77a87fd46d3dc555fa698eebdd26b360c0372f37af815bc2fb22de07e",
+      "size": 7355,
+      "sha256": "abffcb0978a771269d4fe43407e05b326b81eda72395b223e356a0e2f2b7d08f",
       "install": true
     },
     {
