@@ -1,4 +1,19 @@
 {
   "schema": 1,
-  "exceptions": []
+  "exceptions": [
+    {
+      "rule": "config.sensitive_write",
+      "path": "bundles/spiceflow/installers/ryoku-palette-bridge.sh",
+      "sha256": "509511675f9571466864aab562155252b8e21c16a833b53ea381f229b26358ec",
+      "reason": "Deliberately enables and starts the user's selected Ryoku Palette Bridge service upon installation.",
+      "expires": "2026-12-31"
+    },
+    {
+      "rule": "config.sensitive_write",
+      "path": "installers/ryoku-palette-bridge.sh",
+      "sha256": "509511675f9571466864aab562155252b8e21c16a833b53ea381f229b26358ec",
+      "reason": "Compatibility copy; deliberately enables and starts the user's selected Ryoku Palette Bridge service upon installation.",
+      "expires": "2026-12-31"
+    }
+  ]
 }
