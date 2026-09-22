@@ -31,6 +31,9 @@ Item {
     property int  userIndex:    (typeof userModel !== "undefined" && userModel.lastIndex >= 0) ? userModel.lastIndex : 0
     property int  sessionIndex: (typeof sessionModel !== "undefined" && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
     property bool loginError:   false
+    // -1 = typing the password. 0 user, 1 session, 2 shutdown, 3 reboot.
+    property int  navIndex:     -1
+    readonly property bool navActive: navIndex >= 0
     property bool userMenuOpen: false
 
     // Fonts
@@ -44,6 +47,61 @@ Item {
     // Helpers
     ListView { id: sessionHelper; model: typeof sessionModel !== "undefined" ? sessionModel : null; currentIndex: root.sessionIndex; opacity: 0; width: 1; height: 1; z: -100; delegate: Item { property string sName: model.name || "" } }
     ListView { id: userHelper;    model: typeof userModel !== "undefined" ? userModel : null;    currentIndex: root.userIndex;    opacity: 0; width: 1; height: 1; z: -100; delegate: Item { property string uName: model.realName || model.name || ""; property string uLogin: model.name || "" } }
+
+    // The session entry only exists in the SDDM greeter.
+    function navUsable(i) { return i === 1 ? !root.isQuickshell : (i >= 0 && i <= 3) }
+    function navEnter() {
+        var i = 0
+        while (i <= 3 && !navUsable(i)) i++
+        root.navIndex = i
+        navKeys.forceActiveFocus()
+    }
+    function navLeave() {
+        root.navIndex = -1
+        root.userMenuOpen = false
+        passInput.forceActiveFocus()
+    }
+    function navMove(step) {
+        var i = root.navIndex
+        for (var n = 0; n < 4; n++) {
+            i += step
+            if (i < 0) i = 3
+            if (i > 3) i = 0
+            if (navUsable(i)) break
+        }
+        root.navIndex = i
+    }
+    function navActivate() {
+        if (typeof sddm === "undefined") return
+        switch (root.navIndex) {
+        case 0:
+            if (typeof userModel !== "undefined" && userModel.rowCount() > 0)
+                root.userMenuOpen = !root.userMenuOpen
+            break
+        case 1:
+            if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0) toggleAnim.start()
+            break
+        case 2: sddm.powerOff(); break
+        case 3: sddm.reboot();   break
+        }
+    }
+
+    // Focus holder while navigating. The password field keeps focus otherwise, so
+    // arrow keys still move the text cursor while typing.
+    Item {
+        id: navKeys
+        width: 0; height: 0
+        Keys.onPressed: function (event) {
+            switch (event.key) {
+            case Qt.Key_Left:  case Qt.Key_Up:    root.navMove(-1); event.accepted = true; break
+            case Qt.Key_Right: case Qt.Key_Down:
+            case Qt.Key_Tab:                      root.navMove(1);  event.accepted = true; break
+            case Qt.Key_Return: case Qt.Key_Enter:
+            case Qt.Key_Space:                    root.navActivate(); event.accepted = true; break
+            case Qt.Key_Escape: case Qt.Key_Backtab: root.navLeave(); event.accepted = true; break
+            }
+        }
+    }
 
     function login() {
         var n = (userHelper.currentItem && userHelper.currentItem.uName !== "") ? userHelper.currentItem.uLogin : (typeof userModel !== "undefined" ? userModel.lastUser : "")
@@ -273,7 +331,7 @@ Item {
                         font.family: mainFont.name; font.weight: Font.Bold; style: Text.Outline; styleColor: root.outline
                         font.pixelSize: 46 * s
                         font.letterSpacing: 1 * s
-                        color: uMa.containsMouse ? root.accent : root.textPrimary
+                        color: (uMa.containsMouse || root.navIndex === 0) ? root.accent : root.textPrimary
                         Behavior on color { ColorAnimation { duration: 300 } }
                         MouseArea { 
                             id: uMa
@@ -311,6 +369,8 @@ Item {
                         cursorVisible: false
                         cursorDelegate: Item { width: 0; height: 0 }
                         onAccepted: root.login()
+                        Keys.onDownPressed: function (event) { root.navEnter(); event.accepted = true }
+                        Keys.onTabPressed:  function (event) { root.navEnter(); event.accepted = true }
                         onTextEdited: {
                             root.loginError = false
                             errText.text = ""
@@ -539,6 +599,17 @@ Item {
             anchors.rightMargin: uiContainer.edge
             spacing: 80 * s
             height: 30 * s
+
+            Text {
+                text: root.navActive ? "ESC: BACK" : "TAB: OPTIONS"
+                font.family: mainFont.name; font.weight: Font.Bold; style: Text.Outline; styleColor: root.outline
+                font.pixelSize: 16 * s
+                font.letterSpacing: 2 * s
+                color: root.textSecondary
+                opacity: 0.55
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
             Row {
                 spacing: 60 * s
                 anchors.verticalCenter: parent.verticalCenter
@@ -550,7 +621,13 @@ Item {
                         font.pixelSize: 20 * s
                         font.letterSpacing: 2 * s
                         anchors.verticalCenter: parent.verticalCenter
-                        color: pMa.containsMouse ? root.accent : root.textSecondary
+                        color: (pMa.containsMouse || root.navIndex === 2 + index) ? root.accent : root.textSecondary
+                        Rectangle {
+                            anchors.top: parent.bottom; anchors.topMargin: 4 * s
+                            anchors.left: parent.left; anchors.right: parent.right
+                            height: 2 * s; color: root.accent
+                            visible: root.navIndex === 2 + index
+                        }
                         Behavior on color { ColorAnimation { duration: 250 } }
                         MouseArea { 
                             id: pMa
@@ -590,7 +667,13 @@ Item {
                         font.pixelSize: 20 * s
                         font.letterSpacing: 2 * s
                         anchors.verticalCenter: parent.verticalCenter
-                        color: sMa.containsMouse ? root.accent : root.textSecondary
+                        color: (sMa.containsMouse || root.navIndex === 1) ? root.accent : root.textSecondary
+                        Rectangle {
+                            anchors.top: parent.bottom; anchors.topMargin: 4 * s
+                            anchors.left: parent.left; anchors.right: parent.right
+                            height: 2 * s; color: root.accent
+                            visible: root.navIndex === 1
+                        }
                         Behavior on color { ColorAnimation { duration: 250 } }
                         transform: Translate { id: sessTrans; x: 0 }
                     }

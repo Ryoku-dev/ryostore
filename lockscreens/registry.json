@@ -840,7 +840,7 @@
     {
       "id": "world-machine",
       "name": "World Machine",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "lockscreens/world-machine",
       "author": "CratusGod",
       "upstream": "https://github.com/CratusGod/Oneshot-themed-Ryoku",
@@ -859,9 +859,9 @@
         "assets/preview.gif"
       ],
       "manifest": "manifest.json",
-      "manifestSha256": "a5f50095dcb2a445591428e5ecc0e9ba44c5ab46e490b8befe2f044fb1fb73c5",
+      "manifestSha256": "bcb8397c0c71400fada6957b75d6d66ac03aaeb4aaf41d30e88bb9cf5acdb5c4",
       "official": false,
-      "lastUpdated": "2026-09-15"
+      "lastUpdated": "2026-09-22"
     },
     {
       "id": "wuwa",
