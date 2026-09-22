@@ -3,6 +3,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 installer="$repo_root/bundles/spiceflow/installers/ryoku-palette-bridge.sh"
+cmp "$installer" "$repo_root/installers/ryoku-palette-bridge.sh"
 expected_commit=$(sed -n 's/^commit=//p' "$installer")
 test_root=$(mktemp -d /tmp/ryostore-palette-installer.XXXXXX)
 trap 'rm -rf "$test_root"' EXIT
@@ -34,6 +35,11 @@ if [[ $* == *'is-active --quiet ryoku-palette-bridge.service'* &&
       -f $CANONICAL_MARKER ]]; then
   exit 0
 fi
+if [[ $* == *'enable --now ryoku-palette-bridge.service'* ||
+      $* == *'restart ryoku-palette-bridge.service'* ]]; then
+  : > "$CANONICAL_MARKER"
+  exit 0
+fi
 exit 1
 EOF
 
@@ -51,9 +57,10 @@ case ${3:-} in
     printf '%s\n' \
       '#!/usr/bin/env bash' \
       'set -euo pipefail' \
+      '[[ -d .git ]] || { echo "installer must build from its source directory" >&2; exit 1; }' \
       'printf "run\\n" >> "$REPAIR_LOG"' \
       ': > "$REPAIR_MARKER"' \
-      ': > "$CANONICAL_MARKER"' > "$checkout/install.sh"
+      'true' > "$checkout/install.sh"
     printf '%s\n' '#!/usr/bin/env bash' 'exit 0' > "$checkout/install-integrations.sh"
     chmod +x "$checkout/install.sh" "$checkout/install-integrations.sh"
     ;;
@@ -83,6 +90,7 @@ PATH="$fake_bin:$PATH" \
 test -f "$repair_marker"
 test -f "$canonical_marker"
 test -x "$test_root/home/.local/share/ryoku-palette-bridge/install.sh"
+test -x "$test_root/home/.local/bin/ryoku-palette-bridge-store-2-1-0"
 [[ $(wc -l < "$curl_log") -ge 1 ]]
 
 mv "$canonical_marker" "$canonical_marker.first-run"
