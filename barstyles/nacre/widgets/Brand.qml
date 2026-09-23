@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import shell.services
 import shell.barkit as Pill
 
 Item {
@@ -13,6 +14,13 @@ Item {
         size: 12
     }
     TapHandler {
-        onTapped: Quickshell.execDetached(["ryoku-shell", "launcher"])
+        // the click action is a Nacre setting (Bar Studio > Appearance): the
+        // launcher, or the same quick-settings sidebar Super+Esc opens.
+        onTapped: {
+            if (Config.normalizedNacre.brandClick === "quicksettings")
+                ShellState.requestSurfaceActive("quick-settings", undefined)
+            else
+                Quickshell.execDetached(["ryoku-shell", "launcher"])
+        }
     }
 }
