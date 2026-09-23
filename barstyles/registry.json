@@ -4,7 +4,7 @@
     {
       "id": "nacre",
       "name": "Nacre",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "path": "barstyles/nacre",
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/nacre",
@@ -21,7 +21,7 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "0e09c5d1415c4b66ffbbc5ac21aec79f4e87126fa762132fad40533cc1fa83d6"
+      "manifestSha256": "819fac41dc92d267260fd998bf8a95f1155ce1a1318440e890d4c5e59943e8fa"
     },
     {
       "id": "obi",

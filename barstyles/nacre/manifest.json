@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "nacre",
   "category": "barstyles",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "destination": "ryoku/barstyles/nacre",
   "files": [
     {
@@ -201,8 +201,8 @@
       "source": "widgets/Brand.qml",
       "destination": "widgets/Brand.qml",
       "mode": "0644",
-      "size": 321,
-      "sha256": "71021ebcd19db92fb6fe627fffb15a7d5be4f003144391789a4eb58d9ab36409",
+      "size": 687,
+      "sha256": "3d48c6686c2b85b84bc883027aeb34836dddec2cf18b3a99087d4bd910e6177f",
       "install": true
     },
     {
