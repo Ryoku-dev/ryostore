@@ -1167,17 +1167,20 @@
       ],
       "accent": "#8f8378",
       "surface": "#101010",
-      "preview": "",
-      "screenshots": [],
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "d2e026ed3b469c50403bdaed74d65dff2975edf0a942d3287d516cb22dd06c1b",
+      "manifestSha256": "d730426947b2edbbf2c225570d8a129e8118563f6f86be9b9509d5f5e0b6855a",
       "official": false,
       "tagline": "Muestra la IP pública actual (consultando https://checkip.",
-      "icon": "",
+      "icon": "public",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-09-24"
+      "lastUpdated": "2026-09-24",
+      "upstream": "https://github.com/vampireJSV/ryoku-plugin-public-ip"
     }
   ]
 }
