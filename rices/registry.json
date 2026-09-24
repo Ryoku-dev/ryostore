@@ -154,6 +154,70 @@
       "hero": "https://github.com/ryoku-dev/ryostore/releases/download/rices/monolith-hero.jpg",
       "lastUpdated": "2026-09-11",
       "official": false
+    },
+    {
+      "id": "ryoku-paper-light",
+      "name": "Ryoku Paper Light",
+      "version": "1.0.0",
+      "path": "rices/ryoku-paper-light",
+      "author": "Eduardo Vieira",
+      "summary": "Sunlit washi, bronze accents, and a calm editorial Ryoku desktop.",
+      "description": "A luminous paper-and-marble Ryoku desktop with a left rail, restrained bronze accents, and a family portrait wallpaper. A matching stoic marble alternate is available as a separate download.",
+      "tags": [
+        "light",
+        "paper",
+        "editorial",
+        "marble",
+        "warm"
+      ],
+      "accent": "#6F4B17",
+      "surface": "#F5F0E6",
+      "preview": "screenshots/desktop.webp",
+      "screenshots": [
+        "screenshots/desktop.webp"
+      ],
+      "manifest": "rice.json",
+      "manifestSha256": "266c6a6bc77baa893a1d59e8b576d309cfa45a2ccf1e9bed6035096b6405540e",
+      "createdWith": "0.63.1-beta.19",
+      "color": "fixed",
+      "palette": "rices/ryoku-paper-light/palette.json",
+      "rounding": 8,
+      "wallpaper": "https://github.com/eduardojvieira/ryostore/releases/download/rices/ryoku-paper-light-wall.png",
+      "upstream": "https://github.com/eduardojvieira/Homelab/tree/master/Ryoku",
+      "official": false,
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "ryoku-paper-dark",
+      "name": "Ryoku Paper Dark",
+      "version": "1.0.0",
+      "path": "rices/ryoku-paper-dark",
+      "author": "Eduardo Vieira",
+      "summary": "Charcoal washi, bronze accents, and a quiet editorial Ryoku desktop.",
+      "description": "A dark paper-and-marble Ryoku desktop with a left rail, restrained bronze accents, and a family portrait wallpaper. A matching stoic marble alternate is available as a separate download.",
+      "tags": [
+        "dark",
+        "paper",
+        "editorial",
+        "marble",
+        "warm"
+      ],
+      "accent": "#C79A49",
+      "surface": "#171512",
+      "preview": "screenshots/desktop.webp",
+      "screenshots": [
+        "screenshots/desktop.webp"
+      ],
+      "manifest": "rice.json",
+      "manifestSha256": "00716438f054505ff47175155a1b78496f626d334146be3b1182e6efb1063db0",
+      "createdWith": "0.63.1-beta.19",
+      "color": "fixed",
+      "palette": "rices/ryoku-paper-dark/palette.json",
+      "rounding": 8,
+      "wallpaper": "https://github.com/eduardojvieira/ryostore/releases/download/rices/ryoku-paper-dark-wall.png",
+      "upstream": "https://github.com/eduardojvieira/Homelab/tree/master/Ryoku",
+      "official": false,
+      "lastUpdated": "2026-09-24"
     }
   ]
 }
