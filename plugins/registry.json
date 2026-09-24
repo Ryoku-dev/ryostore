@@ -515,7 +515,7 @@
     {
       "id": "awe-clock",
       "name": "Clock",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "path": "plugins/awe-clock",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -535,14 +535,14 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "c09accef4780b4b666536e6289b72576aa986478b6d9a0397fb760acc642749e",
+      "manifestSha256": "1e2a778fedfe0161025f4870d99a0719d6a6fd9e4b94d689f9f6b39419573111",
       "official": false,
       "tagline": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
       "icon": "schedule",
       "hosts": [
         "desktopWidget"
       ],
-      "lastUpdated": "2026-09-21"
+      "lastUpdated": "2026-09-24"
     },
     {
       "id": "awe-clock-world",
@@ -1061,7 +1061,7 @@
     {
       "id": "awe-visualizer",
       "name": "Visualizer",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "path": "plugins/awe-visualizer",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1081,7 +1081,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "4ebfa1be2a602f03f43713c2f083215fe100dd87523aadfc162b54a430db101b",
+      "manifestSha256": "77773ebb3a9e1dc723ea956a8856dfaf21647271393974291b4a6418630328fc",
       "official": false,
       "tagline": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
       "icon": "graphic_eq",

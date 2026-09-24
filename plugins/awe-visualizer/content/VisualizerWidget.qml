@@ -1,6 +1,4 @@
 import QtQuick
-import Quickshell
-import Quickshell.Io
 import "."
 
 Item {
@@ -8,42 +6,54 @@ Item {
     implicitWidth: 290
     implicitHeight: 150
 
-    // Visualizer modes: "bars" (16-bar spectrum), "wave" (sine soundwave), "radial" (circular)
+    // Visualizer modes: "bars" (16-band spectrum), "wave" (scope waveform),
+    // "radial" (circular). All three draw the tile's own cava spectrum (the
+    // `levels`/`energy` fed down from service/Main.qml) instead of a sine
+    // animation, so the tile answers to whatever is actually playing.
     property string vizMode: "bars"
     property var modeList: ["bars", "wave", "radial"]
     property int modeIndex: 0
-    property bool isPlaying: false
     property real wavePhase: 0
 
-    // MPRIS Player Status Check
-    Process {
-        id: mprisProc
-        command: ["playerctl", "status"]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var st = text.trim().toLowerCase()
-                root.isPlaying = (st === "playing")
-            }
-        }
+    // The analyser settles to all-zero bands on silence; energy is the mean
+    // level, so it is the honest play/pause signal (and it covers browser and
+    // game audio that has no MPRIS interface, which playerctl could not see).
+    property var levels: []
+    property real energy: 0
+    readonly property bool isPlaying: energy > 0.02
+
+    // Resample the 40 cava bands to n, linearly, so every mode reads the real
+    // spectrum at whatever width it draws.
+    function band(n, i) {
+        var src = (levels && levels.length) ? levels : null;
+        if (!src)
+            return 0;
+        var t = n > 1 ? i / (n - 1) : 0;
+        var f = t * (src.length - 1);
+        var a = Math.floor(f);
+        var b = Math.min(src.length - 1, a + 1);
+        return src[a] + (src[b] - src[a]) * (f - a);
     }
 
-    Timer {
-        interval: 2000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: mprisProc.running = true
+    // Redraw the moment a real frame arrives; the timer only carries the
+    // idle shimmer and the wave/radial scroll, and runs while playing.
+    function repaint() {
+        vizCanvas.requestPaint();
     }
+    onLevelsChanged: repaint()
+    onEnergyChanged: repaint()
 
-    // High frequency animation timer for wave canvas
+    // Idle breath so the tile is alive with nothing playing; the paint adds it
+    // at a small amplitude, so silence reads as a resting line, not a flat gap.
     Timer {
-        interval: 35
+        id: shimmer
+        interval: 45
         running: true
         repeat: true
         onTriggered: {
-            root.wavePhase = (root.wavePhase + 0.12) % (Math.PI * 2)
-            vizCanvas.requestPaint()
+            root.wavePhase = (root.wavePhase + 0.12) % (Math.PI * 2);
+            if (!root.isPlaying)
+                root.repaint();
         }
     }
 
@@ -190,21 +200,19 @@ Item {
                             var cx = w / 2
                             var cy = h / 2
                             var phase = root.wavePhase
-                            var amp = root.isPlaying ? 1.0 : 0.35
+                            // A faint resting breath keeps the tile alive on
+                            // silence; the real spectrum dominates once playing.
+                            var idle = 0.06 * (0.5 + 0.5 * Math.sin(phase))
 
                             if (root.vizMode === "bars") {
-                                // 16-Bar Spectrum Equalizer
+                                // 16-band spectrum, resampled from the cava feed.
                                 var numBars = 16
                                 var barW = (w - (numBars - 1) * 4) / numBars
-
                                 for (var i = 0; i < numBars; i++) {
-                                    var val = Math.sin(phase + i * 0.45) * 0.5 + 0.5
-                                    var val2 = Math.cos(phase * 1.3 + i * 0.3) * 0.3 + 0.3
-                                    var barH = Math.max(4, (val * 0.7 + val2 * 0.3) * (h - 8) * amp)
+                                    var val = root.band(numBars, i) + idle
+                                    var barH = Math.max(3, Math.min(h, val * (h - 8)))
                                     var x = i * (barW + 4)
                                     var y = h - barH
-
-                                    // Gradient bar fill
                                     var grad = ctx.createLinearGradient(x, y, x, h)
                                     grad.addColorStop(0, root.colAccent)
                                     grad.addColorStop(1, root.colAccentGreen)
@@ -212,56 +220,44 @@ Item {
                                     ctx.fillRect(x, y, barW, barH)
                                 }
                             } else if (root.vizMode === "wave") {
-                                // Fluid Sine Waveforms
+                                // The spectrum drawn as a centred waveform: the
+                                // 40 bands mirrored left-to-right into one curve.
+                                var pts = 60
                                 ctx.lineWidth = 2.5
                                 ctx.strokeStyle = root.colAccent
                                 ctx.lineCap = "round"
                                 ctx.beginPath()
-
-                                for (var wx = 0; wx <= w; wx += 3) {
-                                    var normX = wx / w
-                                    var sine = Math.sin(normX * Math.PI * 4 + phase) * Math.cos(normX * Math.PI * 2 + phase * 0.5)
-                                    var wy = cy + sine * (h * 0.38) * amp
-                                    if (wx === 0) ctx.moveTo(wx, wy)
-                                    else ctx.lineTo(wx, wy)
-                                }
-                                ctx.stroke()
-
-                                // Secondary Harmonic Waveform
-                                ctx.lineWidth = 1.5
-                                ctx.strokeStyle = root.colAccentGreen
-                                ctx.beginPath()
-
-                                for (var wx2 = 0; wx2 <= w; wx2 += 3) {
-                                    var normX2 = wx2 / w
-                                    var sine2 = Math.sin(normX2 * Math.PI * 6 - phase * 1.2) * 0.7
-                                    var wy2 = cy + sine2 * (h * 0.25) * amp
-                                    if (wx2 === 0) ctx.moveTo(wx2, wy2)
-                                    else ctx.lineTo(wx2, wy2)
+                                for (var k = 0; k <= pts; k++) {
+                                    var normX = k / pts
+                                    // fold so the centre is the loudest band edge
+                                    var bi = normX < 0.5 ? normX * 2 : (1 - normX) * 2
+                                    var lvl = root.band(24, Math.round(bi * 23))
+                                    var wy = cy - (lvl + idle) * (h * 0.42)
+                                    var px = normX * w
+                                    if (k === 0) ctx.moveTo(px, wy); else ctx.lineTo(px, wy)
                                 }
                                 ctx.stroke()
                             } else if (root.vizMode === "radial") {
-                                // Radial Pulsing Soundwave
+                                // A ring whose radius breathes with the spectrum.
                                 var rBase = 22
+                                var steps = 72
                                 ctx.lineWidth = 2
                                 ctx.strokeStyle = root.colAccent
                                 ctx.beginPath()
-
-                                for (var a = 0; a <= 360; a += 4) {
+                                for (var s = 0; s <= steps; s++) {
+                                    var a = (s / steps) * 360
                                     var rad = a * Math.PI / 180
-                                    var waveR = rBase + (Math.sin(a * 6 * Math.PI / 180 + phase * 2) * 9 + Math.cos(a * 3 * Math.PI / 180 - phase) * 4) * amp
+                                    var lvl = root.band(steps, s % steps)
+                                    var waveR = rBase + (lvl + idle) * 26
                                     var rx = cx + waveR * Math.cos(rad)
                                     var ry = cy + waveR * Math.sin(rad)
-                                    if (a === 0) ctx.moveTo(rx, ry)
-                                    else ctx.lineTo(rx, ry)
+                                    if (s === 0) ctx.moveTo(rx, ry); else ctx.lineTo(rx, ry)
                                 }
                                 ctx.closePath()
                                 ctx.stroke()
-
-                                // Center Core Dot
                                 ctx.fillStyle = root.colAccentGreen
                                 ctx.beginPath()
-                                ctx.arc(cx, cy, 4, 0, Math.PI * 2)
+                                ctx.arc(cx, cy, 4 + root.energy * 10, 0, Math.PI * 2)
                                 ctx.fill()
                             }
                         }

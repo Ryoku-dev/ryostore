@@ -1,9 +1,9 @@
 {
   "id": "awe-visualizer",
   "name": "Visualizer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "neur0map <hello@ryoku.dev>",
-  "description": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
+  "description": "Desktop audio spectrum in bar, wave and radial modes, drawn from the tile's own PipeWire playback analyser.",
   "license": "BSL-1.0",
   "official": false,
   "tags": [
@@ -46,8 +46,9 @@
     "label": "Visualizer"
   },
   "dependencies": {
-    "commands": [
-      "playerctl"
+    "commands": [],
+    "optional": [
+      "cava"
     ]
   }
 }
