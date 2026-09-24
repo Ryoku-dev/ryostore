@@ -30,6 +30,10 @@ Item {
     property string hours12String: "01"
     property string minutesString: "07"
     property string timeDigital: "00:00"
+    // cookie dial turn: 120s per revolution, stepped once per second.
+    property int cookieStep: 0
+    readonly property real cookieAngle: root.clockStyle === "cookie"
+        ? 360 - (root.cookieStep % 120) * 3 : 0
 
     Timer {
         interval: 1000
@@ -54,25 +58,16 @@ Item {
             root.hours12String = h12Str
             root.minutesString = mStr
             root.timeDigital = h12Str + ":" + mStr
+            var m = root.minutes + root.seconds / 60.0
+            var h = (root.hours % 12) + m / 60.0
+            minuteHand.rotation = m * 6
+            hourHand.rotation = h * 30
+            nothingSecondHand.rotation = root.seconds * 6
+            root.secondsSmooth = root.seconds
+            root.cookieStep += 1
         }
     }
 
-    // ─── Smooth Hand & Seconds Orbit Sweep ───
-    Timer {
-        interval: 33
-        running: root.clockStyle === "cookie" || root.clockStyle === "nothing"
-        repeat: true
-        onTriggered: {
-            var now = new Date()
-            var s = now.getSeconds() + now.getMilliseconds() / 1000.0
-            var m = now.getMinutes() + s / 60.0
-            var h = (now.getHours() % 12) + m / 60.0
-            minuteHand.rotation = m * 6
-            hourHand.rotation = h * 30
-            nothingSecondHand.rotation = s * 6
-            root.secondsSmooth = s
-        }
-    }
 
     // ─── Scaled Visual Content ───
     Item {
@@ -97,14 +92,10 @@ Item {
                 height: 290
                 antialiasing: true
 
-                RotationAnimation on rotation {
-                    running: root.clockStyle === "cookie"
-                    duration: 120000 // 120 seconds per full turn
-                    from: 360
-                    to: 0
-                    loops: Animation.Infinite
-                    easing.type: Easing.Linear
-                }
+                // 120s per turn, stepped once per second (3 deg/step): a
+                // continuous animation damages the full screen at frame rate
+                // forever; the step is invisible at this speed.
+                rotation: root.cookieAngle
 
                 onPaint: {
                     var ctx = getContext("2d")
