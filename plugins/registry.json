@@ -1061,7 +1061,7 @@
     {
       "id": "awe-visualizer",
       "name": "Visualizer",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "path": "plugins/awe-visualizer",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1081,7 +1081,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "4ebfa1be2a602f03f43713c2f083215fe100dd87523aadfc162b54a430db101b",
+      "manifestSha256": "77773ebb3a9e1dc723ea956a8856dfaf21647271393974291b4a6418630328fc",
       "official": false,
       "tagline": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
       "icon": "graphic_eq",

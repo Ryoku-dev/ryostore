@@ -7,19 +7,23 @@ A desktop audio-spectrum tile, ported from the Awe widget suite
 
 ## What it does
 
-Every 2 seconds it runs `playerctl status` to learn whether media is playing, and
-animates a spectrum on a ~35 ms timer in one of three modes (bars, wave, radial);
-double-click or tap the mode pill to cycle them. The bars are a simulated
-spectrum driven by sine functions and the play/pause state, not a real FFT of the
-audio, so it moves livelier while playing and idles gently when paused.
+It draws the desktop's real audio spectrum, in one of three modes (bars, wave,
+radial); double-click or tap the mode pill to cycle them. The bands come from
+the tile's own PipeWire playback analyser, so it answers to whatever is
+actually playing -- music, a browser video, a game -- not one media player, and
+it settles to a faint resting breath on silence.
 
 ## Commands and network
 
-- Commands: `playerctl`.
+- One optional command: the tile runs `cava` itself to read the PipeWire
+  playback monitor, and only while a stream is actually playing. cava is an
+  optional dependency: without it the tile stays at its resting line rather
+  than failing.
 - No network access.
 
-It writes nothing to disk. The original stored tile position, scale and mode on
-disk; that persistence is dropped because the shell owns placement and scale.
+It writes nothing to disk (the analyser config is piped to cava's stdin). The
+original stored tile position, scale and mode on disk; that persistence is
+dropped because the shell owns placement and scale.
 
 ## Credits
 
