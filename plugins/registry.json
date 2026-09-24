@@ -1167,17 +1167,20 @@
       ],
       "accent": "#8f8378",
       "surface": "#101010",
-      "preview": "",
-      "screenshots": [],
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "3a5f611ccda2d851164db23702981f55738a9bf2435cd7fac70fbdc93bb325cd",
+      "manifestSha256": "6d5cea25a4e98a70d4554effd640c2752353d4331c93762871ff7fa7150b06fb",
       "official": false,
       "tagline": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
-      "icon": "",
+      "icon": "phone_android",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-09-24"
+      "lastUpdated": "2026-09-24",
+      "upstream": "https://github.com/vampireJSV/ryoku-plugin-kdeconnect-status"
     }
   ]
 }

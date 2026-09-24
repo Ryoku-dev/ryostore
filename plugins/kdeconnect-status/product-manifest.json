@@ -84,6 +84,14 @@
       "mode": "0644",
       "size": 2322,
       "install": true
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "4c9acf9e3cd724de9a76756cf14c0e10a04e8d0ca43a851eba67715e6dd79370",
+      "mode": "0644",
+      "size": 3059,
+      "install": false
     }
   ]
 }
