@@ -46,12 +46,12 @@
       "install": true
     },
     {
-      "source": "content/Glyph.qml",
-      "destination": "content/Glyph.qml",
-      "sha256": "9b8703fd3adef1560aa9f53c5ee07a26ba862595f3e063cfdbdb1c4ff0d36be5",
-      "mode": "0644",
-      "size": 3921,
-      "install": true
+        "source": "content/Glyph.qml",
+        "destination": "content/Glyph.qml",
+        "sha256": "302fb0a2163bbf88ab8d73f2ebd57c8b01b69ab5fdaf36534deffaf2df6b57a5",
+        "mode": "0644",
+        "size": 4046,
+        "install": true
     },
     {
       "source": "content/InfoRow.qml",
