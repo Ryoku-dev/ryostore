@@ -1,0 +1,52 @@
+{
+  "id": "kdeconnect-status",
+  "name": "KDE Connect",
+  "version": "0.1.0",
+  "author": "vampirejsv <vampirejsv@local>",
+  "description": "Live KDE Connect device status on the bar: connection, battery, unread notification count. Read-only, no actions.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 280
+  },
+  "files": [
+    "bin/poll.sh"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "KDE Connect"
+  },
+  "dependencies": {
+    "commands": [
+      "busctl",
+      "jq"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "pollSeconds",
+        "type": "int",
+        "label": "Refresh interval (s)",
+        "group": "KDE Connect",
+        "default": 10,
+        "min": 3,
+        "max": 60
+      }
+    ]
+  }
+}

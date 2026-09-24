@@ -1153,6 +1153,31 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "kdeconnect-status",
+      "name": "KDE Connect",
+      "version": "0.1.0",
+      "path": "plugins/kdeconnect-status",
+      "author": "vampirejsv <vampirejsv@local>",
+      "summary": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
+      "description": "Live KDE Connect device status on the bar: connection, battery, unread notification count. Read-only, no actions.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "",
+      "screenshots": [],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "3a5f611ccda2d851164db23702981f55738a9bf2435cd7fac70fbdc93bb325cd",
+      "official": false,
+      "tagline": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-24"
     }
   ]
 }

@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "id": "kdeconnect-status",
+  "category": "plugins",
+  "version": "0.1.0",
+  "destination": "ryoku/plugins/kdeconnect-status",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "e3deb2be2f6824d3233cd08604dfb581dddac498726f514eff183751dfb9e7b3",
+      "mode": "0644",
+      "size": 3966,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3115cecc7b0a749c8ec85426e41e8ed7fbe44483f1e0df7d8d391fe58d95712e",
+      "mode": "0644",
+      "size": 1067,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "8a7692c9a8230e8cb2bc77e6c262c3c863352a4ac2014ddc028d514593dc902a",
+      "mode": "0644",
+      "size": 2885,
+      "install": false
+    },
+    {
+      "source": "bin/poll.sh",
+      "destination": "bin/poll.sh",
+      "sha256": "2d0a77cd8884d7af67c877de12fba1d02f02dd8c5ce4d672c1c48d0ac7cf8006",
+      "mode": "0755",
+      "size": 1943,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "e668a7490a35724dbb1a6053f0ff4a87e4d4ccdfa309508ecde9d6c2b650755e",
+      "mode": "0644",
+      "size": 2746,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "52562bf55c771ee9e0e557c119796cb7b88158edc152616372d13f0c52389317",
+      "mode": "0644",
+      "size": 4118,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "c821df91722a42bd37a6185d41d8b86b6af73c1071df0e0834e2b0029726d5e8",
+      "mode": "0644",
+      "size": 1010,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "2b5f88fdf43756c16f3038008e3dc9161f025c1265697daa735fdea519f38b5a",
+      "mode": "0644",
+      "size": 2322,
+      "install": true
+    }
+  ]
+}
