@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "awe-clock",
   "category": "plugins",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "destination": "ryoku/plugins/awe-clock",
   "files": [
     {
@@ -32,9 +32,9 @@
     {
       "source": "content/Clock.qml",
       "destination": "content/Clock.qml",
-      "sha256": "4676de025b8af7308fb0f291a02f4a67655f6baa642f13b013003e1652243879",
+      "sha256": "bb1c71d814963508091227c86159df60d24b2a258204d932bdba3d551f80e191",
       "mode": "0644",
-      "size": 23398,
+      "size": 23260,
       "install": true
     },
     {
@@ -64,7 +64,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "6ace7e9df4d1ec5e81c6c2d58b3b4d2237623123892625851391018683149574",
+      "sha256": "cc00787acbe792aafddb9f4e2cee9431f8e913f287868f9eda8ee4bfb3e5b752",
       "mode": "0644",
       "size": 969,
       "install": true
