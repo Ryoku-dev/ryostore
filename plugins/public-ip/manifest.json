@@ -1,0 +1,52 @@
+{
+  "id": "public-ip",
+  "name": "IP Pública",
+  "version": "0.1.0",
+  "author": "vampirejsv \u003cvampirejsv@local\u003e",
+  "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "bin/poll.sh",
+    "bin/copy.sh"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ],
+    "network": [
+      "checkip.amazonaws.com"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "IP Pública"
+  },
+  "dependencies": {
+    "commands": [
+      "curl",
+      "wl-copy"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "pollSeconds",
+        "type": "int",
+        "label": "Intervalo de refresco (s)",
+        "group": "IP Pública",
+        "default": 60,
+        "min": 10,
+        "max": 600
+      }
+    ]
+  }
+}

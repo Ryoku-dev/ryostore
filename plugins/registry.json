@@ -1153,6 +1153,31 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-09-21"
+    },
+    {
+      "id": "public-ip",
+      "name": "IP Pública",
+      "version": "0.1.0",
+      "path": "plugins/public-ip",
+      "author": "vampirejsv <vampirejsv@local>",
+      "summary": "Muestra la IP pública actual (consultando https://checkip.",
+      "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "",
+      "screenshots": [],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "d2e026ed3b469c50403bdaed74d65dff2975edf0a942d3287d516cb22dd06c1b",
+      "official": false,
+      "tagline": "Muestra la IP pública actual (consultando https://checkip.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-24"
     }
   ]
 }
