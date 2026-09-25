@@ -1,7 +1,7 @@
 {
   "id": "mjw-timer",
   "name": "Timers",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
   "description": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts — the illogical-impulse timers.",
   "license": "GPL-3.0-only",

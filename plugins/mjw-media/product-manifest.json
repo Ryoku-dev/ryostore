@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-media",
   "category": "plugins",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "destination": "ryoku/plugins/mjw-media",
   "files": [
     {
@@ -88,9 +88,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "e4850e508c57ca86792ac02408d71d39a03a0d80ad91c137da3f29eabbff17f8",
+      "sha256": "df3969b394f0df1c76f89e231cb7f4d1a6c83d33cb07e577bc5cf133745b343a",
       "mode": "0644",
-      "size": 7136,
+      "size": 6685,
       "install": true
     },
     {
@@ -400,7 +400,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "419f2cc496252b7f47423957dddb29c022923eb7b36179a2e4dd3552096dcefc",
+      "sha256": "2015526b622e786715bcbac1a951d0710ec47868f9657f166cd861c63a143141",
       "mode": "0644",
       "size": 4151,
       "install": true

@@ -1,7 +1,7 @@
 {
   "id": "mjw-visualizer",
   "name": "Visualizer",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
   "description": "Live audio spectrum with five styles — bars, mirror, aurora, ring and dots — driven by your own playback stream.",
   "license": "GPL-3.0-only",
