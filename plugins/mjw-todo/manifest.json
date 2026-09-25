@@ -1,0 +1,76 @@
+{
+  "id": "mjw-todo",
+  "name": "To-Do",
+  "version": "2.0.1",
+  "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+  "description": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "tags": [
+    "todo",
+    "tasks",
+    "checklist",
+    "desktop-widget",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 1720,
+      "y": 110,
+      "scale": 0.85
+    },
+    "icon": "checklist",
+    "label": "To-Do"
+  },
+  "dependencies": {
+    "commands": []
+  },
+  "files": [
+    "content/Appearance.qml",
+    "content/Backdrop.qml",
+    "content/ColorUtils.qml",
+    "content/Config.qml",
+    "content/Directories.qml",
+    "content/FastBlurred.qml",
+    "content/FloatingActionButton.qml",
+    "content/GlobalStates.qml",
+    "content/IconToolbarButton.qml",
+    "content/Icons.qml",
+    "content/MaterialSymbol.qml",
+    "content/Revealer.qml",
+    "content/RippleButton.qml",
+    "content/StyledDropShadow.qml",
+    "content/StyledListView.qml",
+    "content/StyledRectangularShadow.qml",
+    "content/StyledScrollBar.qml",
+    "content/StyledText.qml",
+    "content/Todo.qml",
+    "content/TodoWidget.qml",
+    "content/Toolbar.qml",
+    "content/ToolbarButton.qml",
+    "content/ToolbarPairedFab.qml",
+    "content/Translation.qml",
+    "content/Widget.qml",
+    "content/WidgetBase.qml",
+    "content/qmldir",
+    "service/Main.qml"
+  ]
+}

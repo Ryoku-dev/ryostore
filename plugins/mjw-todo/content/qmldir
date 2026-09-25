@@ -1,0 +1,26 @@
+singleton Appearance 1.0 Appearance.qml
+singleton Backdrop 1.0 Backdrop.qml
+singleton ColorUtils 1.0 ColorUtils.qml
+singleton Config 1.0 Config.qml
+singleton Directories 1.0 Directories.qml
+singleton GlobalStates 1.0 GlobalStates.qml
+singleton Icons 1.0 Icons.qml
+singleton Todo 1.0 Todo.qml
+singleton Translation 1.0 Translation.qml
+FastBlurred 1.0 FastBlurred.qml
+FloatingActionButton 1.0 FloatingActionButton.qml
+IconToolbarButton 1.0 IconToolbarButton.qml
+MaterialSymbol 1.0 MaterialSymbol.qml
+Revealer 1.0 Revealer.qml
+RippleButton 1.0 RippleButton.qml
+StyledDropShadow 1.0 StyledDropShadow.qml
+StyledListView 1.0 StyledListView.qml
+StyledRectangularShadow 1.0 StyledRectangularShadow.qml
+StyledScrollBar 1.0 StyledScrollBar.qml
+StyledText 1.0 StyledText.qml
+TodoWidget 1.0 TodoWidget.qml
+Toolbar 1.0 Toolbar.qml
+ToolbarButton 1.0 ToolbarButton.qml
+ToolbarPairedFab 1.0 ToolbarPairedFab.qml
+Widget 1.0 Widget.qml
+WidgetBase 1.0 WidgetBase.qml

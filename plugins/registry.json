@@ -2,38 +2,157 @@
   "schema": 1,
   "plugins": [
     {
-      "id": "obsidian",
-      "name": "Obsidian",
-      "version": "1.3.1",
-      "path": "plugins/obsidian",
-      "author": "Ryoku Team",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/obsidian",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Quick-capture into your Obsidian vault, right from the desktop.",
-      "description": "A desktop-widget plugin that adopts your existing Obsidian vault and settings, then turns the everyday moves into two views: a Board of tappable workflow blocks and a Graph of your vault. Create or open today's daily note (with your folder, filename format, and template), open any note, and append text, tasks, links, pasted images, or voice memos - with a live elapsed timer, a discard, and attachments filed next to the target note. Capture retargets are one-off (the default inbox stays a setting), delete asks with a second tap, Enter drives the pickers, and the Graph runs its layout only when the vault changes - tap a node to spotlight it, tap again to open. Local-first and opt-in - nothing runs until you pick a vault, and notes are written straight to disk.",
+      "id": "apptime",
+      "name": "App Time",
+      "version": "0.2.0",
+      "path": "plugins/apptime",
+      "author": "ran",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/apptime",
+      "summary": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
+      "description": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
       "tags": [
-        "obsidian",
-        "notes",
-        "graph",
-        "productivity",
-        "desktop-widget"
+        "bar-widget"
       ],
-      "accent": "#7c3aed",
+      "accent": "#8f8378",
       "surface": "#101010",
       "preview": "assets/preview-widget.png",
       "screenshots": [
-        "assets/preview-widget.png",
-        "assets/preview-graph.png"
+        "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "e06629eb9b8dc98f5d0946ddcdcb19b03dde6c0f37ebe45e87353c77b29888ef",
-      "official": true,
-      "tagline": "Quick-capture into your Obsidian vault, right from the desktop.",
-      "icon": "file",
+      "manifestSha256": "59b4b3009eb9f600f8159b121d5196d36cc1c3c3d4bc694dc9b4db19aefadd1a",
+      "official": false,
+      "tagline": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
+      "icon": "",
       "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "bluetooth-profiles",
+      "name": "Bluetooth Profiles",
+      "version": "1.0.0",
+      "path": "plugins/bluetooth-profiles",
+      "author": "itsKontra <derntl@gmx.net>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/bluetooth-profiles",
+      "summary": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
+      "description": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "92159a6ecc76ddb10a60be1beb6b44b7c0a9fcf6a4abcd76dccfa63db10ce56a",
+      "official": false,
+      "tagline": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
+      "icon": "bluetooth",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "coffee",
+      "name": "Coffee",
+      "version": "0.1.0",
+      "path": "plugins/coffee",
+      "author": "Ankur <ankur@localhost>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/coffee",
+      "summary": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
+      "description": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
+      "tags": [
+        "power",
+        "idle",
+        "caffeine",
+        "bar-widget",
+        "desktop-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "314a976257e7ef33ea3ce421881c0ba1c1d72c25adaf062bdd3bd2f8396aeb0e",
+      "official": false,
+      "tagline": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
+      "icon": "coffee",
+      "hosts": [
+        "topbarGlyph",
         "desktopWidget"
       ],
-      "lastUpdated": "2026-08-12"
+      "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "emoji",
+      "name": "Emoji",
+      "version": "1.1.0",
+      "path": "plugins/emoji",
+      "author": "hypruser",
+      "upstream": "https://github.com/Kavy-Codes/ryostore",
+      "summary": "A keyboard-first emoji picker with search and arrow-key selection.",
+      "description": "A frame popout that lists every emoji, searchable by name and keyword, with arrow-key selection and a one-key pick: copy to the clipboard or type into the focused window. Loads its own 3,900+ item catalogue, themes with the wallpaper, and shows per-group counts.",
+      "tags": [
+        "emoji",
+        "clipboard",
+        "search",
+        "productivity",
+        "frame-popout"
+      ],
+      "accent": "#fbbf24",
+      "surface": "#101010",
+      "preview": "assets/preview-popout.png",
+      "screenshots": [
+        "assets/preview-popout.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "8a4f212d8382f6691db9d5a8385b826c493b0c813e35490bf17e8fca09420b44",
+      "official": false,
+      "tagline": "Search and pick any emoji from your keyboard.",
+      "icon": "emoji_emotions",
+      "hosts": [
+        "framePopout"
+      ],
+      "lastUpdated": "2026-08-20"
+    },
+    {
+      "id": "gmail",
+      "name": "Gmail",
+      "version": "1.0.0",
+      "path": "plugins/gmail",
+      "author": "Yash Parmar",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/gmail",
+      "summary": "Industrial noir Gmail client and notification reader for Ryoku.",
+      "description": "Native Gmail client for the Ryoku shell with live Matugen color scheme integration, OAuth 2.0 PKCE, folder navigation, search, compose, and noir spec decor. Browse your Inbox, Sent, Spam, and Trash, read threads, and compose emails directly from a frame popout.",
+      "tags": [
+        "gmail",
+        "email",
+        "google",
+        "productivity",
+        "frame-popout"
+      ],
+      "accent": "#6E6A58",
+      "surface": "#0D0D0D",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "43dc7a0c04e0768c4ee41a700760bbed62bb55178f87c8741d8cc09f6b9cb7c8",
+      "official": false,
+      "tagline": "Inbox, search & compose in Ryoku noir style.",
+      "icon": "mail",
+      "hosts": [
+        "framePopout"
+      ],
+      "lastUpdated": "2026-09-07"
     },
     {
       "id": "key-visualizer",
@@ -68,6 +187,39 @@
       "lastUpdated": "2026-08-20"
     },
     {
+      "id": "kotoba",
+      "name": "Kotoba",
+      "version": "1.4.0",
+      "path": "plugins/kotoba",
+      "author": "CratusGod <nghiabigg652@gmail.com>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/kotoba",
+      "summary": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule.",
+      "description": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule. Pick the scripts you can read, reveal, and grade yourself; FSRS decides when each word comes back.",
+      "tags": [
+        "japanese",
+        "flashcards",
+        "srs",
+        "fsrs",
+        "learning",
+        "desktop-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "3736282ff0fd9aa2ccb78e35627a859c544cbde700ac64dc4340ee871b3af574",
+      "official": false,
+      "tagline": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule.",
+      "icon": "translate",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-20"
+    },
+    {
       "id": "market",
       "name": "Market",
       "version": "1.1.1",
@@ -93,6 +245,947 @@
       "official": true,
       "tagline": "Track a watchlist of stocks, indices, and crypto on your desktop.",
       "icon": "trending_up",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-08-12"
+    },
+    {
+      "id": "mjw-battery",
+      "name": "Battery",
+      "version": "1.0.3",
+      "path": "plugins/mjw-battery",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
+      "description": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
+      "tags": [
+        "battery",
+        "power",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7cbc6e336177286bceab4f21557b20e08d6f6023711d04fba87fe5c338616a7d",
+      "official": false,
+      "tagline": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
+      "icon": "battery_full",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-calc",
+      "name": "Calculator",
+      "version": "1.0.3",
+      "path": "plugins/mjw-calc",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Material-style desktop calculator with a safe expression evaluator.",
+      "description": "Material-style desktop calculator with a safe expression evaluator.",
+      "tags": [
+        "calculator",
+        "math",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7012a81e396d80a3105cbcac3f9cf224ff3f79c9cea8f9ff3049db8eb2f961c3",
+      "official": false,
+      "tagline": "Material-style desktop calculator with a safe expression evaluator.",
+      "icon": "calculate",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-calendar",
+      "name": "Calendar",
+      "version": "2.0.1",
+      "path": "plugins/mjw-calendar",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Month calendar tile with size presets, today ring and week strip from the illogical-impulse desktop.",
+      "description": "Month calendar tile with size presets, today ring and week strip from the illogical-impulse desktop.",
+      "tags": [
+        "calendar",
+        "date",
+        "month",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "cd69425e8c92a59180ee016c66a3bc4b01b0fe0934bda4a7f78f7b62590f26d7",
+      "official": false,
+      "tagline": "Month calendar tile with size presets, today ring and week strip from the illogical-impulse desktop.",
+      "icon": "calendar_month",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-clipboard",
+      "name": "Clipboard",
+      "version": "1.0.3",
+      "path": "plugins/mjw-clipboard",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
+      "description": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
+      "tags": [
+        "clipboard",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "145b00bb684c0cb736b1d65dc92dede298b94e6fc29b028b14e1d87df3e02462",
+      "official": false,
+      "tagline": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
+      "icon": "content_paste",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-clock",
+      "name": "Clock",
+      "version": "2.0.1",
+      "path": "plugins/mjw-clock",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Desktop clock with the illogical-impulse faces: analog cookie, digital, and pixel dot-matrix, tinted by your live theme.",
+      "description": "Desktop clock with the illogical-impulse faces: analog cookie, digital, and pixel dot-matrix, tinted by your live theme.",
+      "tags": [
+        "clock",
+        "time",
+        "analog",
+        "digital",
+        "pixel",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "3f17a02a22c5da9be0dff37dceb862870af100936871f29682d3a8c77a704784",
+      "official": false,
+      "tagline": "Desktop clock with the illogical-impulse faces: analog cookie, digital, and pixel dot-matrix, tinted by your live theme.",
+      "icon": "schedule",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-crypto",
+      "name": "Crypto",
+      "version": "1.0.3",
+      "path": "plugins/mjw-crypto",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
+      "description": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
+      "tags": [
+        "crypto",
+        "markets",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "58ad3a8b9229ba73c4f5f3c69771cd6dbe08a1454bfd3ab3cba797603f0961f7",
+      "official": false,
+      "tagline": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
+      "icon": "trending_up",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-git-dashboard",
+      "name": "Git Dashboard",
+      "version": "1.0.3",
+      "path": "plugins/mjw-git-dashboard",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
+      "description": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
+      "tags": [
+        "git",
+        "developer",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "9aba0f473a47eee19b952db41da723ab4641a4319a48ad3941c9c3b2f64825b2",
+      "official": false,
+      "tagline": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
+      "icon": "code",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-habits",
+      "name": "Habits",
+      "version": "1.0.3",
+      "path": "plugins/mjw-habits",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
+      "description": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
+      "tags": [
+        "habits",
+        "tracker",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "e212bd506ff7aa1490ed0f12d3b6c5901b1f0c18aa5c77f2ae2c58e12079b312",
+      "official": false,
+      "tagline": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
+      "icon": "repeat",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-image",
+      "name": "Image",
+      "version": "2.0.1",
+      "path": "plugins/mjw-image",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable — the illogical-impulse image tile.",
+      "description": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable — the illogical-impulse image tile.",
+      "tags": [
+        "image",
+        "photo",
+        "shape",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "e7a0517e2edb5ea19e63e945f02e8cc154921bdd24b56561736d63652cbbf6c4",
+      "official": false,
+      "tagline": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable — the illogical-impulse image tile.",
+      "icon": "image",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-image-converter",
+      "name": "Image Converter",
+      "version": "2.0.1",
+      "path": "plugins/mjw-image-converter",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Drop images on the tile to convert them (png/jpg/webp/avif/bmp/tiff) or merge a stack into one PDF, beside the source.",
+      "description": "Drop images on the tile to convert them (png/jpg/webp/avif/bmp/tiff) or merge a stack into one PDF, beside the source.",
+      "tags": [
+        "image",
+        "converter",
+        "utility",
+        "pdf",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "9ee329431faa4e3eb28cd8ed92992c515848546c48dd73ef1c3b6c24819642ab",
+      "official": false,
+      "tagline": "Drop images on the tile to convert them (png/jpg/webp/avif/bmp/tiff) or merge a stack into one PDF, beside the source.",
+      "icon": "autorenew",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-media",
+      "name": "Media",
+      "version": "2.0.1",
+      "path": "plugins/mjw-media",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib — the illogical-impulse media widget.",
+      "description": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib — the illogical-impulse media widget.",
+      "tags": [
+        "media",
+        "player",
+        "mpris",
+        "lyrics",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "f9fa33402160f59cc16ecb4c6f4c9af4f39d05a7a0a9f3bdb34fa70baedad7f3",
+      "official": false,
+      "tagline": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib — the illogical-impulse media widget.",
+      "icon": "music_note",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-network",
+      "name": "Network",
+      "version": "1.0.3",
+      "path": "plugins/mjw-network",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
+      "description": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
+      "tags": [
+        "network",
+        "wifi",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "097e78021f1a1ec1c49ed4adccdf21a08664f72f7dfd447845b9ad07c12db85f",
+      "official": false,
+      "tagline": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
+      "icon": "wifi",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-notes",
+      "name": "Notes",
+      "version": "2.0.1",
+      "path": "plugins/mjw-notes",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state — the illogical-impulse notes.",
+      "description": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state — the illogical-impulse notes.",
+      "tags": [
+        "notes",
+        "stickies",
+        "editing",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "ccd6aa38695ff153e5e1026c3c4fd71d1d407c00ae3eebfc2ab4ea480636efcc",
+      "official": false,
+      "tagline": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state — the illogical-impulse notes.",
+      "icon": "sticky_note_2",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-ping",
+      "name": "Ping",
+      "version": "1.0.3",
+      "path": "plugins/mjw-ping",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
+      "description": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
+      "tags": [
+        "network",
+        "ping",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "e3aecc9ca3bfb31ddfed1e42614c33e346a01ba0fc9950a3ad47e92395690cbf",
+      "official": false,
+      "tagline": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
+      "icon": "settings_ethernet",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-resources",
+      "name": "Resources",
+      "version": "2.0.1",
+      "path": "plugins/mjw-resources",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower — the illogical-impulse resources card.",
+      "description": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower — the illogical-impulse resources card.",
+      "tags": [
+        "system",
+        "cpu",
+        "memory",
+        "battery",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "b69b393112c7e051ee75a09bca008ffe88a8aee2ef8c07191d356479349b23cd",
+      "official": false,
+      "tagline": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower — the illogical-impulse resources card.",
+      "icon": "speed",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-sticker",
+      "name": "Sticker",
+      "version": "2.0.1",
+      "path": "plugins/mjw-sticker",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Rotatable sticker tile with outline colour, drop-replaceable — the illogical-impulse sticker.",
+      "description": "Rotatable sticker tile with outline colour, drop-replaceable — the illogical-impulse sticker.",
+      "tags": [
+        "sticker",
+        "image",
+        "deco",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "451e11c31850ba4382334bb164f5e60850edf0e9b439262af27ce75c317c30be",
+      "official": false,
+      "tagline": "Rotatable sticker tile with outline colour, drop-replaceable — the illogical-impulse sticker.",
+      "icon": "stk",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-storage-map",
+      "name": "Storage Map",
+      "version": "1.0.3",
+      "path": "plugins/mjw-storage-map",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
+      "description": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
+      "tags": [
+        "storage",
+        "disk",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "628ea380d5081a2b73d0af18d2bd05dad87bc9c1190538cf1a201dc4204a13f4",
+      "official": false,
+      "tagline": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
+      "icon": "storage",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-text",
+      "name": "Custom Text",
+      "version": "2.0.1",
+      "path": "plugins/mjw-text",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Floating desktop text in eight bundled handwriting fonts with inline editing — the illogical-impulse custom text.",
+      "description": "Floating desktop text in eight bundled handwriting fonts with inline editing — the illogical-impulse custom text.",
+      "tags": [
+        "text",
+        "notes",
+        "custom",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "0bec1f2040c1aee15f5283ed5a63e9fd664ca37539c5363b58924ed051eee59e",
+      "official": false,
+      "tagline": "Floating desktop text in eight bundled handwriting fonts with inline editing — the illogical-impulse custom text.",
+      "icon": "text_fields",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-thermal",
+      "name": "Thermal",
+      "version": "1.0.3",
+      "path": "plugins/mjw-thermal",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
+      "description": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
+      "tags": [
+        "thermal",
+        "temperature",
+        "desktop-widget",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw",
+        "mjw"
+      ],
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c1cea44fcffc46eda0c9244c356ae00b693ae376b338f552e91a0c975a1150d7",
+      "official": false,
+      "tagline": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
+      "icon": "thermostat",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24",
+      "set": "MJW"
+    },
+    {
+      "id": "mjw-timer",
+      "name": "Timers",
+      "version": "2.0.1",
+      "path": "plugins/mjw-timer",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts — the illogical-impulse timers.",
+      "description": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts — the illogical-impulse timers.",
+      "tags": [
+        "timer",
+        "pomodoro",
+        "stopwatch",
+        "countdown",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "e35517637e76e8deb05678dd8b8c694564f2eac846efa0e2a7577cb493db4f14",
+      "official": false,
+      "tagline": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts — the illogical-impulse timers.",
+      "icon": "timer",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-todo",
+      "name": "To-Do",
+      "version": "2.0.1",
+      "path": "plugins/mjw-todo",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
+      "description": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
+      "tags": [
+        "todo",
+        "tasks",
+        "checklist",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "4fad8f9974b30d06f69471b4fbee57cdcb501329ead2daefced685ec2e291391",
+      "official": false,
+      "tagline": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
+      "icon": "checklist",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-usercard",
+      "name": "User Card",
+      "version": "2.0.1",
+      "path": "plugins/mjw-usercard",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons — the illogical-impulse user card.",
+      "description": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons — the illogical-impulse user card.",
+      "tags": [
+        "user",
+        "system",
+        "session",
+        "clock",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "27d90304a13d0ab6b1f7160140df6cec8f63c0f1511cabfe266db3506c3a9392",
+      "official": false,
+      "tagline": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons — the illogical-impulse user card.",
+      "icon": "badge",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-visualizer",
+      "name": "Visualizer",
+      "version": "2.0.1",
+      "path": "plugins/mjw-visualizer",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Live audio spectrum with five styles — bars, mirror, aurora, ring and dots — driven by your own playback stream.",
+      "description": "Live audio spectrum with five styles — bars, mirror, aurora, ring and dots — driven by your own playback stream.",
+      "tags": [
+        "visualizer",
+        "audio",
+        "spectrum",
+        "shader",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "627637e3526c4d41c4e8c5975620ed596930dccddab7f4ceacff91590dea473a",
+      "official": false,
+      "tagline": "Live audio spectrum with five styles — bars, mirror, aurora, ring and dots — driven by your own playback stream.",
+      "icon": "equalizer",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-weather",
+      "name": "Weather",
+      "version": "2.0.1",
+      "path": "plugins/mjw-weather",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Weather card with condition art, humidity, wind, visibility and sun times, fed by the Ryoku weather daemon (same data as the bar).",
+      "description": "Weather card with condition art, humidity, wind, visibility and sun times, fed by the Ryoku weather daemon (same data as the bar).",
+      "tags": [
+        "weather",
+        "forecast",
+        "sun",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "a833b4b67b0d7634566f49f1693a9ad613fe9d36d8b5f0244507b860cd19b030",
+      "official": false,
+      "tagline": "Weather card with condition art, humidity, wind, visibility and sun times, fed by the Ryoku weather daemon (same data as the bar).",
+      "icon": "partly_cloudy_day",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "mjw-worldclock",
+      "name": "World Clock",
+      "version": "2.0.1",
+      "path": "plugins/mjw-worldclock",
+      "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+      "upstream": "https://github.com/neur0map/MJ-widgets",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Up to four analog clocks for timezones you pick, with live UTC offsets — the illogical-impulse world clock.",
+      "description": "Up to four analog clocks for timezones you pick, with live UTC offsets — the illogical-impulse world clock.",
+      "tags": [
+        "clock",
+        "timezones",
+        "world",
+        "desktop-widget",
+        "mjw"
+      ],
+      "set": "MJW",
+      "accent": "#7dd3fc",
+      "surface": "#101418",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "9af02f75af70e5c450946f61f4fc614c9cd685417092537bdc516b6ceb35ad9c",
+      "official": false,
+      "tagline": "Up to four analog clocks for timezones you pick, with live UTC offsets — the illogical-impulse world clock.",
+      "icon": "public",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-24"
+    },
+    {
+      "id": "obsidian",
+      "name": "Obsidian",
+      "version": "1.3.1",
+      "path": "plugins/obsidian",
+      "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/obsidian",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Quick-capture into your Obsidian vault, right from the desktop.",
+      "description": "A desktop-widget plugin that adopts your existing Obsidian vault and settings, then turns the everyday moves into two views: a Board of tappable workflow blocks and a Graph of your vault. Create or open today's daily note (with your folder, filename format, and template), open any note, and append text, tasks, links, pasted images, or voice memos - with a live elapsed timer, a discard, and attachments filed next to the target note. Capture retargets are one-off (the default inbox stays a setting), delete asks with a second tap, Enter drives the pickers, and the Graph runs its layout only when the vault changes - tap a node to spotlight it, tap again to open. Local-first and opt-in - nothing runs until you pick a vault, and notes are written straight to disk.",
+      "tags": [
+        "obsidian",
+        "notes",
+        "graph",
+        "productivity",
+        "desktop-widget"
+      ],
+      "accent": "#7c3aed",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-graph.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "e06629eb9b8dc98f5d0946ddcdcb19b03dde6c0f37ebe45e87353c77b29888ef",
+      "official": true,
+      "tagline": "Quick-capture into your Obsidian vault, right from the desktop.",
+      "icon": "file",
       "hosts": [
         "desktopWidget"
       ],
@@ -198,961 +1291,6 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-09-02"
-    },
-    {
-      "id": "emoji",
-      "name": "Emoji",
-      "version": "1.1.0",
-      "path": "plugins/emoji",
-      "author": "hypruser",
-      "upstream": "https://github.com/Kavy-Codes/ryostore",
-      "summary": "A keyboard-first emoji picker with search and arrow-key selection.",
-      "description": "A frame popout that lists every emoji, searchable by name and keyword, with arrow-key selection and a one-key pick: copy to the clipboard or type into the focused window. Loads its own 3,900+ item catalogue, themes with the wallpaper, and shows per-group counts.",
-      "tags": [
-        "emoji",
-        "clipboard",
-        "search",
-        "productivity",
-        "frame-popout"
-      ],
-      "accent": "#fbbf24",
-      "surface": "#101010",
-      "preview": "assets/preview-popout.png",
-      "screenshots": [
-        "assets/preview-popout.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "8a4f212d8382f6691db9d5a8385b826c493b0c813e35490bf17e8fca09420b44",
-      "official": false,
-      "tagline": "Search and pick any emoji from your keyboard.",
-      "icon": "emoji_emotions",
-      "hosts": [
-        "framePopout"
-      ],
-      "lastUpdated": "2026-08-20"
-    },
-    {
-      "id": "gmail",
-      "name": "Gmail",
-      "version": "1.0.0",
-      "path": "plugins/gmail",
-      "author": "Yash Parmar",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/gmail",
-      "summary": "Industrial noir Gmail client and notification reader for Ryoku.",
-      "description": "Native Gmail client for the Ryoku shell with live Matugen color scheme integration, OAuth 2.0 PKCE, folder navigation, search, compose, and noir spec decor. Browse your Inbox, Sent, Spam, and Trash, read threads, and compose emails directly from a frame popout.",
-      "tags": [
-        "gmail",
-        "email",
-        "google",
-        "productivity",
-        "frame-popout"
-      ],
-      "accent": "#6E6A58",
-      "surface": "#0D0D0D",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "43dc7a0c04e0768c4ee41a700760bbed62bb55178f87c8741d8cc09f6b9cb7c8",
-      "official": false,
-      "tagline": "Inbox, search & compose in Ryoku noir style.",
-      "icon": "mail",
-      "hosts": [
-        "framePopout"
-      ],
-      "lastUpdated": "2026-09-07"
-    },
-    {
-      "id": "apptime",
-      "name": "App Time",
-      "version": "0.2.0",
-      "path": "plugins/apptime",
-      "author": "ran",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/apptime",
-      "summary": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
-      "description": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
-      "tags": [
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "59b4b3009eb9f600f8159b121d5196d36cc1c3c3d4bc694dc9b4db19aefadd1a",
-      "official": false,
-      "tagline": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
-      "icon": "",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-09-07"
-    },
-    {
-      "id": "bluetooth-profiles",
-      "name": "Bluetooth Profiles",
-      "version": "1.0.0",
-      "path": "plugins/bluetooth-profiles",
-      "author": "itsKontra <derntl@gmx.net>",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/bluetooth-profiles",
-      "summary": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
-      "description": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
-      "tags": [
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "92159a6ecc76ddb10a60be1beb6b44b7c0a9fcf6a4abcd76dccfa63db10ce56a",
-      "official": false,
-      "tagline": "Quickly view and switch Bluetooth audio profiles and codecs of connected devices.",
-      "icon": "bluetooth",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-09-07"
-    },
-    {
-      "id": "coffee",
-      "name": "Coffee",
-      "version": "0.1.0",
-      "path": "plugins/coffee",
-      "author": "Ankur <ankur@localhost>",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/coffee",
-      "summary": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
-      "description": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
-      "tags": [
-        "power",
-        "idle",
-        "caffeine",
-        "bar-widget",
-        "desktop-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "314a976257e7ef33ea3ce421881c0ba1c1d72c25adaf062bdd3bd2f8396aeb0e",
-      "official": false,
-      "tagline": "Keep the desktop awake: a coffee-cup bar glyph that toggles Ryoku's caffeine idle inhibitor, with a compact status panel.",
-      "icon": "coffee",
-      "hosts": [
-        "topbarGlyph",
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-07"
-    },
-    {
-      "id": "kotoba",
-      "name": "Kotoba",
-      "version": "1.4.0",
-      "path": "plugins/kotoba",
-      "author": "CratusGod <nghiabigg652@gmail.com>",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/kotoba",
-      "summary": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule.",
-      "description": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule. Pick the scripts you can read, reveal, and grade yourself; FSRS decides when each word comes back.",
-      "tags": [
-        "japanese",
-        "flashcards",
-        "srs",
-        "fsrs",
-        "learning",
-        "desktop-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "3736282ff0fd9aa2ccb78e35627a859c544cbde700ac64dc4340ee871b3af574",
-      "official": false,
-      "tagline": "Japanese flashcards on the wallpaper, on a real spaced-repetition schedule.",
-      "icon": "translate",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-20"
-    },
-    {
-      "id": "awe-battery",
-      "name": "Battery",
-      "version": "1.0.1",
-      "path": "plugins/awe-battery",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
-      "description": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
-      "tags": [
-        "battery",
-        "power",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "bca730ada5c2a3ff4e3d7e51b78a81f3766f96127107fff7c812f298c180c069",
-      "official": false,
-      "tagline": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys.",
-      "icon": "battery_full",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-calc",
-      "name": "Calculator",
-      "version": "1.0.1",
-      "path": "plugins/awe-calc",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Material-style desktop calculator with a safe expression evaluator.",
-      "description": "Material-style desktop calculator with a safe expression evaluator.",
-      "tags": [
-        "calculator",
-        "math",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "8faf2878738ac36c26388161505fe64de397c29deb9151fdc4768eebb8c4aaf2",
-      "official": false,
-      "tagline": "Material-style desktop calculator with a safe expression evaluator.",
-      "icon": "calculate",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-calendar",
-      "name": "Calendar",
-      "version": "1.0.1",
-      "path": "plugins/awe-calendar",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Compact monthly calendar that highlights today's date.",
-      "description": "Compact monthly calendar that highlights today's date.",
-      "tags": [
-        "calendar",
-        "date",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "ec20b42d44f609a09ebd1c90c53ca8a142552979338c87fd5561c55a3d65c5ed",
-      "official": false,
-      "tagline": "Compact monthly calendar that highlights today's date.",
-      "icon": "calendar_month",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-clipboard",
-      "name": "Clipboard",
-      "version": "1.0.1",
-      "path": "plugins/awe-clipboard",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
-      "description": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
-      "tags": [
-        "clipboard",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "b7ad07efaa1893729b2e9f160349d84d25dd6797af3ffcdb2423932bb195604d",
-      "official": false,
-      "tagline": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
-      "icon": "content_paste",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-clock",
-      "name": "Clock",
-      "version": "1.0.2",
-      "path": "plugins/awe-clock",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
-      "description": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
-      "tags": [
-        "clock",
-        "time",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "1e2a778fedfe0161025f4870d99a0719d6a6fd9e4b94d689f9f6b39419573111",
-      "official": false,
-      "tagline": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces.",
-      "icon": "schedule",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-24"
-    },
-    {
-      "id": "awe-clock-world",
-      "name": "World Clock",
-      "version": "1.0.1",
-      "path": "plugins/awe-clock-world",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
-      "description": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
-      "tags": [
-        "clock",
-        "time",
-        "world",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "0bb210fa760decddf5084a5624356c8a2df2fee9cbba40718ead3784f5c614cc",
-      "official": false,
-      "tagline": "Multiple time zones in four switchable layouts; double-click to cycle the layout.",
-      "icon": "public",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-crypto",
-      "name": "Crypto",
-      "version": "1.0.1",
-      "path": "plugins/awe-crypto",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
-      "description": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
-      "tags": [
-        "crypto",
-        "markets",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "cf3c6f727a23666a9a0085bcaaa99a5bc8b269cf936deba04aa8bba426047dc8",
-      "official": false,
-      "tagline": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
-      "icon": "trending_up",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-git-dashboard",
-      "name": "Git Dashboard",
-      "version": "1.0.1",
-      "path": "plugins/awe-git-dashboard",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
-      "description": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
-      "tags": [
-        "git",
-        "developer",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "701a61013c63b7fcf27b25cdb32f48e321c326556492fd640975accb7eb742bc",
-      "official": false,
-      "tagline": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory.",
-      "icon": "code",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-habits",
-      "name": "Habits",
-      "version": "1.0.1",
-      "path": "plugins/awe-habits",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
-      "description": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
-      "tags": [
-        "habits",
-        "tracker",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "98fb2cd79d1c0b228f60124a973ee596e53c0ec134eace5bb1489a85222cc54f",
-      "official": false,
-      "tagline": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
-      "icon": "repeat",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-media",
-      "name": "Media",
-      "version": "1.0.1",
-      "path": "plugins/awe-media",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
-      "description": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
-      "tags": [
-        "media",
-        "player",
-        "mpris",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "c1eb76e76f234ae591410c475d2f72f045906cf830e7fca59bb95b1e70c7d4da",
-      "official": false,
-      "tagline": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls.",
-      "icon": "play_circle",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-network",
-      "name": "Network",
-      "version": "1.0.1",
-      "path": "plugins/awe-network",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
-      "description": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
-      "tags": [
-        "network",
-        "wifi",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "2289540db9871ea13ac8d8db17e24c0e5e338048bd9c8eedba15c4bc4b7336e5",
-      "official": false,
-      "tagline": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline.",
-      "icon": "wifi",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-notes",
-      "name": "Notes",
-      "version": "1.0.1",
-      "path": "plugins/awe-notes",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
-      "description": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
-      "tags": [
-        "notes",
-        "memo",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "6c6815db3a5674e67857ef7da1834be1ca009189c76351c2d7884bb7cee81f37",
-      "official": false,
-      "tagline": "Inline-editable sticky notes with colour tags, saved locally between sessions.",
-      "icon": "sticky_note_2",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-ping",
-      "name": "Ping",
-      "version": "1.0.1",
-      "path": "plugins/awe-ping",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
-      "description": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
-      "tags": [
-        "network",
-        "ping",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "f26346c3ff70362bb9e679461d3199de95722ce9ec6296e169a4348afd657057",
-      "official": false,
-      "tagline": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS.",
-      "icon": "settings_ethernet",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-poster",
-      "name": "Poster",
-      "version": "1.0.1",
-      "path": "plugins/awe-poster",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
-      "description": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
-      "tags": [
-        "image",
-        "decorative",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "c7cd7732aba7aed4a85527d44206714874b4ead3f7c14394f21a9d7c5e2a3604",
-      "official": false,
-      "tagline": "A decorative image frame that masks a picture or GIF into a Material organic shape.",
-      "icon": "image",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-quote",
-      "name": "Quote",
-      "version": "1.0.1",
-      "path": "plugins/awe-quote",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
-      "description": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
-      "tags": [
-        "quote",
-        "inspiration",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "5950c23bd5636c75b42bf0229f128cf7352080a65749d3ab462a39c703f5b934",
-      "official": false,
-      "tagline": "A rotating card of programming and design quotes; click refresh to cycle to the next one.",
-      "icon": "format_quote",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-resource-wheel",
-      "name": "Resource Wheel",
-      "version": "1.0.1",
-      "path": "plugins/awe-resource-wheel",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
-      "description": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
-      "tags": [
-        "system",
-        "monitor",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "bb4c587a1ea6f040ac184bc5814c6e2792766e58d9d6885bf1b5c286dc4af1d8",
-      "official": false,
-      "tagline": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem.",
-      "icon": "speed",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-storage-map",
-      "name": "Storage Map",
-      "version": "1.0.1",
-      "path": "plugins/awe-storage-map",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
-      "description": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
-      "tags": [
-        "storage",
-        "disk",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "d21dcc5754d88de44adcc20b807ed4f5364bba6b74e69d1c3771eac128c1f569",
-      "official": false,
-      "tagline": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df.",
-      "icon": "storage",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-system-info",
-      "name": "System Info",
-      "version": "1.0.1",
-      "path": "plugins/awe-system-info",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
-      "description": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
-      "tags": [
-        "system",
-        "monitor",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "4f84056d16b84573bf24ec5f0509ba4614f5c02f5cdfd5a395b4dff463be9eb2",
-      "official": false,
-      "tagline": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts.",
-      "icon": "info",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-thermal",
-      "name": "Thermal",
-      "version": "1.0.1",
-      "path": "plugins/awe-thermal",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
-      "description": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
-      "tags": [
-        "thermal",
-        "temperature",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "847a679a5ef2575dc7b151fdd3959b3388e7d9469e1134bf86f8119c87d8d91b",
-      "official": false,
-      "tagline": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors.",
-      "icon": "thermostat",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-timer",
-      "name": "Timer",
-      "version": "1.0.1",
-      "path": "plugins/awe-timer",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
-      "description": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
-      "tags": [
-        "timer",
-        "pomodoro",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "2e0b328f2113ec0a1048afb83115b503c2721e2bb2666e9ee45ff3c787cf95bf",
-      "official": false,
-      "tagline": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations.",
-      "icon": "timer",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-todo",
-      "name": "Todo",
-      "version": "1.0.1",
-      "path": "plugins/awe-todo",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Desktop task list with a progress bar and per-task completion, saved locally.",
-      "description": "Desktop task list with a progress bar and per-task completion, saved locally.",
-      "tags": [
-        "todo",
-        "tasks",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "9551656ef27cadd11008599a874d5d9de087fc936aec9204ec2c3e2d450398e6",
-      "official": false,
-      "tagline": "Desktop task list with a progress bar and per-task completion, saved locally.",
-      "icon": "check_square",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-visualizer",
-      "name": "Visualizer",
-      "version": "1.0.2",
-      "path": "plugins/awe-visualizer",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
-      "description": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
-      "tags": [
-        "audio",
-        "visualizer",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "77773ebb3a9e1dc723ea956a8856dfaf21647271393974291b4a6418630328fc",
-      "official": false,
-      "tagline": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state.",
-      "icon": "graphic_eq",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-volume-brightness",
-      "name": "Volume & Brightness",
-      "version": "1.0.1",
-      "path": "plugins/awe-volume-brightness",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
-      "description": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
-      "tags": [
-        "audio",
-        "brightness",
-        "controls",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "3eddd71fb3b2a9cda7c28750f1c238c503d2f42ff9a89d9d9e50b0c5bd3ba934",
-      "official": false,
-      "tagline": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl.",
-      "icon": "volume_up",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
-    },
-    {
-      "id": "awe-weather",
-      "name": "Weather",
-      "version": "1.0.1",
-      "path": "plugins/awe-weather",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/neur0map/MJ-widgets",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
-      "description": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
-      "tags": [
-        "weather",
-        "desktop-widget",
-        "awe"
-      ],
-      "accent": "#7dd3fc",
-      "surface": "#101418",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "29b23ee43f024563d1f0bc2058020ef7ceec33877209cc03e1ecefc8b6c834fd",
-      "official": false,
-      "tagline": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click.",
-      "icon": "partly_cloudy_day",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-21"
     }
   ]
 }

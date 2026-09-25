@@ -1,0 +1,321 @@
+{
+  "schema": 1,
+  "id": "mjw-text",
+  "category": "plugins",
+  "version": "2.0.1",
+  "destination": "ryoku/plugins/mjw-text",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mode": "0644",
+      "size": 35149,
+      "install": false
+    },
+    {
+      "source": "NOTICE",
+      "destination": "NOTICE",
+      "sha256": "dcb801e3cafefc16d2d5ea0f55815c98df82432e313876cdcb0862af1baae915",
+      "mode": "0644",
+      "size": 1541,
+      "install": false
+    },
+    {
+      "source": "PROVENANCE.md",
+      "destination": "PROVENANCE.md",
+      "sha256": "15bf53992b6c7c66e9c4339510434978aa407c01f2743bdc3ad902611ec2c75c",
+      "mode": "0644",
+      "size": 699,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "0a617c3a27b9c93fdf32536e148b7fe6a999d5bf3f77a29ef983f404774f1f8e",
+      "mode": "0644",
+      "size": 1134,
+      "install": false
+    },
+    {
+      "source": "assets/fonts/Caveat.ttf",
+      "destination": "assets/fonts/Caveat.ttf",
+      "sha256": "0bdb6b660482d31531b3945849fba5916b3ef8695da7024a9e6b9ee3c4157988",
+      "mode": "0644",
+      "size": 403648,
+      "install": true
+    },
+    {
+      "source": "assets/fonts/DancingScript.ttf",
+      "destination": "assets/fonts/DancingScript.ttf",
+      "sha256": "21808625578fe8d8cd10cb684be546dca077b27cd03a53a2f1ec11dc743c924c",
+      "mode": "0644",
+      "size": 133636,
+      "install": true
+    },
+    {
+      "source": "assets/fonts/GreatVibes.ttf",
+      "destination": "assets/fonts/GreatVibes.ttf",
+      "sha256": "8d509802186f1b51572531ecf313e8098f9a5bfdfaca93f0c9b34467f9982d15",
+      "mode": "0644",
+      "size": 457588,
+      "install": true
+    },
+    {
+      "source": "assets/fonts/IndieFlower.ttf",
+      "destination": "assets/fonts/IndieFlower.ttf",
+      "sha256": "ccc94b22b156e9c5dfe50fd051f01b097600b252c24473e624bb43a143140a94",
+      "mode": "0644",
+      "size": 108196,
+      "install": true
+    },
+    {
+      "source": "assets/fonts/Kalam.ttf",
+      "destination": "assets/fonts/Kalam.ttf",
+      "sha256": "57cecb63d4608019371954274ae1d8c397764debd5b19d4a33c1efa4dc923c0b",
+      "mode": "0644",
+      "size": 427360,
+      "install": true
+    },
+    {
+      "source": "assets/fonts/LICENSES.txt",
+      "destination": "assets/fonts/LICENSES.txt",
+      "sha256": "da51fedbedb93aea8860f25843fb8ad2316fddc8269b82e9dcee016ebab3ff85",
+      "mode": "0644",
+      "size": 31361,
+      "install": true
+    },
+    {
+      "source": "assets/fonts/Pacifico.ttf",
+      "destination": "assets/fonts/Pacifico.ttf",
+      "sha256": "5b6c0d5334a7bf77dea52b975c5a0c408878c0f7115ed5b6fb151f634b7bf701",
+      "mode": "0644",
+      "size": 329380,
+      "install": true
+    },
+    {
+      "source": "assets/fonts/PatrickHand.ttf",
+      "destination": "assets/fonts/PatrickHand.ttf",
+      "sha256": "0f173b3e6cb6d1af25babf7f0057c5ac4ee11f9992b0469bb817e967ef4ad0fc",
+      "mode": "0644",
+      "size": 214772,
+      "install": true
+    },
+    {
+      "source": "assets/fonts/PermanentMarker.ttf",
+      "destination": "assets/fonts/PermanentMarker.ttf",
+      "sha256": "28f82c8a7943cb8e9d599f8554da1d4fc75dbcf69b9885ad6c0611d20c6946c5",
+      "mode": "0644",
+      "size": 74632,
+      "install": true
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "b3275f128d63774cff2225367c6f31ef38d2d7988e0e06cb8a9c41b12b6f4d34",
+      "mode": "0644",
+      "size": 26472,
+      "install": false
+    },
+    {
+      "source": "content/Appearance.qml",
+      "destination": "content/Appearance.qml",
+      "sha256": "f399db754b3837684236db3d3fc18470095d5e51676f50d23f5e859c6eb98bfe",
+      "mode": "0644",
+      "size": 30479,
+      "install": true
+    },
+    {
+      "source": "content/Backdrop.qml",
+      "destination": "content/Backdrop.qml",
+      "sha256": "bc372b6351812947869daf2ef17858c4c6a6bd2ba44980249ddc371463e76e77",
+      "mode": "0644",
+      "size": 2304,
+      "install": true
+    },
+    {
+      "source": "content/ColorUtils.qml",
+      "destination": "content/ColorUtils.qml",
+      "sha256": "0d7aac211823e624f01cb223e16e34a812950ed8b0d6d638dd256585bafb8417",
+      "mode": "0644",
+      "size": 6138,
+      "install": true
+    },
+    {
+      "source": "content/Config.qml",
+      "destination": "content/Config.qml",
+      "sha256": "83d556e9716cb81a54faca73c8d13ab916292a1b593538112729f61607b7394a",
+      "mode": "0644",
+      "size": 7177,
+      "install": true
+    },
+    {
+      "source": "content/CustomTextWidget.qml",
+      "destination": "content/CustomTextWidget.qml",
+      "sha256": "b2736152363f7b3c1543e9d236d010178b44a58b729b399ff4e9862f9f3a376b",
+      "mode": "0644",
+      "size": 5867,
+      "install": true
+    },
+    {
+      "source": "content/Directories.qml",
+      "destination": "content/Directories.qml",
+      "sha256": "6bdddd80671f02abf8799a8ddc9849321f022cd0ccdece6e4b09c85f0d558966",
+      "mode": "0644",
+      "size": 1958,
+      "install": true
+    },
+    {
+      "source": "content/FloatingActionButton.qml",
+      "destination": "content/FloatingActionButton.qml",
+      "sha256": "c11d081c451aeb73fb00500b83aa7450651c900f100238910d3165949722bfc5",
+      "mode": "0644",
+      "size": 2234,
+      "install": true
+    },
+    {
+      "source": "content/GlobalStates.qml",
+      "destination": "content/GlobalStates.qml",
+      "sha256": "e29a5a5029bbc6949ae6b455b1d833535d4c0f52c793b76972589178e2f60aee",
+      "mode": "0644",
+      "size": 1122,
+      "install": true
+    },
+    {
+      "source": "content/IconToolbarButton.qml",
+      "destination": "content/IconToolbarButton.qml",
+      "sha256": "4e09be61c06576b88c006cf49adac6fea0cbdb322de76348c196f92c5ddb3c82",
+      "mode": "0644",
+      "size": 714,
+      "install": true
+    },
+    {
+      "source": "content/Icons.qml",
+      "destination": "content/Icons.qml",
+      "sha256": "291b8a662e8fa11ad020f449927f6fc50b9dc14a2bc466702cb278aac4df1c24",
+      "mode": "0644",
+      "size": 5474,
+      "install": true
+    },
+    {
+      "source": "content/MaterialSymbol.qml",
+      "destination": "content/MaterialSymbol.qml",
+      "sha256": "b57a7e773a9d8119682653237cb1461490299c5bdc385c3a2fd8681ffa6213a9",
+      "mode": "0644",
+      "size": 554,
+      "install": true
+    },
+    {
+      "source": "content/ResizeHandler.qml",
+      "destination": "content/ResizeHandler.qml",
+      "sha256": "5b975d059262fb1e7c0f974266f9abd5568d0aa72741cbbd1f31805127c36568",
+      "mode": "0644",
+      "size": 5008,
+      "install": true
+    },
+    {
+      "source": "content/Revealer.qml",
+      "destination": "content/Revealer.qml",
+      "sha256": "5fb856d6dd37a899be74a9c4785913e957d53ce71bcb96fae4beb51c35175549",
+      "mode": "0644",
+      "size": 933,
+      "install": true
+    },
+    {
+      "source": "content/RippleButton.qml",
+      "destination": "content/RippleButton.qml",
+      "sha256": "becafd9c6b2d77e52b2ad177de5147af6a6616845978c8c609e651558064a2ce",
+      "mode": "0644",
+      "size": 6383,
+      "install": true
+    },
+    {
+      "source": "content/StyledRectangularShadow.qml",
+      "destination": "content/StyledRectangularShadow.qml",
+      "sha256": "3cb6862c2e006526c0ba8b5f09f8741e2a0929fad9c5a139d214d5f1c67f3dac",
+      "mode": "0644",
+      "size": 309,
+      "install": true
+    },
+    {
+      "source": "content/StyledText.qml",
+      "destination": "content/StyledText.qml",
+      "sha256": "ff11bf1827a9a7830d62b811cf03a8af475195249fa9b047bfadd9298bc62345",
+      "mode": "0644",
+      "size": 3030,
+      "install": true
+    },
+    {
+      "source": "content/Toolbar.qml",
+      "destination": "content/Toolbar.qml",
+      "sha256": "c063fa19e10c758797a07f8f1bc7945236da8276acd8a6cf84f3e656a2829397",
+      "mode": "0644",
+      "size": 1691,
+      "install": true
+    },
+    {
+      "source": "content/ToolbarButton.qml",
+      "destination": "content/ToolbarButton.qml",
+      "sha256": "229fb5c90400ed6885dd6b0853a056489885a3d592a914ec6e3ccaf6d8de63ef",
+      "mode": "0644",
+      "size": 138,
+      "install": true
+    },
+    {
+      "source": "content/ToolbarPairedFab.qml",
+      "destination": "content/ToolbarPairedFab.qml",
+      "sha256": "be0fb91d986f836430b6fa8c17b0e8efc800ad4d0a7acf4653f524dbfa43bdd8",
+      "mode": "0644",
+      "size": 902,
+      "install": true
+    },
+    {
+      "source": "content/Translation.qml",
+      "destination": "content/Translation.qml",
+      "sha256": "2327bf414dba15e08dfa715ec321c5244628a28617585e041d58cb83d2df2dc5",
+      "mode": "0644",
+      "size": 359,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "20bdc5b0a26e46c3cda11d6093608dfa77bfa688fc58589fa830bdb5460b840b",
+      "mode": "0644",
+      "size": 2626,
+      "install": true
+    },
+    {
+      "source": "content/WidgetBase.qml",
+      "destination": "content/WidgetBase.qml",
+      "sha256": "b583de8e24f556f3b7ddc690d130acf25eeb17cac37746f3d51a691e0572c06b",
+      "mode": "0644",
+      "size": 2948,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "33cef2e9fc87fd9c239a51c057544566a40fd6cb1f082a9e57988127182bb0d1",
+      "mode": "0644",
+      "size": 816,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "c38577200375bd45b6e21735999d7767358ef8c84c030b6ccc67f1496cf5c6fe",
+      "mode": "0644",
+      "size": 4472,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "f4e8d893dba0e8fc50f1f0dd341c5cd1139125e765143b397c87137a7f92cf33",
+      "mode": "0644",
+      "size": 313,
+      "install": true
+    }
+  ]
+}

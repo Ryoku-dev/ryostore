@@ -1,0 +1,28 @@
+singleton Appearance 1.0 Appearance.qml
+singleton Backdrop 1.0 Backdrop.qml
+singleton ColorUtils 1.0 ColorUtils.qml
+singleton Config 1.0 Config.qml
+singleton DateTime 1.0 DateTime.qml
+singleton Directories 1.0 Directories.qml
+singleton GlobalStates 1.0 GlobalStates.qml
+singleton Icons 1.0 Icons.qml
+singleton Translation 1.0 Translation.qml
+singleton Weather 1.0 Weather.qml
+singleton WorldClock 1.0 WorldClock.qml
+AndroidClock 1.0 AndroidClock.qml
+ConfigSpinBox 1.0 ConfigSpinBox.qml
+FastBlurred 1.0 FastBlurred.qml
+MaterialSymbol 1.0 MaterialSymbol.qml
+OptionalMaterialSymbol 1.0 OptionalMaterialSymbol.qml
+ResizeHandler 1.0 ResizeHandler.qml
+StyledComboBoxSearch 1.0 StyledComboBoxSearch.qml
+StyledDropShadow 1.0 StyledDropShadow.qml
+StyledListView 1.0 StyledListView.qml
+StyledRectangularShadow 1.0 StyledRectangularShadow.qml
+StyledScrollBar 1.0 StyledScrollBar.qml
+StyledSpinBox 1.0 StyledSpinBox.qml
+StyledText 1.0 StyledText.qml
+StyledTextInput 1.0 StyledTextInput.qml
+Widget 1.0 Widget.qml
+WidgetBase 1.0 WidgetBase.qml
+WorldClockWidget 1.0 WorldClockWidget.qml

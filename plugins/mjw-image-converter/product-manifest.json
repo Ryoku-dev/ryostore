@@ -1,0 +1,393 @@
+{
+  "schema": 1,
+  "id": "mjw-image-converter",
+  "category": "plugins",
+  "version": "2.0.1",
+  "destination": "ryoku/plugins/mjw-image-converter",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mode": "0644",
+      "size": 35149,
+      "install": false
+    },
+    {
+      "source": "NOTICE",
+      "destination": "NOTICE",
+      "sha256": "e92f5c8a11af099ccedbf5d02446e42830eff5a21936b1a0bf67f1af0297080f",
+      "mode": "0644",
+      "size": 1556,
+      "install": false
+    },
+    {
+      "source": "PROVENANCE.md",
+      "destination": "PROVENANCE.md",
+      "sha256": "4e0088b0fa5e8071f0e47e4ea114dba1680012399df6003b37182c5c49558ca0",
+      "mode": "0644",
+      "size": 695,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "a9186eb2da2d3e1c1a09d79604ef50676499a68fee1a782f104f93f6e147f8d3",
+      "mode": "0644",
+      "size": 1197,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "d6744db4b4e9c151265679dba4adfea6141591f23c8a960aff3af56575fee2e8",
+      "mode": "0644",
+      "size": 34090,
+      "install": false
+    },
+    {
+      "source": "content/Appearance.qml",
+      "destination": "content/Appearance.qml",
+      "sha256": "f399db754b3837684236db3d3fc18470095d5e51676f50d23f5e859c6eb98bfe",
+      "mode": "0644",
+      "size": 30479,
+      "install": true
+    },
+    {
+      "source": "content/Backdrop.qml",
+      "destination": "content/Backdrop.qml",
+      "sha256": "bc372b6351812947869daf2ef17858c4c6a6bd2ba44980249ddc371463e76e77",
+      "mode": "0644",
+      "size": 2304,
+      "install": true
+    },
+    {
+      "source": "content/ColorUtils.qml",
+      "destination": "content/ColorUtils.qml",
+      "sha256": "0d7aac211823e624f01cb223e16e34a812950ed8b0d6d638dd256585bafb8417",
+      "mode": "0644",
+      "size": 6138,
+      "install": true
+    },
+    {
+      "source": "content/Config.qml",
+      "destination": "content/Config.qml",
+      "sha256": "be6171083623814e92cbcf9b0d30b1e88dfa4f28201090b75cc73f7067dc3551",
+      "mode": "0644",
+      "size": 6883,
+      "install": true
+    },
+    {
+      "source": "content/Directories.qml",
+      "destination": "content/Directories.qml",
+      "sha256": "afa70c9f943df0f22bab8418e912f8a70f900fed91c2e2c8f70dd90bb06ef9df",
+      "mode": "0644",
+      "size": 1980,
+      "install": true
+    },
+    {
+      "source": "content/FastBlurred.qml",
+      "destination": "content/FastBlurred.qml",
+      "sha256": "4c5b3a50c2835dc1b92b046e9c3f502c5c7f5d0f16e61307fe483887d9a24fed",
+      "mode": "0644",
+      "size": 1578,
+      "install": true
+    },
+    {
+      "source": "content/GlobalStates.qml",
+      "destination": "content/GlobalStates.qml",
+      "sha256": "e29a5a5029bbc6949ae6b455b1d833535d4c0f52c793b76972589178e2f60aee",
+      "mode": "0644",
+      "size": 1122,
+      "install": true
+    },
+    {
+      "source": "content/Icons.qml",
+      "destination": "content/Icons.qml",
+      "sha256": "291b8a662e8fa11ad020f449927f6fc50b9dc14a2bc466702cb278aac4df1c24",
+      "mode": "0644",
+      "size": 5474,
+      "install": true
+    },
+    {
+      "source": "content/ImageConverterWidget.qml",
+      "destination": "content/ImageConverterWidget.qml",
+      "sha256": "cabfd08818ed02444276c5afb544fdfdc5952c5d4b6afe1b1c74df26d106f917",
+      "mode": "0644",
+      "size": 13667,
+      "install": true
+    },
+    {
+      "source": "content/MaterialLoadingIndicator.qml",
+      "destination": "content/MaterialLoadingIndicator.qml",
+      "sha256": "5ace778aa3b36474aa3684b5375812105cd978e4cc4045fcefd50cc18efafb68",
+      "mode": "0644",
+      "size": 2898,
+      "install": true
+    },
+    {
+      "source": "content/MaterialShape.qml",
+      "destination": "content/MaterialShape.qml",
+      "sha256": "5987fd991f21e964913b8485c6cc714fcb3c99473cd08fc92cf8cf610a65acfe",
+      "mode": "0644",
+      "size": 3945,
+      "install": true
+    },
+    {
+      "source": "content/MaterialSymbol.qml",
+      "destination": "content/MaterialSymbol.qml",
+      "sha256": "b57a7e773a9d8119682653237cb1461490299c5bdc385c3a2fd8681ffa6213a9",
+      "mode": "0644",
+      "size": 554,
+      "install": true
+    },
+    {
+      "source": "content/ResizeHandler.qml",
+      "destination": "content/ResizeHandler.qml",
+      "sha256": "5b975d059262fb1e7c0f974266f9abd5568d0aa72741cbbd1f31805127c36568",
+      "mode": "0644",
+      "size": 5008,
+      "install": true
+    },
+    {
+      "source": "content/StyledComboBox.qml",
+      "destination": "content/StyledComboBox.qml",
+      "sha256": "8c4ceb5f7877014e91f920cf41f2a0238a3dd346590ff939c74300715a342ddb",
+      "mode": "0644",
+      "size": 7233,
+      "install": true
+    },
+    {
+      "source": "content/StyledDropShadow.qml",
+      "destination": "content/StyledDropShadow.qml",
+      "sha256": "7dc0cbbff532290ff2231ed12f908391fe716a298846a63016c1301ce3fbd75b",
+      "mode": "0644",
+      "size": 262,
+      "install": true
+    },
+    {
+      "source": "content/StyledImage.qml",
+      "destination": "content/StyledImage.qml",
+      "sha256": "2dfe9f9456616fb69d3e364ec9b5de32e2e3b41e4ca368bb8be40996d0c93656",
+      "mode": "0644",
+      "size": 613,
+      "install": true
+    },
+    {
+      "source": "content/StyledListView.qml",
+      "destination": "content/StyledListView.qml",
+      "sha256": "0cd61e335385a341535e5e8e04cf19f054fc5fb970daf74a61b446610d264113",
+      "mode": "0644",
+      "size": 5341,
+      "install": true
+    },
+    {
+      "source": "content/StyledRectangularShadow.qml",
+      "destination": "content/StyledRectangularShadow.qml",
+      "sha256": "3cb6862c2e006526c0ba8b5f09f8741e2a0929fad9c5a139d214d5f1c67f3dac",
+      "mode": "0644",
+      "size": 309,
+      "install": true
+    },
+    {
+      "source": "content/StyledScrollBar.qml",
+      "destination": "content/StyledScrollBar.qml",
+      "sha256": "8080081ff45e6cf7d9aa89fae0a8eb0bb3ee1409a75bd1e37561e2c97cc25a0a",
+      "mode": "0644",
+      "size": 798,
+      "install": true
+    },
+    {
+      "source": "content/StyledText.qml",
+      "destination": "content/StyledText.qml",
+      "sha256": "ff11bf1827a9a7830d62b811cf03a8af475195249fa9b047bfadd9298bc62345",
+      "mode": "0644",
+      "size": 3030,
+      "install": true
+    },
+    {
+      "source": "content/Translation.qml",
+      "destination": "content/Translation.qml",
+      "sha256": "2327bf414dba15e08dfa715ec321c5244628a28617585e041d58cb83d2df2dc5",
+      "mode": "0644",
+      "size": 359,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "dbe261bdffb54f5e0b91e8510d037b51213ba075e2dfe6809417b52bf6815f7e",
+      "mode": "0644",
+      "size": 2630,
+      "install": true
+    },
+    {
+      "source": "content/WidgetBase.qml",
+      "destination": "content/WidgetBase.qml",
+      "sha256": "b583de8e24f556f3b7ddc690d130acf25eeb17cac37746f3d51a691e0572c06b",
+      "mode": "0644",
+      "size": 2948,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "da5c45598b6749658fcae7787ab872107f9c89b5b9d71bc7ace4c36de6a5e494",
+      "mode": "0644",
+      "size": 884,
+      "install": true
+    },
+    {
+      "source": "content/shapes/LICENSE",
+      "destination": "content/shapes/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "mode": "0644",
+      "size": 11357,
+      "install": false
+    },
+    {
+      "source": "content/shapes/README.md",
+      "destination": "content/shapes/README.md",
+      "sha256": "a075c5daf0611da6d93e0fae53967981177f4256f7e55b8ebb70ead0a049f96d",
+      "mode": "0644",
+      "size": 687,
+      "install": false
+    },
+    {
+      "source": "content/shapes/ShapeCanvas.qml",
+      "destination": "content/shapes/ShapeCanvas.qml",
+      "sha256": "f56de4b9f61b4759094dd75686cb4aedab66e7d1e269d2afc11a5e978b28515a",
+      "mode": "0644",
+      "size": 3327,
+      "install": true
+    },
+    {
+      "source": "content/shapes/geometry/offset.js",
+      "destination": "content/shapes/geometry/offset.js",
+      "sha256": "5ddc6d47e7b39537da43d38eabf5809f84c28bb390b430f16e6e4eea404f99ad",
+      "mode": "0644",
+      "size": 3556,
+      "install": true
+    },
+    {
+      "source": "content/shapes/graphics/matrix.js",
+      "destination": "content/shapes/graphics/matrix.js",
+      "sha256": "d624b09f32cf4a4896de0b526a45b8dcf0cc5a8d5bf75e027ae92c567b0b2e36",
+      "mode": "0644",
+      "size": 6003,
+      "install": true
+    },
+    {
+      "source": "content/shapes/material-shapes.js",
+      "destination": "content/shapes/material-shapes.js",
+      "sha256": "ba3ac8388b3a3ffc46e188086c9237bf51a0019ccd1f033f3d339eab764312e9",
+      "mode": "0644",
+      "size": 26526,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/corner-rounding.js",
+      "destination": "content/shapes/shapes/corner-rounding.js",
+      "sha256": "a74f99183fb900e93bc761a6effc6721d104644aa2543714e84cf2d0f62520d7",
+      "mode": "0644",
+      "size": 364,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/cubic.js",
+      "destination": "content/shapes/shapes/cubic.js",
+      "sha256": "ae04b6424c342568b1cb8ec95154e4e815b74524ed6c9799f9b681584b3025c7",
+      "mode": "0644",
+      "size": 11076,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/feature-mapping.js",
+      "destination": "content/shapes/shapes/feature-mapping.js",
+      "sha256": "f9790494643c5018f608d08000907bb3b0c102463287932263988c91902f9d73",
+      "mode": "0644",
+      "size": 4788,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/feature.js",
+      "destination": "content/shapes/shapes/feature.js",
+      "sha256": "b0f07edff41813d6037a4529e8d6653bec7f37e4a0b6d0c54285b854ed0bdc4c",
+      "mode": "0644",
+      "size": 2110,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/float-mapping.js",
+      "destination": "content/shapes/shapes/float-mapping.js",
+      "sha256": "90d5573a9495c146333555ff2a6c834d1f6ce6a4fdc920e0cebdfcb9ea51ac36",
+      "mode": "0644",
+      "size": 2288,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/morph.js",
+      "destination": "content/shapes/shapes/morph.js",
+      "sha256": "955593b7b220f3ee897ca138d10c64a6fc2842b59fe10d6f4205e7ce7778d6c9",
+      "mode": "0644",
+      "size": 3453,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/point.js",
+      "destination": "content/shapes/shapes/point.js",
+      "sha256": "de6a7b0066347eab32045a2649f0826718b664a2131e109313ffd27ac8bc797a",
+      "mode": "0644",
+      "size": 2874,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/polygon-measure.js",
+      "destination": "content/shapes/shapes/polygon-measure.js",
+      "sha256": "b3584cee5ac2440c630123b07dc38d1f3cd5e7e559301bf7bc11d8bbf28501ba",
+      "mode": "0644",
+      "size": 7739,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/rounded-corner.js",
+      "destination": "content/shapes/shapes/rounded-corner.js",
+      "sha256": "de719645cf404ecd775a250f3d0708f00f168106deaaa19c9546d754e362eb88",
+      "mode": "0644",
+      "size": 8358,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/rounded-polygon.js",
+      "destination": "content/shapes/shapes/rounded-polygon.js",
+      "sha256": "67c6fd8b784b2d978591748080db0fc01a6e6b7211d71b39e32a3bd2dd54f503",
+      "mode": "0644",
+      "size": 15163,
+      "install": true
+    },
+    {
+      "source": "content/shapes/shapes/utils.js",
+      "destination": "content/shapes/shapes/utils.js",
+      "sha256": "dd470245904ec33f029f2dac0594f78f9109a4e2b8528ed663f6fd8587fcf064",
+      "mode": "0644",
+      "size": 1996,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "cb650286349aedc5abdfcae6c6c8e8fca329ca2a79107b06dccfa3cc515ecf38",
+      "mode": "0644",
+      "size": 2526,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "f4e8d893dba0e8fc50f1f0dd341c5cd1139125e765143b397c87137a7f92cf33",
+      "mode": "0644",
+      "size": 313,
+      "install": true
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "mjw-git-dashboard",
+  "category": "plugins",
+  "version": "1.0.3",
+  "destination": "ryoku/plugins/mjw-git-dashboard",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "mode": "0644",
+      "size": 1338,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "5a9900bf22fe5e4be6d9e63a4f2d7bceb5b10f2c19a90a3ebe8d167002bdddb3",
+      "mode": "0644",
+      "size": 936,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "8c3735c65244c610db635a79737f9c68ea6e15b03970139ea0c68cbeb8fa0d5f",
+      "mode": "0644",
+      "size": 19736,
+      "install": false
+    },
+    {
+      "source": "content/GitDashboardWidget.qml",
+      "destination": "content/GitDashboardWidget.qml",
+      "sha256": "6728fd81c5f9f973f1aff9d48249f0c41208cba9885e87a5b18662095cdd3d79",
+      "mode": "0644",
+      "size": 9570,
+      "install": true
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "content/Theme.qml",
+      "sha256": "c08c09387c91028f02552346793a7a960bffd9c7307294ee7ea4fca4179a3c84",
+      "mode": "0644",
+      "size": 13387,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "b75e55a155fb28692a646adfc2dcbfbd615eaa7b637153e7fd46ad612a38b44e",
+      "mode": "0644",
+      "size": 1088,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "26bde1b27ef69acf5c823c549f73e8bf0740c6609399cfc6ed99f42863b589e0",
+      "mode": "0644",
+      "size": 72,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "c886ace766e28bdc1695e2a29145c67ab55d9dac2237a382c2078b43f4e37241",
+      "mode": "0644",
+      "size": 1083,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "49d5233fd543e6c5e6100d96ad21c484c2606e5da1f734b70c42ccd8615f41ac",
+      "mode": "0644",
+      "size": 97,
+      "install": true
+    }
+  ]
+}

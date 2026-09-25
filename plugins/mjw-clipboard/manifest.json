@@ -1,0 +1,61 @@
+{
+  "id": "mjw-clipboard",
+  "name": "Clipboard",
+  "version": "1.0.3",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "clipboard",
+    "desktop-widget",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/Store.qml",
+    "content/ClipboardWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 1300,
+      "y": 518,
+      "scale": 0.8
+    },
+    "icon": "content_paste",
+    "label": "Clipboard"
+  },
+  "dependencies": {
+    "commands": [
+      "wl-paste",
+      "wl-copy",
+      "mkdir"
+    ]
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "id": "mjw-widgets",
+  "category": "bundles",
+  "version": "2.0.0",
+  "destination": "ryoku/bundles/mjw-widgets",
+  "name": "MJ Widget Set",
+  "description": "The full MJ set: 25 desktop widgets for your wallpaper, ported from end4-pC (illogical-impulse) with live Ryoku theming, weather and audio - the set was previously published as Awe.",
+  "icon": "widgets",
+  "accent": "#7dd3fc",
+  "preview": "assets/preview.png",
+  "screenshots": [
+    "assets/preview.png"
+  ],
+  "items": [
+    {
+      "type": "plugin",
+      "name": "mjw-calendar",
+      "detect": "mjw-calendar",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Month calendar tile with size presets, today ring and week strip from the illogical-impulse desktop."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-clock",
+      "detect": "mjw-clock",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Desktop clock with the illogical-impulse faces: analog cookie, digital, and pixel dot-matrix, tinted by your live theme."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-image",
+      "detect": "mjw-image",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable \u2014 the illogical-impulse image tile."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-image-converter",
+      "detect": "mjw-image-converter",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Drop images on the tile to convert them (png/jpg/webp/avif/bmp/tiff) or merge a stack into one PDF, beside the source."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-media",
+      "detect": "mjw-media",
+      "tier": "core",
+      "interactive": false,
+      "summary": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib \u2014 the illogical-impulse media widget."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-notes",
+      "detect": "mjw-notes",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state \u2014 the illogical-impulse notes."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-resources",
+      "detect": "mjw-resources",
+      "tier": "core",
+      "interactive": false,
+      "summary": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower \u2014 the illogical-impulse resources card."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-sticker",
+      "detect": "mjw-sticker",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Rotatable sticker tile with outline colour, drop-replaceable \u2014 the illogical-impulse sticker."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-text",
+      "detect": "mjw-text",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Floating desktop text in eight bundled handwriting fonts with inline editing \u2014 the illogical-impulse custom text."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-timer",
+      "detect": "mjw-timer",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts \u2014 the illogical-impulse timers."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-todo",
+      "detect": "mjw-todo",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Flip card with a checkable task list, progress ring and inline add \u2014 the illogical-impulse todo."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-usercard",
+      "detect": "mjw-usercard",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons \u2014 the illogical-impulse user card."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-visualizer",
+      "detect": "mjw-visualizer",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Live audio spectrum with five styles \u2014 bars, mirror, aurora, ring and dots \u2014 driven by your own playback stream."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-weather",
+      "detect": "mjw-weather",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Weather card with condition art, humidity, wind, visibility and sun times, fed by the Ryoku weather daemon (same data as the bar)."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-worldclock",
+      "detect": "mjw-worldclock",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Up to four analog clocks for timezones you pick, with live UTC offsets \u2014 the illogical-impulse world clock."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-battery",
+      "detect": "mjw-battery",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-calc",
+      "detect": "mjw-calc",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Material-style desktop calculator with a safe expression evaluator."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-clipboard",
+      "detect": "mjw-clipboard",
+      "tier": "core",
+      "interactive": false,
+      "summary": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-crypto",
+      "detect": "mjw-crypto",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-git-dashboard",
+      "detect": "mjw-git-dashboard",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-habits",
+      "detect": "mjw-habits",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-network",
+      "detect": "mjw-network",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-ping",
+      "detect": "mjw-ping",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-storage-map",
+      "detect": "mjw-storage-map",
+      "tier": "core",
+      "interactive": false,
+      "summary": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df."
+    },
+    {
+      "type": "plugin",
+      "name": "mjw-thermal",
+      "detect": "mjw-thermal",
+      "tier": "core",
+      "interactive": false,
+      "summary": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors."
+    }
+  ],
+  "files": [
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 1829,
+      "sha256": "1516c5830443f3f9462b45b4f6cd52a776eb7bfd5e1be006a7299c73e10942bd",
+      "install": false
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "assets/preview.png",
+      "mode": "0644",
+      "size": 597783,
+      "sha256": "9601e1b07e17bcdf6fbe2558367245666f7bffcecdd7ecae7f6ef5e7598323b6",
+      "install": false
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+singleton Appearance 1.0 Appearance.qml
+singleton Backdrop 1.0 Backdrop.qml
+singleton ColorUtils 1.0 ColorUtils.qml
+singleton Config 1.0 Config.qml
+singleton DateTime 1.0 DateTime.qml
+singleton Directories 1.0 Directories.qml
+singleton GlobalStates 1.0 GlobalStates.qml
+singleton Icons 1.0 Icons.qml
+singleton Translation 1.0 Translation.qml
+BigHourNumbers 1.0 BigHourNumbers.qml
+BubbleDate 1.0 BubbleDate.qml
+ClockText 1.0 ClockText.qml
+ClockWidget 1.0 ClockWidget.qml
+CookieClock 1.0 CookieClock.qml
+CookieQuote 1.0 CookieQuote.qml
+DateIndicator 1.0 DateIndicator.qml
+DigitalClock 1.0 DigitalClock.qml
+Dots 1.0 Dots.qml
+FadeLoader 1.0 FadeLoader.qml
+FastBlurred 1.0 FastBlurred.qml
+HourHand 1.0 HourHand.qml
+HourMarks 1.0 HourMarks.qml
+Lines 1.0 Lines.qml
+MaterialCookie 1.0 MaterialCookie.qml
+MaterialShape 1.0 MaterialShape.qml
+MaterialSymbol 1.0 MaterialSymbol.qml
+MinuteHand 1.0 MinuteHand.qml
+MinuteMarks 1.0 MinuteMarks.qml
+PixelClock 1.0 PixelClock.qml
+RectangleDate 1.0 RectangleDate.qml
+ResizeHandler 1.0 ResizeHandler.qml
+RotatingDate 1.0 RotatingDate.qml
+SecondHand 1.0 SecondHand.qml
+SineCookie 1.0 SineCookie.qml
+StyledDropShadow 1.0 StyledDropShadow.qml
+StyledRectangularShadow 1.0 StyledRectangularShadow.qml
+StyledText 1.0 StyledText.qml
+TimeColumn 1.0 TimeColumn.qml
+Widget 1.0 Widget.qml
+WidgetBase 1.0 WidgetBase.qml
