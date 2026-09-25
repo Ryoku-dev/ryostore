@@ -1,9 +1,9 @@
 {
   "id": "mjw-media",
   "name": "Media",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib \u2014 the illogical-impulse media widget.",
+  "description": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib — the illogical-impulse media widget.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [

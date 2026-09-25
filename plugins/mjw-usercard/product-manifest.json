@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-usercard",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-usercard",
   "files": [
     {
@@ -72,9 +72,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "2c898fb4c1d8003e63af0780c358c6d26070c4735819f73c168d5024b811126a",
+      "sha256": "df532c17d161036d5584a588b87144f6ad848cc4a6a911c53c9fa766dcda283b",
       "mode": "0644",
-      "size": 6483,
+      "size": 6934,
       "install": true
     },
     {
@@ -208,9 +208,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "0333dc5aebd8c089c1b8063c920cd6ae1f653576b5444cf16964d8d2e4227fa8",
+      "sha256": "ba081da55dfd4b6401249738631bfb9b42dfb05f92fddd1bf556d2213048c6d7",
       "mode": "0644",
-      "size": 2107,
+      "size": 2104,
       "install": true
     },
     {

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-clock",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-clock",
   "files": [
     {
@@ -104,9 +104,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "0c8d6e39b3a71d020b46b96d7f5c968d5ddb399a500953ab28d4a015fd3530bb",
+      "sha256": "37b716a39b2d9a37ebae82b6dd43bf6f659b09200fb145f64f16081f33e9795a",
       "mode": "0644",
-      "size": 8338,
+      "size": 8789,
       "install": true
     },
     {
@@ -512,9 +512,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "d6fcdeda4ad6783324a54cf4bd655d412ce691874b200b6f8637bc754e9d8293",
+      "sha256": "6298dbe31a4caffb38b99e2437043a49a1b8b11f9782c0c1e5ee69c72df99030",
       "mode": "0644",
-      "size": 7778,
+      "size": 7766,
       "install": true
     },
     {

@@ -1,9 +1,9 @@
 {
   "id": "mjw-sticker",
   "name": "Sticker",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "Rotatable sticker tile with outline colour, drop-replaceable \u2014 the illogical-impulse sticker.",
+  "description": "Rotatable sticker tile with outline colour, drop-replaceable — the illogical-impulse sticker.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [

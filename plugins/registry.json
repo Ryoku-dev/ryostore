@@ -331,7 +331,7 @@
     {
       "id": "mjw-calendar",
       "name": "Calendar",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-calendar",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -353,7 +353,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "2137de7135e93168fe2b2b642a4f895240082ceb5516d1bd96b5c1ab40643ab8",
+      "manifestSha256": "cd69425e8c92a59180ee016c66a3bc4b01b0fe0934bda4a7f78f7b62590f26d7",
       "official": false,
       "tagline": "Month calendar tile with size presets, today ring and week strip from the illogical-impulse desktop.",
       "icon": "calendar_month",
@@ -403,7 +403,7 @@
     {
       "id": "mjw-clock",
       "name": "Clock",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-clock",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -427,7 +427,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "1acbba0cc30b0612af8de392ff18d81d6e7d6271b110286ff7a9ce1d33e7eb94",
+      "manifestSha256": "3f17a02a22c5da9be0dff37dceb862870af100936871f29682d3a8c77a704784",
       "official": false,
       "tagline": "Desktop clock with the illogical-impulse faces: analog cookie, digital, and pixel dot-matrix, tinted by your live theme.",
       "icon": "schedule",
@@ -556,7 +556,7 @@
     {
       "id": "mjw-image",
       "name": "Image",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-image",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -578,7 +578,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "a3c991555f47fc440274ea0864ba20e2651ff97954411515394ae4f7d6651c62",
+      "manifestSha256": "e7a0517e2edb5ea19e63e945f02e8cc154921bdd24b56561736d63652cbbf6c4",
       "official": false,
       "tagline": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable — the illogical-impulse image tile.",
       "icon": "image",
@@ -590,7 +590,7 @@
     {
       "id": "mjw-image-converter",
       "name": "Image Converter",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-image-converter",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -613,7 +613,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "6bc1325f30772b519cc2c6cac958b350fd5f52dc4a7e23603935cb6a8ca6f3e5",
+      "manifestSha256": "9ee329431faa4e3eb28cd8ed92992c515848546c48dd73ef1c3b6c24819642ab",
       "official": false,
       "tagline": "Drop images on the tile to convert them (png/jpg/webp/avif/bmp/tiff) or merge a stack into one PDF, beside the source.",
       "icon": "autorenew",
@@ -625,7 +625,7 @@
     {
       "id": "mjw-media",
       "name": "Media",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-media",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -648,7 +648,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "93eebe16ce29c7730cce8abd4d37d6575bce0b2dccd61456216480515b63f77c",
+      "manifestSha256": "f9fa33402160f59cc16ecb4c6f4c9af4f39d05a7a0a9f3bdb34fa70baedad7f3",
       "official": false,
       "tagline": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib — the illogical-impulse media widget.",
       "icon": "music_note",
@@ -699,7 +699,7 @@
     {
       "id": "mjw-notes",
       "name": "Notes",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-notes",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -721,7 +721,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "0bcd0896737ef9e2c05f57c5c4bb09154501d9fec7983e918f8b092f33a3819d",
+      "manifestSha256": "ccd6aa38695ff153e5e1026c3c4fd71d1d407c00ae3eebfc2ab4ea480636efcc",
       "official": false,
       "tagline": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state — the illogical-impulse notes.",
       "icon": "sticky_note_2",
@@ -772,7 +772,7 @@
     {
       "id": "mjw-resources",
       "name": "Resources",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-resources",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -795,7 +795,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "e418570c5279a7fbf3603cfaa970ca92489b1c67e471eb469ece8401249813eb",
+      "manifestSha256": "b69b393112c7e051ee75a09bca008ffe88a8aee2ef8c07191d356479349b23cd",
       "official": false,
       "tagline": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower — the illogical-impulse resources card.",
       "icon": "speed",
@@ -807,7 +807,7 @@
     {
       "id": "mjw-sticker",
       "name": "Sticker",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-sticker",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -829,7 +829,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "ca568439658d410ca18eaef8cb4afef5a27bd9ac2862d1fa85b146d8c9919eb9",
+      "manifestSha256": "451e11c31850ba4382334bb164f5e60850edf0e9b439262af27ce75c317c30be",
       "official": false,
       "tagline": "Rotatable sticker tile with outline colour, drop-replaceable — the illogical-impulse sticker.",
       "icon": "stk",
@@ -880,7 +880,7 @@
     {
       "id": "mjw-text",
       "name": "Custom Text",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-text",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -902,7 +902,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "6ea784bb6f3b160fb9f5e3663fbef166a606ccc997413cf2e1c5ec31cd32d538",
+      "manifestSha256": "0bec1f2040c1aee15f5283ed5a63e9fd664ca37539c5363b58924ed051eee59e",
       "official": false,
       "tagline": "Floating desktop text in eight bundled handwriting fonts with inline editing — the illogical-impulse custom text.",
       "icon": "text_fields",
@@ -953,7 +953,7 @@
     {
       "id": "mjw-timer",
       "name": "Timers",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-timer",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -976,7 +976,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "86e9cf3ed783f6246bd7f051cda21cffd4b251e6421316e1e71d9480a8574ca6",
+      "manifestSha256": "e35517637e76e8deb05678dd8b8c694564f2eac846efa0e2a7577cb493db4f14",
       "official": false,
       "tagline": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts — the illogical-impulse timers.",
       "icon": "timer",
@@ -988,7 +988,7 @@
     {
       "id": "mjw-todo",
       "name": "To-Do",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-todo",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1010,7 +1010,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "c9f604fd70c11ed9722384a01aeb202d69322c0c30ff47e3e55730bbb1655047",
+      "manifestSha256": "4fad8f9974b30d06f69471b4fbee57cdcb501329ead2daefced685ec2e291391",
       "official": false,
       "tagline": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
       "icon": "checklist",
@@ -1022,7 +1022,7 @@
     {
       "id": "mjw-usercard",
       "name": "User Card",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-usercard",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1045,7 +1045,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "4184888085baf3e44982133a45c1ca3ef3e319c669579647e27b626c0bd549b8",
+      "manifestSha256": "27d90304a13d0ab6b1f7160140df6cec8f63c0f1511cabfe266db3506c3a9392",
       "official": false,
       "tagline": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons — the illogical-impulse user card.",
       "icon": "badge",
@@ -1057,7 +1057,7 @@
     {
       "id": "mjw-visualizer",
       "name": "Visualizer",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-visualizer",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1080,7 +1080,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "70552a2d18055fc84cb3dcf406c6e01344862d33c755e9e10347cad1537232d9",
+      "manifestSha256": "627637e3526c4d41c4e8c5975620ed596930dccddab7f4ceacff91590dea473a",
       "official": false,
       "tagline": "Live audio spectrum with five styles — bars, mirror, aurora, ring and dots — driven by your own playback stream.",
       "icon": "equalizer",
@@ -1092,7 +1092,7 @@
     {
       "id": "mjw-weather",
       "name": "Weather",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-weather",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1114,7 +1114,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "32775d2f1607e428814b6bc9113b1bb0d5fddcf68c08695c7261bbe4c1d11c5e",
+      "manifestSha256": "a833b4b67b0d7634566f49f1693a9ad613fe9d36d8b5f0244507b860cd19b030",
       "official": false,
       "tagline": "Weather card with condition art, humidity, wind, visibility and sun times, fed by the Ryoku weather daemon (same data as the bar).",
       "icon": "partly_cloudy_day",
@@ -1126,7 +1126,7 @@
     {
       "id": "mjw-worldclock",
       "name": "World Clock",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "path": "plugins/mjw-worldclock",
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
@@ -1148,7 +1148,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "1fd4fc06001a27ed9f0b0325e82f720cdd1802d26d851ff895f2c49e31700dfc",
+      "manifestSha256": "9af02f75af70e5c450946f61f4fc614c9cd685417092537bdc516b6ceb35ad9c",
       "official": false,
       "tagline": "Up to four analog clocks for timezones you pick, with live UTC offsets — the illogical-impulse world clock.",
       "icon": "public",

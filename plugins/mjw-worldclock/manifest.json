@@ -1,9 +1,9 @@
 {
   "id": "mjw-worldclock",
   "name": "World Clock",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "Up to four analog clocks for timezones you pick, with live UTC offsets \u2014 the illogical-impulse world clock.",
+  "description": "Up to four analog clocks for timezones you pick, with live UTC offsets — the illogical-impulse world clock.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [

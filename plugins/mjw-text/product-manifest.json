@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-text",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-text",
   "files": [
     {
@@ -144,9 +144,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "5cc07a8c64d4fd3387442848e1eb934b07425f6dc3388f8b54bf55c100b9d376",
+      "sha256": "83d556e9716cb81a54faca73c8d13ab916292a1b593538112729f61607b7394a",
       "mode": "0644",
-      "size": 6726,
+      "size": 7177,
       "install": true
     },
     {
@@ -304,9 +304,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "13713e8cf56b89ccbc30c5605eb3d1ab0091e29bc5f29044aff012825d9809a8",
+      "sha256": "c38577200375bd45b6e21735999d7767358ef8c84c030b6ccc67f1496cf5c6fe",
       "mode": "0644",
-      "size": 4475,
+      "size": 4472,
       "install": true
     },
     {

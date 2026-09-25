@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-weather",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-weather",
   "files": [
     {
@@ -72,9 +72,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "bb26ccbc8978a07d71424c6942fcd423d4a51d92eab6b975d1677446412311ab",
+      "sha256": "2a2e86cf04888a7b955904a6223697e18b5577c4ccec8aff19633faa201e9c37",
       "mode": "0644",
-      "size": 6527,
+      "size": 6978,
       "install": true
     },
     {
@@ -344,7 +344,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "12780a13e8c4246f94122bb0323de1a9bef2cebedc115fb4eb5a51dedbc3e2ba",
+      "sha256": "c44015a32e16d3e8408d514b4e74ce14aa9d93c6e4c2504a356e9332ef6286e3",
       "mode": "0644",
       "size": 2960,
       "install": true

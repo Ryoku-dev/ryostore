@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-timer",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-timer",
   "files": [
     {
@@ -80,9 +80,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "37076a55c74fa4e7e1eab23d466eab65e35de0487901d3323546d834e226fd1b",
+      "sha256": "88e5c0f1e9362fcc781de496560dbc2b2cc3b230d0d3711608839b1bb51111cd",
       "mode": "0644",
-      "size": 6477,
+      "size": 6928,
       "install": true
     },
     {
@@ -352,9 +352,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "a8a841b59b6479fd509d32b664c341bc2386103380134fd11d430ccd595fd9f7",
+      "sha256": "b432b3d4aec7bb65d6ce5ce80d2fc13aed052bfd30874e5f2be9662c43a7c0ab",
       "mode": "0644",
-      "size": 2583,
+      "size": 2580,
       "install": true
     },
     {

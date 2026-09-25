@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-calendar",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-calendar",
   "files": [
     {
@@ -80,9 +80,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "854e7b6bfb6d6ae3829daad68c46f4e246c56f651dd9269d57ccfc61c81ba3c9",
+      "sha256": "3113c47df8a0d6e0bd09daa11963958630b813014b1040e43448bf3081de929d",
       "mode": "0644",
-      "size": 6483,
+      "size": 6934,
       "install": true
     },
     {
@@ -336,7 +336,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "5ede387430dc2df55f1aad510476d15eede47e4e67458a24643581d7ba06f837",
+      "sha256": "7039471063b60a3521b8601586ae5fb8708f5acfe8586c4c36a715398e8ba751",
       "mode": "0644",
       "size": 2747,
       "install": true

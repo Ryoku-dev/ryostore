@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-sticker",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-sticker",
   "files": [
     {
@@ -72,9 +72,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "201ca7816d1bffc7a547f5ea44e5e54622d12738f05c46ebaf5d8f8bf8f0125e",
+      "sha256": "f4d7d25475978f8529d89376133ee76f6167e355705fea414b1e90e2e980df1e",
       "mode": "0644",
-      "size": 6661,
+      "size": 7112,
       "install": true
     },
     {
@@ -184,9 +184,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "f8138c364511b61e5b943fb76b900115759a1c752330fe70b44e4364ae4b4253",
+      "sha256": "baa3d624ed1dd87216159fe18101e179ad5e14aae4b98d12e2796033289e1492",
       "mode": "0644",
-      "size": 2413,
+      "size": 2410,
       "install": true
     },
     {

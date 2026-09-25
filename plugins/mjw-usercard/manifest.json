@@ -1,9 +1,9 @@
 {
   "id": "mjw-usercard",
   "name": "User Card",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons \u2014 the illogical-impulse user card.",
+  "description": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons — the illogical-impulse user card.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [

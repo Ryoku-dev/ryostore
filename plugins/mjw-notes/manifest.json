@@ -1,9 +1,9 @@
 {
   "id": "mjw-notes",
   "name": "Notes",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state \u2014 the illogical-impulse notes.",
+  "description": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state — the illogical-impulse notes.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [

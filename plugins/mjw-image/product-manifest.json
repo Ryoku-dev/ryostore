@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-image",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-image",
   "files": [
     {
@@ -72,9 +72,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "0cfa4895d03c049c02fbe70da0a182ed0aaf2c94d8970ea57196e588c725490d",
+      "sha256": "97c4c4356dbf490e044011ac390812d34475b24aee829d73af5bda99e0934a56",
       "mode": "0644",
-      "size": 6575,
+      "size": 7026,
       "install": true
     },
     {
@@ -352,9 +352,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "4e7b14d391bacbc1a7ee34fd02d938e78ec615a9107a60f1be575e450c15cd8d",
+      "sha256": "a25da3920aaef268ec3dd4f7261e731185acc105a9d037692d3671392100b9ce",
       "mode": "0644",
-      "size": 4204,
+      "size": 4201,
       "install": true
     },
     {

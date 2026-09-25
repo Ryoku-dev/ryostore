@@ -1,9 +1,9 @@
 {
   "id": "mjw-todo",
   "name": "To-Do",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "Flip card with a checkable task list, progress ring and inline add \u2014 the illogical-impulse todo.",
+  "description": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [

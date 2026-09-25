@@ -1,9 +1,9 @@
 {
   "id": "mjw-resources",
   "name": "Resources",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower \u2014 the illogical-impulse resources card.",
+  "description": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower — the illogical-impulse resources card.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [

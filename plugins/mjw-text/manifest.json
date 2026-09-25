@@ -1,9 +1,9 @@
 {
   "id": "mjw-text",
   "name": "Custom Text",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "Floating desktop text in eight bundled handwriting fonts with inline editing \u2014 the illogical-impulse custom text.",
+  "description": "Floating desktop text in eight bundled handwriting fonts with inline editing — the illogical-impulse custom text.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [

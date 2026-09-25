@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-todo",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-todo",
   "files": [
     {
@@ -72,9 +72,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "7ffa6f5d14607339204dad08f48a2fe4ad309a38e002109e64fa161d7c554ce6",
+      "sha256": "a7750d720dad5be0d4b91b53aacb5f18bca6ab93dc09975426333051ec0babf0",
       "mode": "0644",
-      "size": 6428,
+      "size": 6879,
       "install": true
     },
     {
@@ -264,9 +264,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "78cf5e0aaaa7dbd139fec81c9a9fbbdeda34a88cc53faa8210e95a68724e28d2",
+      "sha256": "3ce1dbb309513fff10f75f0fa6b24fc7de1573afc3c5520359e315a1903ba283",
       "mode": "0644",
-      "size": 1799,
+      "size": 1796,
       "install": true
     },
     {

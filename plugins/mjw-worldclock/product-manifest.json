@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-worldclock",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-worldclock",
   "files": [
     {
@@ -80,9 +80,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "03ea2bf46de8b7cc4fe554518f1f4e25a6830515c1291090004512b83c22ddb3",
+      "sha256": "dd3b5a470bf3cf436159dbdccac832f89325f2a266bfa636187366b853ff37e6",
       "mode": "0644",
-      "size": 6651,
+      "size": 7102,
       "install": true
     },
     {
@@ -280,9 +280,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "61c4b990d6cb4495139c8eb60bfe21fb6bc07fcab6f8406bbbd1db21f3e928eb",
+      "sha256": "1e7868b13a21d62fcedfec8621ff00fd48c3f56edb78863128321b771ef8afbc",
       "mode": "0644",
-      "size": 2691,
+      "size": 2688,
       "install": true
     },
     {

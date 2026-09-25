@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-visualizer",
   "category": "plugins",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/plugins/mjw-visualizer",
   "files": [
     {
@@ -72,9 +72,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "42d3b3e1786bc1b35143ad84a37156ced4a0fb0e8148640a3627c61f00b4da77",
+      "sha256": "3d8798257a7c53da286996e6804c8e2ee7899ab06c3920d60f64988ea7dcb29c",
       "mode": "0644",
-      "size": 6669,
+      "size": 7120,
       "install": true
     },
     {
@@ -216,9 +216,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "d3f849274fee4e2e00350d19df8d7396829122701a9c4f18b55241ba42742ee4",
+      "sha256": "4f417d46cf1333137f0b7c71099f97d1a71fe8d93d5ce5c06d06e1228d019a42",
       "mode": "0644",
-      "size": 2982,
+      "size": 2976,
       "install": true
     },
     {

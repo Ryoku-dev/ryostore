@@ -1,7 +1,7 @@
 {
   "id": "mjw-clock",
   "name": "Clock",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
   "description": "Desktop clock with the illogical-impulse faces: analog cookie, digital, and pixel dot-matrix, tinted by your live theme.",
   "license": "GPL-3.0-only",
@@ -167,7 +167,7 @@
           },
           {
             "value": "numbers",
-            "label": "3 \u00b7 6 \u00b7 9 \u00b7 12"
+            "label": "3 · 6 · 9 · 12"
           },
           {
             "value": "full",

@@ -1,9 +1,9 @@
 {
   "id": "mjw-image",
   "name": "Image",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
-  "description": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable \u2014 the illogical-impulse image tile.",
+  "description": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable — the illogical-impulse image tile.",
   "license": "GPL-3.0-only",
   "official": false,
   "tags": [
