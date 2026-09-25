@@ -1,7 +1,7 @@
 {
   "id": "mjw-weather",
   "name": "Weather",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
   "description": "Weather card with condition art, humidity, wind, visibility and sun times, fed by the Ryoku weather daemon (same data as the bar).",
   "license": "GPL-3.0-only",

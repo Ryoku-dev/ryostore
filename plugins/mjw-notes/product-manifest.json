@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-notes",
   "category": "plugins",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "destination": "ryoku/plugins/mjw-notes",
   "files": [
     {
@@ -72,9 +72,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "3652720689f524a5a6aefa3a39b90d2b6dd927d01b63d5c70e9f2f14bea04bea",
+      "sha256": "f123839b730a14087d8d4bc948d9f2957ff73475ac795fe5849b5aad05ca4092",
       "mode": "0644",
-      "size": 6881,
+      "size": 6430,
       "install": true
     },
     {
@@ -264,7 +264,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "397b1124ca3d5f72983deff5be4950c87c701739d3516839253455ee033f1e66",
+      "sha256": "9eb10aacd1fd330e7d10401056046bbaa7fc1b18582cf8dacd27276a0ea33aa5",
       "mode": "0644",
       "size": 1832,
       "install": true

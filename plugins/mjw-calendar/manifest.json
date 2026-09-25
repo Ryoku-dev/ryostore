@@ -1,7 +1,7 @@
 {
   "id": "mjw-calendar",
   "name": "Calendar",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
   "description": "Month calendar tile with size presets, today ring and week strip from the illogical-impulse desktop.",
   "license": "GPL-3.0-only",

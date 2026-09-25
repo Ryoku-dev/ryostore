@@ -1,7 +1,7 @@
 {
   "id": "mjw-image-converter",
   "name": "Image Converter",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
   "description": "Drop images on the tile to convert them (png/jpg/webp/avif/bmp/tiff) or merge a stack into one PDF, beside the source.",
   "license": "GPL-3.0-only",

@@ -120,21 +120,11 @@ Singleton {
     }
 
     // Per-widget knobs written by Ryoku Settings (pluginSettings) on top of
-    // the persisted entry. The host re-reads placement for every tile whenever
-    // any tile is moved, resized or recoloured, so an unchanged payload returns
-    // early: one widget being dragged must not push writes and repaints through
-    // every other tile on the desktop.
-    property string _appliedSettings: ""
+    // the persisted entry. Called by the adapter on every settings change.
     function hydrate(settings) {
         const entry = options.background.widgets.todo;
-        if (!settings || !entry) {
-            root._appliedSettings = "";
+        if (!settings || !entry)
             return;
-        }
-        const stamp = JSON.stringify(settings);
-        if (stamp === root._appliedSettings)
-            return;
-        root._appliedSettings = stamp;
         for (const k in settings) {
             const v = settings[k];
             if (v === undefined || v === null)

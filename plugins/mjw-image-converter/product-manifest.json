@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mjw-image-converter",
   "category": "plugins",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "destination": "ryoku/plugins/mjw-image-converter",
   "files": [
     {
@@ -72,9 +72,9 @@
     {
       "source": "content/Config.qml",
       "destination": "content/Config.qml",
-      "sha256": "be6171083623814e92cbcf9b0d30b1e88dfa4f28201090b75cc73f7067dc3551",
+      "sha256": "ae193e4fb552feb31db15e9fff1468feb4006330f9cd76d944b5741b44ae0a40",
       "mode": "0644",
-      "size": 6883,
+      "size": 6432,
       "install": true
     },
     {
@@ -376,7 +376,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "cb650286349aedc5abdfcae6c6c8e8fca329ca2a79107b06dccfa3cc515ecf38",
+      "sha256": "34d541f05d1e9c92d948e9d1be1970f1b249335cbbec48a4bca17f2a42054921",
       "mode": "0644",
       "size": 2526,
       "install": true
