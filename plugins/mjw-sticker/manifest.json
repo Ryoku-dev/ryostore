@@ -1,0 +1,111 @@
+{
+  "id": "mjw-sticker",
+  "name": "Sticker",
+  "version": "2.0.0",
+  "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+  "description": "Rotatable sticker tile with outline colour, drop-replaceable \u2014 the illogical-impulse sticker.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "tags": [
+    "sticker",
+    "image",
+    "deco",
+    "desktop-widget",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 880,
+      "y": 860,
+      "scale": 0.85
+    },
+    "icon": "stk",
+    "label": "Sticker"
+  },
+  "dependencies": {
+    "commands": []
+  },
+  "files": [
+    "content/Appearance.qml",
+    "content/Backdrop.qml",
+    "content/ColorUtils.qml",
+    "content/Config.qml",
+    "content/Directories.qml",
+    "content/GlobalStates.qml",
+    "content/Icons.qml",
+    "content/MaterialSymbol.qml",
+    "content/ResizeHandler.qml",
+    "content/StickerWidget.qml",
+    "content/StyledDropShadow.qml",
+    "content/StyledImage.qml",
+    "content/StyledText.qml",
+    "content/Translation.qml",
+    "content/Widget.qml",
+    "content/WidgetBase.qml",
+    "content/qmldir",
+    "service/Main.qml"
+  ],
+  "metadata": {
+    "settings": [
+      {
+        "key": "path",
+        "type": "image",
+        "label": "Sticker image",
+        "group": "Sticker",
+        "default": "",
+        "placeholder": "Drop one on the tile or pick a file"
+      },
+      {
+        "key": "size",
+        "type": "slider",
+        "label": "Size",
+        "group": "Sticker",
+        "default": 200,
+        "min": 60,
+        "max": 500,
+        "step": 10,
+        "decimals": 0
+      },
+      {
+        "key": "rotation",
+        "type": "slider",
+        "label": "Rotation (deg)",
+        "group": "Sticker",
+        "default": 0,
+        "min": -180,
+        "max": 180,
+        "step": 5,
+        "decimals": 0
+      },
+      {
+        "key": "outlineWidth",
+        "type": "slider",
+        "label": "Outline width",
+        "group": "Sticker",
+        "default": 8,
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "decimals": 0
+      }
+    ]
+  }
+}

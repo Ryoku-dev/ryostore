@@ -1,0 +1,175 @@
+{
+  "id": "mjw-image",
+  "name": "Image",
+  "version": "2.0.0",
+  "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+  "description": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable \u2014 the illogical-impulse image tile.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "tags": [
+    "image",
+    "photo",
+    "shape",
+    "desktop-widget",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 460,
+      "y": 860,
+      "scale": 0.85
+    },
+    "icon": "image",
+    "label": "Image"
+  },
+  "dependencies": {
+    "commands": []
+  },
+  "files": [
+    "content/Appearance.qml",
+    "content/Backdrop.qml",
+    "content/ColorUtils.qml",
+    "content/Config.qml",
+    "content/CustomImage.qml",
+    "content/Directories.qml",
+    "content/FastBlurred.qml",
+    "content/GlobalStates.qml",
+    "content/Icons.qml",
+    "content/MaterialLoadingIndicator.qml",
+    "content/MaterialShape.qml",
+    "content/MaterialSymbol.qml",
+    "content/ResizeHandler.qml",
+    "content/StyledDropShadow.qml",
+    "content/StyledImage.qml",
+    "content/StyledRectangularShadow.qml",
+    "content/StyledText.qml",
+    "content/Translation.qml",
+    "content/Widget.qml",
+    "content/WidgetBase.qml",
+    "content/qmldir",
+    "content/shapes/LICENSE",
+    "content/shapes/README.md",
+    "content/shapes/ShapeCanvas.qml",
+    "content/shapes/geometry/offset.js",
+    "content/shapes/graphics/matrix.js",
+    "content/shapes/material-shapes.js",
+    "content/shapes/shapes/corner-rounding.js",
+    "content/shapes/shapes/cubic.js",
+    "content/shapes/shapes/feature-mapping.js",
+    "content/shapes/shapes/feature.js",
+    "content/shapes/shapes/float-mapping.js",
+    "content/shapes/shapes/morph.js",
+    "content/shapes/shapes/point.js",
+    "content/shapes/shapes/polygon-measure.js",
+    "content/shapes/shapes/rounded-corner.js",
+    "content/shapes/shapes/rounded-polygon.js",
+    "content/shapes/shapes/utils.js",
+    "service/Main.qml"
+  ],
+  "metadata": {
+    "settings": [
+      {
+        "key": "path",
+        "type": "image",
+        "label": "Image",
+        "group": "Image",
+        "default": "",
+        "placeholder": "Drop one on the tile or pick a file"
+      },
+      {
+        "key": "shape",
+        "type": "choice",
+        "label": "Shape",
+        "group": "Image",
+        "default": "Cookie4Sided",
+        "options": [
+          {
+            "value": "Cookie4Sided",
+            "label": "Cookie 4-sided"
+          },
+          {
+            "value": "Cookie3Sided",
+            "label": "Cookie 3-sided"
+          },
+          {
+            "value": "Cookie5Sided",
+            "label": "Cookie 5-sided"
+          },
+          {
+            "value": "Squircle",
+            "label": "Squircle"
+          },
+          {
+            "value": "Circle",
+            "label": "Circle"
+          },
+          {
+            "value": "Pill",
+            "label": "Pill"
+          },
+          {
+            "value": "Arch",
+            "label": "Arch"
+          },
+          {
+            "value": "Leaf",
+            "label": "Leaf"
+          },
+          {
+            "value": "ClamShell",
+            "label": "Clam shell"
+          },
+          {
+            "value": "Gem",
+            "label": "Gem"
+          },
+          {
+            "value": "Heart",
+            "label": "Heart"
+          },
+          {
+            "value": "Flower",
+            "label": "Flower"
+          },
+          {
+            "value": "Star",
+            "label": "Star"
+          },
+          {
+            "value": "Square",
+            "label": "Square"
+          }
+        ]
+      },
+      {
+        "key": "size",
+        "type": "slider",
+        "label": "Size",
+        "group": "Image",
+        "default": 200,
+        "min": 80,
+        "max": 600,
+        "step": 10,
+        "decimals": 0
+      }
+    ]
+  }
+}

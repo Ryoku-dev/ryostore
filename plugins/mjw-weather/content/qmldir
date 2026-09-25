@@ -1,0 +1,19 @@
+singleton Appearance 1.0 Appearance.qml
+singleton Backdrop 1.0 Backdrop.qml
+singleton ColorUtils 1.0 ColorUtils.qml
+singleton Config 1.0 Config.qml
+singleton Directories 1.0 Directories.qml
+singleton GlobalStates 1.0 GlobalStates.qml
+singleton Icons 1.0 Icons.qml
+singleton Translation 1.0 Translation.qml
+singleton Weather 1.0 Weather.qml
+FastBlurred 1.0 FastBlurred.qml
+MaterialShape 1.0 MaterialShape.qml
+MaterialShapeWrappedMaterialSymbol 1.0 MaterialShapeWrappedMaterialSymbol.qml
+MaterialSymbol 1.0 MaterialSymbol.qml
+ResizeHandler 1.0 ResizeHandler.qml
+StyledRectangularShadow 1.0 StyledRectangularShadow.qml
+StyledText 1.0 StyledText.qml
+WeatherWidget 1.0 WeatherWidget.qml
+Widget 1.0 Widget.qml
+WidgetBase 1.0 WidgetBase.qml

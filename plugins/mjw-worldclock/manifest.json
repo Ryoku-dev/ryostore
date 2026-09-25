@@ -1,0 +1,118 @@
+{
+  "id": "mjw-worldclock",
+  "name": "World Clock",
+  "version": "2.0.0",
+  "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+  "description": "Up to four analog clocks for timezones you pick, with live UTC offsets \u2014 the illogical-impulse world clock.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "tags": [
+    "clock",
+    "timezones",
+    "world",
+    "desktop-widget",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 40,
+      "y": 390,
+      "scale": 0.85
+    },
+    "icon": "public",
+    "label": "World Clock"
+  },
+  "dependencies": {
+    "commands": []
+  },
+  "files": [
+    "content/AndroidClock.qml",
+    "content/Appearance.qml",
+    "content/Backdrop.qml",
+    "content/ColorUtils.qml",
+    "content/Config.qml",
+    "content/ConfigSpinBox.qml",
+    "content/DateTime.qml",
+    "content/Directories.qml",
+    "content/FastBlurred.qml",
+    "content/GlobalStates.qml",
+    "content/Icons.qml",
+    "content/MaterialSymbol.qml",
+    "content/OptionalMaterialSymbol.qml",
+    "content/ResizeHandler.qml",
+    "content/StyledComboBoxSearch.qml",
+    "content/StyledDropShadow.qml",
+    "content/StyledListView.qml",
+    "content/StyledRectangularShadow.qml",
+    "content/StyledScrollBar.qml",
+    "content/StyledSpinBox.qml",
+    "content/StyledText.qml",
+    "content/StyledTextInput.qml",
+    "content/Translation.qml",
+    "content/Weather.qml",
+    "content/Widget.qml",
+    "content/WidgetBase.qml",
+    "content/WorldClock.qml",
+    "content/WorldClockWidget.qml",
+    "content/qmldir",
+    "service/Main.qml"
+  ],
+  "metadata": {
+    "settings": [
+      {
+        "key": "sizeMode",
+        "type": "choice",
+        "label": "Size",
+        "group": "World Clock",
+        "default": "2x2",
+        "options": [
+          {
+            "value": "1x1",
+            "label": "Column"
+          },
+          {
+            "value": "1x2",
+            "label": "Pair"
+          },
+          {
+            "value": "2x2",
+            "label": "Square"
+          },
+          {
+            "value": "2x3",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "key": "clockCount",
+        "type": "slider",
+        "label": "Clocks",
+        "group": "World Clock",
+        "default": 4,
+        "min": 1,
+        "max": 4,
+        "step": 1,
+        "decimals": 0
+      }
+    ]
+  }
+}

@@ -9,7 +9,7 @@
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/gaming",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "proton · overlays · emulators",
+      "summary": "proton \u00b7 overlays \u00b7 emulators",
       "description": "The native Linux gaming stack: launchers, Wine and Proton, performance overlays, controller support, and console emulators for every system with a proven package. Ryoku installs the matching 32-bit GPU drivers for full hardware capacity.",
       "tags": [
         "proton",
@@ -368,7 +368,7 @@
           "summary": "Configure Steam Controller, DualShock, and other gamepads with custom profiles."
         }
       ],
-      "tagline": "proton · overlays · emulators",
+      "tagline": "proton \u00b7 overlays \u00b7 emulators",
       "sources": "pacman / AUR",
       "icon": "sports_esports"
     },
@@ -380,7 +380,7 @@
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/the-influencer",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "stream · record · edit · publish",
+      "summary": "stream \u00b7 record \u00b7 edit \u00b7 publish",
       "description": "A complete stream, record, edit, reformat, and publish kit: recorders, editors, audio and thumbnail tools, plus a right-click video toolkit in the file manager.",
       "tags": [
         "stream",
@@ -654,7 +654,7 @@
           "summary": "GUI subtitle editor for timing, styling, and format conversion."
         }
       ],
-      "tagline": "stream · record · edit · publish",
+      "tagline": "stream \u00b7 record \u00b7 edit \u00b7 publish",
       "sources": "pacman / AUR / Go / npm / ryoku",
       "icon": "movie"
     },
@@ -665,7 +665,7 @@
       "path": "bundles/spiceflow",
       "author": "Rayyan",
       "upstream": "https://github.com/Sipper1236/ryoku-palette-bridge",
-      "summary": "wallpaper · Zen · Spotify · Discord",
+      "summary": "wallpaper \u00b7 Zen \u00b7 Spotify \u00b7 Discord",
       "description": "Wallpaper colours for Spotify and Vesktop, with optional Zen live theming through a separately installed signed extension. Installs and starts the bridge user service.",
       "tags": [
         "zen browser",
@@ -718,7 +718,7 @@
           "summary": "Apply your wallpaper colours to Zen, Spotify, and Discord."
         }
       ],
-      "tagline": "wallpaper colours · optional app integrations",
+      "tagline": "wallpaper colours \u00b7 optional app integrations",
       "sources": "GitHub / MIT",
       "icon": "palette",
       "official": false,
@@ -732,7 +732,7 @@
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/cachyos-layer",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "kernel · tuning · schedulers · proton",
+      "summary": "kernel \u00b7 tuning \u00b7 schedulers \u00b7 proton",
       "description": "Turn Ryoku into CachyOS: the performance-tuned kernel, cachyos-settings tuning, sched-ext schedulers, the ananicy-cpp auto-nice daemon and ruleset, and the CachyOS Proton build. Adds the CachyOS repos above Arch's, so opting in goes full CachyOS; the stock kernel stays as the boot fallback. Install all, or pick individual tools. Every item but scx-scheds needs the CachyOS repo.",
       "tags": [
         "faster kernel",
@@ -803,7 +803,7 @@
           "summary": "The CachyOS-tuned Proton build for Steam and Lutris. Needs the CachyOS repo (and multilib for its 32-bit libraries); not on plain Arch."
         }
       ],
-      "tagline": "kernel · tuning · schedulers · proton",
+      "tagline": "kernel \u00b7 tuning \u00b7 schedulers \u00b7 proton",
       "sources": "CachyOS repo / Arch"
     },
     {
@@ -814,7 +814,7 @@
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/developer-essentials",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "build · debug · runtimes · containers",
+      "summary": "build \u00b7 debug \u00b7 runtimes \u00b7 containers",
       "description": "A practical workstation bootstrap for developers: Arch build basics, Git and GitHub CLI, fast shell search tools, terminal workflow helpers, C/C++ build and debug tools, major language runtimes, Docker, and Visual Studio Code.",
       "tags": [
         "developer tools",
@@ -1065,7 +1065,7 @@
           "summary": "Microsoft Visual Studio Code editor with the official marketplace build."
         }
       ],
-      "tagline": "build · debug · runtimes · containers",
+      "tagline": "build \u00b7 debug \u00b7 runtimes \u00b7 containers",
       "sources": "pacman / AUR",
       "icon": "code"
     },
@@ -1077,7 +1077,7 @@
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/web-browsers",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "firefox · chromium · privacy browsers",
+      "summary": "firefox \u00b7 chromium \u00b7 privacy browsers",
       "description": "A browser shelf for daily use, web development, privacy testing, and Chromium/Firefox compatibility checks: Firefox, Firefox Developer Edition, Chromium, Brave, LibreWolf, and Zen Browser.",
       "tags": [
         "browsers",
@@ -1148,7 +1148,7 @@
           "summary": "Zen Browser, a Firefox-based browser focused on a calmer, more customizable UI."
         }
       ],
-      "tagline": "firefox · chromium · privacy browsers",
+      "tagline": "firefox \u00b7 chromium \u00b7 privacy browsers",
       "sources": "pacman / AUR",
       "icon": "travel_explore"
     },
@@ -1160,7 +1160,7 @@
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/vpn-networking",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "wireguard · openvpn · vpn clients",
+      "summary": "wireguard \u00b7 openvpn \u00b7 vpn clients",
       "description": "VPN basics and desktop clients for WireGuard, OpenVPN, IPsec/IKEv2, Proton VPN, Mullvad VPN, and Cloudflare WARP.",
       "tags": [
         "vpn",
@@ -1240,7 +1240,7 @@
           "summary": "Cloudflare WARP client and CLI for 1.1.1.1/WARP networking."
         }
       ],
-      "tagline": "wireguard · openvpn · vpn clients",
+      "tagline": "wireguard \u00b7 openvpn \u00b7 vpn clients",
       "sources": "pacman / AUR",
       "icon": "vpn_lock"
     },
@@ -1252,7 +1252,7 @@
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/rice-showcase",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "cmatrix · bonsai · visualizers",
+      "summary": "cmatrix \u00b7 bonsai \u00b7 visualizers",
       "description": "Terminal toys and visual tools for showing off a desktop rice: Matrix rain, bonsai, audio visualizers, system readouts, ASCII banners, and classic terminal animations.",
       "tags": [
         "ricing",
@@ -1386,7 +1386,7 @@
           "summary": "Animated ASCII aquarium for whimsical terminal showcases."
         }
       ],
-      "tagline": "cmatrix · bonsai · visualizers",
+      "tagline": "cmatrix \u00b7 bonsai \u00b7 visualizers",
       "sources": "pacman / AUR",
       "icon": "auto_awesome"
     },
@@ -1397,7 +1397,7 @@
       "path": "bundles/ryotunes",
       "author": "ashmitvoid",
       "upstream": "https://github.com/ryoku-dev/ryotunes",
-      "summary": "Native music · live Ryoku colours · MPRIS",
+      "summary": "Native music \u00b7 live Ryoku colours \u00b7 MPRIS",
       "description": "The Ryoku-native music player, originally contributed by ashmitvoid. Installs the current distribution package, with native playback, MPRIS and live desktop theming.",
       "tags": [
         "music",
@@ -1423,27 +1423,27 @@
           "summary": "Ryoku-native music player with libmpv playback, MPRIS and live desktop theming."
         }
       ],
-      "tagline": "Native music · live Ryoku colours · MPRIS",
+      "tagline": "Native music \u00b7 live Ryoku colours \u00b7 MPRIS",
       "sources": "Ryoku package repository",
       "icon": "music_note",
       "official": false,
       "lastUpdated": "2026-09-07"
     },
     {
-      "id": "awe-widgets",
-      "name": "Awe Widget Set",
-      "version": "1.0.0",
-      "path": "bundles/awe-widgets",
+      "id": "mjw-widgets",
+      "name": "MJ Widget Set",
+      "version": "2.0.0",
+      "path": "bundles/mjw-widgets",
       "author": "neur0map <hello@ryoku.dev>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "24 Material 3 desktop widgets, in one install",
-      "description": "The full Awe suite: 24 Material 3 desktop widgets for your wallpaper - clocks, calendar, notes, habits, media, weather, thermals and more - ported to run as Ryoku plugins. Install the set, then toggle each one from the desktop's Add widget menu.",
+      "summary": "25 desktop widgets in one install, ported from end4-pC",
+      "description": "The full MJ set: 25 desktop widgets for your wallpaper, ported from end4-pC (illogical-impulse) with live Ryoku theming, weather and audio - the set was previously published as Awe.",
       "tags": [
         "widgets",
         "material 3",
         "desktop",
-        "awe",
+        "mjw",
         "bundle"
       ],
       "accent": "#7dd3fc",
@@ -1453,206 +1453,214 @@
         "assets/preview.png"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "d1850b1fb0ebe087f841b54cc312026e143e7db3c04347eae9fc61c5f9158b2d",
+      "manifestSha256": "2686a028e28a681758d69e7ddfb035d94da806eff02ab82f0b8539c52c9326b9",
       "components": [
         {
           "type": "plugin",
-          "name": "awe-battery",
-          "detect": "awe-battery",
+          "name": "mjw-calendar",
+          "detect": "mjw-calendar",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Month calendar tile with size presets, today ring and week strip from the illogical-impulse desktop."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-clock",
+          "detect": "mjw-clock",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Desktop clock with the illogical-impulse faces: analog cookie, digital, and pixel dot-matrix, tinted by your live theme."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-image",
+          "detect": "mjw-image",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable \u2014 the illogical-impulse image tile."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-image-converter",
+          "detect": "mjw-image-converter",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Drop images on the tile to convert them (png/jpg/webp/avif/bmp/tiff) or merge a stack into one PDF, beside the source."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-media",
+          "detect": "mjw-media",
+          "tier": "core",
+          "interactive": false,
+          "summary": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib \u2014 the illogical-impulse media widget."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-notes",
+          "detect": "mjw-notes",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state \u2014 the illogical-impulse notes."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-resources",
+          "detect": "mjw-resources",
+          "tier": "core",
+          "interactive": false,
+          "summary": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower \u2014 the illogical-impulse resources card."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-sticker",
+          "detect": "mjw-sticker",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Rotatable sticker tile with outline colour, drop-replaceable \u2014 the illogical-impulse sticker."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-text",
+          "detect": "mjw-text",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Floating desktop text in eight bundled handwriting fonts with inline editing \u2014 the illogical-impulse custom text."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-timer",
+          "detect": "mjw-timer",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts \u2014 the illogical-impulse timers."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-todo",
+          "detect": "mjw-todo",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Flip card with a checkable task list, progress ring and inline add \u2014 the illogical-impulse todo."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-usercard",
+          "detect": "mjw-usercard",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons \u2014 the illogical-impulse user card."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-visualizer",
+          "detect": "mjw-visualizer",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Live audio spectrum with five styles \u2014 bars, mirror, aurora, ring and dots \u2014 driven by your own playback stream."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-weather",
+          "detect": "mjw-weather",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Weather card with condition art, humidity, wind, visibility and sun times, fed by the Ryoku weather daemon (same data as the bar)."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-worldclock",
+          "detect": "mjw-worldclock",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Up to four analog clocks for timezones you pick, with live UTC offsets \u2014 the illogical-impulse world clock."
+        },
+        {
+          "type": "plugin",
+          "name": "mjw-battery",
+          "detect": "mjw-battery",
           "tier": "core",
           "interactive": false,
           "summary": "Battery charge level and charging state with a vector icon badge and progress bar, read from /sys."
         },
         {
           "type": "plugin",
-          "name": "awe-calc",
-          "detect": "awe-calc",
+          "name": "mjw-calc",
+          "detect": "mjw-calc",
           "tier": "core",
           "interactive": false,
           "summary": "Material-style desktop calculator with a safe expression evaluator."
         },
         {
           "type": "plugin",
-          "name": "awe-calendar",
-          "detect": "awe-calendar",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Compact monthly calendar that highlights today's date."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-clipboard",
-          "detect": "awe-clipboard",
+          "name": "mjw-clipboard",
+          "detect": "mjw-clipboard",
           "tier": "core",
           "interactive": false,
           "summary": "A rolling clipboard history read from wl-paste; click an entry to copy it back with wl-copy."
         },
         {
           "type": "plugin",
-          "name": "awe-clock",
-          "detect": "awe-clock",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Analog and digital desktop clock with cookie, Nothing-OS, stacked and digital faces."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-crypto",
-          "detect": "awe-crypto",
+          "name": "mjw-crypto",
+          "detect": "mjw-crypto",
           "tier": "core",
           "interactive": false,
           "summary": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API."
         },
         {
           "type": "plugin",
-          "name": "awe-git-dashboard",
-          "detect": "awe-git-dashboard",
+          "name": "mjw-git-dashboard",
+          "detect": "mjw-git-dashboard",
           "tier": "core",
           "interactive": false,
           "summary": "Shows the branch, dirty-file count, and last commit of the git repository in your home directory."
         },
         {
           "type": "plugin",
-          "name": "awe-habits",
-          "detect": "awe-habits",
+          "name": "mjw-habits",
+          "detect": "mjw-habits",
           "tier": "core",
           "interactive": false,
           "summary": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally."
         },
         {
           "type": "plugin",
-          "name": "awe-media",
-          "detect": "awe-media",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Now-playing card driven by playerctl (MPRIS): album art, scrubbable progress and transport controls."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-network",
-          "detect": "awe-network",
+          "name": "mjw-network",
+          "detect": "mjw-network",
           "tier": "core",
           "interactive": false,
           "summary": "Live Wi-Fi status, local IP, and up/down throughput with an activity sparkline."
         },
         {
           "type": "plugin",
-          "name": "awe-notes",
-          "detect": "awe-notes",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Inline-editable sticky notes with colour tags, saved locally between sessions."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-ping",
-          "detect": "awe-ping",
+          "name": "mjw-ping",
+          "detect": "mjw-ping",
           "tier": "core",
           "interactive": false,
           "summary": "Live latency monitor with a jitter sparkline, pinging Cloudflare and Google DNS."
         },
         {
           "type": "plugin",
-          "name": "awe-poster",
-          "detect": "awe-poster",
-          "tier": "core",
-          "interactive": false,
-          "summary": "A decorative image frame that masks a picture or GIF into a Material organic shape."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-quote",
-          "detect": "awe-quote",
-          "tier": "core",
-          "interactive": false,
-          "summary": "A rotating card of programming and design quotes; click refresh to cycle to the next one."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-resource-wheel",
-          "detect": "awe-resource-wheel",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Concentric CPU, RAM, disk and temperature gauge with a live legend, polled from /proc and the filesystem."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-storage-map",
-          "detect": "awe-storage-map",
+          "name": "mjw-storage-map",
+          "detect": "mjw-storage-map",
           "tier": "core",
           "interactive": false,
           "summary": "Root filesystem usage with a segmented bar and a used and free breakdown, read from df."
         },
         {
           "type": "plugin",
-          "name": "awe-system-info",
-          "detect": "awe-system-info",
-          "tier": "core",
-          "interactive": false,
-          "summary": "CPU, RAM and disk usage in three frosted tiles; double-click to switch between horizontal and vertical layouts."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-thermal",
-          "detect": "awe-thermal",
+          "name": "mjw-thermal",
+          "detect": "mjw-thermal",
           "tier": "core",
           "interactive": false,
           "summary": "CPU package temperature with per-core bars and a live status tag, from the kernel thermal zone and lm_sensors."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-timer",
-          "detect": "awe-timer",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Focus / break / stopwatch timer with a circular progress ring and adjustable custom durations."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-todo",
-          "detect": "awe-todo",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Desktop task list with a progress bar and per-task completion, saved locally."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-visualizer",
-          "detect": "awe-visualizer",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Animated audio spectrum in bar, wave and radial modes that reacts to playerctl playback state."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-volume-brightness",
-          "detect": "awe-volume-brightness",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Volume and screen-brightness sliders with mute, driven by wpctl and brightnessctl."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-weather",
-          "detect": "awe-weather",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Local conditions, temperature, wind and humidity, refreshed from wttr.in on a timer and on click."
-        },
-        {
-          "type": "plugin",
-          "name": "awe-clock-world",
-          "detect": "awe-clock-world",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Multiple time zones in four switchable layouts; double-click to cycle the layout."
         }
       ],
       "tagline": "the whole Awe suite, on your wallpaper",
       "sources": "GitHub / BSL-1.0",
       "icon": "widgets",
       "official": false,
-      "lastUpdated": "2026-09-21"
+      "lastUpdated": "2026-09-24"
     }
   ]
 }

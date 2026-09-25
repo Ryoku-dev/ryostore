@@ -1,0 +1,101 @@
+{
+  "id": "mjw-timer",
+  "name": "Timers",
+  "version": "2.0.0",
+  "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+  "description": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts \u2014 the illogical-impulse timers.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "tags": [
+    "timer",
+    "pomodoro",
+    "stopwatch",
+    "countdown",
+    "desktop-widget",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 40,
+      "y": 620,
+      "scale": 0.85
+    },
+    "icon": "timer",
+    "label": "Timers"
+  },
+  "dependencies": {
+    "commands": [
+      "notify-send"
+    ]
+  },
+  "files": [
+    "content/Appearance.qml",
+    "content/Audio.qml",
+    "content/Backdrop.qml",
+    "content/ColorUtils.qml",
+    "content/Config.qml",
+    "content/Directories.qml",
+    "content/FastBlurred.qml",
+    "content/GlobalStates.qml",
+    "content/Icons.qml",
+    "content/MaterialShape.qml",
+    "content/MaterialShapeWrappedMaterialSymbol.qml",
+    "content/MaterialSymbol.qml",
+    "content/Persistent.qml",
+    "content/StyledRectangularShadow.qml",
+    "content/StyledText.qml",
+    "content/TimerService.qml",
+    "content/TimerWidget.qml",
+    "content/Translation.qml",
+    "content/Widget.qml",
+    "content/WidgetBase.qml",
+    "content/qmldir",
+    "content/shapes/LICENSE",
+    "content/shapes/README.md",
+    "content/shapes/ShapeCanvas.qml",
+    "content/shapes/geometry/offset.js",
+    "content/shapes/graphics/matrix.js",
+    "content/shapes/material-shapes.js",
+    "content/shapes/shapes/corner-rounding.js",
+    "content/shapes/shapes/cubic.js",
+    "content/shapes/shapes/feature-mapping.js",
+    "content/shapes/shapes/feature.js",
+    "content/shapes/shapes/float-mapping.js",
+    "content/shapes/shapes/morph.js",
+    "content/shapes/shapes/point.js",
+    "content/shapes/shapes/polygon-measure.js",
+    "content/shapes/shapes/rounded-corner.js",
+    "content/shapes/shapes/rounded-polygon.js",
+    "content/shapes/shapes/utils.js",
+    "service/Main.qml"
+  ],
+  "metadata": {
+    "settings": [
+      {
+        "key": "vertical",
+        "type": "toggle",
+        "label": "Stack cards vertically",
+        "group": "Timers",
+        "default": false
+      }
+    ]
+  }
+}

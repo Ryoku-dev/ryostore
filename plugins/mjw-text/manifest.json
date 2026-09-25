@@ -1,0 +1,200 @@
+{
+  "id": "mjw-text",
+  "name": "Custom Text",
+  "version": "2.0.0",
+  "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+  "description": "Floating desktop text in eight bundled handwriting fonts with inline editing \u2014 the illogical-impulse custom text.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "tags": [
+    "text",
+    "notes",
+    "custom",
+    "desktop-widget",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 40,
+      "y": 860,
+      "scale": 0.85
+    },
+    "icon": "text_fields",
+    "label": "Custom Text"
+  },
+  "dependencies": {
+    "commands": []
+  },
+  "files": [
+    "content/Appearance.qml",
+    "content/Backdrop.qml",
+    "content/ColorUtils.qml",
+    "content/Config.qml",
+    "content/CustomTextWidget.qml",
+    "content/Directories.qml",
+    "content/FloatingActionButton.qml",
+    "content/GlobalStates.qml",
+    "content/IconToolbarButton.qml",
+    "content/Icons.qml",
+    "content/MaterialSymbol.qml",
+    "content/ResizeHandler.qml",
+    "content/Revealer.qml",
+    "content/RippleButton.qml",
+    "content/StyledRectangularShadow.qml",
+    "content/StyledText.qml",
+    "content/Toolbar.qml",
+    "content/ToolbarButton.qml",
+    "content/ToolbarPairedFab.qml",
+    "content/Translation.qml",
+    "content/Widget.qml",
+    "content/WidgetBase.qml",
+    "content/qmldir",
+    "service/Main.qml"
+  ],
+  "metadata": {
+    "settings": [
+      {
+        "key": "content",
+        "type": "text",
+        "label": "Text",
+        "group": "Custom Text",
+        "default": "Hello world"
+      },
+      {
+        "key": "fontFamily",
+        "type": "choice",
+        "label": "Font",
+        "group": "Custom Text",
+        "default": "Caveat",
+        "options": [
+          {
+            "value": "Caveat",
+            "label": "Caveat"
+          },
+          {
+            "value": "Dancing Script",
+            "label": "Dancing Script"
+          },
+          {
+            "value": "Pacifico",
+            "label": "Pacifico"
+          },
+          {
+            "value": "Indie Flower",
+            "label": "Indie Flower"
+          },
+          {
+            "value": "Great Vibes",
+            "label": "Great Vibes"
+          },
+          {
+            "value": "Permanent Marker",
+            "label": "Permanent Marker"
+          },
+          {
+            "value": "Patrick Hand",
+            "label": "Patrick Hand"
+          },
+          {
+            "value": "Kalam",
+            "label": "Kalam"
+          }
+        ]
+      },
+      {
+        "key": "fontSize",
+        "type": "slider",
+        "label": "Size",
+        "group": "Custom Text",
+        "default": 72,
+        "min": 20,
+        "max": 180,
+        "step": 2,
+        "decimals": 0
+      },
+      {
+        "key": "color",
+        "type": "choice",
+        "label": "Colour",
+        "group": "Custom Text",
+        "default": "",
+        "options": [
+          {
+            "value": "",
+            "label": "Automatic (theme)"
+          },
+          {
+            "value": "primary",
+            "label": "Primary"
+          },
+          {
+            "value": "secondary",
+            "label": "Secondary"
+          },
+          {
+            "value": "tertiary",
+            "label": "Tertiary"
+          },
+          {
+            "value": "error",
+            "label": "Error"
+          },
+          {
+            "value": "white",
+            "label": "White"
+          },
+          {
+            "value": "black",
+            "label": "Black"
+          }
+        ]
+      },
+      {
+        "key": "alignment",
+        "type": "choice",
+        "label": "Alignment",
+        "group": "Custom Text",
+        "default": "center",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "key": "shadow",
+        "type": "toggle",
+        "label": "Drop shadow",
+        "group": "Custom Text",
+        "default": true
+      }
+    ]
+  }
+}

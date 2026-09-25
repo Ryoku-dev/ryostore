@@ -1,0 +1,61 @@
+{
+  "id": "mjw-crypto",
+  "name": "Crypto",
+  "version": "1.0.3",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Live BTC / ETH / SOL prices with 24h change and a sparkline, polled from the CoinGecko API.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "crypto",
+    "markets",
+    "desktop-widget",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/CryptoWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [
+      "api.coingecko.com"
+    ],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 40,
+      "y": 574,
+      "scale": 0.8
+    },
+    "icon": "trending_up",
+    "label": "Crypto"
+  },
+  "dependencies": {
+    "commands": [
+      "curl"
+    ]
+  }
+}

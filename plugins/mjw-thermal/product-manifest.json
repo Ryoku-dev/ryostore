@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "mjw-thermal",
+  "category": "plugins",
+  "version": "1.0.3",
+  "destination": "ryoku/plugins/mjw-thermal",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "mode": "0644",
+      "size": 1338,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "5c7aa5fc75a974737315acd34421ce40daf1dbfd9a51365e980816dbbe972d45",
+      "mode": "0644",
+      "size": 825,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "d92642e1d720e8e5a0505af1d813a20c74fb181cab7bf5a181a63fd25221bbe9",
+      "mode": "0644",
+      "size": 23095,
+      "install": false
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "content/Theme.qml",
+      "sha256": "c08c09387c91028f02552346793a7a960bffd9c7307294ee7ea4fca4179a3c84",
+      "mode": "0644",
+      "size": 13387,
+      "install": true
+    },
+    {
+      "source": "content/ThermalWidget.qml",
+      "destination": "content/ThermalWidget.qml",
+      "sha256": "aa5961a7c55883c5645d9b6723dffecd4bc787192e9fa3753ee41386ba6eae8a",
+      "mode": "0644",
+      "size": 10359,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "0909251533372acb1547ee78227e6e6b14f722e0b1e9b365ef65de35c1c9962b",
+      "mode": "0644",
+      "size": 1085,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "6b60b265dfe5b5e759442fc01eb5ae8366938e4844d399c52d91a6fd78d203d8",
+      "mode": "0644",
+      "size": 62,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "a15c4293ce34a9c4f2f83dc5a18337955a25ff551aab8dca430785055526d082",
+      "mode": "0644",
+      "size": 1159,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "49d5233fd543e6c5e6100d96ad21c484c2606e5da1f734b70c42ccd8615f41ac",
+      "mode": "0644",
+      "size": 97,
+      "install": true
+    }
+  ]
+}

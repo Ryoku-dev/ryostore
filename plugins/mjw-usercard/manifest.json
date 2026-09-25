@@ -1,0 +1,97 @@
+{
+  "id": "mjw-usercard",
+  "name": "User Card",
+  "version": "2.0.0",
+  "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+  "description": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons \u2014 the illogical-impulse user card.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "tags": [
+    "user",
+    "system",
+    "session",
+    "clock",
+    "desktop-widget",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 1720,
+      "y": 620,
+      "scale": 0.85
+    },
+    "icon": "badge",
+    "label": "User Card"
+  },
+  "dependencies": {
+    "commands": [
+      "whoami"
+    ]
+  },
+  "files": [
+    "content/Appearance.qml",
+    "content/Backdrop.qml",
+    "content/ColorUtils.qml",
+    "content/Config.qml",
+    "content/DateTime.qml",
+    "content/Directories.qml",
+    "content/FastBlurred.qml",
+    "content/GlobalStates.qml",
+    "content/Icons.qml",
+    "content/MaterialSymbol.qml",
+    "content/ResizeHandler.qml",
+    "content/StyledRectangularShadow.qml",
+    "content/StyledText.qml",
+    "content/SystemInfo.qml",
+    "content/Translation.qml",
+    "content/UserCardWidget.qml",
+    "content/Weather.qml",
+    "content/Widget.qml",
+    "content/WidgetBase.qml",
+    "content/qmldir",
+    "service/Main.qml"
+  ],
+  "metadata": {
+    "settings": [
+      {
+        "key": "sizeMode",
+        "type": "choice",
+        "label": "Size",
+        "group": "User Card",
+        "default": "1x2",
+        "options": [
+          {
+            "value": "1x1",
+            "label": "Tile"
+          },
+          {
+            "value": "1x2",
+            "label": "Half"
+          },
+          {
+            "value": "2x2",
+            "label": "Square"
+          }
+        ]
+      }
+    ]
+  }
+}

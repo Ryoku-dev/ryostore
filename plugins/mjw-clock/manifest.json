@@ -1,0 +1,329 @@
+{
+  "id": "mjw-clock",
+  "name": "Clock",
+  "version": "2.0.0",
+  "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
+  "description": "Desktop clock with the illogical-impulse faces: analog cookie, digital, and pixel dot-matrix, tinted by your live theme.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "tags": [
+    "clock",
+    "time",
+    "analog",
+    "digital",
+    "pixel",
+    "desktop-widget",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 40,
+      "y": 110,
+      "scale": 0.85
+    },
+    "icon": "schedule",
+    "label": "Clock"
+  },
+  "dependencies": {
+    "commands": []
+  },
+  "files": [
+    "content/Appearance.qml",
+    "content/Backdrop.qml",
+    "content/BigHourNumbers.qml",
+    "content/BubbleDate.qml",
+    "content/ClockText.qml",
+    "content/ClockWidget.qml",
+    "content/ColorUtils.qml",
+    "content/Config.qml",
+    "content/CookieClock.qml",
+    "content/CookieQuote.qml",
+    "content/DateIndicator.qml",
+    "content/DateTime.qml",
+    "content/DigitalClock.qml",
+    "content/Directories.qml",
+    "content/Dots.qml",
+    "content/FadeLoader.qml",
+    "content/FastBlurred.qml",
+    "content/GlobalStates.qml",
+    "content/HourHand.qml",
+    "content/HourMarks.qml",
+    "content/Icons.qml",
+    "content/Lines.qml",
+    "content/MaterialCookie.qml",
+    "content/MaterialShape.qml",
+    "content/MaterialSymbol.qml",
+    "content/MinuteHand.qml",
+    "content/MinuteMarks.qml",
+    "content/PixelClock.qml",
+    "content/RectangleDate.qml",
+    "content/ResizeHandler.qml",
+    "content/RotatingDate.qml",
+    "content/SecondHand.qml",
+    "content/SineCookie.qml",
+    "content/StyledDropShadow.qml",
+    "content/StyledRectangularShadow.qml",
+    "content/StyledText.qml",
+    "content/TimeColumn.qml",
+    "content/Translation.qml",
+    "content/Widget.qml",
+    "content/WidgetBase.qml",
+    "content/qmldir",
+    "content/shapes/LICENSE",
+    "content/shapes/README.md",
+    "content/shapes/ShapeCanvas.qml",
+    "content/shapes/geometry/offset.js",
+    "content/shapes/graphics/matrix.js",
+    "content/shapes/material-shapes.js",
+    "content/shapes/shapes/corner-rounding.js",
+    "content/shapes/shapes/cubic.js",
+    "content/shapes/shapes/feature-mapping.js",
+    "content/shapes/shapes/feature.js",
+    "content/shapes/shapes/float-mapping.js",
+    "content/shapes/shapes/morph.js",
+    "content/shapes/shapes/point.js",
+    "content/shapes/shapes/polygon-measure.js",
+    "content/shapes/shapes/rounded-corner.js",
+    "content/shapes/shapes/rounded-polygon.js",
+    "content/shapes/shapes/utils.js",
+    "service/Main.qml"
+  ],
+  "metadata": {
+    "settings": [
+      {
+        "key": "style",
+        "type": "choice",
+        "label": "Face",
+        "group": "Clock",
+        "default": "cookie",
+        "options": [
+          {
+            "value": "digital",
+            "label": "Digital"
+          },
+          {
+            "value": "cookie",
+            "label": "Analog cookie"
+          },
+          {
+            "value": "pixel",
+            "label": "Pixel"
+          }
+        ]
+      },
+      {
+        "key": "cookie.dateStyle",
+        "type": "choice",
+        "label": "Date",
+        "group": "Analog",
+        "default": "bubble",
+        "options": [
+          {
+            "value": "bubble",
+            "label": "Bubble"
+          },
+          {
+            "value": "rect",
+            "label": "Rectangle"
+          },
+          {
+            "value": "border",
+            "label": "Rotating"
+          },
+          {
+            "value": "hide",
+            "label": "Hidden"
+          }
+        ]
+      },
+      {
+        "key": "cookie.dialNumberStyle",
+        "type": "choice",
+        "label": "Dial numbers",
+        "group": "Analog",
+        "default": "full",
+        "options": [
+          {
+            "value": "dots",
+            "label": "Dots"
+          },
+          {
+            "value": "numbers",
+            "label": "3 \u00b7 6 \u00b7 9 \u00b7 12"
+          },
+          {
+            "value": "full",
+            "label": "Full marks"
+          },
+          {
+            "value": "none",
+            "label": "None"
+          }
+        ]
+      },
+      {
+        "key": "cookie.hourHandStyle",
+        "type": "choice",
+        "label": "Hour hand",
+        "group": "Analog",
+        "default": "fill",
+        "options": [
+          {
+            "value": "classic",
+            "label": "Classic"
+          },
+          {
+            "value": "fill",
+            "label": "Filled"
+          },
+          {
+            "value": "hollow",
+            "label": "Hollow"
+          },
+          {
+            "value": "hide",
+            "label": "Hidden"
+          }
+        ]
+      },
+      {
+        "key": "cookie.minuteHandStyle",
+        "type": "choice",
+        "label": "Minute hand",
+        "group": "Analog",
+        "default": "medium",
+        "options": [
+          {
+            "value": "classic",
+            "label": "Classic"
+          },
+          {
+            "value": "thin",
+            "label": "Thin"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "bold",
+            "label": "Bold"
+          },
+          {
+            "value": "hide",
+            "label": "Hidden"
+          }
+        ]
+      },
+      {
+        "key": "cookie.secondHandStyle",
+        "type": "choice",
+        "label": "Second hand",
+        "group": "Analog",
+        "default": "dot",
+        "options": [
+          {
+            "value": "dot",
+            "label": "Dot"
+          },
+          {
+            "value": "line",
+            "label": "Line"
+          },
+          {
+            "value": "classic",
+            "label": "Classic"
+          },
+          {
+            "value": "hide",
+            "label": "Hidden"
+          }
+        ]
+      },
+      {
+        "key": "cookie.timeIndicators",
+        "type": "toggle",
+        "label": "Numerals on dial",
+        "group": "Analog",
+        "default": true
+      },
+      {
+        "key": "cookie.constantlyRotate",
+        "type": "toggle",
+        "label": "Smooth second hand",
+        "group": "Analog",
+        "default": false
+      },
+      {
+        "key": "digital.showDate",
+        "type": "toggle",
+        "label": "Show date",
+        "group": "Digital",
+        "default": true
+      },
+      {
+        "key": "digital.vertical",
+        "type": "toggle",
+        "label": "Stack hours over minutes",
+        "group": "Digital",
+        "default": false
+      },
+      {
+        "key": "digital.animateChange",
+        "type": "toggle",
+        "label": "Animate digit changes",
+        "group": "Digital",
+        "default": true
+      },
+      {
+        "key": "pixel.orientation",
+        "type": "choice",
+        "label": "Orientation",
+        "group": "Pixel",
+        "default": "vertical",
+        "options": [
+          {
+            "value": "vertical",
+            "label": "Vertical"
+          },
+          {
+            "value": "horizontal",
+            "label": "Horizontal"
+          }
+        ]
+      },
+      {
+        "key": "quote.enable",
+        "type": "toggle",
+        "label": "Quote under clock",
+        "group": "Quote",
+        "default": false
+      },
+      {
+        "key": "quote.text",
+        "type": "text",
+        "label": "Quote text",
+        "group": "Quote",
+        "default": ""
+      }
+    ]
+  }
+}

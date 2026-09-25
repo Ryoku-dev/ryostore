@@ -1,0 +1,27 @@
+MJW Sticker - licensing and attribution
+=======================================
+
+SPDX-License-Identifier: GPL-3.0-only
+
+The widget code in `content/` is a port of the desktop widgets of end4-pC
+(https://github.com/pctrade/end4-pC), a maintained fork of the "illogical-impulse" Quickshell shell in
+end-4/dots-hyprland (https://github.com/end-4/dots-hyprland). Both are GNU GPL v3; this plugin is therefore
+conveyed under GPL-3.0 (see LICENSE). The original work is (c) its authors
+(pctrade, end-4 and contributors).
+
+Port notes:
+- The illogical-impulse shell-wide singletons (Config, Appearance, GlobalStates,
+  Directories, services) were replaced by plugin-local equivalents resolved
+  from Ryoku's live theme daemon (Ryoku.PluginKit Scheme) and the ryoku-shell
+  data topics, so the tile follows the desktop's palette, wallpaper and weather
+  instead of a fixed fork config. No OpenWeather API key is required.
+- Window/compositor access was removed entirely: placement, dragging, scaling
+  and the lock screen belong to the Ryoku shell (docs/compositors.md), so this
+  plugin runs on Hyprland and niri unchanged.
+- Widget state (style picks, notes, todos, timers) is persisted under the
+  plugin's own state dir ($XDG_STATE_HOME/ryoku/plugins/mjw-sticker).
+
+The MJW set was originally ported from https://github.com/neur0map/MJ-widgets (Material Junk Widgets, BSL-1.0)
+under the name "Awe"; the illogical-impulse-based widgets replace the Awe
+implementations where the upstream set has no equivalent (see
+plugins/registry.json history).

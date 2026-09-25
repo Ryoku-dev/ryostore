@@ -1,0 +1,59 @@
+{
+  "id": "mjw-calc",
+  "name": "Calculator",
+  "version": "1.0.3",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Material-style desktop calculator with a safe expression evaluator.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "calculator",
+    "math",
+    "desktop-widget",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/CalcWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 460,
+      "y": 110,
+      "scale": 0.8
+    },
+    "icon": "calculate",
+    "label": "Calc"
+  },
+  "dependencies": {
+    "commands": [
+      "wl-copy"
+    ]
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "mjw-ping",
+  "category": "plugins",
+  "version": "1.0.3",
+  "destination": "ryoku/plugins/mjw-ping",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "mode": "0644",
+      "size": 1338,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "49f63c8933e93d8fcc29546707af9bd93e128cb977e2e54d894f5d29e4654595",
+      "mode": "0644",
+      "size": 888,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "808dab7cc158ace6ed4b767085e3bf00da33ae1bacffbb03331cc8fff6e00c6d",
+      "mode": "0644",
+      "size": 24443,
+      "install": false
+    },
+    {
+      "source": "content/PingWidget.qml",
+      "destination": "content/PingWidget.qml",
+      "sha256": "2ff1d5bee2701d5f3a16412328fff883a2444346d3342c5a84cdbacf3addea4b",
+      "mode": "0644",
+      "size": 10442,
+      "install": true
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "content/Theme.qml",
+      "sha256": "c08c09387c91028f02552346793a7a960bffd9c7307294ee7ea4fca4179a3c84",
+      "mode": "0644",
+      "size": 13387,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "0752a972b7162c174494f899494e07d72fad6741f8d586699cc9d87e0d3716e6",
+      "mode": "0644",
+      "size": 1080,
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "content/qmldir",
+      "sha256": "d7ad4a8643eb1005c23779ec8772284075f7aca45cfb50d90d064057d1a171b4",
+      "mode": "0644",
+      "size": 56,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "9489d5daa0d2cea9605874b8c8a827d5341dccb19df063bf3f79469f541f3d7a",
+      "mode": "0644",
+      "size": 1114,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "49d5233fd543e6c5e6100d96ad21c484c2606e5da1f734b70c42ccd8615f41ac",
+      "mode": "0644",
+      "size": 97,
+      "install": true
+    }
+  ]
+}

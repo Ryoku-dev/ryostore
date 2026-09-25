@@ -1,0 +1,60 @@
+{
+  "id": "mjw-habits",
+  "name": "Habits",
+  "version": "1.0.3",
+  "author": "neur0map <hello@ryoku.dev>",
+  "description": "Weekly habit tracker with streak counts and a seven-day matrix, saved locally.",
+  "license": "BSL-1.0",
+  "official": false,
+  "tags": [
+    "habits",
+    "tracker",
+    "desktop-widget",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw",
+    "mjw"
+  ],
+  "set": "MJW",
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/qmldir",
+    "content/Theme.qml",
+    "content/Store.qml",
+    "content/HabitsWidget.qml",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ],
+    "network": [],
+    "colors": true
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true,
+      "x": 1720,
+      "y": 518,
+      "scale": 0.8
+    },
+    "icon": "repeat",
+    "label": "Habits"
+  },
+  "dependencies": {
+    "commands": [
+      "mkdir"
+    ]
+  }
+}
