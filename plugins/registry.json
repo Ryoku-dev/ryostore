@@ -1291,6 +1291,34 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-09-02"
+    },
+    {
+      "id": "kdeconnect-status",
+      "name": "KDE Connect",
+      "version": "0.1.0",
+      "path": "plugins/kdeconnect-status",
+      "author": "vampirejsv <vampirejsv@local>",
+      "summary": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
+      "description": "Live KDE Connect device status on the bar: connection, battery, unread notification count. Read-only, no actions.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "9f91989b658352164823b47066af5a40d76c2132e8330612ee09f0ffeea90fd9",
+      "official": false,
+      "tagline": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
+      "icon": "phone_android",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-29",
+      "upstream": "https://github.com/vampireJSV/ryoku-plugin-kdeconnect-status"
     }
   ]
 }
