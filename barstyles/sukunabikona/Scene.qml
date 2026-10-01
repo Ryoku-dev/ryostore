@@ -354,8 +354,17 @@ Scope {
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
         WlrLayershell.namespace: "sukunabikona-rail"
         anchors { top: true; bottom: true; left: true; right: true }
-        visible: !shell.hasFullscreen
-        mask: Region { item: rail }
+        // Keep the rail window mapped only long enough to finish its collapse
+        // animation. In compact mode its input region disappears immediately,
+        // so the invisible expanded rail cannot swallow desktop clicks.
+        visible: !shell.hasFullscreen && (!shell.compact || rail.opacity > 0)
+        mask: shell.compact ? emptyRailInput : railInput
+
+        Region { id: emptyRailInput }
+        Region {
+            id: railInput
+            Region { item: rail }
+        }
 
         C.RyokuRail {
             id: rail

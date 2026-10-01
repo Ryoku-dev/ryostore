@@ -156,7 +156,7 @@
     {
       "id": "sukunabikona",
       "name": "Sukunabikona",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "barstyles/sukunabikona",
       "author": "aethctl",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/barstyles/sukunabikona",
@@ -176,8 +176,8 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "da8d9af4216e8ad891bc63cb989674fb648956aa6bbdce604fc390451aee36bb",
-      "lastUpdated": "2026-09-27",
+      "manifestSha256": "5f2b9fba8c38329c7563ba0368da3a9eba0530baf7ed61e62cdb014bc8dc299c",
+      "lastUpdated": "2026-10-01",
       "official": false,
       "license": "GPL-3.0-only"
     }
