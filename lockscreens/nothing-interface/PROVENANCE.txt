@@ -1,0 +1,18 @@
+Nothing Interface qylock theme
+
+Original QML and helper scripts by Ivan, 2026, under the MIT License in this
+folder. The design is an independent fan interpretation of Nothing OS.
+
+No Nothing wallpaper, proprietary font, logo or AI-generated wallpaper is
+installed with this lockscreen. During an in-session lock, the theme reads the
+current Ryogami wallpaper, so it changes together with the desktop wallpaper.
+It shows the local battery state, Ryoku's daily screen-time counter, and MPRIS
+media metadata. The media control uses playerctl. In the system greeter, live
+session-only data is unavailable and the background falls back to charcoal.
+
+The catalogue preview is a capture of the interface, not part of the installed
+theme. The wallpaper and album art visible in that capture are not redistributed
+as standalone assets.
+
+Upstream and maintainer: https://github.com/venchik111/ryoku-nothing-interface
+Nothing trademarks and the referenced visual identity remain with their owners.

@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "nothing-audio",
+  "category": "plugins",
+  "version": "0.2.0",
+  "destination": "ryoku/plugins/nothing-audio",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "ba2c1e000400342bf25ec91e60f59fba59d6d62079cfb698622a39f12468d9b9",
+      "mode": "0644",
+      "size": 1061,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "3067bee3db10cad73f716ac4fd16da9ed303c4a3c5de814ecb3b5d6d4f9dae5b",
+      "mode": "0644",
+      "size": 420,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "8cd4460885065c01fadbf8e6a727ce0ebaf3301d7b3416ffa50060875c5e7af0",
+      "mode": "0644",
+      "size": 9866,
+      "install": false
+    },
+    {
+      "source": "bin/audio.py",
+      "destination": "bin/audio.py",
+      "sha256": "16ae93f4d13735b3722628a96f6c6caa7fd21e3f10eabe72b2ee96fe66539083",
+      "mode": "0755",
+      "size": 534,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "44c2fe67ec6b0b16b9da47506b3a4cf31d72e366a32e0ad27be3590a3ab87e54",
+      "mode": "0644",
+      "size": 1887,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "e5b3b3b7a979f8a7b2c234fd8f75caf4edc40027e7f121eeed7fb3d8aa305be7",
+      "mode": "0644",
+      "size": 762,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "ad74de047fc07eb4786fa0e38e49defb6b191d0b6aa7db203ed7eded9bb00fd3",
+      "mode": "0644",
+      "size": 1002,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

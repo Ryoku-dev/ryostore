@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "nothing-screen-time",
+  "category": "plugins",
+  "version": "0.3.0",
+  "destination": "ryoku/plugins/nothing-screen-time",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "ba2c1e000400342bf25ec91e60f59fba59d6d62079cfb698622a39f12468d9b9",
+      "mode": "0644",
+      "size": 1061,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "b3f660a67189f342d15ba7ad349d24f882678da94ca741bf91d621d9af9cda69",
+      "mode": "0644",
+      "size": 635,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "5090b4cfffd88f325277a7dfa7ad32d0d20b6d3f4caf833acca45e6437f6427b",
+      "mode": "0644",
+      "size": 15547,
+      "install": false
+    },
+    {
+      "source": "bin/activity.py",
+      "destination": "bin/activity.py",
+      "sha256": "fbda6814067e049ba155ebf3c2cd68a41357bff2bca5ba049e58c66f1364d09a",
+      "mode": "0755",
+      "size": 748,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "d4f0adb4d326fe08be32387f5e0b46eb8b0b241e51177e0e58a7c56694a43178",
+      "mode": "0644",
+      "size": 1107,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "847a3eb523179437491e947bcf000d9032d9de1f87df73c5027eabe8619adc63",
+      "mode": "0644",
+      "size": 780,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "2c1dd40c099d49cf34bf667b2bf4bb8361f02c915d41a75739f5f778498ab4a0",
+      "mode": "0644",
+      "size": 820,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

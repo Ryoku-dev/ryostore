@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "id": "nothing-interface",
+  "category": "rices",
+  "version": "1.0.0",
+  "destination": "ryoku/rices/nothing-interface",
+  "slug": "nothing-interface",
+  "name": "Nothing Interface",
+  "author": "Ivan",
+  "blurb": "Charcoal island bar and modular Nothing OS-inspired desktop widgets. No wallpaper is included.",
+  "tags": [
+    "dark",
+    "monochrome",
+    "red-accent",
+    "no-wallpaper"
+  ],
+  "createdWith": "0.75.3",
+  "color": {
+    "mode": "fixed",
+    "palette": "palette.json",
+    "themeApps": false
+  },
+  "assets": {},
+  "look": {
+    "shell": {
+      "fontFamily": "Noto Sans",
+      "qsbar": {
+        "aiTools": "claude,codex,opencode",
+        "audioBoost": false,
+        "barAnim": 0,
+        "barAutoHide": false,
+        "barBorderEnabled": false,
+        "barColor": "foreground",
+        "barCornerRadius": 20,
+        "barFrostEnabled": false,
+        "barGapBottom": 0,
+        "barGapLeft": 8,
+        "barGapRight": 8,
+        "barGapTop": 8,
+        "barPosition": "top",
+        "barScale": 1,
+        "barSeps": [],
+        "barShadowEnabled": false,
+        "barShellStyle": "islands",
+        "barTemperatureSource": "cpu",
+        "iconOnlyGids": [],
+        "launcherLogoMode": "icon",
+        "layout": {
+          "center": [
+            "clock",
+            "media"
+          ],
+          "left": [
+            "launcher",
+            "workspaces",
+            "cpu",
+            "volume",
+            "memory",
+            "ai",
+            "cputemp"
+          ],
+          "right": [
+            "quick",
+            "network",
+            "power",
+            "layout",
+            "battery",
+            "brightness",
+            "storage",
+            "gpu",
+            "bluetooth",
+            "status",
+            "nothing-status"
+          ],
+          "version": 1
+        },
+        "panelTooltipBorderEnabled": true,
+        "pickerStyle": "tanzaku",
+        "widgetColorStyles": "-",
+        "widgetGeom": {},
+        "widgets": {
+          "battery": false,
+          "bluetooth": false,
+          "brightness": false,
+          "claude": false,
+          "cpu": true,
+          "cpuTemperature": true,
+          "gpu": false,
+          "layout": true,
+          "media": true,
+          "memory": true,
+          "mpris": true,
+          "network": true,
+          "power": false,
+          "quick": false,
+          "status": true,
+          "storage": false,
+          "volume": true,
+          "weather": true
+        },
+        "workspaceMode": "active",
+        "workspaceStyle": "rings"
+      }
+    },
+    "widgets": {
+      "clockAccent": "mono",
+      "clockAnchor": "free",
+      "clockBg": "none",
+      "clockColor": "#FFFFFF",
+      "clockDesign": "digital",
+      "clockEnabled": true,
+      "clockScale": 1.15,
+      "clockX": 104,
+      "clockY": 96,
+      "musicEnabled": false,
+      "statsEnabled": false,
+      "widgetFont": "Noto Sans"
+    }
+  },
+  "files": [
+    {
+      "source": "assets/preview.png",
+      "destination": "assets/preview.png",
+      "mode": "0644",
+      "size": 1655377,
+      "sha256": "03b405d50824b7378f82035a6cebcc601d61468fcacebe4a72338794dd244d36",
+      "install": false
+    },
+    {
+      "source": "palette.json",
+      "destination": "palette.json",
+      "mode": "0644",
+      "size": 1421,
+      "sha256": "8b0499e094bf58bef147d9359fc6692d58f291421ccd0680bb8a3071cb3addc4",
+      "install": true
+    }
+  ]
+}

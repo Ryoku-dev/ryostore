@@ -1,0 +1,34 @@
+{
+  "id": "nothing-audio",
+  "name": "Nothing Audio",
+  "version": "0.2.0",
+  "author": "Ivan \u003c254410104+venchik111@users.noreply.github.com\u003e",
+  "description": "Circular Nothing OS-style audio widget with mute control.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": ["bin/audio.py", "assets/preview-widget.png"],
+  "capabilities": {
+    "densities": [
+      "compact",
+      "full"
+    ]
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "label": "Nothing Audio",
+    "desktopWidget": { "bg": "none" }
+  },
+  "dependencies": {
+    "commands": ["python3", "wpctl"]
+  },
+  "metadata": {
+    "settings": []
+  }
+}

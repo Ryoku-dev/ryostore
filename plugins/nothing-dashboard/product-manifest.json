@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "nothing-dashboard",
+  "category": "plugins",
+  "version": "0.4.0",
+  "destination": "ryoku/plugins/nothing-dashboard",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "ba2c1e000400342bf25ec91e60f59fba59d6d62079cfb698622a39f12468d9b9",
+      "mode": "0644",
+      "size": 1061,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "14facbb64ba818cb8c76cdcbb408921481337960efe5083f835abfde1babf2f5",
+      "mode": "0644",
+      "size": 470,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "39225ff4059e41d1138f70113b720eef47957053647d6760f4d3b00d79ef536c",
+      "mode": "0644",
+      "size": 18842,
+      "install": false
+    },
+    {
+      "source": "bin/status.py",
+      "destination": "bin/status.py",
+      "sha256": "ac31d5e653ee3d17b57eef6b5ccdd7f60a9f728ee687b7c5d1b8f758242b6b10",
+      "mode": "0755",
+      "size": 1040,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "785596e10e89daf4f98e15d727683c2df57328a0e3409799ac5c3bcd0ffbb683",
+      "mode": "0644",
+      "size": 3362,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "f443511fd1ac713f2bee269aea33079d5790de99e8748a05e429bfc35b59220a",
+      "mode": "0644",
+      "size": 769,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "0cc0e785a5bce3ace9552701d4e24ccd16ea7f2496278bdade320f0fa2865704",
+      "mode": "0644",
+      "size": 787,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}
