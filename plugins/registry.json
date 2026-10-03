@@ -1282,7 +1282,7 @@
         "assets/preview-desktop.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "58a721b7939cf9b9d173bc770d3cc9c4627e0f9e6376cd2bc2d080614c287194",
+      "manifestSha256": "5493894e33ace5e10fd4dd4db0007e9b1a666178cee5927d106d8011e758b80c",
       "official": false,
       "tagline": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles,...",
       "icon": "vpn_lock",
