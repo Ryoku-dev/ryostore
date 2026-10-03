@@ -1,15 +1,15 @@
-// apptime — today's app usage, tracked from the window focus the compositor
-// reports.
+// apptime — today's app usage, tracked from the Wayland toplevel protocol.
 //
-// service/Main.qml is the plugin's logic and carries no UI. It watches the
-// focused toplevel over the foreign-toplevel protocol (the same source the
-// shell's own dock and bar particles read, and the only window state a plugin
-// may reach), banks per-app foreground seconds for the current
-// local day, pauses while the user is idle (Wayland ext-idle-notify), archives
-// each finished day to stateDir/usage-YYYY-MM-DD.json and lets the panel
-// browse the archive. Live state is persisted to stateDir/today.json, atomic
-// writes, every 15 s and on unload. The glyph and the panel read the same live
-// state through pluginApi.mainInstance.
+// service/Main.qml is the plugin's logic and carries no UI. It follows the
+// focused window through Quickshell.Wayland ToplevelManager
+// (zwlr_foreign_toplevel_management) and idle through IdleMonitor
+// (ext-idle-notify), so it runs on any compositor Ryoku supports and never
+// touches a compositor-specific IPC. It banks per-app foreground seconds for
+// the current local day, pauses while the user is idle, archives each finished
+// day to stateDir/usage-YYYY-MM-DD.json and lets the panel browse the archive.
+// Live state is persisted to stateDir/today.json, atomic writes, every 15 s and
+// on unload. The glyph and the panel read the same live state through
+// pluginApi.mainInstance.
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -25,14 +25,12 @@ Item {
     // ---- today's tally (local time) ----
     property string dateKey: ""              // YYYY-MM-DD this tally belongs to
     property var tally: ({})                 // app id -> banked foreground seconds
-    property string curClass: ""             // focused app id ("" = none/excluded)
+    property string curApp: ""               // focused app id ("" = none/excluded)
     property double curSince: 0              // epoch ms the current segment began
-    property bool seeded: false              // warm-start focus resolved
 
     // ---- idle pause ----
     property int idleMinutesV: 5             // from settings, refreshed each tick
     property bool paused: false              // true while the user is idle
-    property string resumeCls: ""
 
     // ---- history / day browsing ----
     property var dates: []                   // archived date keys, ascending
@@ -75,8 +73,8 @@ Item {
     }
 
     // windows that should never count as "using an app"
-    function excluded(cls) {
-        const c = String(cls || "").toLowerCase();
+    function excluded(app) {
+        const c = String(app || "").toLowerCase();
         return c === ""
             || c.indexOf("org.quickshell") === 0   // shell surfaces (launcher, settings, store, lock)
             || c.indexOf("xdg-desktop-portal") === 0;
@@ -88,11 +86,22 @@ Item {
             if (svc.excluded(k)) delete svc.tally[k];
     }
 
-    // class -> readable label ("org.mozilla.firefox" -> "Firefox")
+    // app id -> readable label ("org.mozilla.firefox" -> "Firefox")
     function prettyLabel(cls) {
         const s = String(cls || "").trim();
         if (s === "") return "Unknown";
-        const last = s.split(".").pop();
+        // skip the generic reverse-DNS tail (org.kde.kdeconnect.app -> kdeconnect)
+        const GENERIC = ["app", "application", "client", "desktop", "gui",
+                         "main", "bin", "binaries", "run", "start", "startup"];
+        const parts = s.split(".");
+        let last = "";
+        for (let i = parts.length - 1; i >= 0; i--) {
+            const p = String(parts[i] || "").trim();
+            if (p === "" || GENERIC.indexOf(p.toLowerCase()) >= 0) continue;
+            last = p;
+            break;
+        }
+        if (last === "") last = s.split(".").pop();
         const out = [];
         const words = last.split(/[-_]/);
         for (let i = 0; i < words.length; i++) {
@@ -120,34 +129,25 @@ Item {
     }
 
     // ------------------------------------------------------------------
-    // focus tracking
+    // focus tracking (compositor-neutral)
     // ------------------------------------------------------------------
     function closeSegment(now) {
-        if (svc.curClass !== "" && svc.curSince > 0 && !svc.excluded(svc.curClass)) {
+        if (svc.curApp !== "" && svc.curSince > 0 && !svc.excluded(svc.curApp)) {
             const secs = (now - svc.curSince) / 1000;
             if (secs > 0)
-                svc.tally[svc.curClass] = (svc.tally[svc.curClass] || 0) + secs;
+                svc.tally[svc.curApp] = (svc.tally[svc.curApp] || 0) + secs;
         }
-        svc.curClass = "";
+        svc.curApp = "";
         svc.curSince = 0;
     }
 
-    // the still-open segment's seconds, if it belongs to `cls`
-    function liveSeconds(cls) {
-        if (svc.curClass === "" || svc.curClass !== cls || svc.curSince <= 0)
-            return 0;
-        return (Date.now() - svc.curSince) / 1000;
-    }
-
-    // start counting a known app (used by the warm-start seed and idle resume)
-    function beginSegment(cls, now) {
+    // bank the current segment and start one for `app` ("" banks only)
+    function beginSegment(app, now) {
         svc.closeSegment(now);
-        const c = String(cls || "");
-        if (c === "" || svc.excluded(c))
-            return;                      // nothing focused, or a surface we never count
-        svc.curClass = c;
+        const c = String(app || "");
+        if (c === "" || svc.excluded(c)) return;
+        svc.curApp = c;
         svc.curSince = now;
-        svc.seeded = true;
     }
 
     // The focused app id, read from the activated toplevel. The activation flag
@@ -166,25 +166,8 @@ Item {
     onFocusedAppIdChanged: svc.onFocus()
 
     function onFocus() {
+        if (svc.paused) return;             // resume happens explicitly on wake
         svc.beginSegment(svc.focusedAppId, Date.now());
-    }
-
-    // warm start: adopt whatever is focused once the toplevel list has arrived.
-    // The list fills asynchronously, so retry briefly instead of polling forever.
-    function trySeed() {
-        if (svc.seeded) return;
-        if (svc.focusedAppId !== "") {
-            svc.beginSegment(svc.focusedAppId, Date.now());
-            return;
-        }
-        seedRetryTimer.restart();
-    }
-
-    Timer {
-        id: seedRetryTimer
-        interval: 800
-        repeat: false
-        onTriggered: svc.trySeed()
     }
 
     // ------------------------------------------------------------------
@@ -201,12 +184,14 @@ Item {
     function onIdleChanged() {
         if (svc.idleMinutesV <= 0) return;
         if (idleMon.isIdle && !svc.paused) {
-            // freeze: bank up to the idle onset, remember what to resume
+            // freeze: bank up to the idle onset, remember what to resume.
+            // isIdle fires `idleMinutes` after the last real input, so the
+            // segment must stop that far back, not at Date.now(), or every
+            // idle period is billed to the app as if it were still in use.
             const now = Date.now();
-            if (svc.curClass !== "") {
-                svc.resumeCls = svc.curClass;
-                svc.closeSegment(now);
-            }
+            const idleMs = svc.idleMinutesV * 60000;
+            if (svc.curApp !== "")
+                svc.closeSegment(Math.max(svc.curSince, now - idleMs));
             svc.paused = true;
             svc.save();
         } else if (!idleMon.isIdle && svc.paused) {
@@ -217,10 +202,9 @@ Item {
     function unpause() {
         if (!svc.paused) return;
         svc.paused = false;
-        if (svc.resumeCls !== "") {
-            svc.beginSegment(svc.resumeCls, Date.now());
-            svc.resumeCls = "";
-        }
+        // resume whichever window is focused now (the same one, normally; a
+        // window that closed or lost focus while idle does not accrue time)
+        svc.onFocus();
     }
 
     // ------------------------------------------------------------------
@@ -328,7 +312,8 @@ Item {
             svc.selTally = {};
             return;
         }
-        const k = svc.dates[svc.selIndex - 1];
+        // selIndex 1 = the most recent archive (yesterday); dates is ascending
+        const k = svc.dates[svc.dates.length - svc.selIndex];
         svc.selDate = k;
         svc.selTally = svc.loadDay(k);
     }
@@ -355,7 +340,7 @@ Item {
         saveTimer.restart();
         midnightTimer.interval = svc.msToMidnight();
         midnightTimer.running = true;
-        svc.trySeed();
+        svc.onFocus();                  // count whatever already has focus
     }
 
     onPluginApiChanged: if (svc.pluginApi) svc.initialize()
@@ -381,9 +366,8 @@ Item {
         svc.archiveDay(oldKey, svc.tally);  // keep yesterday for the archive
         svc.dateKey = svc.todayKey();
         svc.tally = {};
-        svc.seeded = false;
         svc.save();
-        svc.trySeed();                      // keep counting the focused app
+        svc.onFocus();                      // keep counting the focused app
         midnightTimer.interval = svc.msToMidnight();
         midnightTimer.restart();
     }
@@ -404,14 +388,14 @@ Item {
         for (const k in tallyLike) {
             if (svc.excluded(k)) continue;
             let secs = tallyLike[k];
-            if (includeLive && k === svc.curClass && svc.curSince > 0)
+            if (includeLive && k === svc.curApp && svc.curSince > 0)
                 secs += (now - svc.curSince) / 1000;
             if (secs > 0) { map[k] = secs; total += secs; }
         }
-        if (includeLive && svc.curClass !== "" && !svc.excluded(svc.curClass)
-            && svc.curSince > 0 && map[svc.curClass] === undefined) {
+        if (includeLive && svc.curApp !== "" && !svc.excluded(svc.curApp)
+            && svc.curSince > 0 && map[svc.curApp] === undefined) {
             const lv = (now - svc.curSince) / 1000;
-            map[svc.curClass] = lv;
+            map[svc.curApp] = lv;
             total += lv;
         }
         const arr = [];

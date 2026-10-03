@@ -21,6 +21,7 @@ Item {
         return v === undefined || v === null ? true : !!v;
     }
     readonly property bool lit: (mouse.containsMouse || (pluginApi ? pluginApi.panelOpen : false))
+    readonly property color tint: root.lit ? Theme.accent : Theme.dim
 
     implicitWidth: row.implicitWidth
     implicitHeight: Math.max(row.implicitHeight, 20 * root.s)
@@ -30,39 +31,50 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 6 * root.s
 
-        // tiny clock, drawn in place (no icon font dependency)
+        // tiny clock, drawn in place (the kit has no clock glyph)
         Item {
             id: clock
-            width: 15 * root.s
-            height: 15 * root.s
+            width: 16 * root.s
+            height: 16 * root.s
             anchors.verticalCenter: parent.verticalCenter
 
             Rectangle {
                 anchors.fill: parent
                 radius: width / 2
                 color: "transparent"
-                border.width: 1.6 * root.s
-                border.color: root.lit ? Theme.accent : Theme.dim
+                border.width: 1.5 * root.s
+                border.color: root.tint
+                Behavior on border.color { ColorAnimation { duration: 120 } }
             }
             Rectangle {
-                width: 1.7 * root.s
+                width: 1.6 * root.s
                 height: 4.4 * root.s
-                radius: 0.9 * root.s
-                color: root.lit ? Theme.accent : Theme.dim
+                radius: width / 2
+                color: root.tint
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.verticalCenter
                 rotation: -60
                 transformOrigin: Item.Bottom
+                Behavior on color { ColorAnimation { duration: 120 } }
             }
             Rectangle {
-                width: 1.7 * root.s
+                width: 1.6 * root.s
                 height: 5.8 * root.s
-                radius: 0.9 * root.s
-                color: root.lit ? Theme.accent : Theme.dim
+                radius: width / 2
+                color: root.tint
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.verticalCenter
                 rotation: 60
                 transformOrigin: Item.Bottom
+                Behavior on color { ColorAnimation { duration: 120 } }
+            }
+            Rectangle {
+                width: 2.4 * root.s
+                height: 2.4 * root.s
+                radius: width / 2
+                color: root.tint
+                anchors.centerIn: parent
+                Behavior on color { ColorAnimation { duration: 120 } }
             }
         }
 
@@ -79,6 +91,7 @@ Item {
             width: root.widthBudget > 0
                 ? Math.min(implicitWidth, Math.max(40, root.widthBudget - clock.width - row.spacing))
                 : implicitWidth
+            Behavior on color { ColorAnimation { duration: 120 } }
         }
     }
 

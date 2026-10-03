@@ -1,7 +1,7 @@
 {
   "id": "apptime",
   "name": "App Time",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "ran",
   "description": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
   "license": "MIT",

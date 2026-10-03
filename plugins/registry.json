@@ -4,7 +4,7 @@
     {
       "id": "apptime",
       "name": "App Time",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "path": "plugins/apptime",
       "author": "ran",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/apptime",
@@ -20,14 +20,14 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "59b4b3009eb9f600f8159b121d5196d36cc1c3c3d4bc694dc9b4db19aefadd1a",
+      "manifestSha256": "7d4f509ac697072940e2ddd2a98b28918e9158d613d64102d228af41ca61aba5",
       "official": false,
       "tagline": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
       "icon": "",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-09-07"
+      "lastUpdated": "2026-10-03"
     },
     {
       "id": "bluetooth-profiles",

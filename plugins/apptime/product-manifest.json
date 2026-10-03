@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "apptime",
   "category": "plugins",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "destination": "ryoku/plugins/apptime",
   "files": [
     {
@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "ee85b32846e81c0f5ca228b039b56f00cdb06e5e5dfea0c625867c35f0d41e5c",
+      "sha256": "705030eefef2f46e7d6aa9b1c159a05da643630fafdf4d6914225b5e5583c174",
       "mode": "0644",
-      "size": 3673,
+      "size": 3865,
       "install": false
     },
     {
@@ -32,23 +32,23 @@
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "bea6bca8c491d7270e1972f8bd7ba6609f8cd4330e1851f0252216e8ee18c996",
+      "sha256": "47dbe1cb2957634e675df487f27ef6435fe4ff13c067b8647ddca91b57dd24c7",
       "mode": "0644",
-      "size": 8884,
+      "size": 10698,
       "install": true
     },
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "46c6990bc6daf2946f4e6d092cb1c9219fc55320378a7c06803b3b132ce24f85",
+      "sha256": "3e057115d6d127707bc98bed1e7fba5ad3508c1d089077cceeb5306df5bfdfa9",
       "mode": "0644",
-      "size": 3159,
+      "size": 3725,
       "install": true
     },
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "9111e9a3237f1163f604073fa0aae688a033efd1fb070eb05891dfecc46c2672",
+      "sha256": "330993333af45f6b3d5675d4190cdc39d7ee88fae4f4648e93dc324330b432a0",
       "mode": "0644",
       "size": 1343,
       "install": true
@@ -56,9 +56,9 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "c71fe492981d30b9dd8090f1c32af21a16d8a4bb3faa284496a26b931e351751",
+      "sha256": "20cd6e52f07bf962ca8600847b79326e7823d32716ae889f2988fb652a4aa824",
       "mode": "0644",
-      "size": 16764,
+      "size": 16844,
       "install": true
     }
   ]
