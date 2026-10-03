@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="392" height="256" viewBox="0 0 392 256" role="img" aria-label="Schematic rectangular Nothing Media widget without playback data">
+  <rect width="392" height="256" rx="28" fill="#1C1D21"/>
+  <circle cx="72" cy="72" r="54" fill="#303136"/>
+  <circle cx="72" cy="72" r="40" fill="none" stroke="#515258" stroke-width="1.5"/>
+  <circle cx="72" cy="72" r="29" fill="none" stroke="#515258" stroke-width="1.5"/>
+  <circle cx="72" cy="72" r="18" fill="none" stroke="#515258" stroke-width="1.5"/>
+  <circle cx="72" cy="72" r="6" fill="#DCD7D2"/>
+  <rect x="142" y="24" width="174" height="12" rx="6" fill="#F5F5F5"/>
+  <rect x="142" y="44" width="123" height="12" rx="6" fill="#F5F5F5"/>
+  <rect x="142" y="77" width="113" height="8" rx="4" fill="#B1B3B3"/>
+  <rect x="142" y="108" width="83" height="7" rx="3.5" fill="#777980"/>
+  <circle cx="356" cy="109" r="18" fill="#303136"/>
+  <path d="M350 100v18m11-18v18" stroke="#F5F5F5" stroke-width="4" stroke-linecap="round"/>
+  <rect x="18" y="143" width="356" height="76" rx="18" fill="#303136"/>
+  <rect x="34" y="159" width="178" height="6" rx="3" fill="#777980"/>
+  <rect x="34" y="172" width="274" height="10" rx="5" fill="#F5F5F5"/>
+  <rect x="34" y="190" width="226" height="6" rx="3" fill="#B1B3B3"/>
+  <rect x="18" y="238" width="356" height="3" rx="1.5" fill="#4B4C52"/>
+  <rect x="18" y="238" width="104" height="3" rx="1.5" fill="#DCD7D2"/>
+</svg>

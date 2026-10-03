@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "id": "nothing-analog-clock",
+  "category": "plugins",
+  "version": "0.2.0",
+  "destination": "ryoku/plugins/nothing-analog-clock",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "ba2c1e000400342bf25ec91e60f59fba59d6d62079cfb698622a39f12468d9b9",
+      "mode": "0644",
+      "size": 1061,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "0bc77bcd158930c0b10aa460545813849a112693799744df29e46438a330fb96",
+      "mode": "0644",
+      "size": 471,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "38bd9c56849c43070631a6449a73afdcbd9757eabb5d3c730fe48d56afd9ff7b",
+      "mode": "0644",
+      "size": 56874,
+      "install": false
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "671795ac80e72b1af9719525d24c0827532472a9f39622d3d36778a8b29ba18e",
+      "mode": "0644",
+      "size": 3079,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "d388d93f5791fb5bfd6a11d2bca46be96a5b7f946675f1704e55c31b6eeb9287",
+      "mode": "0644",
+      "size": 764,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "b8586fa685ccfa03adfce9db6a7135b987921b60454c300b0331b007fb03b76b",
+      "mode": "0644",
+      "size": 84,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

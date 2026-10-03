@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "id": "nothing-interface",
+  "category": "lockscreens",
+  "version": "0.1.0",
+  "destination": "qylock/themes/nothing-interface",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1061,
+      "sha256": "ba2c1e000400342bf25ec91e60f59fba59d6d62079cfb698622a39f12468d9b9",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 988,
+      "sha256": "9cf4b869099194b70802904404df29a3deb556bc654f10e58f8ec70e68178b5e",
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 1012,
+      "sha256": "136d38f513f00e1322883860b83d176078867ab5c208eee5478c76eacea2a84a",
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "preview.png",
+      "mode": "0644",
+      "size": 1676418,
+      "sha256": "28e3ab81506920d45dfe562a574c489754e9a2070abc7608d839beb565c0ca02",
+      "install": false
+    },
+    {
+      "source": "content/LiveData.qml",
+      "destination": "LiveData.qml",
+      "mode": "0644",
+      "size": 3567,
+      "sha256": "418948536ec2a38892f7703e2488b5e0f2d0a4ae62b0834b14d3e24a03d28ba9",
+      "install": true
+    },
+    {
+      "source": "content/LiveVideo.qml",
+      "destination": "LiveVideo.qml",
+      "mode": "0644",
+      "size": 459,
+      "sha256": "fa32e41180ba861516a0ac5943ccccf1b810587469865598d2a4f59d0af9812d",
+      "install": true
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 13300,
+      "sha256": "98bfbd666ebbd996f8915e204613caafae1e4d2f9102c54f8383ad010adb58a5",
+      "install": true
+    },
+    {
+      "source": "content/bin/activity.py",
+      "destination": "bin/activity.py",
+      "mode": "0755",
+      "size": 748,
+      "sha256": "fbda6814067e049ba155ebf3c2cd68a41357bff2bca5ba049e58c66f1364d09a",
+      "install": true
+    },
+    {
+      "source": "content/bin/media.py",
+      "destination": "bin/media.py",
+      "mode": "0755",
+      "size": 1151,
+      "sha256": "cacb43232dbfeb5951315de0a8ab612fd3f3a043eeef12e2515c7b53b82d3a0c",
+      "install": true
+    },
+    {
+      "source": "content/bin/status.py",
+      "destination": "bin/status.py",
+      "mode": "0755",
+      "size": 1040,
+      "sha256": "ac31d5e653ee3d17b57eef6b5ccdd7f60a9f728ee687b7c5d1b8f758242b6b10",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 204,
+      "sha256": "c107b2489d2720f367365a1f869dc207bc354101e22b28f18c58f126a48f569d",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 10,
+      "sha256": "a371ee2822ab833c1349cbe193bf4b9292d6ab6b49a22b525fc1dcd95aa933c1",
+      "install": true
+    }
+  ]
+}

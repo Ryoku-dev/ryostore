@@ -154,6 +154,39 @@
       "hero": "https://github.com/ryoku-dev/ryostore/releases/download/rices/monolith-hero.jpg",
       "lastUpdated": "2026-09-11",
       "official": false
+    },
+    {
+      "id": "nothing-interface",
+      "name": "Nothing Interface",
+      "version": "1.0.0",
+      "path": "rices/nothing-interface",
+      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+      "summary": "Nothing-inspired charcoal islands, dot clock and fixed grey palette.",
+      "description": "Charcoal Nothing OS-inspired Ryoku rice with a three-island QS Bar and fixed grey palette. Leaves the wallpaper unchanged. Matching widgets and lock screen are separate store entries.",
+      "tags": [
+        "nothing",
+        "dark",
+        "monochrome",
+        "islands",
+        "no-wallpaper"
+      ],
+      "accent": "#DCD7D2",
+      "surface": "#1C1D21",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png"
+      ],
+      "manifest": "rice.json",
+      "manifestSha256": "c73a39c34a7c123970a1435c2eeedcf0f43a288894d8e7b3c7883c7670ad2842",
+      "blurb": "Charcoal island bar and modular Nothing OS-inspired desktop widgets. No wallpaper is included.",
+      "createdWith": "0.75.3",
+      "color": "fixed",
+      "palette": "rices/nothing-interface/palette.json",
+      "rounding": 0,
+      "upstream": "https://github.com/venchik111/ryoku-nothing-interface",
+      "official": false,
+      "license": "MIT",
+      "lastUpdated": "2026-10-01"
     }
   ]
 }

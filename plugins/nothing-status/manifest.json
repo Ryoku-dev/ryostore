@@ -1,0 +1,60 @@
+{
+  "id": "nothing-status",
+  "name": "Nothing Status",
+  "version": "0.3.0",
+  "author": "Ivan \u003c254410104+venchik111@users.noreply.github.com\u003e",
+  "description": "Neutral Nothing OS-style status icons for the Ryoku bar.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 320
+  },
+  "files": ["content/Icon.qml", "bin/status.py", "assets/preview-widget.png"],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Nothing Status",
+    "bar": { "section": "right" }
+  },
+  "dependencies": {
+    "commands": ["python3", "nmcli", "wpctl"]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "showNetwork",
+        "type": "toggle",
+        "label": "Show network",
+        "group": "Nothing Status",
+        "default": true
+      },
+      {
+        "key": "showVolume",
+        "type": "toggle",
+        "label": "Show volume",
+        "group": "Nothing Status",
+        "default": true
+      },
+      {
+        "key": "showBattery",
+        "type": "toggle",
+        "label": "Show battery",
+        "group": "Nothing Status",
+        "default": true
+      }
+    ]
+  }
+}

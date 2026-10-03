@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "id": "nothing-media",
+  "category": "plugins",
+  "version": "0.3.2",
+  "destination": "ryoku/plugins/nothing-media",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "ba2c1e000400342bf25ec91e60f59fba59d6d62079cfb698622a39f12468d9b9",
+      "mode": "0644",
+      "size": 1061,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "2b0e3e54243f04af848a0f1bef584585c6cf53830e9de004d12c789e28a33cf1",
+      "mode": "0644",
+      "size": 971,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "0df25428b38181f9b7b917b9dd5b96940b8e2f592323d5294a4c5636866882c4",
+      "mode": "0644",
+      "size": 27650,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.svg",
+      "destination": "assets/preview-widget.svg",
+      "sha256": "981f65d94e58b372cfa796ba074541cd9cb1574e98d3db9ef4854c213b041b36",
+      "mode": "0644",
+      "size": 1445,
+      "install": true
+    },
+    {
+      "source": "bin/media.py",
+      "destination": "bin/media.py",
+      "sha256": "cacb43232dbfeb5951315de0a8ab612fd3f3a043eeef12e2515c7b53b82d3a0c",
+      "mode": "0755",
+      "size": 1151,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "df99e963ebada72b2c37d27c9f1f03fed3d92812f6f5ddab85f7649356e06113",
+      "mode": "0644",
+      "size": 8277,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "83a6bddb6cc317069432fac751f877cfcf5eb7d40bcc2343236004b8ed0e4b8c",
+      "mode": "0644",
+      "size": 834,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "628d0d6fe62f4f82fd693dcca7d31036cfd4f1d1519e0f6d04a35e94a712fe8e",
+      "mode": "0644",
+      "size": 1971,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}
