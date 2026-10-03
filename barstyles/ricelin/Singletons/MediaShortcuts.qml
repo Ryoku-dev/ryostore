@@ -24,22 +24,33 @@ Item {
     signal nextRequested()
     signal prevRequested()
 
-    GlobalShortcut {
-        appid: "quickshell"
-        name: "mediaToggle"
-        description: "Play or pause the active media player"
-        onPressed: root.toggleRequested()
+    Component {
+        id: shortcutsComponent
+
+        Item {
+            GlobalShortcut {
+                appid: "quickshell"
+                name: "mediaToggle"
+                description: "Play or pause the active media player"
+                onPressed: root.toggleRequested()
+            }
+            GlobalShortcut {
+                appid: "quickshell"
+                name: "mediaNext"
+                description: "Skip to the next track"
+                onPressed: root.nextRequested()
+            }
+            GlobalShortcut {
+                appid: "quickshell"
+                name: "mediaPrev"
+                description: "Skip to the previous track"
+                onPressed: root.prevRequested()
+            }
+        }
     }
-    GlobalShortcut {
-        appid: "quickshell"
-        name: "mediaNext"
-        description: "Skip to the next track"
-        onPressed: root.nextRequested()
-    }
-    GlobalShortcut {
-        appid: "quickshell"
-        name: "mediaPrev"
-        description: "Skip to the previous track"
-        onPressed: root.prevRequested()
+
+    Loader {
+        active: Wm.caps.globalShortcuts === true
+        sourceComponent: shortcutsComponent
     }
 }

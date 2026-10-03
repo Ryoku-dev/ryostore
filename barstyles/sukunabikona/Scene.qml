@@ -33,7 +33,7 @@ Scope {
             return String(Wm.focusedWorkspace.name || Wm.focusedWorkspace.id || "")
         return ""
     }
-    readonly property var workspace: shell.workspaceKey.length > 0 ? Wm.workspaceByKey(shell.workspaceKey) : null
+    readonly property var workspace: shell.workspaceKey.length > 0 ? Wm.workspaceByName(shell.workspaceKey) : null
     readonly property var workspaceWindows: {
         const out = []
         const wins = Wm.windows || []

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "sukunabikona",
   "category": "barstyles",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/barstyles/sukunabikona",
   "files": [
     {
@@ -33,8 +33,8 @@
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 27044,
-      "sha256": "53c9405cf72527c834f7e5468eaaceaefe40a5713197b1c81feced88b4c6d60a",
+      "size": 27045,
+      "sha256": "73d30d956c08b588ef09652cb1c83d5330e964d805ba5c2ee674969269754a13",
       "install": true
     },
     {

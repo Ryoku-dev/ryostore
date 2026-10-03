@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "chroma",
   "category": "barstyles",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/barstyles/chroma",
   "files": [
     {

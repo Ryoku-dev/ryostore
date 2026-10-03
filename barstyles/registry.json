@@ -77,7 +77,7 @@
     {
       "id": "ricelin",
       "name": "Ricelin",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "path": "barstyles/ricelin",
       "author": "feelyourwarmth",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/ricelin",
@@ -96,14 +96,14 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "d54e43a0479018ce6bb5ff5a9b8ce4a948925795386a6904d95adf9ba30daefc",
+      "manifestSha256": "53834e6b716f6569ccc82a752bcaa473ec34f515ef0760f52efd53e8c24edb3a",
       "official": false,
-      "lastUpdated": "2026-09-21"
+      "lastUpdated": "2026-10-02"
     },
     {
       "id": "chroma",
       "name": "Chroma",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "barstyles/chroma",
       "author": "aethctl",
       "upstream": "https://github.com/aethctl/chroma-shell",
@@ -121,15 +121,15 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "bab5a9890e45ec75d1d8e98398b9a09b59db571cf747c08415b3f26a9a95e2b4",
-      "lastUpdated": "2026-09-10",
+      "manifestSha256": "5f89f751af38057cd3e4f70e4245f659abb798092fffb7dbf1f3e3a5ee14380e",
+      "lastUpdated": "2026-10-02",
       "official": false,
       "license": "MIT"
     },
     {
       "id": "orbit",
       "name": "Orbit",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "barstyles/orbit",
       "author": "aethctl",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/orbit",
@@ -148,15 +148,15 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "85dfd95d90d0357120c73a3474166c658b4cc27e0e1edbd378110b2410a75133",
-      "lastUpdated": "2026-09-11",
+      "manifestSha256": "434e0f6da7dce44976d866d29e5d9a59962232f06b6eff7eef04444a6b55388a",
+      "lastUpdated": "2026-10-02",
       "official": false,
       "license": "GPL-3.0-only"
     },
     {
       "id": "sukunabikona",
       "name": "Sukunabikona",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "barstyles/sukunabikona",
       "author": "aethctl",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/barstyles/sukunabikona",
@@ -176,8 +176,8 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "da8d9af4216e8ad891bc63cb989674fb648956aa6bbdce604fc390451aee36bb",
-      "lastUpdated": "2026-09-27",
+      "manifestSha256": "f7b25b78c8c752f6732e830f8fe041f5110c3b2b6f9dded37bbf8faed191d3ba",
+      "lastUpdated": "2026-10-02",
       "official": false,
       "license": "GPL-3.0-only"
     }

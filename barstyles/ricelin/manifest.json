@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "ricelin",
   "category": "barstyles",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "destination": "ryoku/barstyles/ricelin",
   "files": [
     {
@@ -361,8 +361,8 @@
       "source": "Singletons/Fullscreen.qml",
       "destination": "Singletons/Fullscreen.qml",
       "mode": "0644",
-      "size": 5789,
-      "sha256": "835733a44151fa9811e80bc38fcb4979c0c7f94febb1ca08620212261b285d4c",
+      "size": 341,
+      "sha256": "d37e979d38a84c56c1cedcfce6e5f088280bb01f6870d4d7d1f8a66ced634086",
       "install": true
     },
     {
@@ -377,8 +377,8 @@
       "source": "Singletons/MediaShortcuts.qml",
       "destination": "Singletons/MediaShortcuts.qml",
       "mode": "0644",
-      "size": 1262,
-      "sha256": "de4b63a785ab858a737f4e3f47902d41fca369be4ac0b83db9ef73408bada216",
+      "size": 1598,
+      "sha256": "bb512ac2ed3ccd890a593ebc2e0c4824fa579df72a819dec9488198a20c7dd98",
       "install": true
     },
     {
