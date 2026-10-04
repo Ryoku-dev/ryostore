@@ -156,6 +156,70 @@
       "official": false
     },
     {
+      "id": "ryoku-paper-light",
+      "name": "Ryoku Paper Light",
+      "version": "1.0.1",
+      "path": "rices/ryoku-paper-light",
+      "author": "Eduardo Vieira",
+      "summary": "Sunlit washi, bronze accents, and a calm editorial Ryoku desktop.",
+      "description": "A luminous paper-and-marble Ryoku desktop with a left rail, restrained bronze accents, and a classical marble statue against the Great Wave.",
+      "tags": [
+        "light",
+        "paper",
+        "editorial",
+        "marble",
+        "warm"
+      ],
+      "accent": "#6F4B17",
+      "surface": "#F5F0E6",
+      "preview": "screenshots/desktop.webp",
+      "screenshots": [
+        "screenshots/desktop.webp"
+      ],
+      "manifest": "rice.json",
+      "manifestSha256": "62bca8185a6170616a5eaee6cf065ba4ddba7bd32b3aa06b5b539cfb16dc7c50",
+      "createdWith": "0.63.1-beta.19",
+      "color": "fixed",
+      "palette": "rices/ryoku-paper-light/palette.json",
+      "rounding": 8,
+      "wallpaper": "https://github.com/eduardojvieira/ryostore/releases/download/rices/ryoku-paper-light-stoic-wall.png",
+      "upstream": "https://github.com/eduardojvieira/ryostore/tree/feat/ryoku-paper-rices/rices/ryoku-paper-light",
+      "official": false,
+      "lastUpdated": "2026-09-28"
+    },
+    {
+      "id": "ryoku-paper-dark",
+      "name": "Ryoku Paper Dark",
+      "version": "1.0.1",
+      "path": "rices/ryoku-paper-dark",
+      "author": "Eduardo Vieira",
+      "summary": "Charcoal washi, bronze accents, and a quiet editorial Ryoku desktop.",
+      "description": "A dark paper-and-marble Ryoku desktop with a left rail, restrained bronze accents, and a classical marble statue against the Great Wave.",
+      "tags": [
+        "dark",
+        "paper",
+        "editorial",
+        "marble",
+        "warm"
+      ],
+      "accent": "#C79A49",
+      "surface": "#171512",
+      "preview": "screenshots/desktop.webp",
+      "screenshots": [
+        "screenshots/desktop.webp"
+      ],
+      "manifest": "rice.json",
+      "manifestSha256": "ddf3dc6a15683a935182130959cbb5c22533c78af4aaa165f9efa3f28e34fe76",
+      "createdWith": "0.63.1-beta.19",
+      "color": "fixed",
+      "palette": "rices/ryoku-paper-dark/palette.json",
+      "rounding": 8,
+      "wallpaper": "https://github.com/eduardojvieira/ryostore/releases/download/rices/ryoku-paper-dark-stoic-wall.png",
+      "upstream": "https://github.com/eduardojvieira/ryostore/tree/feat/ryoku-paper-rices/rices/ryoku-paper-dark",
+      "official": false,
+      "lastUpdated": "2026-09-28"
+    },
+    {
       "id": "nothing-interface",
       "name": "Nothing Interface",
       "version": "1.0.0",

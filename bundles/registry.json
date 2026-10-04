@@ -659,6 +659,54 @@
       "icon": "movie"
     },
     {
+      "id": "ryoku-zed-theme",
+      "name": "Ryoku for Zed",
+      "version": "1.0.0",
+      "path": "bundles/ryoku-zed-theme",
+      "author": "Ryoku Team",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/bundles/ryoku-zed-theme",
+      "summary": "Zed \u00b7 Matugen \u00b7 syntax colors",
+      "description": "Follow Ryoku's wallpaper palette in Zed with readable UI and distinct syntax colors, including monochrome palettes.",
+      "tags": [
+        "zed",
+        "editor",
+        "theme",
+        "syntax highlighting",
+        "matugen",
+        "wallpaper colors"
+      ],
+      "accent": "#b995f8",
+      "surface": "#17151e",
+      "preview": "assets/ryoku-violet.png",
+      "screenshots": [
+        "assets/ryoku-violet.png",
+        "assets/ryoku-red.png",
+        "assets/ryoku-blue.png"
+      ],
+      "manifest": "bundle.json",
+      "manifestSha256": "55677e06ebaa99ca4439e11ff8e097afd1b0f7a50da1225fe9d4a5c7d920a040",
+      "components": [
+        {
+          "type": "package",
+          "name": "bun",
+          "detect": "bun",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Run the local palette generator and watcher."
+        },
+        {
+          "type": "script",
+          "name": "ryoku-zed-theme",
+          "detect": "ryoku-zed-theme-sync-installed",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Install the dynamic Zed theme and enable the local Ryoku palette watcher."
+        }
+      ],
+      "sources": "bun / Ryoku / Zed",
+      "icon": "code"
+    },
+    {
       "id": "spiceflow",
       "name": "Ryoku Palette Bridge",
       "version": "2.1.0",

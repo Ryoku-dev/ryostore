@@ -1,0 +1,11 @@
+{
+  "name": "ryoku-zed-theme",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "theme:bootstrap": "bun scripts/theme.ts --bootstrap",
+    "theme:verify-monochrome": "bun scripts/theme.ts --verify-monochrome",
+    "theme:sync": "bun scripts/theme.ts --sync",
+    "install:sync": "bun scripts/install-sync.ts"
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "id": "ryoku-zed-theme",
+  "category": "bundles",
+  "version": "1.0.0",
+  "destination": "ryoku/bundles/ryoku-zed-theme",
+  "name": "Ryoku for Zed",
+  "description": "Keep Zed's UI and syntax colors in step with Ryoku's wallpaper palette, including monochrome wallpapers.",
+  "icon": "code",
+  "accent": "#b995f8",
+  "preview": "assets/ryoku-violet.png",
+  "screenshots": [
+    "assets/ryoku-violet.png",
+    "assets/ryoku-red.png",
+    "assets/ryoku-blue.png"
+  ],
+  "items": [
+    {
+      "type": "package",
+      "name": "bun",
+      "detect": "bun",
+      "tier": "core",
+      "source": "official",
+      "summary": "Run the local palette generator and watcher.",
+      "upstream": "https://bun.sh"
+    },
+    {
+      "type": "script",
+      "name": "ryoku-zed-theme",
+      "detect": "ryoku-zed-theme-sync-installed",
+      "tier": "core",
+      "interactive": false,
+      "source": "ryoku",
+      "summary": "Install the dynamic Zed theme and enable the local Ryoku palette watcher.",
+      "upstream": "https://github.com/Ryoku-dev/ryostore"
+    }
+  ],
+  "files": [
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 2456,
+      "sha256": "6ebc890f851d562c8d84b44d8298d880db0fb5bb621bd1f707fbb77ea981e7bb",
+      "install": false
+    },
+    {
+      "source": "assets/ryoku-blue.png",
+      "destination": "assets/ryoku-blue.png",
+      "mode": "0644",
+      "size": 1079357,
+      "sha256": "4bd3b635dd4cc027b8bc1ef0e131b7eebfedc39f84ee1683526aa5041302dbc6",
+      "install": false
+    },
+    {
+      "source": "assets/ryoku-red.png",
+      "destination": "assets/ryoku-red.png",
+      "mode": "0644",
+      "size": 1096994,
+      "sha256": "29c6427bfb073512a403cdfc02dad6f42fc1d017550d726f402384afeb1da51c",
+      "install": false
+    },
+    {
+      "source": "assets/ryoku-violet.png",
+      "destination": "assets/ryoku-violet.png",
+      "mode": "0644",
+      "size": 1103799,
+      "sha256": "8918af24aedc87b44b90ee5703a0918ca677bd2d0f5d0fd593b7c681630ade92",
+      "install": false
+    },
+    {
+      "source": "installers/ryoku-zed-theme.sh",
+      "destination": "installers/ryoku-zed-theme.sh",
+      "mode": "0755",
+      "size": 26330,
+      "sha256": "04d155c2afb045cd6399224ff15474855e96ac0d9f2e3e2968de5945835fdc65",
+      "install": false
+    },
+    {
+      "source": "runtime/extension.toml",
+      "destination": "runtime/extension.toml",
+      "mode": "0644",
+      "size": 183,
+      "sha256": "485db1c02b9e01b706a48cbaa1e3ee034f824cd16e0536011ad08a44612dc5a4",
+      "install": false
+    },
+    {
+      "source": "runtime/package.json",
+      "destination": "runtime/package.json",
+      "mode": "0644",
+      "size": 324,
+      "sha256": "a89cd14db35619686e1ebf7feb768b09a3f6cb7667fb66c5e7621ad6032a9881",
+      "install": false
+    },
+    {
+      "source": "runtime/scripts/install-sync.ts",
+      "destination": "runtime/scripts/install-sync.ts",
+      "mode": "0644",
+      "size": 3396,
+      "sha256": "f9c5d1caeb4cfa43dad010802a58e28196666674b3c812a3d080e474b41546e2",
+      "install": false
+    },
+    {
+      "source": "runtime/scripts/theme.ts",
+      "destination": "runtime/scripts/theme.ts",
+      "mode": "0644",
+      "size": 12398,
+      "sha256": "224af967d731935a2dd96e1cee24036db77ee2775ba70e9bc5fc5d4f4566ed4b",
+      "install": false
+    },
+    {
+      "source": "runtime/themes/ryoku.json",
+      "destination": "runtime/themes/ryoku.json",
+      "mode": "0644",
+      "size": 8236,
+      "sha256": "7d96b118aebede8f6fec0c27567f5966b19f198cab17fc4e34a5bcc1156052ee",
+      "install": false
+    }
+  ]
+}

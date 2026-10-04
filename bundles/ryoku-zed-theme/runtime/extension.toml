@@ -1,0 +1,6 @@
+id = "ryoku-zed-theme"
+name = "Ryoku"
+version = "0.1.0"
+schema_version = 1
+authors = ["Ryoku contributors"]
+description = "A high-contrast Zed theme in Ryoku's Material You palette."

@@ -1321,6 +1321,41 @@
       "upstream": "https://github.com/vampireJSV/ryoku-plugin-public-ip"
     },
     {
+      "id": "github-heatmap",
+      "name": "GitHub Heatmap",
+      "version": "0.7.1",
+      "path": "plugins/github-heatmap",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/github-heatmap",
+      "author": "safloresmo <safloresmo@gmail.com>",
+      "summary": "Your GitHub contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+      "description": "Your GitHub contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+      "tags": [
+        "github",
+        "contributions",
+        "heatmap",
+        "calendar",
+        "desktop-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-github.png",
+        "assets/preview-minimal.png",
+        "assets/preview-settings.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "198116bb38fc65e02fa7179e18ccd76b017623afc81be1ca82fd97e2da3c15f4",
+      "official": false,
+      "tagline": "Your GitHub contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+      "icon": "calendar_month",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-02"
+    },
+    {
       "id": "nothing-analog-clock",
       "name": "Nothing Analog Clock",
       "version": "0.2.0",

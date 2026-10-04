@@ -1,0 +1,456 @@
+{
+  "id": "github-heatmap",
+  "name": "GitHub Heatmap",
+  "version": "0.7.1",
+  "author": "safloresmo <safloresmo@gmail.com>",
+  "description": "Your GitHub contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+  "license": "MIT",
+  "official": false,
+  "tags": [
+    "github",
+    "contributions",
+    "heatmap",
+    "calendar",
+    "desktop-widget"
+  ],
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "bin/gh-contrib",
+    "assets/preview-widget.png",
+    "assets/preview-github.png",
+    "assets/preview-settings.png",
+    "assets/preview-minimal.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact",
+      "full"
+    ],
+    "network": [
+      "github.com"
+    ]
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none",
+      "autoEnable": true
+    },
+    "icon": "calendar_month",
+    "label": "GitHub Heatmap"
+  },
+  "dependencies": {
+    "commands": [
+      "python3",
+      "gh",
+      "ryoku-plugins-place"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "username",
+        "type": "text",
+        "label": "GitHub username",
+        "group": "GitHub Heatmap",
+        "default": "",
+        "placeholder": "octocat"
+      },
+      {
+        "key": "language",
+        "type": "choice",
+        "label": "Language",
+        "group": "GitHub Heatmap",
+        "default": "auto",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "es",
+            "label": "Español"
+          },
+          {
+            "value": "en",
+            "label": "English"
+          }
+        ]
+      },
+      {
+        "key": "range",
+        "type": "choice",
+        "label": "Period",
+        "group": "GitHub Heatmap",
+        "default": "year",
+        "options": [
+          {
+            "value": "year",
+            "label": "Year"
+          },
+          {
+            "value": "last",
+            "label": "Last months"
+          }
+        ]
+      },
+      {
+        "key": "months",
+        "type": "slider",
+        "label": "Months to show (last months)",
+        "group": "GitHub Heatmap",
+        "default": 12,
+        "min": 1,
+        "max": 12,
+        "step": 1
+      },
+      {
+        "key": "futureDays",
+        "type": "choice",
+        "label": "Future days",
+        "group": "GitHub Heatmap",
+        "default": "dim",
+        "options": [
+          {
+            "value": "dim",
+            "label": "Dim"
+          },
+          {
+            "value": "hide",
+            "label": "Hide"
+          },
+          {
+            "value": "show",
+            "label": "Normal"
+          }
+        ]
+      },
+      {
+        "key": "colorScale",
+        "type": "choice",
+        "label": "Color scale",
+        "group": "GitHub Heatmap",
+        "default": "github",
+        "options": [
+          {
+            "value": "github",
+            "label": "GitHub"
+          },
+          {
+            "value": "relative",
+            "label": "Relative to your best"
+          }
+        ]
+      },
+      {
+        "key": "refreshMin",
+        "type": "slider",
+        "label": "Refresh every (min)",
+        "group": "GitHub Heatmap",
+        "default": 30,
+        "min": 10,
+        "max": 240,
+        "step": 10
+      },
+      {
+        "key": "clickOpens",
+        "type": "toggle",
+        "label": "Click opens the day on GitHub",
+        "group": "GitHub Heatmap",
+        "default": false
+      },
+      {
+        "key": "hoverStyle",
+        "type": "choice",
+        "label": "Info on hover",
+        "group": "GitHub Heatmap",
+        "default": "tooltip",
+        "options": [
+          {
+            "value": "bar",
+            "label": "In the bar"
+          },
+          {
+            "value": "tooltip",
+            "label": "Floating"
+          },
+          {
+            "value": "off",
+            "label": "Don't show"
+          }
+        ]
+      },
+      {
+        "key": "showTodayCount",
+        "type": "toggle",
+        "label": "Show today's contributions",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "palette",
+        "type": "choice",
+        "label": "Colors",
+        "group": "GitHub Heatmap",
+        "default": "accent",
+        "options": [
+          {
+            "value": "accent",
+            "label": "Theme"
+          },
+          {
+            "value": "github",
+            "label": "Green"
+          },
+          {
+            "value": "blue",
+            "label": "Blue"
+          },
+          {
+            "value": "purple",
+            "label": "Purple"
+          },
+          {
+            "value": "pink",
+            "label": "Pink"
+          },
+          {
+            "value": "halloween",
+            "label": "Orange"
+          },
+          {
+            "value": "ice",
+            "label": "Ice"
+          },
+          {
+            "value": "mono",
+            "label": "Mono"
+          }
+        ]
+      },
+      {
+        "key": "cellShape",
+        "type": "choice",
+        "label": "Shape",
+        "group": "GitHub Heatmap",
+        "default": "rounded",
+        "options": [
+          {
+            "value": "rounded",
+            "label": "Rounded"
+          },
+          {
+            "value": "square",
+            "label": "Square"
+          },
+          {
+            "value": "circle",
+            "label": "Circle"
+          }
+        ]
+      },
+      {
+        "key": "showEmpty",
+        "type": "toggle",
+        "label": "Empty days",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "highlightToday",
+        "type": "toggle",
+        "label": "Mark today",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "cellSize",
+        "type": "slider",
+        "label": "Cell size",
+        "group": "GitHub Heatmap",
+        "default": 11,
+        "min": 6,
+        "max": 20,
+        "step": 1
+      },
+      {
+        "key": "cellGap",
+        "type": "slider",
+        "label": "Cell spacing",
+        "group": "GitHub Heatmap",
+        "default": 3,
+        "min": 0,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "monthGap",
+        "type": "slider",
+        "label": "Month spacing",
+        "group": "GitHub Heatmap",
+        "default": 0,
+        "min": 0,
+        "max": 24,
+        "step": 2
+      },
+      {
+        "key": "weekStart",
+        "type": "choice",
+        "label": "Week starts",
+        "group": "GitHub Heatmap",
+        "default": "sun",
+        "options": [
+          {
+            "value": "sun",
+            "label": "Sunday"
+          },
+          {
+            "value": "mon",
+            "label": "Monday"
+          }
+        ]
+      },
+      {
+        "key": "showMonths",
+        "type": "toggle",
+        "label": "Months",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "monthFormat",
+        "type": "choice",
+        "label": "Month format",
+        "group": "GitHub Heatmap",
+        "default": "short",
+        "options": [
+          {
+            "value": "short",
+            "label": "jan"
+          },
+          {
+            "value": "cap",
+            "label": "Jan"
+          },
+          {
+            "value": "initial",
+            "label": "J"
+          },
+          {
+            "value": "number",
+            "label": "1"
+          }
+        ]
+      },
+      {
+        "key": "showWeekdays",
+        "type": "toggle",
+        "label": "Weekdays",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "weekdayStyle",
+        "type": "choice",
+        "label": "Weekday style",
+        "group": "GitHub Heatmap",
+        "default": "alt",
+        "options": [
+          {
+            "value": "alt",
+            "label": "mon wed fri"
+          },
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "initial",
+            "label": "M T W"
+          }
+        ]
+      },
+      {
+        "key": "textScale",
+        "type": "slider",
+        "label": "Text size (%)",
+        "group": "GitHub Heatmap",
+        "default": 100,
+        "min": 70,
+        "max": 160,
+        "step": 10
+      },
+      {
+        "key": "showToolbar",
+        "type": "toggle",
+        "label": "Top bar",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "showStats",
+        "type": "toggle",
+        "label": "Streaks and record",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "showLegend",
+        "type": "toggle",
+        "label": "Legend",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "showBorder",
+        "type": "toggle",
+        "label": "Card border",
+        "group": "GitHub Heatmap",
+        "default": true
+      },
+      {
+        "key": "bgStyle",
+        "type": "choice",
+        "label": "Background",
+        "group": "GitHub Heatmap",
+        "default": "glass",
+        "options": [
+          {
+            "value": "glass",
+            "label": "Glass (like the calendar)"
+          },
+          {
+            "value": "solid",
+            "label": "Solid"
+          }
+        ]
+      },
+      {
+        "key": "bgOpacity",
+        "type": "slider",
+        "label": "Background opacity",
+        "group": "GitHub Heatmap",
+        "default": 100,
+        "min": 0,
+        "max": 100,
+        "step": 10
+      },
+      {
+        "key": "cardRadius",
+        "type": "slider",
+        "label": "Card corners",
+        "group": "GitHub Heatmap",
+        "default": 14,
+        "min": 0,
+        "max": 24,
+        "step": 2
+      }
+    ]
+  }
+}

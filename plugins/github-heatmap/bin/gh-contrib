@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+"""Print a GitHub user's public contribution calendar as JSON.
+
+usage: gh-contrib <username> <year|last>
+"last" is the rolling year GitHub shows on a profile.
+Reads the public page https://github.com/users/<user>/contributions (no token).
+"""
+import json
+import re
+import sys
+import urllib.error
+import urllib.request
+
+USAGE = "usage: gh-contrib <username> <year|last>"
+
+
+def main():
+    if len(sys.argv) != 3:
+        print(json.dumps({"error": USAGE}))
+        return 2
+    user, year = sys.argv[1].strip(), sys.argv[2].strip()
+    if not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})", user):
+        print(json.dumps({"error": "invalid username"}))
+        return 2
+    if year != "last" and not re.fullmatch(r"\d{4}", year):
+        print(json.dumps({"error": "invalid year"}))
+        return 2
+    url = f"https://github.com/users/{user}/contributions"
+    if year != "last":
+        url += f"?from={year}-01-01&to={year}-12-31"
+    req = urllib.request.Request(url, headers={"User-Agent": "ryoku-github-heatmap"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            html = r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as e:
+        print(json.dumps({"error": "user not found" if e.code == 404 else f"HTTP {e.code}"}))
+        return 1
+    except Exception as e:  # network down, DNS, timeout
+        print(json.dumps({"error": f"network: {e.__class__.__name__}"}))
+        return 1
+
+    # Each day is a <td data-date data-level id>, its count in a <tool-tip for=id>.
+    tips = {}
+    for m in re.finditer(r'<tool-tip[^>]*\bfor="([^"]+)"[^>]*>([^<]*)', html):
+        n = re.match(r"\s*(\d+)\s+contribution", m.group(2))
+        tips[m.group(1)] = int(n.group(1)) if n else 0
+    days = []
+    for m in re.finditer(r"<td\b[^>]*\bdata-date=[^>]*>", html):
+        td = m.group(0)
+        date = re.search(r'data-date="([^"]+)"', td).group(1)
+        lvl = re.search(r'data-level="(\d)"', td)
+        tid = re.search(r'\bid="([^"]+)"', td)
+        days.append({
+            "date": date,
+            "level": int(lvl.group(1)) if lvl else 0,
+            "count": tips.get(tid.group(1), 0) if tid else 0,
+        })
+    days.sort(key=lambda d: d["date"])
+    if year != "last":
+        days = [d for d in days if d["date"].startswith(year)]
+    print(json.dumps({
+        "user": user,
+        "year": year if year == "last" else int(year),
+        "total": sum(d["count"] for d in days),
+        "first": days[0]["date"] if days else "",
+        "days": days,
+    }))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
