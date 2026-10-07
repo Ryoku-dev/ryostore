@@ -1,0 +1,192 @@
+{
+  "id": "goxlr",
+  "name": "GoXLR",
+  "version": "1.0.0",
+  "author": "dajax",
+  "description": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel. Backed by the goxlr-utility daemon.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 360
+  },
+  "files": [
+    "bin/mic-mute-toggle",
+    "bin/volume-step",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ],
+    "network": [
+      "localhost",
+      "127.0.0.1"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "GoXLR"
+  },
+  "dependencies": {
+    "commands": [
+      "curl",
+      "jq"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "host",
+        "type": "text",
+        "label": "Daemon host",
+        "group": "Connection",
+        "default": "localhost",
+        "placeholder": "localhost"
+      },
+      {
+        "key": "port",
+        "type": "int",
+        "label": "Daemon port",
+        "group": "Connection",
+        "default": 14564,
+        "min": 1,
+        "max": 65535
+      },
+      {
+        "key": "refreshMs",
+        "type": "int",
+        "label": "Poll interval while the panel is closed (ms)",
+        "group": "Connection",
+        "default": 1000,
+        "min": 250,
+        "max": 10000
+      },
+      {
+        "key": "volumeDisplay",
+        "type": "choice",
+        "label": "Show volumes as",
+        "group": "Connection",
+        "default": "percent",
+        "options": [
+          { "value": "percent", "label": "Percent" },
+          { "value": "raw", "label": "Raw (0-255)" }
+        ]
+      },
+      {
+        "key": "channel",
+        "type": "choice",
+        "label": "Channel shown on the bar",
+        "group": "Widget",
+        "default": "Mic",
+        "options": [
+          { "value": "Mic", "label": "Mic" },
+          { "value": "LineIn", "label": "Line In" },
+          { "value": "Console", "label": "Console" },
+          { "value": "System", "label": "System" },
+          { "value": "Game", "label": "Game" },
+          { "value": "Chat", "label": "Chat" },
+          { "value": "Sample", "label": "Sample" },
+          { "value": "Music", "label": "Music" },
+          { "value": "Headphones", "label": "Headphones" },
+          { "value": "MicMonitor", "label": "Mic Monitor" },
+          { "value": "LineOut", "label": "Line Out" }
+        ]
+      },
+      {
+        "key": "display",
+        "type": "choice",
+        "label": "Bar display",
+        "group": "Widget",
+        "default": "glyph_value",
+        "options": [
+          { "value": "glyph", "label": "Icon only" },
+          { "value": "glyph_value", "label": "Icon and volume" },
+          { "value": "value", "label": "Volume only" }
+        ]
+      },
+      {
+        "key": "glyphStyle",
+        "type": "choice",
+        "label": "Bar icon style",
+        "group": "Widget",
+        "default": "text",
+        "options": [
+          { "value": "text", "label": "Text / emoji character" },
+          { "value": "icon", "label": "Material Symbols icon name" }
+        ]
+      },
+      {
+        "key": "glyph",
+        "type": "text",
+        "label": "Bar icon",
+        "group": "Widget",
+        "default": "\u25C6",
+        "placeholder": "\u25C6 or, in icon style, a Material Symbols name like mic"
+      },
+      {
+        "key": "showChannelName",
+        "type": "toggle",
+        "label": "Prefix the volume with the channel name",
+        "group": "Widget",
+        "default": false
+      },
+      {
+        "key": "scrollStep",
+        "type": "int",
+        "label": "Volume change per scroll notch (%)",
+        "group": "Widget",
+        "default": 2,
+        "min": 1,
+        "max": 25
+      },
+      {
+        "key": "muteIndicator",
+        "type": "toggle",
+        "label": "Change colour while the channel is muted",
+        "group": "Widget",
+        "default": true
+      },
+      {
+        "key": "hideWhenAbsent",
+        "type": "toggle",
+        "label": "Hide the capsule when no GoXLR is connected",
+        "group": "Widget",
+        "default": false
+      },
+      {
+        "key": "flashEnabled",
+        "type": "toggle",
+        "label": "Flash the bar capsule when any channel's volume or mute changes",
+        "group": "Flash",
+        "default": true
+      },
+      {
+        "key": "flashTimeoutMs",
+        "type": "int",
+        "label": "How long the flash stays up (ms)",
+        "group": "Flash",
+        "default": 1500,
+        "min": 500,
+        "max": 5000
+      },
+      {
+        "key": "flashPollMs",
+        "type": "int",
+        "label": "Poll interval while watching for changes to flash (ms)",
+        "group": "Flash",
+        "default": 200,
+        "min": 100,
+        "max": 1000
+      }
+    ]
+  }
+}

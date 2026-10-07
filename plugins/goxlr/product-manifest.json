@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "id": "goxlr",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/goxlr",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "069ca9810e1f7ab3d4053db9e9cfad2af6ef457874f8390e968471858e5e203a",
+      "mode": "0644",
+      "size": 3954,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "ed31c58623a08b80bf05d3575e03c1c957547da68ba2ade41c6cf81338e50a56",
+      "mode": "0644",
+      "size": 1061,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "83d27b9d36c281a62e501c8c03e21b79f28a57a96d03a5acb33528068716e25c",
+      "mode": "0644",
+      "size": 5270,
+      "install": false
+    },
+    {
+      "source": "assets/preview-panel.png",
+      "destination": "assets/preview-panel.png",
+      "sha256": "45541f977411c5f1237dfaf010ad1983afcbc0ed38e7246dc24a44bc6770917c",
+      "mode": "0644",
+      "size": 108273,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "c65ca853699b3443f9efa1d24e797feae0fa36f398182a040e91c421a0018969",
+      "mode": "0644",
+      "size": 1289,
+      "install": false
+    },
+    {
+      "source": "bin/mic-mute-toggle",
+      "destination": "bin/mic-mute-toggle",
+      "sha256": "2cd11be84be8b7a25f81c0efce0e4f8008c55691b698d0f397e476c3e4f390e9",
+      "mode": "0755",
+      "size": 1251,
+      "install": true
+    },
+    {
+      "source": "bin/volume-step",
+      "destination": "bin/volume-step",
+      "sha256": "821dc027597264fd46d6793841007776b40b5e5a64d3bec383ba1ab6a3d10886",
+      "mode": "0755",
+      "size": 1755,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "260a2cdf171eb451bd2db517fd236194fbaa9c8c9ece012acfed902e6231bf9a",
+      "mode": "0644",
+      "size": 9734,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "fa847ea6ad44a117218c0e325c82bdd99abc7fe1bf9551087fb807d3b022c682",
+      "mode": "0644",
+      "size": 5046,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "6d4969c1040578ed0f7d99ba11c3623676ca73e7fdb1430e70dfa81a7ce4c3ce",
+      "mode": "0644",
+      "size": 5013,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "969d2d955f2cc5c5e5e2fe9ad75aa0151a7c66959779f6b6f58640c513ebb7cf",
+      "mode": "0644",
+      "size": 17474,
+      "install": true
+    }
+  ]
+}
