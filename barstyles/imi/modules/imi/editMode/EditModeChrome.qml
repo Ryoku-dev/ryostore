@@ -54,7 +54,7 @@ Scope {
         delegate: Loader {
             id: surfaceLoader
             required property var modelData
-            // This screen's Hyprland record, for the special-workspace gate.
+            // This screen's compositor record, for the scratchpad gate.
             // Found by name rather than by index: `Quickshell.screens` and
             // `HyprlandData.monitors` are two lists that agree today and are
             // not promised to stay in the same order.

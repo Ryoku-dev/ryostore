@@ -43,7 +43,7 @@ Item {
     readonly property int workspacesShown: Math.min(
         (Config.options?.overview.rows ?? 2) * (Config.options?.overview.columns ?? 5), 10)
     readonly property int workspaceGroup: Math.floor(
-        ((Hyprland.focusedMonitor?.activeWorkspace?.id ?? 1) - 1) / workspacesShown)
+        (WM.activeWorkspaceNumber() - 1) / workspacesShown)
 
     LiveDesktopEntry {
         id: liveDeskEntry
@@ -91,7 +91,7 @@ Item {
             implicitHeight: menuBackground.implicitHeight + Appearance.sizes.elevationMargin * 2
 
             HyprlandFocusGrab {
-                active: true
+                active: WM.isHyprland
                 windows: [contextPopup]
                 onCleared: root.close()
             }
@@ -207,9 +207,11 @@ Item {
                                         onClicked: {
                                             for (const toplevel of root.appToplevel.toplevels) {
                                                 const addr = toplevel.HyprlandToplevel?.address
+                                                    ?? toplevel.address
+                                                    ?? toplevel.id;
                                                 if (!addr)
                                                     continue
-                                                Hyprland.dispatch(`hl.dsp.window.move({ workspace = ${wsButton.workspaceValue}, follow = false, window = "address:0x${addr}" })`)
+                                                WM.moveWindowToWorkspace(addr, wsButton.workspaceValue)
                                             }
                                             root.close()
                                         }

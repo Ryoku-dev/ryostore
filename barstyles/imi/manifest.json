@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "imi",
   "category": "barstyles",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "destination": "ryoku/barstyles/imi",
   "files": [
     {
@@ -41,16 +41,16 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 4156,
-      "sha256": "93a025e3621c181c89afa1d4353c76db193753736c6571603f54f55033d8e3a3",
+      "size": 5490,
+      "sha256": "e8f8a84493ea13d7dd4e01a1685643a79a6f2a26051e28162798a46da46dfa4a",
       "install": true
     },
     {
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 8019,
-      "sha256": "ceea20306e1dbbebc0ab550a704f9619e9813af9b39f958b114a92355951a78a",
+      "size": 13552,
+      "sha256": "6b518b3f576236d4ee86b4302c47d862c5fb22223c3e6e54ae8d5b39e83a967c",
       "install": true
     },
     {
@@ -409,8 +409,8 @@
       "source": "modules/common/models/WorkspaceModel.qml",
       "destination": "modules/common/models/WorkspaceModel.qml",
       "mode": "0644",
-      "size": 2892,
-      "sha256": "51f454f46980ee60ad843a7eb52aa4c6414ddc0bccd1123836fbcdf6aa3e0432",
+      "size": 5094,
+      "sha256": "e4369db17058a2f761a4e2911098d085dcd470400fb0496b4cce050c886488ae",
       "install": true
     },
     {
@@ -729,8 +729,8 @@
       "source": "modules/common/widgets/DockContextMenu.qml",
       "destination": "modules/common/widgets/DockContextMenu.qml",
       "mode": "0644",
-      "size": 13668,
-      "sha256": "5b0a0da7e3ca350f9cae52b70e8c44f8bdd9a532007f01badba3d91af1adbc80",
+      "size": 13718,
+      "sha256": "fdd323c4b322eb194fecdf012771d802f048d22dd80bd55ab75b4c8f21ceec8c",
       "install": true
     },
     {
@@ -1385,16 +1385,16 @@
       "source": "modules/imi/bar/ActiveWindow.qml",
       "destination": "modules/imi/bar/ActiveWindow.qml",
       "mode": "0644",
-      "size": 3257,
-      "sha256": "64702e867ff34018fdbe4a6866fa6c5a8542e43551f2b32f206ea512d8dc4736",
+      "size": 3533,
+      "sha256": "5db493446b315bded584bb84411a04cac5c1a92a9cd6176fe5c3e7d85bfbe166",
       "install": true
     },
     {
       "source": "modules/imi/bar/Bar.qml",
       "destination": "modules/imi/bar/Bar.qml",
       "mode": "0644",
-      "size": 25837,
-      "sha256": "83c8539f3669d1270bc2490e03573299d46fb3227f7338de872d3f4a0713937a",
+      "size": 25844,
+      "sha256": "6312f4faf6563207e2ac47e08a47e5228195633af241edfb93977739acec797e",
       "install": true
     },
     {
@@ -1449,8 +1449,8 @@
       "source": "modules/imi/bar/BarPopupOverlay.qml",
       "destination": "modules/imi/bar/BarPopupOverlay.qml",
       "mode": "0644",
-      "size": 32916,
-      "sha256": "147ccd2872c67f5dd1d974c6625dc5f42f0fc5ca1f12ffc22ad7f400888580a7",
+      "size": 32960,
+      "sha256": "072a09e6c9385ef26bca6b0bae2809d622a4da6eae9aeb561cb0e2bfa990cfd2",
       "install": true
     },
     {
@@ -1777,8 +1777,8 @@
       "source": "modules/imi/bar/Workspaces.qml",
       "destination": "modules/imi/bar/Workspaces.qml",
       "mode": "0644",
-      "size": 17846,
-      "sha256": "8e83f1aa4c6d805a78d8e72fee52d3afc711040cb267fe2dda15530b872bdc40",
+      "size": 17946,
+      "sha256": "93546b1fa78f67eff6a25f22702c77e03206ef8f64159c67b0835d8dbfd1844f",
       "install": true
     },
     {
@@ -1817,8 +1817,8 @@
       "source": "modules/imi/editMode/EditModeChrome.qml",
       "destination": "modules/imi/editMode/EditModeChrome.qml",
       "mode": "0644",
-      "size": 4919,
-      "sha256": "9084da67ea5e0712b1e95489178ac47abfc30687b7bf044eb549c389b7bb096f",
+      "size": 4914,
+      "sha256": "e0fff46bddb4d075cdf4b359831b4bbe3b08a21334585515facf61a6f7881a7a",
       "install": true
     },
     {
@@ -2089,8 +2089,8 @@
       "source": "services/HyprlandData.qml",
       "destination": "services/HyprlandData.qml",
       "mode": "0644",
-      "size": 2375,
-      "sha256": "efd2f8c55320763b4bcb91ad56ab5d9b0a66ff3b6b5826cc909389caabd4dcb5",
+      "size": 2640,
+      "sha256": "c202a4da04e6dd3a3db3009e06d64a6a1ee918016ebc52ce88fd5b0e497182f3",
       "install": true
     },
     {
@@ -2321,8 +2321,8 @@
       "source": "services/WM.qml",
       "destination": "services/WM.qml",
       "mode": "0644",
-      "size": 1785,
-      "sha256": "f90c21dbd4524f1dd04252c9fc6467bd437748bf6f7f2fe8ddadd083e2904192",
+      "size": 4437,
+      "sha256": "ddf66fb7fc7817f093b2220c792dd99e2ee284d745a6e83a1de047b5c5bb2668",
       "install": true
     },
     {
@@ -2357,5 +2357,6 @@
       "sha256": "b91a53f73089e76988abe0c8c5731ac6302025466ef7761f824b6602416104b0",
       "install": true
     }
-  ]
+  ],
+  "license": "GPL-3.0-only"
 }

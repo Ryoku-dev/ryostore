@@ -4,18 +4,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+import Ryoku.Ui.Singletons as Ryoku
 
-// Live Hyprland monitor / workspace / window facts, reconstructed on the shell's
-// own Quickshell.Hyprland connection. Upstream (Immaterial Impulse) carried a
-// service that polled `hyprctl -j`; here the same ipc shapes are read straight
-// from the shell's live model, so the bar reads Hyprland without standing up a
-// second poller or a second host process.
 Singleton {
     id: root
 
-    // One flat monitor ipc record per output (name, id, x, y, width, height,
-    // scale, activeWorkspace{id,name}, specialWorkspace{id,name}), exactly the
-    // `hyprctl -j monitors` shape the vendored consumers expect.
     readonly property var monitors: {
         const out = [];
         const mons = Hyprland.monitors ? Hyprland.monitors.values : [];
@@ -24,11 +17,28 @@ Singleton {
             if (o)
                 out.push(o);
         }
+        if (out.length > 0)
+            return out;
+        const screens = Quickshell.screens;
+        for (let i = 0; i < screens.length; i++) {
+            const s = screens[i];
+            if (!s)
+                continue;
+            out.push({
+                "name": s.name,
+                "id": i,
+                "x": 0,
+                "y": 0,
+                "width": s.width,
+                "height": s.height,
+                "scale": 1,
+                "activeWorkspace": Ryoku.Wm.outputByName(s.name)?.activeWorkspace ?? null,
+                "specialWorkspace": { "id": 0, "name": "" }
+            });
+        }
         return out;
     }
 
-    // Workspace ipc records keyed by id; each carries `hasfullscreen`, `name`,
-    // `monitor`, etc. Used for the bar's fullscreen gate.
     readonly property var workspaceById: {
         const map = ({});
         const wss = Hyprland.workspaces ? Hyprland.workspaces.values : [];
@@ -40,9 +50,6 @@ Singleton {
         return map;
     }
 
-    // The largest window sitting on a workspace, by pixel area, returned as its
-    // raw ipc object (`class`, `title`, `size`, `workspace`). Null when the
-    // workspace holds no window.
     function biggestWindowForWorkspace(workspaceId) {
         const tls = Hyprland.toplevels ? Hyprland.toplevels.values : [];
         let best = null;
@@ -58,6 +65,21 @@ Singleton {
                 best = o;
             }
         }
-        return best;
+        if (best)
+            return best;
+        const wins = Ryoku.Wm.windows || [];
+        for (let i = 0; i < wins.length; i++) {
+            const w = wins[i];
+            if (!w)
+                continue;
+            const key = parseInt(String(w.workspace), 10);
+            if (key !== workspaceId && String(w.workspace) !== String(workspaceId))
+                continue;
+            return {
+                "class": w.appId ?? w.class ?? "",
+                "title": w.title ?? ""
+            };
+        }
+        return null;
     }
 }

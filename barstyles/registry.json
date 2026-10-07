@@ -48,14 +48,12 @@
     {
       "id": "imi",
       "name": "Imi",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "path": "barstyles/imi",
       "author": "dodo986",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/imi",
       "summary": "Material 3 Island Bar",
       "description": "Material 3-Like design with morphing popouts, kanji workspaces, audio visualizer, and customizable widget pills.",
-      "windowManager": "hyprland",
-      "windowManagerReason": "Written against Hyprland's own window and workspace model, so it does not run on niri yet.",
       "tags": [
         "top",
         "material3",
@@ -69,8 +67,8 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "b9b2b59fa99ab0b02b26be3ce1905c9e71988543608f916e5d1d22c61624a3b7",
-      "lastUpdated": "2026-09-08",
+      "manifestSha256": "6fb10dd4fb4a0c59b838bd9e6079eb6f2a468395b885bc4d9770121ff005e73c",
+      "lastUpdated": "2026-10-07",
       "official": false,
       "license": "GPL-3.0-only"
     },

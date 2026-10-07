@@ -4,6 +4,7 @@ import "../../common"
 import "../../common/models"
 import "../../common/widgets"
 import "../../common/functions"
+import Ryoku.Ui.Singletons
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -15,16 +16,22 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: root
     property bool vertical: false
-    readonly property var monitor: WM.monitorFor(root.QsWindow.window?.screen)
-    readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
-    property string activeWindowAddress: activeWindow?.HyprlandToplevel?.address ? `0x${activeWindow.HyprlandToplevel.address}` : ""
-    property bool focusingThisMonitor: WM.focusedMonitor?.name === monitor?.name
-    property var biggestWindow: HyprlandData.biggestWindowForWorkspace(monitor?.activeWorkspace?.id ?? 1)
+    readonly property string screenName: root.QsWindow.window?.screen?.name ?? ""
+    readonly property var focusedWindow: Wm.focusedWindow ?? ToplevelManager.activeToplevel
+    readonly property bool tlActivated: ToplevelManager.activeToplevel?.activated ?? false
+    property bool focusingThisMonitor: {
+        const fout = Wm.focusedOutput ?? "";
+        if (fout !== "" && root.screenName !== "")
+            return fout === root.screenName;
+        return root.tlActivated && root.screenName !== "";
+    }
+    readonly property int screenWorkspace: WM.activeWorkspaceNumber(root.screenName)
+    property var biggestWindow: HyprlandData.biggestWindowForWorkspace(root.screenWorkspace)
 
     property string activeAppClass: {
-        if (!root.focusingThisMonitor || !root.activeWindow?.activated)
+        if (!root.focusingThisMonitor || !root.focusedWindow)
             return root.biggestWindow?.class ?? ""
-        return root.activeWindow?.appId ?? root.biggestWindow?.class ?? ""
+        return root.focusedWindow?.appId ?? root.focusedWindow?.class ?? root.biggestWindow?.class ?? ""
     }
 
     property var mainAppIconSource: {
@@ -69,8 +76,8 @@ Item {
             font.pixelSize: Appearance.font.pixelSize.smaller
             color: Appearance.colors.colSubtext
             elide: Text.ElideRight
-            text: root.focusingThisMonitor && root.activeWindow?.activated && root.biggestWindow ?
-                root.activeWindow?.appId :
+            text: root.focusingThisMonitor && root.focusedWindow && root.biggestWindow ?
+                (root.focusedWindow?.appId ?? root.focusedWindow?.class ?? "") :
                 (root.biggestWindow?.class) ?? Translation.tr("Desktop")
         }
         StyledText {
@@ -78,9 +85,9 @@ Item {
             font.pixelSize: Appearance.font.pixelSize.small
             color: Appearance.colors.colOnLayer0
             elide: Text.ElideRight
-            text: root.focusingThisMonitor && root.activeWindow?.activated && root.biggestWindow ?
-                root.activeWindow?.title :
-                (root.biggestWindow?.title) ?? `${Translation.tr("Workspace")} ${monitor?.activeWorkspace?.id ?? 1}`
+            text: root.focusingThisMonitor && root.focusedWindow && root.biggestWindow ?
+                (root.focusedWindow?.title ?? "") :
+                (root.biggestWindow?.title) ?? `${Translation.tr("Workspace")} ${root.screenWorkspace}`
         }
     }
 }
