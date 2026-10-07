@@ -20,8 +20,7 @@ Scope {
         screen: root.modelData
 
         color: "transparent"
-        exclusionMode: ExclusionMode.Normal
-        exclusiveZone: 48
+        exclusionMode: ExclusionMode.Ignore
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
         WlrLayershell.namespace: "ryoku-imi"
@@ -34,14 +33,79 @@ Scope {
 
         implicitHeight: 48
 
-        ImiBar.BarContent {
-            id: barContent
-            anchors.fill: parent
+        readonly property bool autoHide: Config.options.bar.autoHide.enable ?? false
+        property bool superShow: false
+        property bool mustShow: !win.autoHide || hoverRegion.containsMouse || win.superShow
+            || GlobalStates.editMode
+            || ((GlobalStates.mediaControlsOpen || GlobalStates.sysTrayOverflowOpen) && (Config.options.bar.autoHide.dismissPopups ?? true))
 
-            TapHandler {
-                acceptedButtons: Qt.LeftButton
-                gesturePolicy: TapHandler.ReleaseWithinBounds
-                onDoubleTapped: GlobalStates.editMode = !GlobalStates.editMode
+        property QtObject barSpaceReserver: ImiBar.BarExclusiveZoneReserver {
+            screen: root.modelData
+            barNamespace: "ryoku-imi"
+            farEdge: false
+            edgeMargin: 0
+            zone: (!win.autoHide || (win.mustShow && (Config.options.bar.autoHide.pushWindows ?? false))) ? win.implicitHeight : 0
+        }
+
+        mask: Region {
+            item: hoverMaskRegion
+        }
+
+        Timer {
+            id: showBarTimer
+            interval: (Config?.options.bar.autoHide.showWhenPressingSuper.delay ?? 100)
+            repeat: false
+            onTriggered: {
+                win.superShow = true
+            }
+        }
+        Connections {
+            target: GlobalStates
+            function onSuperDownChanged() {
+                if (!Config?.options.bar.autoHide.showWhenPressingSuper.enable) return;
+                if (GlobalStates.superDown) showBarTimer.restart();
+                else {
+                    showBarTimer.stop();
+                    win.superShow = false;
+                }
+            }
+        }
+
+        MouseArea {
+            id: hoverRegion
+            anchors.fill: parent
+            hoverEnabled: true
+
+            Item {
+                id: hoverMaskRegion
+                readonly property real reveal: (Config.options.bar.autoHide.hoverRegionWidth ?? 2)
+                readonly property real rawTop: barContent.y - reveal
+                readonly property real rawBottom: barContent.y + barContent.height + reveal
+
+                x: 0
+                width: parent.width
+                y: Math.max(0, rawTop)
+                height: Math.max(0, Math.min(parent.height, rawBottom) - y)
+            }
+
+            ImiBar.BarContent {
+                id: barContent
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    top: parent.top
+                    topMargin: (win.autoHide && !win.mustShow) ? -height : 0
+                }
+                height: win.implicitHeight
+                Behavior on anchors.topMargin {
+                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                }
+
+                TapHandler {
+                    acceptedButtons: Qt.LeftButton
+                    gesturePolicy: TapHandler.ReleaseWithinBounds
+                    onDoubleTapped: GlobalStates.editMode = !GlobalStates.editMode
+                }
             }
         }
     }
@@ -220,6 +284,74 @@ Scope {
                                 widgetPicker.visible = false
                             }
                         }
+                    }
+                }
+
+                Rectangle {
+                    width: pickerColumn.width
+                    height: 1
+                    color: Appearance.m3colors.m3outlineVariant
+                    opacity: 0.5
+                }
+
+                Rectangle {
+                    id: autoHideRow
+                    width: pickerColumn.width
+                    height: 36
+                    radius: 8
+                    color: autoHideHover.hovered ? Appearance.m3colors.m3surfaceContainerHigh : "transparent"
+
+                    HoverHandler { id: autoHideHover }
+
+                    readonly property bool autoHideOn: Config.options.bar.autoHide.enable ?? false
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 8
+                        anchors.rightMargin: 8
+                        spacing: 8
+
+                        Text {
+                            text: "visibility_off"
+                            font.family: "Material Symbols Rounded"
+                            font.pixelSize: 18
+                            color: Appearance.m3colors.m3onSurfaceVariant
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+                        Text {
+                            text: "Autohide bar"
+                            color: Appearance.m3colors.m3onSurface
+                            font.pixelSize: 13
+                            Layout.fillWidth: true
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+                        Rectangle {
+                            Layout.alignment: Qt.AlignVCenter
+                            width: 34
+                            height: 20
+                            radius: 10
+                            color: autoHideRow.autoHideOn ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHigh
+                            border.width: autoHideRow.autoHideOn ? 0 : 1
+                            border.color: Appearance.m3colors.m3outline
+
+                            Rectangle {
+                                width: 14
+                                height: 14
+                                radius: 7
+                                anchors.verticalCenter: parent.verticalCenter
+                                x: autoHideRow.autoHideOn ? parent.width - width - 3 : 3
+                                color: autoHideRow.autoHideOn ? Appearance.m3colors.m3onPrimary : Appearance.m3colors.m3onSurfaceVariant
+                                Behavior on x {
+                                    NumberAnimation { duration: 150 }
+                                }
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Config.options.bar.autoHide.enable = !autoHideRow.autoHideOn
                     }
                 }
             }

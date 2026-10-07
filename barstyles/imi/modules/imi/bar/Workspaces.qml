@@ -29,7 +29,7 @@ ButtonMouseArea {
     property real workspaceIconSizeShrinked: workspaceButtonWidth * 0.55
     property real workspaceIconOpacityShrinked: 1
     property real workspaceIconMarginShrinked: -Appearance.spacing.space50
-    property int workspaceIndexInGroup: (wsModel.activeNumber - 1) % wsModel.shownCount
+    property int workspaceIndexInGroup: wsModel.activeIndex
     property real specialTextSize: workspaceButtonWidth * 0.5
 
     Layout.alignment: vertical ? Qt.AlignHCenter : Qt.AlignVCenter
@@ -53,7 +53,7 @@ ButtonMouseArea {
     }
 
     function switchWorkspaceToHovered() {
-        WM.switchWorkspace(wsModel.getWorkspaceIdAt(hoverIndex));
+        WM.switchWorkspace(wsModel.slotKeyAt(hoverIndex));
     }
     onPressed: mouse => {
         if (mouse.button == Qt.LeftButton)
@@ -102,14 +102,14 @@ ButtonMouseArea {
             visible: false
 
             Repeater {
-                model: wsModel.shownCount
+                model: wsModel.slotCount
                 delegate: Item {
                     id: wsBg
                     required property int index
-                    readonly property int wsId: wsModel.getWorkspaceIdAt(index)
-                    property bool currentOccupied: wsModel.occupied[index] && wsId != wsModel.fakeWorkspace
-                    property bool previousOccupied: index > 0 && wsModel.occupied[index - 1] && (wsId - 1) != wsModel.fakeWorkspace
-                    property bool nextOccupied: index < wsModel.shownCount - 1 && wsModel.occupied[index + 1] && (wsId + 1) != wsModel.fakeWorkspace
+                    readonly property var wsKey: wsModel.slotKeyAt(index)
+                    property bool currentOccupied: wsModel.occupied[index] && wsKey != wsModel.fakeWorkspace
+                    property bool previousOccupied: index > 0 && wsModel.occupied[index - 1] && (Number(wsKey) - 1) != wsModel.fakeWorkspace
+                    property bool nextOccupied: index < wsModel.slotCount - 1 && wsModel.occupied[index + 1] && (Number(wsKey) + 1) != wsModel.fakeWorkspace
                     implicitWidth: root.workspaceButtonWidth
                     implicitHeight: root.workspaceButtonWidth
 
@@ -183,7 +183,7 @@ ButtonMouseArea {
             layer.enabled: true // For the masking
 
             Repeater {
-                model: wsModel.shownCount
+                model: wsModel.slotCount
                 delegate: NumberWorkspaceItem {}
             }
         }
@@ -207,7 +207,7 @@ ButtonMouseArea {
             z: 6
 
             Repeater {
-                model: wsModel.shownCount
+                model: wsModel.slotCount
                 delegate: WorkspaceItem {
                     id: wsApp
                     property var biggestWindow: wsModel.biggestWindow[index]
@@ -354,7 +354,7 @@ ButtonMouseArea {
 
     component WorkspaceItem: Item {
         required property int index
-        readonly property int wsId: wsModel.getWorkspaceIdAt(index)
+        readonly property var wsKey: wsModel.slotKeyAt(index)
         implicitWidth: root.vertical ? root.barThickness : root.workspaceButtonWidth
         implicitHeight: root.vertical ? root.workspaceButtonWidth : root.barThickness
     }
@@ -362,11 +362,14 @@ ButtonMouseArea {
     component NumberWorkspaceItem: WorkspaceItem {
         id: wsNum
         property bool hasBiggestWindow: !!wsModel.biggestWindow[index]
-        property int wsId: wsModel.getWorkspaceIdAt(index)
-        property color contentColor: (wsModel.occupied[wsNum.index] && wsId !== wsModel.fakeWorkspace) ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1Inactive
+        readonly property int wsNumber: {
+            const n = parseInt(String(wsNum.wsKey), 10);
+            return isNaN(n) ? -1 : n;
+        }
+        property color contentColor: (wsModel.occupied[wsNum.index] && wsNum.wsKey !== wsModel.fakeWorkspace) ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1Inactive
         
         readonly property var kanjiList: ["", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"]
-        readonly property string kanjiText: (wsId >= 1 && wsId <= 10) ? kanjiList[wsId] : String(wsId)
+        readonly property string kanjiText: (wsNum.wsNumber >= 1 && wsNum.wsNumber <= 10) ? kanjiList[wsNum.wsNumber] : String(wsNum.wsKey)
         readonly property bool appIconDisplayed: wsNum.hasBiggestWindow && (Config.options?.bar.workspaces.showAppIcons ?? true) && !root.superPressAndHeld
 
         FadeLoader {

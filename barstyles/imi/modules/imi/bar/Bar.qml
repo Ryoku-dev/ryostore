@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import Ryoku.Ui.Singletons
 import "../../.."
 import "../../../services"
 import "../../common"
@@ -69,9 +70,9 @@ Scope {
                 property bool mustShow: hoverRegion.containsMouse || superShow
                     || GlobalStates.editMode
                     || ((GlobalStates.mediaControlsOpen || GlobalStates.sysTrayOverflowOpen) && Config?.options.bar.autoHide.dismissPopups)
-                property var thisMonitorData: HyprlandData.monitors.find(m => m.name === barRoot.screen?.name)
-                property bool monitorHasFullscreen: HyprlandData.workspaceById[thisMonitorData?.activeWorkspace?.id]?.hasfullscreen ?? false
-                property bool monitorHasSpecialOpen: (thisMonitorData?.specialWorkspace?.name ?? "") !== ""
+                property string screenName: barRoot.screen?.name ?? ""
+                property bool monitorHasFullscreen: screenName !== "" && Wm.outputHasFullscreen(screenName)
+                property bool monitorHasSpecialOpen: WM.isHyprland && ((HyprlandData.monitors.find(m => m.name === screenName)?.specialWorkspace?.name ?? "") !== "")
                 // The zone lives on barSpaceReserver below, so this surface
                 // never reconfigures for it. Do not put an `exclusiveZone`
                 // back here, not even 0: writing that property at all forces
@@ -91,8 +92,8 @@ Scope {
                         ? 0 : Appearance.sizes.baseBarHeight + (Config.options.bar.cornerStyle === 1 ? Appearance.sizes.hyprlandGapsOut : 0)
                 }
                 WlrLayershell.namespace: "quickshell:bar"
-                // Overlay layer only while special workspace sits on top of a fullscreen window on this monitor,
-                // else Top layer so fullscreen apps cover the bar as normal (Hyprland buries Top layer under fullscreen+special).
+                // Overlay layer only while a scratchpad sits on top of a fullscreen window on this monitor,
+                // else Top layer so fullscreen apps cover the bar as normal (the compositor buries Top under fullscreen+special).
                 WlrLayershell.layer: (monitorHasFullscreen && monitorHasSpecialOpen) ? WlrLayer.Overlay : WlrLayer.Top
                 // A detached bar style (cornerStyle 3) holds the surface off the
                 // screen edge by barDetachMargin. That gap is not part of the

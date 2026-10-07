@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import "../../.."
+import "../../../services"
 import "../../common"
 import "../../common/widgets"
 import "bar_popup_unroll.js" as BarPopupUnroll
@@ -364,7 +365,7 @@ Scope {
             // card has stopped moving and is showing content at full size.
             HyprlandFocusGrab {
                 id: cardGrab
-                active: !!overlayWindow.current?.pinnedOpen
+                active: WM.isHyprland && !!overlayWindow.current?.pinnedOpen
                     && !overlayWindow.exiting
                     && !overlayWindow.morphing
                     && card.width > Appearance.sizes.elevationMargin * 2
