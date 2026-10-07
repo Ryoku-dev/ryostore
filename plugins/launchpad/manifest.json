@@ -1,0 +1,111 @@
+{
+  "id": "launchpad",
+  "name": "Launchpad",
+  "version": "0.1.0",
+  "author": "guyb <blumguy111@gmail.com>",
+  "description": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any installed desktop-widget plugin), favourite apps and one-click commands. Reorder or hide anything.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 380
+  },
+  "files": [
+    "content/DeskWidgets.qml",
+    "content/OrderList.qml",
+    "assets/preview-widget.png",
+    "assets/preview-panel.png",
+    "assets/preview-edit.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Launchpad"
+  },
+  "dependencies": {
+    "commands": [
+      "ryoku",
+      "ryoku-shell",
+      "ryoku-app",
+      "cava"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "showWidgets",
+        "type": "toggle",
+        "label": "Show Widgets",
+        "group": "Sections",
+        "default": true
+      },
+      {
+        "key": "showPinned",
+        "type": "toggle",
+        "label": "Show Pinned apps",
+        "group": "Sections",
+        "default": true
+      },
+      {
+        "key": "showCommands",
+        "type": "toggle",
+        "label": "Show Commands",
+        "group": "Sections",
+        "default": true
+      },
+      {
+        "key": "sectionOrder",
+        "type": "text",
+        "label": "Section order (or drag the sections in the panel's EDIT)",
+        "group": "Sections",
+        "default": "widgets pinned commands",
+        "placeholder": "pinned widgets commands"
+      },
+      {
+        "key": "widgetList",
+        "type": "text",
+        "label": "Widgets (keys, space-separated; or pick them in the panel's EDIT)",
+        "group": "Widgets",
+        "default": "calendar music notes",
+        "placeholder": "clock calendar music aio stats weather notes visualizer plugin:<id>"
+      },
+      {
+        "key": "apps",
+        "type": "text",
+        "label": "Pinned apps (desktop ids, space-separated)",
+        "group": "Pinned",
+        "default": "",
+        "placeholder": "firefox kitty org.gnome.Nautilus"
+      },
+      {
+        "key": "columns",
+        "type": "int",
+        "label": "App columns",
+        "group": "Pinned",
+        "default": 5,
+        "min": 3,
+        "max": 8
+      },
+      {
+        "key": "commands",
+        "type": "text",
+        "label": "Quick commands (Label=command ; ...)",
+        "group": "Commands",
+        "default": "Lock=loginctl lock-session ; Suspend=systemctl suspend",
+        "placeholder": "Lock=loginctl lock-session ; Files=nautilus"
+      }
+    ]
+  }
+}

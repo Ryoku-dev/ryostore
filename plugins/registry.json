@@ -1411,6 +1411,36 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-10-06"
+    },
+    {
+      "id": "launchpad",
+      "name": "Launchpad",
+      "version": "0.1.0",
+      "path": "plugins/launchpad",
+      "author": "guyb <blumguy111@gmail.com>",
+      "summary": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any...",
+      "description": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any installed desktop-widget plugin), favourite apps and one-click commands. Reorder or hide anything.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-panel.png",
+      "screenshots": [
+        "assets/preview-panel.png",
+        "assets/preview-edit.png",
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "86e25f0e399e09a7ec66630cef456378845207fd48d80ed7368f8b1df15245f6",
+      "official": false,
+      "tagline": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any...",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-06",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/launchpad"
     }
   ]
 }
