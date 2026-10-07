@@ -258,6 +258,30 @@
       "manifestSha256": "4b07160bea63c9fc4fff381146d7135c99537329d4f9490cbfc5f29bdd22c3ff"
     },
     {
+      "id": "material-you-dark",
+      "name": "Material You Dark",
+      "version": "1.0.0",
+      "path": "lockscreens/material-you-dark",
+      "author": "Darkkal44",
+      "upstream": "https://github.com/Darkkal44/qylock",
+      "summary": "The Material You language in a deep, quiet dark palette.",
+      "description": "The dark sibling of the Material You lock: the Google Sans typeface and rounded surfaces over a low-light palette, with a tidy centred login.",
+      "tags": [
+        "material",
+        "dark",
+        "clean"
+      ],
+      "accent": "#291f48",
+      "surface": "#141316",
+      "preview": "assets/preview.gif",
+      "screenshots": [
+        "assets/preview.gif",
+        "assets/shot-1.png"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "47b6830eb35aaed876b89cc419f09591a5132ea50cd893e41e41342f72120c4e"
+    },
+    {
       "id": "minecraft",
       "name": "Minecraft Menu",
       "version": "1.0.0",

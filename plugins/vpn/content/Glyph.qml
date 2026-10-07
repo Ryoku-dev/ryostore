@@ -49,9 +49,9 @@ Item {
         font.weight: 500
         font.variableAxes: ({ "FILL": root.connected ? 1 : 0, "opsz": 20 })
         renderType: Text.QtRendering
-        // An active VPN reads in the theme accent; idle drops to the dim ink so
-        // the bar stays quiet until something is connected.
-        color: root.connected ? Theme.accent : Theme.dim
+        // Always the theme accent, like every other bar icon; idle just drops
+        // opacity instead of switching to a different, washed-out token.
+        color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, root.connected ? 1.0 : 0.6)
         Behavior on color { ColorAnimation { duration: 140 } }
     }
 
@@ -61,7 +61,7 @@ Item {
         x: glyph.x + glyph.implicitWidth + root.gap
         visible: root.textShown
         text: root.barText
-        color: Theme.cream
+        color: Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, root.connected ? 1.0 : 0.6)
         font.family: Theme.mono
         font.pixelSize: 11
         elide: Text.ElideRight

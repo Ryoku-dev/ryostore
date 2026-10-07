@@ -1,8 +1,10 @@
-// apptime panel: per-day top apps, hours & minutes only (no seconds), with
-// usage bars. Browse the archive with the chevrons (or click the date to jump
-// back to today). The host draws the card; this content is transparent and the
-// host sizes the card from implicitHeight.
+// apptime panel: per-day top apps, hours & minutes only (no seconds), in the
+// plugin kit's dossier idiom — a MicroLabel eyebrow, vector chevrons and a
+// squared tick meter. Browse the archive with the chevrons (or click the day to
+// jump back to today). The host draws the card; this content is transparent and
+// the host sizes the card from implicitHeight.
 import QtQuick
+import Ryoku.PluginKit
 import Ryoku.PluginKit.Singletons
 
 Item {
@@ -18,6 +20,35 @@ Item {
     readonly property var list: service ? service.selTopList : []
     readonly property int total: service ? service.selTotalSeconds : 0
     readonly property bool browsing: service ? !service.selIsToday : false
+    // the host keeps this content alive after the panel closes, so the browse
+    // position is gated on the live open flag (not the always-true `active`).
+    readonly property bool panelOpen: pluginApi ? pluginApi.panelOpen : false
+
+    onPanelOpenChanged: if (!panelOpen && service) service.goToday()
+
+    // a squared, static level meter: no timers, reads as a printed gauge.
+    component TickMeter: Item {
+        id: meter
+        property real frac: 0
+        property int ticks: 16
+        readonly property real gap: 2 * root.s
+        readonly property real tickW: Math.max(1, (width - gap * (ticks - 1)) / ticks)
+        readonly property int lit: Math.max(frac > 0 ? 1 : 0,
+                                            Math.min(ticks, Math.round(frac * ticks)))
+        implicitHeight: 4 * root.s
+
+        Repeater {
+            model: meter.ticks
+            Rectangle {
+                required property int index
+                x: index * (meter.tickW + meter.gap)
+                width: meter.tickW
+                height: meter.height
+                color: index < meter.lit ? Theme.accent : Theme.hair
+                Behavior on color { ColorAnimation { duration: Motion.fast } }
+            }
+        }
+    }
 
     implicitWidth: root.widthBudget
     implicitHeight: col.implicitHeight + 6 * root.s
@@ -25,107 +56,119 @@ Item {
     Column {
         id: col
         width: root.width
-        spacing: 8 * root.s
+        spacing: 9 * root.s
 
-        // ---- header: nav chevrons + day + day total ----
+        // ---- eyebrow: identity + the day total ----
+        Item {
+            width: root.width
+            height: 13 * root.s
+
+            MicroLabel {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                label: "App Time"
+                s: root.s
+            }
+
+            Text {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.service ? root.service.fmtHM(root.total) : "0m"
+                color: Theme.bright
+                font.family: Theme.mono
+                font.pixelSize: 12.5 * root.s
+                font.weight: Font.Medium
+            }
+        }
+
+        // ---- day nav: older chevron / day / newer chevron, position at right ----
         Item {
             id: head
             width: root.width
-            height: 20 * root.s
+            height: 22 * root.s
 
-            // older day
-            Text {
+            GlyphIcon {
                 id: prevBtn
-                x: 0
-                width: 16 * root.s
+                name: "chevron-left"
+                width: 15 * root.s
+                height: 15 * root.s
+                color: root.service && root.service.canOlder
+                    ? (prevMa.containsMouse ? Theme.accent : Theme.bright)
+                    : Theme.faint
+                anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: "\u2039"
-                color: prevMa.containsMouse
-                    ? (service && service.canOlder ? Theme.accent : Theme.faint)
-                    : (service && service.canOlder ? Theme.bright : Theme.faint)
-                font.family: Theme.mono
-                font.pixelSize: 16 * root.s
-                horizontalAlignment: Text.AlignHCenter
             }
             MouseArea {
                 id: prevMa
                 anchors.fill: prevBtn
+                anchors.margins: -5 * root.s
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                enabled: service ? service.canOlder : false
-                onClicked: if (service) service.stepDay(1)
+                enabled: root.service ? root.service.canOlder : false
+                onClicked: if (root.service) root.service.stepDay(1)
             }
 
-            // brand dot
-            Rectangle {
-                id: dot
-                width: 6 * root.s
-                height: 6 * root.s
-                radius: 1.5 * root.s
-                color: Theme.brand
-                anchors.left: prevBtn.right
-                anchors.leftMargin: 4 * root.s
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            // day label ("TODAY" or "Sep 3"); click jumps back to today
             Text {
                 id: dayLabel
-                text: service ? service.selLabel : "TODAY"
+                anchors.left: prevBtn.right
+                anchors.leftMargin: 10 * root.s
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.service ? root.service.selLabel : "TODAY"
                 color: root.browsing
                     ? (dayMa.containsMouse ? Theme.accent : Theme.bright)
                     : Theme.dim
                 font.family: Theme.mono
-                font.pixelSize: 10 * root.s
+                font.pixelSize: 11 * root.s
                 font.weight: Font.DemiBold
-                font.letterSpacing: 1.6 * root.s
+                font.letterSpacing: 1.8 * root.s
                 font.capitalization: Font.AllUppercase
-                anchors.left: dot.right
-                anchors.leftMargin: 7 * root.s
-                anchors.verticalCenter: parent.verticalCenter
             }
             MouseArea {
                 id: dayMa
                 anchors.fill: dayLabel
+                anchors.margins: -4 * root.s
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 enabled: root.browsing
-                onClicked: if (service) service.goToday()
+                onClicked: if (root.service) root.service.goToday()
             }
 
-            // newer day
-            Text {
+            GlyphIcon {
                 id: nextBtn
                 anchors.left: dayLabel.right
-                anchors.leftMargin: 7 * root.s
-                width: 16 * root.s
+                anchors.leftMargin: 10 * root.s
                 anchors.verticalCenter: parent.verticalCenter
-                text: "\u203A"
-                color: nextMa.containsMouse
-                    ? (service && service.canNewer ? Theme.accent : Theme.faint)
-                    : (service && service.canNewer ? Theme.bright : Theme.faint)
-                font.family: Theme.mono
-                font.pixelSize: 16 * root.s
-                horizontalAlignment: Text.AlignHCenter
+                name: "chevron-right"
+                width: 15 * root.s
+                height: 15 * root.s
+                color: root.service && root.service.canNewer
+                    ? (nextMa.containsMouse ? Theme.accent : Theme.bright)
+                    : Theme.faint
             }
             MouseArea {
                 id: nextMa
                 anchors.fill: nextBtn
+                anchors.margins: -5 * root.s
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                enabled: service ? service.canNewer : false
-                onClicked: if (service) service.stepDay(-1)
+                enabled: root.service ? root.service.canNewer : false
+                onClicked: if (root.service) root.service.stepDay(-1)
             }
 
-            // day total
+            // marginalia: live marker or where this day sits in the archive
             Text {
-                text: service ? service.fmtHM(root.total) : "0m"
-                color: root.browsing ? Theme.dim : Theme.bright
-                font.family: Theme.mono
-                font.pixelSize: 12.5 * root.s
-                font.weight: Font.Medium
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+                text: {
+                    if (!root.service) return "";
+                    if (root.service.selIndex === 0) return "LIVE";
+                    return root.service.pad2(root.service.selIndex) + " / "
+                        + root.service.pad2(root.service.dates.length);
+                }
+                color: root.service && root.service.selIndex === 0 ? Theme.accent : Theme.faint
+                font.family: Theme.mono
+                font.pixelSize: 9.5 * root.s
+                font.letterSpacing: 1.2 * root.s
             }
         }
 
@@ -140,9 +183,9 @@ Item {
         Column {
             id: listCol
             width: root.width
-            spacing: 12 * root.s
+            spacing: 11 * root.s
             visible: root.list.length > 0
-            topPadding: 6 * root.s
+            topPadding: 4 * root.s
             bottomPadding: 2 * root.s
 
             Repeater {
@@ -154,21 +197,22 @@ Item {
                     width: root.width
                     height: 30 * root.s
 
-                    readonly property real rankW: 16 * root.s
-                    readonly property real timeW: 58 * root.s
+                    readonly property real rankW: 20 * root.s
+                    readonly property real timeW: 56 * root.s
 
                     Text {
                         x: 0
                         width: rowI.rankW
                         anchors.verticalCenter: parent.verticalCenter
-                        text: rowI.index + 1
-                        color: Theme.faint
+                        text: String(rowI.index + 1).padStart(2, "0")
+                        color: rowI.index === 0 ? Theme.accent : Theme.faint
                         font.family: Theme.mono
                         font.pixelSize: 10 * root.s
+                        font.letterSpacing: 0.5 * root.s
                     }
                     Column {
-                        x: rowI.rankW + 8 * root.s
-                        y: 3 * root.s
+                        x: rowI.rankW + 6 * root.s
+                        y: 2 * root.s
                         width: root.width - x - rowI.timeW - 8 * root.s
                         spacing: 5 * root.s
 
@@ -180,21 +224,9 @@ Item {
                             font.family: Theme.font
                             font.pixelSize: 12.5 * root.s
                         }
-                        Item {
+                        TickMeter {
                             width: parent.width
-                            height: 3 * root.s
-
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: 1.5 * root.s
-                                color: Theme.hair
-                            }
-                            Rectangle {
-                                width: parent.width * rowI.modelData.fraction
-                                height: parent.height
-                                radius: 1.5 * root.s
-                                color: Theme.accent
-                            }
+                            frac: rowI.modelData.fraction
                         }
                     }
                     Text {
@@ -215,13 +247,21 @@ Item {
         Item {
             id: emptyBox
             width: root.width
-            height: 72 * root.s
+            height: 78 * root.s
             visible: root.list.length === 0
 
             Column {
                 anchors.centerIn: parent
-                spacing: 5 * root.s
+                spacing: 7 * root.s
 
+                GlyphIcon {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    name: root.browsing ? "archive" : "list"
+                    width: 22 * root.s
+                    height: 22 * root.s
+                    color: Theme.faint
+                    stroke: 1.6
+                }
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: root.browsing ? "Nothing tracked that day"

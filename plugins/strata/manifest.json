@@ -1,0 +1,72 @@
+{
+  "id": "strata",
+  "name": "Local LLM Manager",
+  "version": "0.4.0",
+  "author": "guyb <blumguy111@gmail.com>",
+  "description": "Pick a local model and start or stop it from the bar. Finds Strata, TabbyAPI and llama.cpp engines and their models, one port per model.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 360
+  },
+  "files": [
+    "bin/strata-models",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ],
+    "network": [
+      "127.0.0.1"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Local LLM Manager"
+  },
+  "dependencies": {
+    "commands": [
+      "systemctl",
+      "systemd-run",
+      "ss"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "strataDir",
+        "type": "text",
+        "label": "Strata folder",
+        "group": "Paths",
+        "default": "~/Strata",
+        "placeholder": "~/Strata"
+      },
+      {
+        "key": "tabbyDir",
+        "type": "text",
+        "label": "TabbyAPI folder",
+        "group": "Paths",
+        "default": "~/tabbyAPI",
+        "placeholder": "~/tabbyAPI"
+      },
+      {
+        "key": "ggufDirs",
+        "type": "text",
+        "label": "GGUF folders (space-separated)",
+        "group": "Paths",
+        "default": "~/models",
+        "placeholder": "~/models ~/llm/gguf"
+      }
+    ]
+  }
+}

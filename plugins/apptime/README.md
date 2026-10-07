@@ -1,9 +1,10 @@
 # App Time
 
 A Ryoku shell plugin that answers "what did I actually do on this machine?".
-It watches Hyprland focus events, banks foreground time per app per day, pauses
-while you are idle, and shows your **top apps in hours and minutes** in a panel
-under its bar glyph — for today or any archived day.
+It follows the focused window through the Wayland toplevel protocol, banks
+foreground time per app per day, pauses while you are idle, and shows your
+**top apps in hours and minutes** in a panel under its bar glyph — for today or
+any archived day.
 
 ## What it looks like
 
@@ -11,21 +12,23 @@ under its bar glyph — for today or any archived day.
   opens the panel. Hover/open tints it with the live accent.
 - **Panel**: `TODAY` header with the day total and ‹ › chevrons to browse the
   per-day archive (click the date to jump back to today). Each app row has a
-  rank, name, accent usage bar (relative to the leader) and its time in hours
+  rank, name, accent tick meter (relative to the leader) and its time in hours
   & minutes — no seconds.
 
 Theming comes from the plugin kit's `Theme`/`Scheme` singletons, which resolve
 the daemon palette (a fixed named scheme or the live wallpaper colours), so
-the widget retints with the desktop like every other Ryoku component.
+the widget retints with the desktop like every other Ryoku component. The panel
+is built from the kit's own parts (`MicroLabel`, `GlyphIcon` chevrons) so it
+reads like a native surface.
 
 ## What it runs, reads, and writes
 
 - **Runs**: nothing external. No subprocesses, no shell, no network, no
   privileged calls. All data stays on the machine.
 - **Reads**:
-  - Hyprland focus events and the toplevel list through `Quickshell.Hyprland`
-    (same source as the built-in dock): `activewindowv2`, `closewindow`, and
-    each window's class.
+  - The focused window through `Quickshell.Wayland` `ToplevelManager`, the
+    `zwlr_foreign_toplevel_management` protocol: the activated toplevel's
+    `appId`. Compositor-neutral (Hyprland or niri), with no compositor IPC.
   - Real input-idle state through `Quickshell.Wayland` `IdleMonitor`, the
     Wayland `ext-idle-notify` protocol — keyboard *and* pointer, tracked by
     the compositor, honouring idle inhibitors (caffeine).
@@ -53,11 +56,11 @@ the widget retints with the desktop like every other Ryoku component.
   guard against counting a machine you walked away from.
 - Windows that are not "using an app" are excluded: `hyprlock`, XDG desktop
   portals.
-- **Granularity is per app class**, not per window: every Firefox window is
+- **Granularity is per app id**, not per window: every Firefox window is
   one "Firefox" entry.
 - Each day is archived at local midnight and browsable from the panel; the
   archive is kept in `usage-*.json` files (no automatic pruning yet).
-- App labels are a heuristic from the WM class (`.desktop` name lookup is a
+- App labels are a heuristic from the app id (`.desktop` name lookup is a
   future improvement).
 
 ## Development

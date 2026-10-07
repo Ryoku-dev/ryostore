@@ -1,0 +1,10 @@
+Material You Dark qylock theme
+
+Upstream: https://github.com/Darkkal44/qylock
+Vendored from commit: f6561e2ceae33f26e5e660742a5df2f725cbe514
+Upstream theme: themes/material-you-dark
+Upstream preview: Assets/material-you-dark.gif
+Author: Darkkal44 and qylock contributors
+License: GNU General Public License version 3; see LICENSE
+
+Ryoku ships assets/preview.gif (and assets/shot-*.<ext>) as catalogue media pulled directly from the qylock repository. These previews are not installed with the runtime payload.

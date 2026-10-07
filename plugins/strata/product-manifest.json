@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "id": "strata",
+  "category": "plugins",
+  "version": "0.4.0",
+  "destination": "ryoku/plugins/strata",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "0e08c37084d75f2911aa191bc73f3acf9744a9cd52604c556f96608bbf7a6894",
+      "mode": "0644",
+      "size": 3955,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "06181c521ca2a124453c1db837e83a0c076ccb465b6df225d8ad2376c5bfb20f",
+      "mode": "0644",
+      "size": 1061,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "56ad9ad18147ed3dbb2774f6ba0d3e0432a1899ce4534183c66595cb22ac2f88",
+      "mode": "0644",
+      "size": 2170,
+      "install": false
+    },
+    {
+      "source": "assets/preview-panel.png",
+      "destination": "assets/preview-panel.png",
+      "sha256": "b2ad3f921d3f9cb782b8e0130d649ba5414e99efadb03e4360edfabfaa6c9b12",
+      "mode": "0644",
+      "size": 144462,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "3ada94879c01839c1a4baf29b1b51a1e5ec696a7f674b28d0c85e893ce513f08",
+      "mode": "0644",
+      "size": 5075,
+      "install": false
+    },
+    {
+      "source": "bin/strata-models",
+      "destination": "bin/strata-models",
+      "sha256": "c0e9dc5417e424ce05dca1eb61f93203ee737b27df56371ef87e426a484c2d9e",
+      "mode": "0755",
+      "size": 5313,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "37a7dffed499a0c95392d201a1d15f2ab7f0bf8b89b91297f0baab209c2fa927",
+      "mode": "0644",
+      "size": 15317,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "6f72d1d6e42efef0c5d38415278d3538d5eabebb3c853a7f5ba50e151e1dca62",
+      "mode": "0644",
+      "size": 2718,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "bfa159a4299775ec7bf90851a9b2f0cba75cdeb98356103f2871e98e41c5dbec",
+      "mode": "0644",
+      "size": 1549,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "e846230a44d906bd4b434377fbee09272693c9041d2baefdbd3c25447151866a",
+      "mode": "0644",
+      "size": 4538,
+      "install": true
+    }
+  ]
+}

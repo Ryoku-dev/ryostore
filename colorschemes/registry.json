@@ -5038,6 +5038,61 @@
         "mOnHover": "#D0EBEE"
       },
       "preview": "https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Varda/preview.jpg"
+    },
+    {
+      "id": "dune",
+      "name": "Dune",
+      "provider": "Ryoku",
+      "path": "colorschemes/Dune",
+      "accent": "#A68036",
+      "surface": "#1B2224",
+      "dark": {
+        "mPrimary": "#A68036",
+        "mOnPrimary": "#161C1E",
+        "mSecondary": "#8FA5D1",
+        "mOnSecondary": "#161C1E",
+        "mTertiary": "#C3AD8B",
+        "mOnTertiary": "#161C1E",
+        "mError": "#B4472F",
+        "mOnError": "#FFF1EC",
+        "mSurface": "#1B2224",
+        "mOnSurface": "#B8C9E1",
+        "mSurfaceVariant": "#2B3538",
+        "mOnSurfaceVariant": "#C3AD8B",
+        "mOutline": "#47565A",
+        "mShadow": "#000000",
+        "mHover": "#A68036",
+        "mOnHover": "#161C1E",
+        "terminal": {
+          "background": "#1B2224",
+          "foreground": "#B8C9E1",
+          "cursor": "#A68036",
+          "cursorText": "#1B2224",
+          "selectionBg": "#2B3538",
+          "selectionFg": "#B8C9E1",
+          "normal": {
+            "black": "#0F1416",
+            "red": "#B4472F",
+            "green": "#9DAF84",
+            "yellow": "#D8AE52",
+            "blue": "#8FA5D1",
+            "magenta": "#C79AB4",
+            "cyan": "#8FB4AE",
+            "white": "#C9C2B4"
+          },
+          "bright": {
+            "black": "#47565A",
+            "red": "#D3715A",
+            "green": "#BCD0A2",
+            "yellow": "#EBCE86",
+            "blue": "#B8C9E1",
+            "magenta": "#DEBCD3",
+            "cyan": "#B5D2CD",
+            "white": "#F0EBE2"
+          }
+        }
+      },
+      "preview": "https://raw.githubusercontent.com/ryoku-dev/ryostore/main/colorschemes/Dune/preview.jpg"
     }
   ]
 }

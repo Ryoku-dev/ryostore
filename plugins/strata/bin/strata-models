@@ -1,0 +1,113 @@
+#!/bin/sh
+# Finds every installed engine and its ready models; one model runs at a time, as the transient
+# user unit strata-model.service (systemd-run; nothing to install, nothing starts at login).
+#
+# strata-models list <state>          one "key<TAB>engine<TAB>label<TAB>port<TAB>unit<TAB>path" line per model
+# strata-models current <state>       print the selected model key ("engine:name"), or nothing
+# strata-models use <key> <state>     select a model; restarts the server if one is running
+# strata-models start <state>         start the selected model (stops the previous one)
+# strata-models run <key> <state>     select a model and start it
+# strata-models stop                  stop the running model
+#
+# Engines: Strata ($STRATA_DIR, default ~/Strata), TabbyAPI ($TABBY_DIR, default ~/tabbyAPI),
+# llama.cpp (llama-server on the PATH; *.gguf in $GGUF_DIRS, space-separated, default ~/models).
+home() { case "$1" in "~") echo "$HOME" ;; "~/"*) echo "$HOME/${1#\~/}" ;; *) echo "$1" ;; esac; }
+strata=$(home "${STRATA_DIR:-$HOME/Strata}")
+tabby=$(home "${TABBY_DIR:-$HOME/tabbyAPI}")
+gguf_dirs=$(for g in ${GGUF_DIRS:-$HOME/models}; do home "$g"; done)
+unit=strata-model.service
+
+# a stable port per model, kept in <state>/ports ("key port"); skips ports already taken or in use
+port_for() { # key state [fixed]
+    [ -n "$3" ] && { echo "$3"; return; }
+    p=$(awk -v k="$1" '$1 == k { print $2 }' "$2/ports" 2>/dev/null)
+    [ -n "$p" ] && { echo "$p"; return; }
+    used=$( { cat "$strata"/strata-*.json 2>/dev/null | sed -n 's/.*"port": *\([0-9]*\).*/\1/p'
+              awk '{ print $2 }' "$2/ports" 2>/dev/null
+              ss -Hltn 2>/dev/null | awk '{ n = split($4, a, ":"); print a[n] }'; } | sort -u)
+    p=8081
+    while echo "$used" | grep -qx "$p"; do p=$((p + 1)); done
+    mkdir -p "$2" && echo "$1 $p" >> "$2/ports"
+    echo "$p"
+}
+
+row() { # key engine label port path
+    printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$1" "$2" "$3" "$4" "$unit" "$5"
+}
+
+list() { # state
+    if [ -f "$strata/serve/server.py" ]; then
+        for f in "$strata"/strata-*.json; do
+            [ -e "$f" ] || continue
+            n=$(basename "$f" .json | sed 's/^strata-//')
+            fixed=$(sed -n 's/.*"port": *\([0-9]*\).*/\1/p' "$f" | head -n 1)
+            row "strata:$n" Strata "$n" "$(port_for "strata:$n" "$1" "${fixed:-8081}")" "$f"
+        done
+    fi
+    if [ -x "$tabby/run.sh" ]; then
+        for d in "$tabby"/models/*/; do
+            d=${d%/}
+            # a finished download: config and shards present, none still partial in hf's cache
+            [ -f "$d/config.json" ] && ls "$d"/*.safetensors >/dev/null 2>&1 || continue
+            ls "$d"/.cache/huggingface/download/*.incomplete >/dev/null 2>&1 && continue
+            n=$(basename "$d")
+            row "tabby:$n" TabbyAPI "$(echo "$n" | sed 's/[-_.]exl3.*//I')" "$(port_for "tabby:$n" "$1")" "$d"
+        done
+    fi
+    if command -v llama-server >/dev/null; then
+        for g in $gguf_dirs; do
+            for f in "$g"/*.gguf; do
+                [ -e "$f" ] || continue
+                n=$(basename "$f" .gguf)
+                case "$n" in *mmproj*|*imatrix*) continue ;; *-0000[2-9]-of-*|*-000[1-9][0-9]-of-*) continue ;; esac
+                row "llama:$n" llama.cpp "$(echo "$n" | sed 's/\.i1-.*//; s/-00001-of-.*//')" "$(port_for "llama:$n" "$1")" "$f"
+            done
+        done
+    fi
+    return 0
+}
+
+current() { # state
+    k=$(cat "$1/current" 2>/dev/null) || return 0
+    case "$k" in *:*) echo "$k" ;; ?*) echo "strata:$k" ;; esac   # older files hold a bare Strata name
+}
+lookup() { list "$2" | awk -F '\t' -v k="$1" '$1 == k'; }
+
+start() { # state
+    k=$(current "$1")
+    [ -n "$k" ] || { echo "no model selected" >&2; exit 2; }
+    r=$(lookup "$k" "$1")
+    [ -n "$r" ] || { echo "model not ready" >&2; exit 2; }
+    port=$(echo "$r" | cut -f4); path=$(echo "$r" | cut -f6)
+    systemctl --user stop "$unit" 2>/dev/null
+    systemctl --user reset-failed "$unit" 2>/dev/null
+    set -- systemd-run --user --unit="$unit" --collect --property=Restart=on-failure
+    case "$k" in
+    strata:*)
+        py="$strata/.venv/bin/python"; [ -x "$py" ] || py=python3
+        "$@" --working-directory="$strata" -- "$py" "$strata/serve/server.py" --engine strata \
+            --config "$path" --port "$port" --lazy --idle-unload 900 ;;
+    tabby:*)
+        "$@" --working-directory="$tabby" -- "$tabby/run.sh" --port "$port" --model-name "$(basename "$path")" ;;
+    llama:*)
+        "$@" --working-directory="$HOME" -- llama-server -m "$path" --host 127.0.0.1 --port "$port" -c 16384 ;;
+    esac
+}
+
+case "$1" in
+list) list "$2" ;;
+current) current "$2" ;;
+use)
+    case "$2" in ''|*[!A-Za-z0-9._:-]*) echo "bad model key" >&2; exit 2 ;; esac
+    [ -n "$(lookup "$2" "$3")" ] || { echo "no such model" >&2; exit 2; }
+    mkdir -p "$3" && echo "$2" > "$3/current"
+    if systemctl --user is-active --quiet "$unit"; then start "$3"; fi ;;
+start) start "$2" ;;
+run)
+    case "$2" in ''|*[!A-Za-z0-9._:-]*) echo "bad model key" >&2; exit 2 ;; esac
+    [ -n "$(lookup "$2" "$3")" ] || { echo "no such model" >&2; exit 2; }
+    mkdir -p "$3" && echo "$2" > "$3/current"
+    start "$3" ;;
+stop) systemctl --user stop "$unit" 2>/dev/null ;;
+*) echo "usage: $0 list|current|use|start|run|stop (see the header)" >&2; exit 2 ;;
+esac

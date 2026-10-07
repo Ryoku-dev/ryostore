@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "id": "material-you-dark",
+  "category": "lockscreens",
+  "version": "1.0.0",
+  "destination": "qylock/themes/material-you-dark",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 510,
+      "sha256": "26e73002b3edd636fb9ebdf7cda70af05dbc9b8b38a887da551f4318ea205fd1",
+      "install": true
+    },
+    {
+      "source": "assets/preview.gif",
+      "destination": "preview.gif",
+      "mode": "0644",
+      "size": 4201246,
+      "sha256": "b7c522da770c6f5cdbd9801517ebbd02c77b618799cbcc6291d36d5f7a0a4e7e",
+      "install": false
+    },
+    {
+      "source": "assets/shot-1.png",
+      "destination": "shot-1.png",
+      "mode": "0644",
+      "size": 354787,
+      "sha256": "5319cc79f5a46c3cabf013f1423f5d262cae3957867d026be54ecdd6961559d9",
+      "install": false
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 33515,
+      "sha256": "ecb8adf97466a3247b72398be80e84229f244db99f62dd0e2076de45fa74b850",
+      "install": true
+    },
+    {
+      "source": "content/bg.png",
+      "destination": "bg.png",
+      "mode": "0644",
+      "size": 354787,
+      "sha256": "5319cc79f5a46c3cabf013f1423f5d262cae3957867d026be54ecdd6961559d9",
+      "install": true
+    },
+    {
+      "source": "content/font/GoogleSans-VariableFont_GRAD,opsz,wght.ttf",
+      "destination": "font/GoogleSans-VariableFont_GRAD,opsz,wght.ttf",
+      "mode": "0644",
+      "size": 4712272,
+      "sha256": "08f022f46f30b5fb77368a1c7b7033e494f73aaac045ca2063e71d5f3fb0df4f",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 246,
+      "sha256": "ef9a1829022b70df3210343e6ba1009d7569fc0227d8f685fc21fed0924bc2a6",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 52,
+      "sha256": "ecb3a6f75921cfc73032783cbfeb8c8bfb2005968145282b34f3bdcb01d82103",
+      "install": true
+    }
+  ]
+}

@@ -43,7 +43,7 @@ import urllib.parse
 from pathlib import Path
 
 REPO = "Darkkal44/qylock"
-COMMIT = "c45eed24c0f9a3148a7d13081b28acc4d7874853"
+COMMIT = "f6561e2ceae33f26e5e660742a5df2f725cbe514"
 UPSTREAM_URL = "https://github.com/Darkkal44/qylock"
 RAW = f"https://raw.githubusercontent.com/{REPO}/{COMMIT}"
 TREE_API = f"https://api.github.com/repos/{REPO}/git/trees/{COMMIT}?recursive=1"
@@ -95,6 +95,10 @@ CURATED = [
          summary="Google's Material You language, clean and adaptive.",
          description="A crisp Material You lock with the Google Sans typeface, rounded surfaces, and a tidy centred login.",
          tags=["material", "clean", "modern"]),
+    dict(id="material-you-dark", upstream="material-you-dark", name="Material You Dark",
+         summary="The Material You language in a deep, quiet dark palette.",
+         description="The dark sibling of the Material You lock: the Google Sans typeface and rounded surfaces over a low-light palette, with a tidy centred login.",
+         tags=["material", "dark", "clean"]),
     dict(id="minecraft", upstream="minecraft", name="Minecraft Menu",
          summary="The blocky main-menu look, splash text and all.",
          description="A nostalgic Minecraft title-screen lock: stone-button widgets, a random yellow splash line, and the classic logo.",
@@ -527,7 +531,7 @@ def build(ids: list[str]) -> None:
 
         entries[pid] = {
             "id": pid, "name": theme["name"], "version": VERSION,
-            "path": f"{CATEGORY}/{pid}", "author": "Darkkal44",
+            "path": f"{CATEGORY}/{pid}", "author": "Darkkal44", "upstream": UPSTREAM_URL,
             "summary": theme["summary"], "description": theme["description"],
             "tags": list(theme["tags"]), "accent": accent, "surface": surface,
             "preview": "assets/preview.gif", "screenshots": screenshots,

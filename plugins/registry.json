@@ -4,7 +4,7 @@
     {
       "id": "apptime",
       "name": "App Time",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "path": "plugins/apptime",
       "author": "ran",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/apptime",
@@ -20,14 +20,14 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "59b4b3009eb9f600f8159b121d5196d36cc1c3c3d4bc694dc9b4db19aefadd1a",
+      "manifestSha256": "7d4f509ac697072940e2ddd2a98b28918e9158d613d64102d228af41ca61aba5",
       "official": false,
       "tagline": "Tracks how long you actually used each app (hours & minutes), pauses when you are idle, and keeps a per-day history in a bar panel.",
       "icon": "",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-09-07"
+      "lastUpdated": "2026-10-03"
     },
     {
       "id": "bluetooth-profiles",
@@ -1282,7 +1282,7 @@
         "assets/preview-desktop.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "58a721b7939cf9b9d173bc770d3cc9c4627e0f9e6376cd2bc2d080614c287194",
+      "manifestSha256": "5493894e33ace5e10fd4dd4db0007e9b1a666178cee5927d106d8011e758b80c",
       "official": false,
       "tagline": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles,...",
       "icon": "vpn_lock",
@@ -1354,6 +1354,93 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-10-02"
+    },
+    {
+      "id": "kdeconnect-status",
+      "name": "KDE Connect",
+      "version": "0.1.0",
+      "path": "plugins/kdeconnect-status",
+      "author": "vampirejsv <vampirejsv@local>",
+      "summary": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
+      "description": "Live KDE Connect device status on the bar: connection, battery, unread notification count. Read-only, no actions.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "9f91989b658352164823b47066af5a40d76c2132e8330612ee09f0ffeea90fd9",
+      "official": false,
+      "tagline": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
+      "icon": "phone_android",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-29",
+      "upstream": "https://github.com/vampireJSV/ryoku-plugin-kdeconnect-status"
+    },
+    {
+      "id": "strata",
+      "name": "Local LLM Manager",
+      "version": "0.4.0",
+      "path": "plugins/strata",
+      "author": "guyb <blumguy111@gmail.com>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/strata",
+      "summary": "Pick a local model and start or stop it from the bar.",
+      "description": "Pick a local model and start or stop it from the bar. Finds Strata, TabbyAPI and llama.cpp engines and their models, one port per model.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c0f9626812f2b8e155247286d14d53cfcbf9982f9897bc2a9134335971b1b923",
+      "official": false,
+      "tagline": "Pick a local model and start or stop it from the bar.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-06"
+    },
+    {
+      "id": "launchpad",
+      "name": "Launchpad",
+      "version": "0.1.0",
+      "path": "plugins/launchpad",
+      "author": "guyb <blumguy111@gmail.com>",
+      "summary": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any...",
+      "description": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any installed desktop-widget plugin), favourite apps and one-click commands. Reorder or hide anything.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-panel.png",
+      "screenshots": [
+        "assets/preview-panel.png",
+        "assets/preview-edit.png",
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "86e25f0e399e09a7ec66630cef456378845207fd48d80ed7368f8b1df15245f6",
+      "official": false,
+      "tagline": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any...",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-06",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/launchpad"
     },
     {
       "id": "nothing-analog-clock",
