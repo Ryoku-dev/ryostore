@@ -909,6 +909,33 @@
       ],
       "manifest": "manifest.json",
       "manifestSha256": "cc3b45853c1f123626adf24d89beb60e3d332ec59e45b82f25ad6f93dbbb8cfe"
+    },
+    {
+      "id": "nothing-interface",
+      "name": "Nothing Interface",
+      "version": "0.1.0",
+      "path": "lockscreens/nothing-interface",
+      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+      "upstream": "https://github.com/venchik111/ryoku-nothing-interface",
+      "summary": "Dot clock and live Ryoku status over your current wallpaper.",
+      "description": "A Nothing OS-inspired lockscreen with a dot clock, battery, daily screen time and MPRIS media controls. Uses the current Ryogami wallpaper during a locked session; no wallpaper is bundled.",
+      "tags": [
+        "nothing",
+        "monochrome",
+        "live",
+        "wallpaper"
+      ],
+      "accent": "#C2C4CB",
+      "surface": "#1C1D21",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "158f1f5ad37b51c589f511366eb23724bf10261c9c0d96f9782ae8640ca772d4",
+      "official": false,
+      "license": "MIT",
+      "lastUpdated": "2026-10-01"
     }
   ]
 }

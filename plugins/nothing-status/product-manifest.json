@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "id": "nothing-status",
+  "category": "plugins",
+  "version": "0.3.0",
+  "destination": "ryoku/plugins/nothing-status",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "ba2c1e000400342bf25ec91e60f59fba59d6d62079cfb698622a39f12468d9b9",
+      "mode": "0644",
+      "size": 1061,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "2737bc30d4b3ca2afcc96f67db004845dd079417298e0bddba8024d1de6055da",
+      "mode": "0644",
+      "size": 808,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "99e8c63c100f6c37fd3ce87ff14f67255e07c1a25b4ff65ef70cc287178bef75",
+      "mode": "0644",
+      "size": 4056,
+      "install": false
+    },
+    {
+      "source": "bin/status.py",
+      "destination": "bin/status.py",
+      "sha256": "b8de6e1ffd780fd271ccbcfbaccc21725995ab23e0e8918fdcb01da717b40572",
+      "mode": "0755",
+      "size": 1642,
+      "install": true
+    },
+    {
+      "source": "content/Icon.qml",
+      "destination": "content/Icon.qml",
+      "sha256": "cf1824c746298c5b2e18b101a8bc876188daab0d075bf354559248b1c8677066",
+      "mode": "0644",
+      "size": 3295,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "f6f2b8705df3c40cb62a2c2c7a23aa036ed5002145ca8d9cb5875aa868c2db26",
+      "mode": "0644",
+      "size": 2644,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "e93033f25e4258300ada27247b6cbc0099f507cc1614f7e5c2b00e26311f7eb7",
+      "mode": "0644",
+      "size": 2432,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "f797a26946c228dd028453a8116dc1d1a6e6a887e71df78e6b9ecbaf3857c926",
+      "mode": "0644",
+      "size": 1353,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "fa9165d96bbc73438e0a07bb933137891a9874c4b3546f170e1793cb85fe61e9",
+      "mode": "0644",
+      "size": 908,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

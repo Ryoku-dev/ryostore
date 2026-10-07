@@ -1,0 +1,10 @@
+[SddmGreeterTheme]
+Name=Nothing Interface
+Description=Nothing OS inspired live Ryoku lockscreen
+Author=Ivan
+License=MIT
+Type=sddm-theme
+Version=0.1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6

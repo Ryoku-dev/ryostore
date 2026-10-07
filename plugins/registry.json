@@ -1441,6 +1441,186 @@
       ],
       "lastUpdated": "2026-10-06",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/launchpad"
+    },
+    {
+      "id": "nothing-analog-clock",
+      "name": "Nothing Analog Clock",
+      "version": "0.2.0",
+      "path": "plugins/nothing-analog-clock",
+      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+      "upstream": "https://github.com/venchik111/ryoku-nothing-interface/tree/main/plugins/nothing-analog-clock",
+      "summary": "Charcoal analog clock with fine white markers and one N-Red second hand.",
+      "description": "Charcoal analog clock with fine white markers and one N-Red second hand.",
+      "tags": [
+        "nothing",
+        "desktop-widget"
+      ],
+      "accent": "#C2C4CB",
+      "surface": "#1C1D21",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7fffcab88be6f73318026a1060d7f5383c7a0cc4d1d7d79f77a779948b1052a9",
+      "official": false,
+      "license": "MIT",
+      "tagline": "Nothing Interface for Ryoku",
+      "icon": "",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-01"
+    },
+    {
+      "id": "nothing-audio",
+      "name": "Nothing Audio",
+      "version": "0.2.0",
+      "path": "plugins/nothing-audio",
+      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+      "upstream": "https://github.com/venchik111/ryoku-nothing-interface/tree/main/plugins/nothing-audio",
+      "summary": "Circular Nothing OS-style audio widget with mute control.",
+      "description": "Circular Nothing OS-style audio widget with mute control.",
+      "tags": [
+        "nothing",
+        "desktop-widget"
+      ],
+      "accent": "#C2C4CB",
+      "surface": "#1C1D21",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7fd6bb56a2a47c04fe62647b010f2c32fa1a4c1af85dac22bdb84afbfe043018",
+      "official": false,
+      "license": "MIT",
+      "tagline": "Nothing Interface for Ryoku",
+      "icon": "",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-01"
+    },
+    {
+      "id": "nothing-dashboard",
+      "name": "Nothing Battery",
+      "version": "0.4.0",
+      "path": "plugins/nothing-dashboard",
+      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+      "upstream": "https://github.com/venchik111/ryoku-nothing-interface/tree/main/plugins/nothing-dashboard",
+      "summary": "A Nothing OS-inspired battery tile with a dotted charge readout.",
+      "description": "A Nothing OS-inspired battery tile with a dotted charge readout.",
+      "tags": [
+        "nothing",
+        "desktop-widget"
+      ],
+      "accent": "#C2C4CB",
+      "surface": "#1C1D21",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7769c40047b70e5a0b4443d4751061897a1b1833f5eb76594c2783a059a86671",
+      "official": false,
+      "license": "MIT",
+      "tagline": "Nothing Interface for Ryoku",
+      "icon": "",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-01"
+    },
+    {
+      "id": "nothing-media",
+      "name": "Nothing Media",
+      "version": "0.3.2",
+      "path": "plugins/nothing-media",
+      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+      "upstream": "https://github.com/venchik111/ryoku-nothing-interface/tree/main/plugins/nothing-media",
+      "summary": "Nothing OS-style media tile with local MPRIS playback control.",
+      "description": "Nothing OS-style media tile with local MPRIS playback control.",
+      "tags": [
+        "nothing",
+        "desktop-widget"
+      ],
+      "accent": "#C2C4CB",
+      "surface": "#1C1D21",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c72b805bc19bb7ed9d729fe019b25cc6aa21305267e57725f5f742a4f6b92d15",
+      "official": false,
+      "license": "MIT",
+      "tagline": "Nothing Interface for Ryoku",
+      "icon": "",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-01"
+    },
+    {
+      "id": "nothing-screen-time",
+      "name": "Nothing Screen Time",
+      "version": "0.3.0",
+      "path": "plugins/nothing-screen-time",
+      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+      "upstream": "https://github.com/venchik111/ryoku-nothing-interface/tree/main/plugins/nothing-screen-time",
+      "summary": "Dotted readout of Ryoku's existing screen-time total for today.",
+      "description": "Dotted readout of Ryoku's existing screen-time total for today.",
+      "tags": [
+        "nothing",
+        "desktop-widget"
+      ],
+      "accent": "#C2C4CB",
+      "surface": "#1C1D21",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "344f7fcbe0e81f20d9bfa628e9083d866f60d59943531f85cfa46a056164d1bc",
+      "official": false,
+      "license": "MIT",
+      "tagline": "Nothing Interface for Ryoku",
+      "icon": "",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-01"
+    },
+    {
+      "id": "nothing-status",
+      "name": "Nothing Status",
+      "version": "0.3.0",
+      "path": "plugins/nothing-status",
+      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+      "upstream": "https://github.com/venchik111/ryoku-nothing-interface/tree/main/plugins/nothing-status",
+      "summary": "Neutral Nothing OS-style status icons for the Ryoku bar.",
+      "description": "Neutral Nothing OS-style status icons for the Ryoku bar.",
+      "tags": [
+        "nothing",
+        "bar-widget"
+      ],
+      "accent": "#C2C4CB",
+      "surface": "#1C1D21",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "8e4f44ae8e69cbfc9a053bf14072d9d5ccc1b7e8b0229e32ac7f9b9401584e82",
+      "official": false,
+      "license": "MIT",
+      "tagline": "Nothing Interface for Ryoku",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-01"
     }
   ]
 }
