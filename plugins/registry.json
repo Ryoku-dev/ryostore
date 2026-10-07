@@ -1621,6 +1621,36 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-10-01"
+    },
+    {
+      "id": "goxlr",
+      "name": "GoXLR",
+      "version": "1.0.0",
+      "path": "plugins/goxlr",
+      "author": "dajax",
+      "upstream": "https://github.com/millerjryan/ryoku-goxlr",
+      "summary": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel.",
+      "description": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel. Backed by the goxlr-utility daemon over its local HTTP API; routing, effects, sampler, lighting, and profiles stay in the GoXLR app.",
+      "tags": [
+        "bar-widget",
+        "audio"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-panel.png",
+      "screenshots": [
+        "assets/preview-panel.png",
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c50fb4fd2ac01fb6d8db7edefe28d29c2392623a73181c66863b2614be81c114",
+      "official": false,
+      "tagline": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-07"
     }
   ]
 }

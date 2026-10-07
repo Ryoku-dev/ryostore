@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Nudges one channel's volume directly against the goxlr-daemon HTTP API,
+# independent of the Quickshell plugin process. Meant to be bound to a key,
+# e.g. in Hyprland:
+#   bind = , XF86AudioRaiseVolume, exec, ~/.local/share/ryoku/plugins/goxlr/bin/volume-step Mic 5
+#   bind = , XF86AudioLowerVolume, exec, ~/.local/share/ryoku/plugins/goxlr/bin/volume-step Mic -5
+#
+# Args: <channel> <percent>, both optional (defaults: Mic, 2). <percent> is
+# the signed change in percent, e.g. "5" raises, "-5" lowers. <channel> is a
+# daemon channel name: Mic, LineIn, Console, System, Game, Chat, Sample,
+# Music, Headphones, MicMonitor, LineOut.
+#
+# Reads GOXLR_HOST / GOXLR_PORT from the environment, defaulting to the
+# daemon's own defaults (localhost:14564). Requires curl and jq.
+set -euo pipefail
+
+channel="${1:-Mic}"
+percent="${2:-2}"
+host="${GOXLR_HOST:-localhost}"
+port="${GOXLR_PORT:-14564}"
+url="http://${host}:${port}/api/command"
+
+status=$(curl -fs --max-time 3 -X POST "$url" -H 'Content-Type: application/json' --data-binary '"GetStatus"')
+serial=$(printf '%s' "$status" | jq -r '.Status.mixers | keys[0] // empty')
+if [ -z "$serial" ]; then
+  echo "goxlr: no device connected" >&2
+  exit 1
+fi
+
+current=$(printf '%s' "$status" | jq -r --arg s "$serial" --arg c "$channel" '.Status.mixers[$s].levels.volumes[$c] // 0')
+delta=$(( percent * 255 / 100 ))
+target=$(( current + delta ))
+if [ "$target" -lt 0 ]; then target=0; fi
+if [ "$target" -gt 255 ]; then target=255; fi
+
+body=$(jq -nc --arg s "$serial" --arg c "$channel" --argjson v "$target" '{"Command":[$s,{"SetVolume":[$c,$v]}]}')
+curl -fs --max-time 3 -X POST "$url" -H 'Content-Type: application/json' --data-binary "$body" >/dev/null
+echo "goxlr: ${channel} -> ${target}"

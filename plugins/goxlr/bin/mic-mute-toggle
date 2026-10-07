@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Toggles the GoXLR's mic mute (the cough button) directly against the
+# goxlr-daemon HTTP API, independent of the Quickshell plugin process. Meant
+# to be bound to a key, e.g. in Hyprland:
+#   bind = , XF86AudioMicMute, exec, ~/.local/share/ryoku/plugins/goxlr/bin/mic-mute-toggle
+#
+# Reads GOXLR_HOST / GOXLR_PORT from the environment, defaulting to the
+# daemon's own defaults (localhost:14564). Requires curl and jq.
+set -euo pipefail
+
+host="${GOXLR_HOST:-localhost}"
+port="${GOXLR_PORT:-14564}"
+url="http://${host}:${port}/api/command"
+
+status=$(curl -fs --max-time 3 -X POST "$url" -H 'Content-Type: application/json' --data-binary '"GetStatus"')
+serial=$(printf '%s' "$status" | jq -r '.Status.mixers | keys[0] // empty')
+if [ -z "$serial" ]; then
+  echo "goxlr: no device connected" >&2
+  exit 1
+fi
+
+state=$(printf '%s' "$status" | jq -r --arg s "$serial" '.Status.mixers[$s].cough_button.state // "Unmuted"')
+if [ "$state" = "Unmuted" ]; then
+  target="MutedToAll"
+else
+  target="Unmuted"
+fi
+
+body=$(jq -nc --arg s "$serial" --arg t "$target" '{"Command":[$s,{"SetCoughMuteState":$t}]}')
+curl -fs --max-time 3 -X POST "$url" -H 'Content-Type: application/json' --data-binary "$body" >/dev/null
+echo "goxlr: mic ${target}"
