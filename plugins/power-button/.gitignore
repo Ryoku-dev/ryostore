@@ -1,0 +1,31 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Logs / temp
+*.log
+*.tmp
+*.bak
+.cache/
+
+# Secrets / local env (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.json
+*_secret*
+*_token*
+
+# Build / package artifacts
+dist/
+build/
+*.qmlc
+*.jsc
