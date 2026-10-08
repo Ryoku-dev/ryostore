@@ -1651,6 +1651,35 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-10-07"
+    },
+    {
+      "id": "power-button",
+      "name": "Session",
+      "version": "0.2.2",
+      "path": "plugins/power-button",
+      "author": "Felix <eu@leandrofelix.dev.br>",
+      "summary": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock via ryoku-shell.",
+      "description": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock via ryoku-shell.",
+      "tags": [
+        "session",
+        "power",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "b8460b8499a0c361bc043a838cdf8255a474ae91b1073a9a9cfe7dfb5327ff96",
+      "official": false,
+      "tagline": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock via ryoku-shell.",
+      "icon": "power_settings_new",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-08"
     }
   ]
 }
