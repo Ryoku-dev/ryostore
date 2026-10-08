@@ -561,8 +561,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable — the illogical-impulse image tile.",
-      "description": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable — the illogical-impulse image tile.",
+      "summary": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable \u2014 the illogical-impulse image tile.",
+      "description": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable \u2014 the illogical-impulse image tile.",
       "tags": [
         "image",
         "photo",
@@ -580,7 +580,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "b1edf3f8847d8bbba515cdfb20d158c8f6e625242017cd18ca5d49a77b3fdf3e",
       "official": false,
-      "tagline": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable — the illogical-impulse image tile.",
+      "tagline": "Your photo in any of 34 Material shapes, drop-replaceable and resizeable \u2014 the illogical-impulse image tile.",
       "icon": "image",
       "hosts": [
         "desktopWidget"
@@ -630,8 +630,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib — the illogical-impulse media widget.",
-      "description": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib — the illogical-impulse media widget.",
+      "summary": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib \u2014 the illogical-impulse media widget.",
+      "description": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib \u2014 the illogical-impulse media widget.",
       "tags": [
         "media",
         "player",
@@ -650,7 +650,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "2288a1f44e787a711dfb9c7400d10d836d73e3a974d1566f467b9949c266559b",
       "official": false,
-      "tagline": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib — the illogical-impulse media widget.",
+      "tagline": "MPRIS player tile with cover art, waveform seekbar, controls and synced lyrics from lrclib \u2014 the illogical-impulse media widget.",
       "icon": "music_note",
       "hosts": [
         "desktopWidget"
@@ -704,8 +704,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state — the illogical-impulse notes.",
-      "description": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state — the illogical-impulse notes.",
+      "summary": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state \u2014 the illogical-impulse notes.",
+      "description": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state \u2014 the illogical-impulse notes.",
       "tags": [
         "notes",
         "stickies",
@@ -723,7 +723,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "db04da19bff2995b835ca7aee06c251b9b7226f035e12a9d48a50dc5fabea2e7",
       "official": false,
-      "tagline": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state — the illogical-impulse notes.",
+      "tagline": "Flip card with a scrollable note pad and inline editing, autosaved to the plugin's own state \u2014 the illogical-impulse notes.",
       "icon": "sticky_note_2",
       "hosts": [
         "desktopWidget"
@@ -777,8 +777,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower — the illogical-impulse resources card.",
-      "description": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower — the illogical-impulse resources card.",
+      "summary": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower \u2014 the illogical-impulse resources card.",
+      "description": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower \u2014 the illogical-impulse resources card.",
       "tags": [
         "system",
         "cpu",
@@ -797,7 +797,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "ac2bb8330645c58ca97f3564cde021792d80eb46eb8395d2bfd160a83e02353c",
       "official": false,
-      "tagline": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower — the illogical-impulse resources card.",
+      "tagline": "CPU, memory, disk and battery gauges read live from /proc, /sys and UPower \u2014 the illogical-impulse resources card.",
       "icon": "speed",
       "hosts": [
         "desktopWidget"
@@ -812,8 +812,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Rotatable sticker tile with outline colour, drop-replaceable — the illogical-impulse sticker.",
-      "description": "Rotatable sticker tile with outline colour, drop-replaceable — the illogical-impulse sticker.",
+      "summary": "Rotatable sticker tile with outline colour, drop-replaceable \u2014 the illogical-impulse sticker.",
+      "description": "Rotatable sticker tile with outline colour, drop-replaceable \u2014 the illogical-impulse sticker.",
       "tags": [
         "sticker",
         "image",
@@ -831,7 +831,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "6b121640256b9e40aa8aa05c6b142fe231325ffe4b9998599ba14578052e5762",
       "official": false,
-      "tagline": "Rotatable sticker tile with outline colour, drop-replaceable — the illogical-impulse sticker.",
+      "tagline": "Rotatable sticker tile with outline colour, drop-replaceable \u2014 the illogical-impulse sticker.",
       "icon": "stk",
       "hosts": [
         "desktopWidget"
@@ -885,8 +885,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Floating desktop text in eight bundled handwriting fonts with inline editing — the illogical-impulse custom text.",
-      "description": "Floating desktop text in eight bundled handwriting fonts with inline editing — the illogical-impulse custom text.",
+      "summary": "Floating desktop text in eight bundled handwriting fonts with inline editing \u2014 the illogical-impulse custom text.",
+      "description": "Floating desktop text in eight bundled handwriting fonts with inline editing \u2014 the illogical-impulse custom text.",
       "tags": [
         "text",
         "notes",
@@ -904,7 +904,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "27e208845abf11805f6640771a3c164298de255369758476fdb25495489d6cfd",
       "official": false,
-      "tagline": "Floating desktop text in eight bundled handwriting fonts with inline editing — the illogical-impulse custom text.",
+      "tagline": "Floating desktop text in eight bundled handwriting fonts with inline editing \u2014 the illogical-impulse custom text.",
       "icon": "text_fields",
       "hosts": [
         "desktopWidget"
@@ -958,8 +958,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts — the illogical-impulse timers.",
-      "description": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts — the illogical-impulse timers.",
+      "summary": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts \u2014 the illogical-impulse timers.",
+      "description": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts \u2014 the illogical-impulse timers.",
       "tags": [
         "timer",
         "pomodoro",
@@ -978,7 +978,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "115651c181fef768b19fd0cce2001ee56b9a338c4a9d9d323c4184b3242e5529",
       "official": false,
-      "tagline": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts — the illogical-impulse timers.",
+      "tagline": "Pomodoro, stopwatch and countdown on one tile with ring progress and desktop alerts \u2014 the illogical-impulse timers.",
       "icon": "timer",
       "hosts": [
         "desktopWidget"
@@ -993,8 +993,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
-      "description": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
+      "summary": "Flip card with a checkable task list, progress ring and inline add \u2014 the illogical-impulse todo.",
+      "description": "Flip card with a checkable task list, progress ring and inline add \u2014 the illogical-impulse todo.",
       "tags": [
         "todo",
         "tasks",
@@ -1012,7 +1012,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "1e5289210ed54c0b19377545cd88061b6d6c6d301dafc082a95c07a057bd2c60",
       "official": false,
-      "tagline": "Flip card with a checkable task list, progress ring and inline add — the illogical-impulse todo.",
+      "tagline": "Flip card with a checkable task list, progress ring and inline add \u2014 the illogical-impulse todo.",
       "icon": "checklist",
       "hosts": [
         "desktopWidget"
@@ -1027,8 +1027,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons — the illogical-impulse user card.",
-      "description": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons — the illogical-impulse user card.",
+      "summary": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons \u2014 the illogical-impulse user card.",
+      "description": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons \u2014 the illogical-impulse user card.",
       "tags": [
         "user",
         "system",
@@ -1047,7 +1047,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "29cba4f9a43163f39c0c58f2e4311a474d2ccd33e447f40a778630970b326c4c",
       "official": false,
-      "tagline": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons — the illogical-impulse user card.",
+      "tagline": "Greeting card with your name, host, uptime and weather quip plus lock, settings and session buttons \u2014 the illogical-impulse user card.",
       "icon": "badge",
       "hosts": [
         "desktopWidget"
@@ -1062,8 +1062,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Live audio spectrum with five styles — bars, mirror, aurora, ring and dots — driven by your own playback stream.",
-      "description": "Live audio spectrum with five styles — bars, mirror, aurora, ring and dots — driven by your own playback stream.",
+      "summary": "Live audio spectrum with five styles \u2014 bars, mirror, aurora, ring and dots \u2014 driven by your own playback stream.",
+      "description": "Live audio spectrum with five styles \u2014 bars, mirror, aurora, ring and dots \u2014 driven by your own playback stream.",
       "tags": [
         "visualizer",
         "audio",
@@ -1082,7 +1082,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "1639400afe0a34293ec93f5d23c0d1a507c60a330b294cb8560346e01f879307",
       "official": false,
-      "tagline": "Live audio spectrum with five styles — bars, mirror, aurora, ring and dots — driven by your own playback stream.",
+      "tagline": "Live audio spectrum with five styles \u2014 bars, mirror, aurora, ring and dots \u2014 driven by your own playback stream.",
       "icon": "equalizer",
       "hosts": [
         "desktopWidget"
@@ -1131,8 +1131,8 @@
       "author": "pctrade (end4-pC) <https://github.com/pctrade/end4-pC>",
       "upstream": "https://github.com/neur0map/MJ-widgets",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Up to four analog clocks for timezones you pick, with live UTC offsets — the illogical-impulse world clock.",
-      "description": "Up to four analog clocks for timezones you pick, with live UTC offsets — the illogical-impulse world clock.",
+      "summary": "Up to four analog clocks for timezones you pick, with live UTC offsets \u2014 the illogical-impulse world clock.",
+      "description": "Up to four analog clocks for timezones you pick, with live UTC offsets \u2014 the illogical-impulse world clock.",
       "tags": [
         "clock",
         "timezones",
@@ -1150,7 +1150,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "7f0f0ebe77d087ea80db4f2fc915b1ae5b35e5d334b3ce4612fb37c99d2b515e",
       "official": false,
-      "tagline": "Up to four analog clocks for timezones you pick, with live UTC offsets — the illogical-impulse world clock.",
+      "tagline": "Up to four analog clocks for timezones you pick, with live UTC offsets \u2014 the illogical-impulse world clock.",
       "icon": "public",
       "hosts": [
         "desktopWidget"
@@ -1294,12 +1294,12 @@
     },
     {
       "id": "public-ip",
-      "name": "IP Pública",
+      "name": "IP P\u00fablica",
       "version": "0.1.0",
       "path": "plugins/public-ip",
       "author": "vampirejsv <vampirejsv@local>",
-      "summary": "Muestra la IP pública actual (consultando https://checkip.",
-      "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
+      "summary": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
+      "description": "Muestra la IP p\u00fablica actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
       "tags": [
         "bar-widget"
       ],
@@ -1312,7 +1312,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "eced7c39a65f038744a15ea4577d65648243e948521fa46d80b1f107eb9b2cc0",
       "official": false,
-      "tagline": "Muestra la IP pública actual (consultando https://checkip.",
+      "tagline": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
       "icon": "public",
       "hosts": [
         "topbarGlyph"
@@ -1658,7 +1658,7 @@
       "version": "0.2.2",
       "path": "plugins/power-button",
       "author": "Felix <eu@leandrofelix.dev.br>",
-      "summary": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock via ryoku-shell.",
+      "summary": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock.",
       "description": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock via ryoku-shell.",
       "tags": [
         "session",
@@ -1674,12 +1674,13 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "b8460b8499a0c361bc043a838cdf8255a474ae91b1073a9a9cfe7dfb5327ff96",
       "official": false,
-      "tagline": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock via ryoku-shell.",
+      "tagline": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock.",
       "icon": "power_settings_new",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-10-08"
+      "lastUpdated": "2026-10-08",
+      "upstream": "https://github.com/leandrofelix-dev/power-button"
     }
   ]
 }
