@@ -1658,7 +1658,7 @@
       "version": "0.2.2",
       "path": "plugins/power-button",
       "author": "Felix <eu@leandrofelix.dev.br>",
-    "upstream": "https://github.com/leandrofelix-dev/power-button",
+      "upstream": "https://github.com/leandrofelix-dev/power-button",
       "summary": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock via ryoku-shell.",
       "description": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock via ryoku-shell.",
       "tags": [
