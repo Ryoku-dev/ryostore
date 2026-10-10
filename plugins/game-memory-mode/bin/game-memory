@@ -235,7 +235,12 @@ def daemon(idle_timeout=0):
                     if len(line)>65536: raise RuntimeError('Request too large')
                     req=json.loads(line)
                 last_request=time.monotonic()
-                result=ctl.handle(req['method'],req.get('params',{}));reply={'id':1,'result':result}
+                with ctl.lock:
+                    result=ctl.handle(req['method'],req.get('params',{}))
+                    # Extraction/preparation can outlast the idle timeout. Count
+                    # inactivity from completion, before releasing the lock.
+                    last_request=time.monotonic()
+                reply={'id':1,'result':result}
             except Exception as exc: reply={'id':1,'error':str(exc)}
             try: conn.sendall((json.dumps(reply)+'\n').encode())
             except OSError: pass

@@ -40,9 +40,9 @@
     {
       "source": "bin/game-memory",
       "destination": "bin/game-memory",
-      "sha256": "6fe816ca5a51e96c1f17f7d06339482769239f231631e651fcf368543ce17a07",
+      "sha256": "fee510853b619c8de53866b440c58ba7668dca14b4e0d23ad8e1fdbd74c35c38",
       "mode": "0755",
-      "size": 14761,
+      "size": 15020,
       "install": true
     },
     {
