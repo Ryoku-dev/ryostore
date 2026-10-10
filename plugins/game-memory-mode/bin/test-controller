@@ -1,0 +1,88 @@
+#!/usr/bin/python3
+import importlib.machinery
+import importlib.util
+from pathlib import Path
+import tempfile
+import unittest
+
+loader=importlib.machinery.SourceFileLoader('controller',str(Path(__file__).with_name('game-memory')))
+spec=importlib.util.spec_from_loader(loader.name,loader);m=importlib.util.module_from_spec(spec);loader.exec_module(m)
+
+class ControllerTests(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory();m.STATE=Path(self.temp.name);m.FLAGS=m.STATE/'flags.json'
+        self.outputs={'*':{'type':'video','path':'video.mp4','mute':False,'volume':100}}
+        self.voice='active';self.enabled='enabled';self.calls=[]
+        def wall(method,params=None):
+            self.calls.append((method,params))
+            if method=='wall.outputs':return {'outputs':dict(self.outputs)}
+            if method=='wall.rotation_status':return {'active':False}
+            if method=='wall.apply':
+                key=params.get('outputs',['*'])[0];self.outputs[key]={'type':params['type'],'path':params.get('path','')}
+                return {'ok':True}
+            raise AssertionError(method)
+        def unit(verb):
+            if verb=='is-active':return self.voice
+            if verb=='is-enabled':return self.enabled
+            if verb=='stop':self.voice='inactive'
+            elif verb=='start':self.voice='active'
+            else:raise AssertionError(verb)
+        m.wall=wall;m.unit=unit;m.static_frame=lambda entry:'still.png'
+        self.ctl=m.Controller()
+    def tearDown(self):self.temp.cleanup()
+    def test_manual_restores_both(self):
+        self.ctl.handle('manual',{'enabled':True});self.assertEqual(self.voice,'inactive');self.assertEqual(self.outputs['*']['path'],'still.png')
+        self.ctl.handle('manual',{'enabled':False});self.assertEqual(self.voice,'active');self.assertEqual(self.outputs['*']['path'],'video.mp4')
+    def test_already_off_and_static_stay_that_way(self):
+        self.voice='inactive';self.enabled='disabled';self.outputs={'*':{'type':'static','path':'chosen.png'}}
+        self.ctl.handle('manual',{'enabled':True});self.ctl.handle('manual',{'enabled':False})
+        self.assertEqual(self.voice,'inactive');self.assertEqual(self.outputs['*']['path'],'chosen.png')
+    def test_user_changes_not_overwritten(self):
+        self.ctl.handle('manual',{'enabled':True});self.outputs['*']={'type':'static','path':'new.png'};self.enabled='disabled'
+        self.ctl.handle('manual',{'enabled':False});self.assertEqual(self.outputs['*']['path'],'new.png');self.assertEqual(self.voice,'inactive')
+    def test_gaming_flag_holds_after_manual_off(self):
+        m.write(m.FLAGS,{'gameMode':True});self.ctl.reconcile();self.assertTrue(self.ctl.status()['active'])
+        self.ctl.handle('manual',{'enabled':False});self.assertTrue(self.ctl.status()['active'])
+        m.write(m.FLAGS,{'gameMode':False});self.ctl.reconcile();self.assertFalse(self.ctl.status()['active'])
+    def test_two_games_and_dead_owner(self):
+        import os
+        self.ctl.handle('acquire',{'pid':os.getpid(),'token':'one'});self.ctl.handle('acquire',{'pid':os.getpid(),'token':'two'})
+        self.ctl.handle('release',{'token':'one'});self.assertTrue(self.ctl.status()['active']);self.assertEqual(self.ctl.status()['games'],1)
+        self.ctl.data['leases']['two']['start']='not-current';self.ctl.reconcile();self.assertFalse(self.ctl.status()['active'])
+    def test_launch_automatic_disabled(self):
+        import os
+        self.ctl.handle('configure',{'automatic':False});self.ctl.handle('acquire',{'pid':os.getpid(),'token':'one'})
+        self.assertFalse(self.ctl.status()['active'])
+    def test_invalid_settings_rejected_before_persisting(self):
+        with self.assertRaises(RuntimeError):self.ctl.handle('configure',{'automatic':'false'})
+        with self.assertRaises(RuntimeError):self.ctl.handle('configure',{'staticImage':[]})
+        self.assertTrue(self.ctl.config['automatic'])
+    def test_shutdown_refuses_active_game(self):
+        import os
+        self.ctl.handle('acquire',{'pid':os.getpid(),'token':'one'})
+        with self.assertRaises(RuntimeError):self.ctl.handle('shutdown',{})
+        self.assertTrue(self.ctl.status()['active'])
+        self.ctl.handle('release',{'token':'one'});self.ctl.handle('shutdown',{})
+        self.assertTrue(self.ctl.stopping);self.assertFalse(self.ctl.status()['active'])
+    def test_rotation_refusal_leaves_voice_unchanged(self):
+        original=m.wall
+        m.wall=lambda method,params=None: {'active':True} if method=='wall.rotation_status' else original(method,params)
+        self.ctl.handle('manual',{'enabled':True})
+        self.assertIn('auto-rotation',self.ctl.error)
+        self.assertEqual(self.voice,'active');self.assertFalse(self.ctl.status()['active'])
+    def test_daemon_restart_keeps_original_snapshot(self):
+        self.ctl.handle('manual',{'enabled':True});old=self.ctl.data['snapshot'];new=m.Controller();new.reconcile()
+        self.assertEqual(new.data['snapshot'],old);new.handle('manual',{'enabled':False});self.assertEqual(self.voice,'active')
+    def test_new_boot_recovers_wallpaper_without_starting_voice(self):
+        self.ctl.handle('manual',{'enabled':True})
+        self.ctl.data['snapshot']['boot']='old-boot';self.ctl.data['boot']='old-boot';self.ctl.save()
+        new=m.Controller();new.reconcile();self.assertFalse(new.status()['active'])
+        self.assertEqual(self.outputs['*']['path'],'video.mp4');self.assertEqual(self.voice,'inactive')
+    def test_failed_wallpaper_transition_rolls_voice_back(self):
+        original=m.wall
+        def failed(method,params=None):
+            if method=='wall.apply' and params['type']=='static':raise RuntimeError('failed')
+            return original(method,params)
+        m.wall=failed;self.ctl.handle('manual',{'enabled':True});self.assertEqual(self.voice,'active');self.assertFalse(self.ctl.status()['active']);self.assertIn('failed',self.ctl.error)
+
+if __name__=='__main__':unittest.main()

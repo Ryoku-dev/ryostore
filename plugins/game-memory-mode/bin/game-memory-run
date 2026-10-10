@@ -1,0 +1,13 @@
+#!/usr/bin/python3
+from pathlib import Path
+import signal
+import subprocess
+import sys
+helper=str(Path(__file__).resolve().with_name('game-memory'))
+child=subprocess.Popen(['python3',helper,'run',*sys.argv[1:]])
+def forward(sig,_):
+    try: child.send_signal(sig)
+    except ProcessLookupError: pass
+signal.signal(signal.SIGTERM,forward)
+signal.signal(signal.SIGINT,forward)
+sys.exit(child.wait())

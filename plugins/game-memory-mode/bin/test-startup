@@ -1,0 +1,55 @@
+#!/usr/bin/python3
+"""Fresh-install helper lifecycle, isolated from the real desktop and settings."""
+import json
+import os
+from pathlib import Path
+import signal
+import socket
+import struct
+import subprocess
+import tempfile
+import time
+
+helper=str(Path(__file__).with_name('game-memory'))
+with tempfile.TemporaryDirectory() as directory:
+    env=dict(os.environ,XDG_STATE_HOME=directory,PYTHONDONTWRITEBYTECODE='1')
+    state=Path(directory)/'ryoku/plugins/game-memory-mode'
+    sockpath=state/'control.sock'
+    def command(*args):
+        return subprocess.check_output([helper,*args],env=env,text=True,timeout=15)
+    def peer():
+        with socket.socket(socket.AF_UNIX) as sock:
+            sock.connect(str(sockpath))
+            return struct.unpack('3i',sock.getsockopt(socket.SOL_SOCKET,socket.SO_PEERCRED,12))[0]
+    pid=None
+    try:
+        # The isolated flags file is absent, so no live desktop transition occurs.
+        result=json.loads(command('configure','{"automatic":false,"followGaming":false}'))
+        assert not result['active']
+        pid=peer()
+        assert (state.stat().st_mode & 0o777)==0o700
+        print('PASS: first request starts helper without a user service')
+        clients=[subprocess.Popen([helper,'status'],env=env,stdout=subprocess.PIPE,text=True) for _ in range(4)]
+        for client in clients:
+            output,_=client.communicate(timeout=15)
+            assert client.returncode==0 and not json.loads(output)['active']
+        assert peer()==pid
+        print('PASS: concurrent clients share one helper')
+        os.kill(pid,signal.SIGKILL)
+        time.sleep(.2)
+        assert not json.loads(command('status'))['automatic']
+        pid=peer()
+        print('PASS: crash restarts helper with saved preferences')
+        assert subprocess.run([helper,'run','sleep','0.1'],env=env,timeout=15).returncode==0
+        assert not json.loads(command('status'))['active']
+        print('PASS: disabled automation leaves desktop unchanged')
+        # No polling and no game leases: the detached helper must clean itself up.
+        deadline=time.monotonic()+20
+        while sockpath.exists() and time.monotonic()<deadline: time.sleep(.2)
+        assert not sockpath.exists()
+        print('PASS: unloaded widget helper exits after idle timeout')
+        pid=None
+    finally:
+        if pid:
+            try: os.kill(pid,signal.SIGTERM)
+            except ProcessLookupError: pass

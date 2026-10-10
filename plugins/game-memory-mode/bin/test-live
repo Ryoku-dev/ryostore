@@ -1,0 +1,46 @@
+#!/usr/bin/python3
+"""Live lifecycle qualification; uses short sleep processes, never launches a game."""
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import time
+helper=str(Path(__file__).with_name('game-memory'))
+wrapper=str(Path(__file__).with_name('game-memory-run'))
+def command(*args):return subprocess.check_output([helper,*args],text=True)
+def status():return json.loads(command('status'))
+def expect(predicate,description):
+ for _ in range(50):
+  s=status()
+  if predicate(s):print('PASS:',description);return s
+  time.sleep(.2)
+ raise AssertionError(description+': '+str(s))
+assert not status()['active'],'Desktop mode already held; do not interrupt it'
+before=json.loads(command('probe'))
+first=subprocess.Popen([wrapper,'/usr/bin/sleep','12'])
+expect(lambda s:s['active'] and s['games']==1,'first launch acquires mode')
+second=subprocess.Popen([wrapper,'/usr/bin/sleep','2'])
+expect(lambda s:s['games']==2,'overlapping launch acquires independent hold')
+assert second.wait(timeout=10)==0
+expect(lambda s:s['active'] and s['games']==1,'one exit keeps mode for the other game')
+failed=subprocess.run([wrapper,'/nonexistent/game-memory-test-command'],capture_output=True,timeout=10)
+assert failed.returncode!=0
+expect(lambda s:s['games']==1,'failed launch releases only its own hold')
+# Kill only this helper via its private socket peer identity, then restart it.
+import socket
+import struct
+state=Path(os.environ.get('XDG_STATE_HOME',str(Path.home()/'.local/state')))/'ryoku/plugins/game-memory-mode'
+with socket.socket(socket.AF_UNIX) as sock:
+ sock.connect(str(state/'control.sock'))
+ pid,uid,gid=struct.unpack('3i',sock.getsockopt(socket.SOL_SOCKET,socket.SO_PEERCRED,12))
+ assert uid==os.getuid()
+ os.kill(pid,signal.SIGKILL)
+expect(lambda s:s['active'] and s['games']==1,'helper restart recovers active session')
+first.kill();first.wait(timeout=5)
+expect(lambda s:s['active'] and s['games']==1,'killed wrapper retains living child hold')
+expect(lambda s:not s['active'] and s['games']==0,'dead-session reconciliation restores desktop')
+after=json.loads(command('probe'))
+assert before==after,(before,after)
+print('PASS: exact wallpaper mapping and rotation state restored')
+print('All live lifecycle checks passed.')

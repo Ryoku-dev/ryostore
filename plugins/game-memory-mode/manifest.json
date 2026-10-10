@@ -1,0 +1,70 @@
+{
+  "id": "game-memory-mode",
+  "name": "Game Mode Optimizer",
+  "version": "0.2.0",
+  "author": "Sannidhya Sandheer <148160409+sannidhyas@users.noreply.github.com>",
+  "description": "Temporarily stop voice typing and replace animated wallpapers while gaming; restore the desktop afterwards.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 320
+  },
+  "files": [
+    "bin/game-memory",
+    "bin/game-memory-run",
+    "bin/test-controller",
+    "assets/preview-widget.png",
+    "bin/test-live",
+    "bin/test-startup"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Game Mode Optimizer"
+  },
+  "dependencies": {
+    "commands": [
+      "python3",
+      "systemctl",
+      "ffmpeg",
+      "sleep"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "automatic",
+        "type": "toggle",
+        "label": "Automatic on game launch",
+        "group": "Gaming",
+        "default": true
+      },
+      {
+        "key": "followGaming",
+        "type": "toggle",
+        "label": "Follow the Gaming toggle",
+        "group": "Gaming",
+        "default": true
+      },
+      {
+        "key": "staticImage",
+        "type": "text",
+        "label": "Static image path (blank uses a video still)",
+        "group": "Gaming",
+        "default": ""
+      }
+    ]
+  }
+}

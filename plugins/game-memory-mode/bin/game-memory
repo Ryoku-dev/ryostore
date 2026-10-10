@@ -1,0 +1,291 @@
+#!/usr/bin/python3
+"""Two-action gaming mode. State stays in this plugin's own state directory."""
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import socket
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+import uuid
+
+STATE = Path(os.environ.get('XDG_STATE_HOME', str(Path.home()/'.local/state')))/'ryoku/plugins/game-memory-mode'
+RUNTIME = Path(os.environ.get('XDG_RUNTIME_DIR', f'/run/user/{os.getuid()}'))
+SOCKET = STATE/'control.sock'
+FLAGS = STATE.parent.parent/'flags.json'
+BOOT = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+
+def read(path, default):
+    try: return json.loads(path.read_text())
+    except (OSError, ValueError): return default
+
+def write(path, obj):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    content = json.dumps(obj, indent=2)+'\n'
+    try:
+        if path.read_text() == content: return
+    except OSError: pass
+    # A private random temp file avoids following pre-existing links; rename
+    # replaces the destination atomically rather than opening it for writing.
+    with tempfile.NamedTemporaryFile(mode='w',dir=path.parent,prefix=path.name+'.',delete=False) as stream:
+        tmp=Path(stream.name)
+        stream.write(content)
+    try: tmp.replace(path)
+    finally: tmp.unlink(missing_ok=True)
+
+def rpc(path, method, params=None):
+    with socket.socket(socket.AF_UNIX) as sock:
+        sock.settimeout(30); sock.connect(str(path))
+        sock.sendall((json.dumps({'id':1,'method':method,'params':params or {}})+'\n').encode())
+        with sock.makefile('r') as reader:
+            for line in reader:
+                reply=json.loads(line)
+                if reply.get('id') == 1:
+                    if reply.get('error'): raise RuntimeError(str(reply['error']))
+                    return reply.get('result', reply)
+    raise RuntimeError('No daemon reply')
+
+def wall(method, params=None): return rpc(RUNTIME/'ryogami.sock', method, params)
+
+def unit(verb):
+    p=subprocess.run(['systemctl','--user',verb,'voxtype.service'],capture_output=True,text=True,timeout=15)
+    if verb.startswith('is-'): return p.stdout.strip()
+    if p.returncode: raise RuntimeError(p.stderr.strip() or 'Voxtype '+verb+' failed')
+    return p.stdout.strip()
+
+def process(pid):
+    try:
+        fields=Path(f'/proc/{pid}/stat').read_text().rsplit(')',1)[1].split()
+        return {'start':fields[19],'group':int(fields[2]),'state':fields[0]}
+    except (OSError,ValueError,IndexError): return None
+
+def alive(lease, groups):
+    if lease.get('boot') != BOOT: return False
+    p=process(lease['pid'])
+    return bool(p and p['start']==lease['start'] and p['state']!='Z') or lease.get('group') in groups
+
+def groups_now():
+    groups=set()
+    for p in Path('/proc').iterdir():
+        if p.name.isdigit():
+            try:
+                if p.stat().st_uid!=os.getuid(): continue
+                info=process(int(p.name))
+                if info and info['state']!='Z': groups.add(info['group'])
+            except OSError: pass
+    return groups
+
+def static_frame(entry):
+    source=Path(entry.get('path',''))
+    if entry.get('type')=='static' and source.is_file(): return str(source)
+    if entry.get('type')!='video' or not source.is_file():
+        raise RuntimeError('This wallpaper type needs a static image selected in Game Mode Optimizer settings')
+    key=hashlib.sha256((str(source)+str(source.stat().st_mtime_ns)).encode()).hexdigest()[:20]
+    target=STATE/'frames'/f'{key}.png'
+    if not target.exists():
+        target.parent.mkdir(parents=True,exist_ok=True)
+        p=subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-ss','1','-i',str(source),'-frames:v','1','-update','1','-y',str(target)],capture_output=True,text=True,timeout=30)
+        if p.returncode or not target.is_file(): raise RuntimeError('Could not extract wallpaper still frame')
+    return str(target)
+
+def apply_entry(output, entry):
+    kind=entry.get('type')
+    params={'type':kind}
+    if output!='*': params['outputs']=[output]
+    if kind in ('static','video'): params['path']=entry['path']
+    elif kind=='we': params.update({'we_id':entry['we_id'],'screens':[] if output=='*' else [output]})
+    else: raise RuntimeError('Unsupported wallpaper type '+str(kind))
+    if kind in ('video','we'):
+        params['outputs_audio']={output:entry.get('mute',True)}
+        params['outputs_volume']={output:entry.get('volume',80)}
+    wall('wall.apply',params)
+
+def client(method, params=None):
+    try: return rpc(SOCKET,method,params)
+    except (FileNotFoundError,ConnectionRefusedError):
+        # No installation hooks or user-unit writes: the first client starts an
+        # inspectable, unprivileged helper. flock arbitrates simultaneous starts.
+        STATE.mkdir(parents=True,exist_ok=True,mode=0o700)
+        subprocess.Popen(['python3',str(Path(__file__).resolve()),'daemon','--idle-timeout','15'],
+                         stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL,start_new_session=True)
+        for _ in range(30):
+            try: return rpc(SOCKET,method,params)
+            except (FileNotFoundError,ConnectionRefusedError): time.sleep(.2)
+        raise RuntimeError('Game Mode Optimizer helper did not start')
+
+class Controller:
+    def __init__(self):
+        self.lock=threading.RLock()
+        self.data=read(STATE/'state.json',{'manual':False,'leases':{},'snapshot':None})
+        self.config=read(STATE/'options.json',{'automatic':True,'followGaming':True,'staticImage':''})
+        self.error=''; self.stopping=False
+        if self.data.get('boot')!=BOOT:
+            self.data['leases']={}; self.data['manual']=False
+        self.data['boot']=BOOT
+    def save(self): write(STATE/'state.json',self.data)
+    def status(self):
+        gaming=bool(self.config.get('followGaming',True) and read(FLAGS,{}).get('gameMode',False))
+        return {'active':bool(self.data.get('snapshot')),'manual':self.data.get('manual',False),'gaming':gaming,'games':len(self.data['leases']),'error':self.error,'automatic':self.config.get('automatic',True),'followGaming':self.config.get('followGaming',True)}
+    def enter(self):
+        outputs=wall('wall.outputs')['outputs']
+        rotation=wall('wall.rotation_status')
+        if rotation.get('active'):
+            raise RuntimeError('Turn off wallpaper auto-rotation before using Game Mode Optimizer mode')
+        replacement={}
+        image=self.config.get('staticImage','')
+        if image and not Path(image).is_file(): raise RuntimeError('Selected static wallpaper does not exist')
+        for key,entry in outputs.items():
+            if entry.get('type')!='static': replacement[key]={'type':'static','path':image or static_frame(entry)}
+        snapshot={'boot':BOOT,'outputs':outputs,'replacement':replacement,'voiceActive':unit('is-active')=='active','voiceEnabled':unit('is-enabled'),'voiceStopped':False,'changed':[]}
+        self.data['snapshot']=snapshot; self.save()
+        try:
+            if snapshot['voiceActive']:
+                # Record intent first so a crash between stop and save is recoverable.
+                snapshot['voiceStopped']=True; self.save(); unit('stop')
+            for key,entry in replacement.items():
+                snapshot['changed'].append(key); self.save(); apply_entry(key,entry)
+        except Exception:
+            self.leave(); raise
+    def leave(self):
+        snapshot=self.data.get('snapshot')
+        if not snapshot: return
+        current=wall('wall.outputs')['outputs']
+        for key in list(snapshot['changed']):
+            actual=current.get(key,{})
+            expected=snapshot['replacement'][key]
+            # Don't overwrite a wallpaper the user chose while gaming.
+            if actual.get('type')==expected['type'] and actual.get('path')==expected['path']:
+                apply_entry(key,snapshot['outputs'][key])
+            snapshot['changed'].remove(key); self.save()
+        if snapshot['voiceStopped'] and snapshot.get('boot')==BOOT:
+            if unit('is-active')!='active' and unit('is-enabled')==snapshot['voiceEnabled']:
+                unit('start')
+        self.data['snapshot']=None; self.save()
+    def reconcile(self):
+        with self.lock:
+            groups=groups_now() if self.data['leases'] else set()
+            self.data['leases']={k:v for k,v in self.data['leases'].items() if alive(v,groups)}
+            try:
+                if self.data.get('snapshot') and self.data['snapshot'].get('boot') != BOOT:
+                    self.leave()
+                st=self.status(); wanted=st['manual'] or st['gaming'] or bool(self.data['leases'])
+                if wanted and not st['active']: self.enter()
+                elif not wanted and st['active']: self.leave()
+                self.error=''
+            except Exception as exc: self.error=str(exc)
+            self.save(); write(STATE/'status.json',self.status())
+    def handle(self,method,params):
+        with self.lock:
+            if method=='configure':
+                for key in ('automatic','followGaming'):
+                    if key in params and not isinstance(params[key],bool):
+                        raise RuntimeError(key+' must be true or false')
+                if 'staticImage' in params and not isinstance(params['staticImage'],str):
+                    raise RuntimeError('staticImage must be an image path')
+                self.config.update({k:v for k,v in params.items() if k in ('automatic','followGaming','staticImage')})
+                write(STATE/'options.json',self.config)
+            elif method=='manual': self.data['manual']=bool(params['enabled'])
+            elif method=='acquire':
+                if self.config.get('automatic',True):
+                    p=process(params['pid'])
+                    if not p: raise RuntimeError('Launch owner disappeared')
+                    self.data['leases'][params['token']]={'pid':params['pid'],'start':p['start'],'boot':BOOT}
+            elif method=='attach':
+                if params['token'] in self.data['leases']: self.data['leases'][params['token']]['group']=params['group']
+            elif method=='release':
+                # Keep a lease if a forked child is still alive in the game's group.
+                lease=self.data['leases'].get(params['token'])
+                if lease and lease.get('group') in groups_now():
+                    lease['pid']=0; lease['start']=''
+                else: self.data['leases'].pop(params['token'],None)
+            elif method=='shutdown':
+                if self.data['leases']: raise RuntimeError('Close wrapped games before stopping the helper')
+                self.data['manual']=False
+                self.leave(); self.stopping=True; self.save()
+                return self.status()
+            elif method!='status': raise RuntimeError('Unknown request')
+            self.reconcile()
+            if method=='acquire' and self.error:
+                self.data['leases'].pop(params['token'],None); self.reconcile()
+                raise RuntimeError('Could not prepare desktop for game')
+            return self.status()
+
+def daemon(idle_timeout=0):
+    STATE.mkdir(parents=True,exist_ok=True,mode=0o700)
+    descriptor=os.open(STATE/'daemon.lock',os.O_CREAT|os.O_RDWR|os.O_NOFOLLOW,0o600)
+    lock=os.fdopen(descriptor,'w'); fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    ctl=Controller(); SOCKET.unlink(missing_ok=True)
+    last_request=time.monotonic()
+    server=socket.socket(socket.AF_UNIX);server.bind(str(SOCKET));SOCKET.chmod(0o600);server.listen(8);server.settimeout(1)
+    def stop(*_): ctl.stopping=True
+    signal.signal(signal.SIGTERM,stop); signal.signal(signal.SIGINT,stop)
+    def connection(conn):
+        nonlocal last_request
+        with conn:
+            conn.settimeout(35)
+            try:
+                with conn.makefile('r') as f:
+                    line=f.readline(65537)
+                    if len(line)>65536: raise RuntimeError('Request too large')
+                    req=json.loads(line)
+                last_request=time.monotonic()
+                result=ctl.handle(req['method'],req.get('params',{}));reply={'id':1,'result':result}
+            except Exception as exc: reply={'id':1,'error':str(exc)}
+            try: conn.sendall((json.dumps(reply)+'\n').encode())
+            except OSError: pass
+    while not ctl.stopping:
+        ctl.reconcile()
+        # A removed/unloaded widget has no polling client. Restore and exit,
+        # while surviving games retain their hold independently of Quickshell.
+        if idle_timeout and not ctl.data['leases'] and time.monotonic()-last_request>idle_timeout:
+            ctl.data['manual']=False; ctl.save(); break
+        try:
+            conn,_=server.accept();threading.Thread(target=connection,args=(conn,),daemon=True).start()
+        except socket.timeout: pass
+    try: ctl.leave()
+    except Exception as exc: print(str(exc),file=sys.stderr)
+    server.close(); SOCKET.unlink(missing_ok=True)
+
+def run(command):
+    if command and command[0]=='--': command=command[1:]
+    if not command: raise RuntimeError('No game command supplied')
+    token=uuid.uuid4().hex
+    client('acquire',{'pid':os.getpid(),'token':token})
+    child=None
+    try:
+        child=subprocess.Popen(command,start_new_session=True)
+        client('attach',{'token':token,'group':child.pid})
+        def forward(sig,_):
+            try: os.killpg(child.pid,sig)
+            except ProcessLookupError: pass
+        signal.signal(signal.SIGTERM,forward);signal.signal(signal.SIGINT,forward)
+        return child.wait()
+    finally: client('release',{'token':token})
+
+def main():
+    args=sys.argv[1:]
+    cmd=args[0] if args else 'status'
+    if cmd=='daemon':
+        idle_timeout=0
+        if len(args)>1:
+            if len(args)!=3 or args[1]!='--idle-timeout': raise RuntimeError('Invalid daemon arguments')
+            idle_timeout=float(args[2])
+            if not 0<idle_timeout<=3600: raise RuntimeError('Idle timeout must be between 0 and 3600 seconds')
+        daemon(idle_timeout); return 0
+    if cmd=='probe': print(json.dumps({'outputs':wall('wall.outputs'),'rotation':wall('wall.rotation_status')},indent=2));return 0
+    if cmd=='run': return run(args[1:])
+    if cmd=='configure': result=client(cmd,json.loads(args[1]))
+    elif cmd in ('on','off'): result=client('manual',{'enabled':cmd=='on'})
+    elif cmd in ('status','shutdown'): result=client(cmd)
+    else: raise RuntimeError('Usage: game-memory [status|on|off|shutdown|configure JSON|run COMMAND...]')
+    print(json.dumps(result));return 0
+
+if __name__=='__main__':
+    try: sys.exit(main())
+    except Exception as exc: print('Game Mode Optimizer: '+str(exc),file=sys.stderr);sys.exit(1)
