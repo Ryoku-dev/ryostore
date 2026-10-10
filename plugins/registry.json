@@ -1651,6 +1651,36 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-10-07"
+    },
+    {
+      "id": "battery-alerts",
+      "name": "Battery Alerts",
+      "version": "1.0.0",
+      "path": "plugins/battery-alerts",
+      "author": "rayyan <82241081+Sipper1236@users.noreply.github.com>",
+      "summary": "Configurable low-battery notifications, with warnings at 25% and 10%, discharge-session deduplication, and a notification test panel.",
+      "description": "Configurable low-battery notifications, with warnings at 25% and 10%, discharge-session deduplication, and a notification test panel.",
+      "tags": [
+        "battery",
+        "notifications",
+        "power",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "b1e54cf95417c87032412eaedf097a6e8c98c22dd869e4ab2e220f59a08b962f",
+      "official": false,
+      "tagline": "Configurable low-battery notifications, with warnings at 25% and 10%, discharge-session deduplication, and a notification test panel.",
+      "icon": "battery_alert",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-09"
     }
   ]
 }

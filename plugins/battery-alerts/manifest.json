@@ -1,0 +1,78 @@
+{
+  "id": "battery-alerts",
+  "name": "Battery Alerts",
+  "version": "1.0.0",
+  "author": "rayyan <82241081+Sipper1236@users.noreply.github.com>",
+  "description": "Configurable low-battery notifications, with warnings at 25% and 10%, discharge-session deduplication, and a notification test panel.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 280
+  },
+  "files": [
+    "service/qmldir",
+    "service/Monitor.qml",
+    "service/AlertPolicy.js",
+    "tests/policy.test.cjs",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Battery Alerts",
+    "icon": "battery_alert"
+  },
+  "dependencies": {
+    "commands": [
+      "notify-send"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "enabled",
+        "type": "toggle",
+        "label": "Enable low-battery alerts",
+        "group": "Alerts",
+        "default": true
+      },
+      {
+        "key": "lowThreshold",
+        "type": "int",
+        "label": "Warning percentage",
+        "group": "Alerts",
+        "default": 25,
+        "min": 5,
+        "max": 50
+      },
+      {
+        "key": "criticalThreshold",
+        "type": "int",
+        "label": "Critical percentage (below warning)",
+        "group": "Alerts",
+        "default": 10,
+        "min": 1,
+        "max": 49
+      }
+    ]
+  },
+  "tags": [
+    "battery",
+    "notifications",
+    "power",
+    "bar-widget"
+  ]
+}

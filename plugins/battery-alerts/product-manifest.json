@@ -1,0 +1,121 @@
+{
+  "schema": 1,
+  "id": "battery-alerts",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/battery-alerts",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "7932678a6a41d97b9fa24fd57f6febef6d3ebb39a232d4e752ae4c1bdbe4b069",
+      "mode": "0644",
+      "size": 4633,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "16276cb85960f4aa41c264f22c53be73114d81e42ec70db90a4de3755ab2c6f7",
+      "mode": "0644",
+      "size": 1063,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "fbbe823287c4d58acb86cb579da3584e756d2c8fe885007b1cea508c657b9702",
+      "mode": "0644",
+      "size": 2053,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "863655dd8745ee4e33b22f9d37ef4054d3c1463f2477a86ebdee110993e2fff1",
+      "mode": "0644",
+      "size": 29442,
+      "install": false
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "e92880ca7c4c690a890a92880f05910ec2b3fb8c15241f653a2ddd2308552b24",
+      "mode": "0644",
+      "size": 4328,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "8a91f3b410ee061177ebd005688aad58b223ca8cf3ea4956ec8035b9f1ce5034",
+      "mode": "0644",
+      "size": 1411,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "14e8ca1b059b96eda42fb07bf2d5c477413b9150066984c4eed1bafa6382cd05",
+      "mode": "0644",
+      "size": 1664,
+      "install": true
+    },
+    {
+      "source": "service/AlertPolicy.js",
+      "destination": "service/AlertPolicy.js",
+      "sha256": "77a7e2e0c272f7ccf5f32ff3a363a34f126ccc83e75d85049735a93b419766bd",
+      "mode": "0644",
+      "size": 916,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "8af0a3d551b079283cc45bc38f3272cbf244f61ab5651719aec8429af99c6ecf",
+      "mode": "0644",
+      "size": 1306,
+      "install": true
+    },
+    {
+      "source": "service/Monitor.qml",
+      "destination": "service/Monitor.qml",
+      "sha256": "30f489625e8aeb96ccd7c07c03c87afb6eac8f37ccd3a1634f2de61cb6f2c5b0",
+      "mode": "0644",
+      "size": 5514,
+      "install": true
+    },
+    {
+      "source": "service/qmldir",
+      "destination": "service/qmldir",
+      "sha256": "00fe55feaca6edeab29d7c49a3f48d4c4d961021864bd22c43af3c3bc8ad340b",
+      "mode": "0644",
+      "size": 34,
+      "install": true
+    },
+    {
+      "source": "tests/policy.test.cjs",
+      "destination": "tests/policy.test.cjs",
+      "sha256": "a08cc6eb16499f681ec10b181d591742d4cde206a18c03e92ac6ccb225ff10e8",
+      "mode": "0644",
+      "size": 1739,
+      "install": true
+    }
+  ]
+}
