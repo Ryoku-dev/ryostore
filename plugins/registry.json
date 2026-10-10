@@ -1651,6 +1651,35 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-10-07"
+    },
+    {
+      "id": "game-memory-mode",
+      "name": "Game Mode Optimizer",
+      "path": "plugins/game-memory-mode",
+      "version": "0.2.0",
+      "author": "Sannidhya Sandheer",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/game-memory-mode",
+      "official": false,
+      "tagline": "A quieter desktop while you game.",
+      "description": "Temporarily stop voice typing and replace animated wallpapers while gaming; restore the desktop afterwards.",
+      "icon": "sports_esports",
+      "tags": [
+        "bar-widget",
+        "gaming"
+      ],
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "lastUpdated": "2026-10-10",
+      "manifestSha256": "10817b4efd9e87ce49ad4caeee2491a5917ead72306a56a7075e5bf9650f1fde",
+      "summary": "Temporarily stop voice typing and replace animated wallpapers while gaming; restore the desktop afterwards.",
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "manifest": "product-manifest.json"
     }
   ]
 }

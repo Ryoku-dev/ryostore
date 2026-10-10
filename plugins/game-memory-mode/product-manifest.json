@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "id": "game-memory-mode",
+  "category": "plugins",
+  "version": "0.2.0",
+  "destination": "ryoku/plugins/game-memory-mode",
+  "files": [
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "a315bad498fc30c2f2778a081a0347bedfa393d1da074992d92bfe273ca3b0a2",
+      "mode": "0644",
+      "size": 3965,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "7b36e508a194efd6ec42caabdbcf1a2a7ae7960b5235c395a6b4170bdd039f35",
+      "mode": "0644",
+      "size": 1075,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "dad3a9b5bc2a10905c628a8364b8c46d203ba30ad36bfecbd82c20d57b4d76ea",
+      "mode": "0644",
+      "size": 6940,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "6db7330a195baa0fdbda6a207c11cfaf7a2552863f560b9a10deeae319542856",
+      "mode": "0644",
+      "size": 70061,
+      "install": false
+    },
+    {
+      "source": "bin/game-memory",
+      "destination": "bin/game-memory",
+      "sha256": "fee510853b619c8de53866b440c58ba7668dca14b4e0d23ad8e1fdbd74c35c38",
+      "mode": "0755",
+      "size": 15020,
+      "install": true
+    },
+    {
+      "source": "bin/game-memory-run",
+      "destination": "bin/game-memory-run",
+      "sha256": "6c196fc7cef5eb9abef657f177118c763a7284b5144461ff2cb72a25e6dcca72",
+      "mode": "0755",
+      "size": 398,
+      "install": true
+    },
+    {
+      "source": "bin/test-controller",
+      "destination": "bin/test-controller",
+      "sha256": "c7557aece5d71585ca74e1d1c11502f14b69ac984d2429d9862884451e1af928",
+      "mode": "0755",
+      "size": 6012,
+      "install": true
+    },
+    {
+      "source": "bin/test-live",
+      "destination": "bin/test-live",
+      "sha256": "0480b40407e94c71efc494fb2c44558775bc3e7301d073875733ec30b29f5d43",
+      "mode": "0755",
+      "size": 2266,
+      "install": true
+    },
+    {
+      "source": "bin/test-startup",
+      "destination": "bin/test-startup",
+      "sha256": "0ccca326e94b0c8132b06d02d3699a648f02d97744c5f48d93885bd283a87404",
+      "mode": "0755",
+      "size": 2431,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "eeb4bc9dbd0b112c755e7acf3c9a7d88c9cf4b81ce005064706d422de78b3818",
+      "mode": "0644",
+      "size": 3043,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "90a8f019f0063fac80a78c5520e3b81acf0d6eca2811ceebebb38ada7da5107c",
+      "mode": "0644",
+      "size": 731,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "13524c74aee0f0c4f4a89fc9ab390cdf1042889317e58f2d601fbf953a7b49d9",
+      "mode": "0644",
+      "size": 1534,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "00a80611ce4590b7b466069e1c59a2ba1ed22ef63f3b85567bbb8793c8b15e57",
+      "mode": "0644",
+      "size": 1892,
+      "install": true
+    }
+  ]
+}
