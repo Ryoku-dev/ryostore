@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "id": "fan-control",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/fan-control",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "e553d6ddf5183ec8d7b2cbb84d9039de1bc03516501d1cf79928501a73707040",
+      "mode": "0644",
+      "size": 3960,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "2118488465cd2ca9ef4a75cad3ac689630c783176224bcbebfec004c83afd975",
+      "mode": "0644",
+      "size": 1081,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "f82fb6569874923909ea6d5562b725b2fbc44d09eefe2f4e2a3b1afe95e40e31",
+      "mode": "0644",
+      "size": 7237,
+      "install": false
+    },
+    {
+      "source": "assets/preview-panel.png",
+      "destination": "assets/preview-panel.png",
+      "sha256": "c26551b4a5789548eb72be3680365d52c685f451f54d75ea0f4dc10e0053d3f8",
+      "mode": "0644",
+      "size": 90554,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "717f1d754e62bb0b9657c4862f5d47c5d3fc68cf768b7aae5d2174aea5a9a209",
+      "mode": "0644",
+      "size": 7455,
+      "install": false
+    },
+    {
+      "source": "bin/fanctl",
+      "destination": "bin/fanctl",
+      "sha256": "0752e495ffdd86014c26c4023d462fb991632f6bfec86e45433827c50d8072f0",
+      "mode": "0755",
+      "size": 8669,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "c554bace8aba43d87cb5e1ee0f48014ef638d6a2d53031d21cf94b83481dc4ea",
+      "mode": "0644",
+      "size": 16730,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "63e64206cdecdda00ce125c9f572f7220321511cc427a543b89eb89f7171c48a",
+      "mode": "0644",
+      "size": 3767,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "f73fb7f2b7cedbf50952c9a3c69da1ad8750bc86c2f7661480f95af133740394",
+      "mode": "0644",
+      "size": 2813,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "0d0dab69199e8086ab17b6c2de9f73b64c01dc80d44f8c2113a75109966dc68e",
+      "mode": "0644",
+      "size": 11741,
+      "install": true
+    }
+  ]
+}

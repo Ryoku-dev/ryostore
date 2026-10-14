@@ -1680,6 +1680,38 @@
       "accent": "#8f8378",
       "surface": "#101010",
       "manifest": "product-manifest.json"
+    },
+    {
+      "id": "fan-control",
+      "name": "Fan Control",
+      "version": "1.0.0",
+      "path": "plugins/fan-control",
+      "author": "Lorenzo Giovanni Vecchio <106695602+lorenzo-vecchio@users.noreply.github.com>",
+      "summary": "Fans on the bar: live rpm and the hottest sensor, and a panel that hands the fans back to the EC, pins them to a fixed performance level,...",
+      "description": "Fans on the bar: live rpm and the hottest sensor, and a panel that hands the fans back to the EC, pins them to a fixed performance level, or takes them to full speed.",
+      "tags": [
+        "fan",
+        "cooling",
+        "temperature",
+        "hardware",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "078e8e575fce069fcfad68067603c3f35533ba497677f980386216825c1bd1a8",
+      "official": false,
+      "tagline": "Fans on the bar: live rpm and the hottest sensor, and a panel that hands the fans back to the EC, pins them to a fixed performance level,...",
+      "icon": "mode_fan",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-15"
     }
   ]
 }

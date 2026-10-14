@@ -1,0 +1,117 @@
+{
+  "id": "fan-control",
+  "name": "Fan Control",
+  "version": "1.0.0",
+  "author": "Lorenzo Giovanni Vecchio <106695602+lorenzo-vecchio@users.noreply.github.com>",
+  "description": "Fans on the bar: live rpm and the hottest sensor, and a panel that hands the fans back to the EC, pins them to a fixed performance level, or takes them to full speed.",
+  "license": "MIT",
+  "official": false,
+  "tags": [
+    "fan",
+    "cooling",
+    "temperature",
+    "hardware",
+    "bar-widget"
+  ],
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 340
+  },
+  "files": [
+    "bin/fanctl",
+    "assets/preview-widget.png",
+    "assets/preview-panel.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph"
+    ],
+    "privileged": [
+      "pkexec svc.helper set auto",
+      "pkexec svc.helper set max",
+      "pkexec svc.helper set level"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "icon": "mode_fan",
+    "label": "Fan"
+  },
+  "dependencies": {
+    "commands": [
+      "pkexec"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "barText",
+        "type": "choice",
+        "label": "Beside the mark",
+        "group": "Fan Control",
+        "default": "rpm",
+        "options": [
+          { "value": "none", "label": "Nothing" },
+          { "value": "rpm", "label": "RPM" },
+          { "value": "profile", "label": "Profile" },
+          { "value": "temp", "label": "Hottest sensor" }
+        ]
+      },
+      {
+        "key": "poll",
+        "type": "int",
+        "label": "Refresh seconds",
+        "group": "Fan Control",
+        "default": 5,
+        "min": 2,
+        "max": 60
+      },
+      {
+        "key": "warnTemp",
+        "type": "int",
+        "label": "Hot warning (C)",
+        "group": "Fan Control",
+        "default": 90,
+        "min": 40,
+        "max": 110
+      },
+      {
+        "key": "helperMode",
+        "type": "choice",
+        "label": "Privileged helper",
+        "group": "Fan Control",
+        "default": "auto",
+        "options": [
+          { "value": "auto", "label": "Root-owned copy when installed" },
+          { "value": "system", "label": "Always the root-owned copy" },
+          { "value": "bundled", "label": "Always the plugin's copy" }
+        ]
+      },
+      {
+        "key": "performanceLevel",
+        "type": "int",
+        "label": "Performance level (128-255)",
+        "group": "Profiles",
+        "default": 200,
+        "min": 128,
+        "max": 255
+      },
+      {
+        "key": "customLevel",
+        "type": "int",
+        "label": "Custom slider start (128-255)",
+        "group": "Profiles",
+        "default": 191,
+        "min": 128,
+        "max": 255
+      }
+    ]
+  }
+}

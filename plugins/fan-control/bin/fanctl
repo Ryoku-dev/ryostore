@@ -1,0 +1,227 @@
+#!/bin/sh
+# fanctl - the Fan Control plugin's helper: the only external program the plugin
+# runs. Reading is unprivileged; the write verbs touch the kernel's hwmon fan
+# interface and are meant to be run through pkexec, from the plugin panel, on an
+# explicit click.
+#
+#   fanctl status [--json]        read fans, temperatures and control state
+#   fanctl set auto               hand the fans back to the EC / firmware
+#   fanctl set max                full speed (ThinkPad: disengaged; else manual 255)
+#   fanctl set level <128-255>    a fixed manual PWM level
+#
+# It writes to /sys/class/hwmon/*/pwm* only, prints to stdout/stderr, reads a
+# few sysfs files, and never runs another program, touches a plugin file, or
+# uses the network.
+set -u
+PATH=/usr/bin:/bin
+export PATH
+
+# The kernel's documented safe floor for a manual level: "try to set pwm1 to at
+# least 128 (255 would be the safest choice)". Below it the EC may stop the fan,
+# so the plugin simply refuses to go there.
+MIN_LEVEL=128
+MAX_LEVEL=255
+
+die() { printf 'fanctl: %s\n' "$*" >&2; exit 1; }
+
+# ── discovery ───────────────────────────────────────────────────────────────
+# The chip this plugin controls: the ThinkPad EC fan when there is one, else the
+# first non-GPU chip exposing pwm1_enable (a desktop Super-I/O, a Dell, an ASUS).
+# GPU fans are skipped: their pwm attributes usually report rather than control.
+control_chip() {
+    fallback=""
+    for d in /sys/class/hwmon/hwmon*; do
+        [ -e "$d/pwm1_enable" ] || continue
+        n=$(cat "$d/name" 2>/dev/null || true)
+        if [ "$n" = "thinkpad" ]; then
+            printf '%s\n' "$d"
+            return 0
+        fi
+        case "$n" in
+            amdgpu|radeon|nouveau|i915|xe|nvidia) continue ;;
+        esac
+        [ -z "$fallback" ] && fallback="$d"
+    done
+    [ -n "$fallback" ] && printf '%s\n' "$fallback"
+    return 0
+}
+
+fan_control_param() {
+    cat /sys/module/thinkpad_acpi/parameters/fan_control 2>/dev/null || printf '?'
+}
+
+# A write that failed: say so, and explain the one kernel knob that gates it.
+fail_write() { # path
+    hint=""
+    if [ "$(cat "$1/../name" 2>/dev/null || true)" = "thinkpad" ]; then
+        fc=$(fan_control_param)
+        case "$fc" in
+            Y|1) : ;;
+            *) hint=" - thinkpad_acpi is loaded with fan_control=$fc, so the kernel refuses all fan writes; load it with fan_control=1 (see the plugin README)" ;;
+        esac
+    fi
+    die "the kernel refused the write to $1$hint"
+}
+
+write_attr() { # path value
+    printf '%s' "$2" > "$1" 2>/dev/null
+}
+
+w() { # path value - write or die
+    write_attr "$1" "$2" || fail_write "$1"
+}
+
+# ── JSON helpers ────────────────────────────────────────────────────────────
+jstr() {
+    printf '%s' "$1" | tr -d '\000-\037' | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+}
+
+celsius() { # millidegrees -> a JSON number with one decimal
+    t=$1
+    sign=""
+    if [ "$t" -lt 0 ]; then
+        sign="-"
+        t=$(( -t ))
+    fi
+    printf '%s%d.%d' "$sign" $(( t / 1000 )) $(( (t % 1000) / 100 ))
+}
+
+emit_fans() { # chip dir
+    f_first=1
+    for f in "$1"/fan*_input; do
+        [ -e "$f" ] || continue
+        id=$(basename "$f" _input)
+        v=$(cat "$f" 2>/dev/null || printf '0')
+        case "$v" in ''|*[!0-9]*) v=0 ;; esac
+        [ "$f_first" = 1 ] || printf ','
+        f_first=0
+        printf '{"id":"%s","rpm":%s}' "$(jstr "$id")" "$v"
+    done
+}
+
+emit_temps() { # chip dir
+    t_first=1
+    for f in "$1"/temp*_input; do
+        [ -e "$f" ] || continue
+        id=$(basename "$f" _input)
+        t=$(cat "$f" 2>/dev/null || printf '')
+        case "$t" in ''|*[!0-9-]*) continue ;; esac
+        lab=""
+        [ -e "$1/${id}_label" ] && lab=$(cat "$1/${id}_label" 2>/dev/null || true)
+        [ "$t_first" = 1 ] || printf ','
+        t_first=0
+        printf '{"id":"%s","label":"%s","celsius":%s}' \
+            "$(jstr "$id")" "$(jstr "$lab")" "$(celsius "$t")"
+    done
+}
+
+# ── status ──────────────────────────────────────────────────────────────────
+cmd_status() { # [--json]
+    case "${1:-}" in
+        ""|--json) ;;
+        *) die "usage: fanctl status [--json]" ;;
+    esac
+
+    d=$(control_chip)
+    chip=""
+    [ -n "$d" ] && chip=$(cat "$d/name" 2>/dev/null || true)
+
+    available=false
+    restricted=false
+    reason=""
+    enable=-1
+    pwm=-1
+    if [ -n "$d" ]; then
+        available=true
+        enable=$(cat "$d/pwm1_enable" 2>/dev/null || printf '%s' -1)
+        pwm=$(cat "$d/pwm1" 2>/dev/null || printf '%s' -1)
+        if [ "$chip" = "thinkpad" ]; then
+            case "$(fan_control_param)" in
+                Y|1) : ;;
+                *) restricted=true; reason="thinkpad_acpi is loaded with fan_control=N: the kernel refuses fan writes" ;;
+            esac
+        fi
+    else
+        reason="no hwmon chip on this machine exposes a pwm1_enable attribute"
+    fi
+
+    printf '{"ok":true,'
+    printf '"control":{"chip":"%s","path":"%s","available":%s,"restricted":%s,"reason":"%s","enable":%s,"pwm":%s,"minLevel":%s,"maxLevel":%s},' \
+        "$(jstr "$chip")" "$(jstr "$d")" "$available" "$restricted" "$(jstr "$reason")" \
+        "$enable" "$pwm" "$MIN_LEVEL" "$MAX_LEVEL"
+    tc=$(fan_control_param)
+    printf '"thinkpad":{"present":"%s","fanControl":"%s"},' \
+        "$([ -e /sys/module/thinkpad_acpi ] && printf true || printf false)" "$(jstr "$tc")"
+    printf '"chips":['
+    first=1
+    for c in /sys/class/hwmon/hwmon*; do
+        [ -d "$c" ] || continue
+        n=$(cat "$c/name" 2>/dev/null || true)
+        [ -n "$n" ] || continue
+        [ "$first" = 1 ] || printf ','
+        first=0
+        printf '{"name":"%s","path":"%s","fans":[' "$(jstr "$n")" "$(jstr "$c")"
+        emit_fans "$c"
+        printf '],"temps":['
+        emit_temps "$c"
+        printf ']}'
+    done
+    printf ']}\n'
+}
+
+# ── set ─────────────────────────────────────────────────────────────────────
+cmd_set() { # auto | max | level <n>
+    [ "$(id -u)" = "0" ] || die "set needs root: this verb is meant to run elevated (see the plugin README)"
+    verb=${1:-}
+    [ -n "$verb" ] || die "usage: fanctl set auto|max|level <$MIN_LEVEL-$MAX_LEVEL>"
+
+    d=$(control_chip)
+    [ -n "$d" ] || die "no hwmon chip exposes pwm1_enable: fan control is not available on this machine"
+
+    case "$verb" in
+        auto)
+            # 2 is the kernel's "hardware PWM control": the EC/firmware owns the
+            # fans again, exactly the state a fresh boot comes up in.
+            w "$d/pwm1_enable" 2
+            ;;
+        max)
+            if [ "$(cat "$d/name" 2>/dev/null || true)" = "thinkpad" ]; then
+                # ThinkPad: 0 is the "disengaged" full-speed level, the EC drives
+                # the fan as hard as it can. Models that refuse it fall back to
+                # manual 255, the highest normal level.
+                if ! write_attr "$d/pwm1_enable" 0; then
+                    w "$d/pwm1_enable" 1
+                    w "$d/pwm1" "$MAX_LEVEL"
+                fi
+            else
+                w "$d/pwm1_enable" 1
+                w "$d/pwm1" "$MAX_LEVEL"
+            fi
+            ;;
+        level)
+            lvl=${2:-}
+            case "$lvl" in
+                ''|*[!0-9]*) die "level must be an integer between $MIN_LEVEL and $MAX_LEVEL" ;;
+            esac
+            if [ "$lvl" -lt "$MIN_LEVEL" ] || [ "$lvl" -gt "$MAX_LEVEL" ]; then
+                die "level must be $MIN_LEVEL-$MAX_LEVEL: the fan is never driven below the kernel's safe floor"
+            fi
+            w "$d/pwm1_enable" 1
+            w "$d/pwm1" "$lvl"
+            ;;
+        *)
+            die "unknown set verb '$verb' (auto|max|level)"
+            ;;
+    esac
+    printf 'fanctl: %s applied on %s\n' "$verb" "$d"
+}
+
+# ── entry ───────────────────────────────────────────────────────────────────
+cmd=${1:-}
+[ -n "$cmd" ] || die "usage: fanctl status [--json] | set auto|max|level <$MIN_LEVEL-$MAX_LEVEL>"
+shift
+case "$cmd" in
+    status) cmd_status "$@" ;;
+    set) cmd_set "$@" ;;
+    *) die "unknown command '$cmd' (status|set)" ;;
+esac
