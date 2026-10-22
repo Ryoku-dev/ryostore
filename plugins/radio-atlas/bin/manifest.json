@@ -1,0 +1,34 @@
+{
+  "author": "Akshar Patel",
+  "barWidget": {
+    "allowMultiple": false,
+    "category": "Media",
+    "defaultSection": "left",
+    "description": "Open the world radio globe",
+    "displayName": "Radio Atlas"
+  },
+  "description": "Explore live radio on a rotatable globe and play stations through Omarchy's media controls.",
+  "entryPoints": {
+    "barWidget": "BarWidget.qml",
+    "panel": "RadioAtlas.qml"
+  },
+  "homepage": "https://github.com/AksharP5/omarchy-radio-atlas",
+  "id": "radio-atlas",
+  "keepLoaded": true,
+  "keywords": [
+    "radio",
+    "world",
+    "globe",
+    "music",
+    "mpris"
+  ],
+  "kinds": [
+    "panel",
+    "bar-widget"
+  ],
+  "license": "MIT",
+  "name": "Radio Atlas",
+  "repository": "https://github.com/AksharP5/omarchy-radio-atlas",
+  "schemaVersion": 1,
+  "version": "0.1.9"
+}

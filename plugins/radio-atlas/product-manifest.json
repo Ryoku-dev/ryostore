@@ -1,0 +1,265 @@
+{
+  "schema": 1,
+  "id": "radio-atlas",
+  "category": "plugins",
+  "version": "0.1.15",
+  "destination": "ryoku/plugins/radio-atlas",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "1f9b29bca45562ceb744891478e2dac179a2e3bd1ec5c5d5420abaff8c738eca",
+      "mode": "0644",
+      "size": 1069,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "131609d5e0a51cc74792bb89e9d49b95dfb52c6f7bf07e8da271b566758b711c",
+      "mode": "0644",
+      "size": 2853,
+      "install": false
+    },
+    {
+      "source": "assets/NOTICE.md",
+      "destination": "assets/NOTICE.md",
+      "sha256": "459025d0085bf7f5d1adce7cdd97ff48f2601850f80f942cba0b3beb5a9bc4ad",
+      "mode": "0644",
+      "size": 737,
+      "install": false
+    },
+    {
+      "source": "assets/countries.json",
+      "destination": "assets/countries.json",
+      "sha256": "b08dda797a260df40a5e429fb73dea5cc494ce520402b19cfdcaf9087322bc27",
+      "mode": "0644",
+      "size": 253826,
+      "install": true
+    },
+    {
+      "source": "assets/country-search.json",
+      "destination": "assets/country-search.json",
+      "sha256": "cf8530b3825502f2471ee6938c92b452e2b17720dbafda434f799f45f18c510f",
+      "mode": "0644",
+      "size": 9875,
+      "install": true
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "7592469740e7448ff2c2fc4623ef0094d614f88f181d006e6d975afe30a1aa44",
+      "mode": "0644",
+      "size": 235978,
+      "install": false
+    },
+    {
+      "source": "bin/manifest.json",
+      "destination": "bin/manifest.json",
+      "sha256": "146f9717773b9601531f1e0610321cf0f455d5b4f04854c0373b47575484fa88",
+      "mode": "0644",
+      "size": 817,
+      "install": true
+    },
+    {
+      "source": "bin/radio-favicon",
+      "destination": "bin/radio-favicon",
+      "sha256": "a9e1ad40d0cfc8448c033f5f208cfcb407ed909f23a7ce6f9e6a1fa39861a4a1",
+      "mode": "0755",
+      "size": 5415,
+      "install": true
+    },
+    {
+      "source": "bin/radio-fetch",
+      "destination": "bin/radio-fetch",
+      "sha256": "c9756055bd58d92fcec910551497eb8ff9138bd71cca0261ab06b353049cdffa",
+      "mode": "0755",
+      "size": 14271,
+      "install": true
+    },
+    {
+      "source": "bin/radio-mpris",
+      "destination": "bin/radio-mpris",
+      "sha256": "3abb6225d10ce7d69ed225edd39a6e135815d88870479834b7ddb1c43cd706ed",
+      "mode": "0755",
+      "size": 24423,
+      "install": true
+    },
+    {
+      "source": "bin/radio-player",
+      "destination": "bin/radio-player",
+      "sha256": "a3cb76de4ea4568d449a1f04de3cd80e7d75157a1707de9f0754146932754d89",
+      "mode": "0755",
+      "size": 23280,
+      "install": true
+    },
+    {
+      "source": "bin/radio-proxy",
+      "destination": "bin/radio-proxy",
+      "sha256": "b02197a876d92ea82dabc70d4eb722882751fadc7146d2ef75a9b583d4b61d65",
+      "mode": "0755",
+      "size": 11478,
+      "install": true
+    },
+    {
+      "source": "bin/radio-sandbox",
+      "destination": "bin/radio-sandbox",
+      "sha256": "10a7c6a5f8aca165bafd65ba4a1debe03448b8c615da2fbb31f0ec7be03bfd53",
+      "mode": "0755",
+      "size": 875,
+      "install": true
+    },
+    {
+      "source": "bin/radio-session",
+      "destination": "bin/radio-session",
+      "sha256": "bd180d6149adb6aeea8ffa43f46cc4152e47f7b927ce10aeaef31c465c859a67",
+      "mode": "0755",
+      "size": 2093,
+      "install": true
+    },
+    {
+      "source": "bin/radio-state",
+      "destination": "bin/radio-state",
+      "sha256": "4a6c73c98e3b124d128df1be40fc58f9763c4b41a729e95113e8d64c15a186b2",
+      "mode": "0755",
+      "size": 6116,
+      "install": true
+    },
+    {
+      "source": "bin/radio-status.lua",
+      "destination": "bin/radio-status.lua",
+      "sha256": "3150ac3202c3e138e7b0226ac885453112282cf75d7f7d2f3a175e91f46a59a5",
+      "mode": "0644",
+      "size": 8731,
+      "install": true
+    },
+    {
+      "source": "content/Button.qml",
+      "destination": "content/Button.qml",
+      "sha256": "bb4b4a0b55b154a31467dc30bc3d5b990aec0a2d3d277a4eb29b6587c7d73f43",
+      "mode": "0644",
+      "size": 3624,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "f63ba7e15aca06b629b27c1869b5150a669cb0fa34a30b7fbf2f539b2b8f261e",
+      "mode": "0644",
+      "size": 96977,
+      "install": true
+    },
+    {
+      "source": "content/PanelSlider.qml",
+      "destination": "content/PanelSlider.qml",
+      "sha256": "90dc500f1c19fd1c7c5633225fde564598ce8e9aa5d00aef915c7a35602ea92b",
+      "mode": "0644",
+      "size": 3518,
+      "install": true
+    },
+    {
+      "source": "content/PanelToolTip.qml",
+      "destination": "content/PanelToolTip.qml",
+      "sha256": "cefab0b46deab31009ecc85f2d3819d2765e61584eadeab61441a9bb9b4322ae",
+      "mode": "0644",
+      "size": 642,
+      "install": true
+    },
+    {
+      "source": "content/TextField.qml",
+      "destination": "content/TextField.qml",
+      "sha256": "37cbfdc0b67c978745e36975125f20f06ce2753c778689e0e24036159a80012c",
+      "mode": "0644",
+      "size": 888,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "3b390743e5c803ba6ba3123ba36c3fcd49d05584d5ee8f129942d71e6b4ac79b",
+      "mode": "0644",
+      "size": 3711,
+      "install": true
+    },
+    {
+      "source": "content/assets/NOTICE.md",
+      "destination": "content/assets/NOTICE.md",
+      "sha256": "459025d0085bf7f5d1adce7cdd97ff48f2601850f80f942cba0b3beb5a9bc4ad",
+      "mode": "0644",
+      "size": 737,
+      "install": false
+    },
+    {
+      "source": "content/assets/countries.json",
+      "destination": "content/assets/countries.json",
+      "sha256": "b08dda797a260df40a5e429fb73dea5cc494ce520402b19cfdcaf9087322bc27",
+      "mode": "0644",
+      "size": 253826,
+      "install": true
+    },
+    {
+      "source": "content/assets/country-search.json",
+      "destination": "content/assets/country-search.json",
+      "sha256": "cf8530b3825502f2471ee6938c92b452e2b17720dbafda434f799f45f18c510f",
+      "mode": "0644",
+      "size": 9875,
+      "install": true
+    },
+    {
+      "source": "content/assets/preview-widget.png",
+      "destination": "content/assets/preview-widget.png",
+      "sha256": "7592469740e7448ff2c2fc4623ef0094d614f88f181d006e6d975afe30a1aa44",
+      "mode": "0644",
+      "size": 235978,
+      "install": true
+    },
+    {
+      "source": "lib/Globe.qml",
+      "destination": "lib/Globe.qml",
+      "sha256": "988d05dbb59b5b325b82b2d0b5b3162fcc6e77f7b3b62c38b42c9866c8cf20ec",
+      "mode": "0644",
+      "size": 31681,
+      "install": true
+    },
+    {
+      "source": "lib/RadioModel.js",
+      "destination": "lib/RadioModel.js",
+      "sha256": "499f4b36016971c7fe3c2de08d6f286fa74d03ef2731b476a056cb3d3cfc326c",
+      "mode": "0644",
+      "size": 23362,
+      "install": true
+    },
+    {
+      "source": "lib/Style.qml",
+      "destination": "lib/Style.qml",
+      "sha256": "f5255ed765221c2fa1b67638c1da6b96ebef706849defd4da2c78f8600490b58",
+      "mode": "0644",
+      "size": 3717,
+      "install": true
+    },
+    {
+      "source": "lib/qmldir",
+      "destination": "lib/qmldir",
+      "sha256": "665baf7f7dfb254e1f6b99f3911b15d75bd3113122fd2e29b47441c06f1047bc",
+      "mode": "0644",
+      "size": 44,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "2f48dd0af3c3a83499244ab5cd1761f40e10986ec2ccf0edfc8f254cad0b1aef",
+      "mode": "0644",
+      "size": 2650,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "5280d070641c792a95c08f3a1e4c0ce6172607dc203326f8d024330f7d01e069",
+      "mode": "0644",
+      "size": 8025,
+      "install": true
+    }
+  ]
+}

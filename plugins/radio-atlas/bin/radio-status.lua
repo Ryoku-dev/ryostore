@@ -1,0 +1,246 @@
+local mp = require("mp")
+local utils = require("mp.utils")
+
+local status_path = os.getenv("RADIO_ATLAS_STATUS_FILE")
+local queue_path = os.getenv("RADIO_ATLAS_QUEUE_FILE")
+local queue = nil
+local update_timer = nil
+local last_volume = 70
+local last_output = ""
+local station_loaded = false
+local station_position = -1
+local failure = nil
+local playlist_redirect = nil
+local mpris_ready = false
+local max_queue_bytes = 4194304
+
+local function clean_text(value, limit)
+  if type(value) ~= "string" then return "" end
+  value = value:gsub("[%c]", " "):gsub("  +", " ")
+  if #value <= limit then return value end
+  local last = limit
+  while last > 0 do
+    local next_byte = value:byte(last + 1)
+    if not next_byte or next_byte < 128 or next_byte > 191 then break end
+    last = last - 1
+  end
+  return value:sub(1, last)
+end
+
+local function clean_output(value)
+  if type(value) ~= "string" then return "" end
+  if value == "auto" then return "" end
+  value = value:gsub("^pipewire/", "")
+  return value:sub(1, 160)
+end
+
+local function empty_station()
+  return { uuid = "", name = "", country = "", countryCode = "" }
+end
+
+local function status_station(station)
+  if type(station) ~= "table" then return empty_station() end
+  local latitude = type(station.latitude) == "number" and station.latitude or nil
+  local longitude = type(station.longitude) == "number" and station.longitude or nil
+  return {
+    uuid = clean_text(station.uuid, 64),
+    name = clean_text(station.name, 160),
+    country = clean_text(station.country, 100),
+    countryCode = clean_text(station.countryCode, 2),
+    latitude = latitude,
+    longitude = longitude
+  }
+end
+
+local function read_queue()
+  if queue then return queue end
+  queue = {}
+  if not queue_path then return queue end
+
+  local file = io.open(queue_path, "r")
+  if not file then return queue end
+  local size = file:seek("end")
+  if not size or size > max_queue_bytes then
+    file:close()
+    return queue
+  end
+  file:seek("set", 0)
+  local parsed = utils.parse_json(file:read("*a"))
+  file:close()
+  if type(parsed) == "table" and #parsed <= 500 then queue = parsed end
+  return queue
+end
+
+local function write_status(state)
+  if not status_path then return end
+  local temporary = status_path .. "." .. tostring(mp.get_property_number("pid", 0)) .. ".tmp"
+  local file = io.open(temporary, "w")
+  if not file then return end
+  file:write(utils.format_json(state), "\n")
+  file:close()
+  os.rename(temporary, status_path)
+end
+
+local function current_status()
+  local position = failure and failure.position or mp.get_property_number("playlist-pos", -1)
+  local volume = mp.get_property_number("volume", last_volume)
+  last_volume = math.floor(volume + 0.5)
+  last_output = clean_output(mp.get_property("audio-device", ""))
+  local artwork = mp.get_property_native("user-data/radio-atlas-artwork", "")
+  if type(artwork) ~= "string" or artwork:sub(1, 8) ~= "file:///" then artwork = "" end
+  return {
+    running = true,
+    stopped = failure == nil and mp.get_property_bool("idle-active", false),
+    paused = failure ~= nil or mp.get_property_bool("pause", false),
+    muted = mp.get_property_bool("mute", false),
+    title = clean_text(mp.get_property("media-title", ""), 512),
+    playlistPosition = position,
+    playlistCount = mp.get_property_number("playlist-count", 0),
+    volume = last_volume,
+    output = last_output,
+    artwork = artwork,
+    loaded = station_loaded,
+    error = failure and failure.message or "",
+    errorDetail = failure and failure.detail or "",
+    station = status_station(read_queue()[position + 1])
+  }
+end
+
+local function emit_status()
+  update_timer = nil
+  write_status(current_status())
+end
+
+local function schedule_update()
+  if update_timer then update_timer:kill() end
+  update_timer = mp.add_timeout(0.04, emit_status)
+end
+
+for _, property in ipairs({
+  "pause", "idle-active", "mute", "media-title", "playlist-pos", "playlist-count", "volume", "audio-device",
+  "user-data/radio-atlas-artwork"
+}) do
+  mp.observe_property(property, "native", schedule_update)
+end
+
+mp.register_event("start-file", function()
+  station_loaded = false
+  station_position = mp.get_property_number("playlist-pos", -1)
+  failure = nil
+  mp.set_property_native("user-data/radio-atlas-failure", nil)
+  schedule_update()
+end)
+mp.register_event("file-loaded", function()
+  station_loaded = true
+  schedule_update()
+end)
+mp.register_event("end-file", function(event)
+  local empty_playlist = event.reason == "redirect" and not event.playlist_insert_id
+  if event.reason == "eof" or event.reason == "error" or empty_playlist then
+    failure = {
+      position = station_position,
+      entry_id = event.playlist_entry_id,
+      message = station_loaded and "Stream disconnected" or "Station could not be played",
+      detail = empty_playlist and "Station playlist is empty" or clean_text(event.error, 200)
+    }
+    mp.set_property_native("user-data/radio-atlas-failure", failure)
+  end
+  if event.reason == "redirect" and not empty_playlist then playlist_redirect = event end
+  station_loaded = false
+  schedule_update()
+end)
+-- Block automatic advancement until failures and playlist expansion are handled.
+mp.add_hook("on_after_end_file", 50, function()
+  if failure then
+    -- A newer selection can arrive while this end-file event is being handled.
+    local position = mp.get_property_number("playlist-current-pos", -1)
+    if mp.get_property_number("playlist/" .. position .. "/id", -1) ~= failure.entry_id then return end
+    mp.commandv("stop", "keep-playlist")
+    return
+  end
+  if not playlist_redirect then return end
+  -- A station may return alternative stream URLs. Keep its first entry so
+  -- native Next/Previous and status indices still refer to stations.
+  local first_id = playlist_redirect.playlist_insert_id
+  local last_id = first_id + playlist_redirect.playlist_insert_num_entries - 1
+  local entries = mp.get_property_native("playlist", {})
+  for index = #entries, 1, -1 do
+    local id = entries[index].id
+    if id > first_id and id <= last_id then mp.commandv("playlist-remove", index - 1) end
+  end
+  playlist_redirect = nil
+end)
+mp.register_event("idle", function()
+  station_loaded = false
+  -- Retain native Next/Previous navigation without reopening the failed stream.
+  if failure and mp.get_property_number("playlist-current-pos", -1) < 0 then
+    mp.set_property_number("playlist-current-pos", failure.position)
+  end
+  schedule_update()
+end)
+mp.register_script_message("radio-atlas-reload", function()
+  queue = nil
+  schedule_update()
+end)
+mp.register_script_message("radio-atlas-loadlist", function(path)
+  local _, error = mp.commandv("loadlist", path, "replace")
+  mp.commandv("script-message", "radio-atlas-loaded", path, error or "")
+end)
+mp.set_property_bool("user-data/radio-atlas-load-ready", true)
+local function toggle_playback()
+  if failure then
+    if failure.position < 0 then return end
+    mp.commandv("playlist-play-index", failure.position)
+    mp.set_property_bool("pause", false)
+    return
+  end
+  mp.commandv("cycle", "pause")
+end
+mp.register_script_message("radio-atlas-mpris-ready", function()
+  mpris_ready = true
+  mp.set_property_bool("user-data/radio-atlas-mpris-ready", true)
+end)
+mp.register_script_message("radio-atlas-perform-toggle", toggle_playback)
+mp.register_script_message("radio-atlas-clear-failure", function()
+  failure = nil
+  mp.set_property_native("user-data/radio-atlas-failure", nil)
+  schedule_update()
+end)
+mp.register_script_message("radio-atlas-toggle", function()
+  if mpris_ready then
+    mp.commandv("script-message", "radio-atlas-ui-toggle")
+    return
+  end
+  toggle_playback()
+end)
+local function navigate(command)
+  if mp.get_property_bool("idle-active", false)
+      or mp.get_property_number("playlist-pos", -1) < 0 then
+    -- Stop clears mpv's cursor. Restore it before choosing a neighbor.
+    local position = failure and failure.position or station_position
+    if position >= 0 then mp.set_property_number("playlist-current-pos", position) end
+    mp.set_property_bool("pause", false)
+  end
+  mp.commandv(command, "force")
+end
+mp.register_script_message("radio-atlas-next", function() navigate("playlist-next") end)
+mp.register_script_message("radio-atlas-previous", function() navigate("playlist-prev") end)
+mp.set_property_bool("user-data/radio-atlas-navigation-ready", true)
+mp.register_event("shutdown", function()
+  if update_timer then update_timer:kill() end
+  write_status({
+    running = false,
+    paused = false,
+    muted = false,
+    title = "",
+    playlistPosition = -1,
+    playlistCount = 0,
+    volume = last_volume,
+    output = last_output,
+    artwork = "",
+    loaded = false,
+    station = empty_station()
+  })
+end)
+
+schedule_update()

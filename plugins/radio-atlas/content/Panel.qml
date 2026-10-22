@@ -1,0 +1,2661 @@
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls as QQC
+import Quickshell
+import Quickshell.Hyprland
+import Quickshell.Io
+import Ryoku.PluginKit.Singletons
+import "../lib" as Atlas
+import "../lib"
+import "../lib/RadioModel.js" as RadioModel
+
+Item {
+  id: root
+
+  // Ryoku host properties. Omarchy's panel host supplied `panel`, `shell`,
+  // `manifest` and a bare shell `Style`; Ryoku supplies pluginApi, density,
+  // s, active and widthBudget, and tokens come from Theme.
+  property var pluginApi
+  property string density: "full"
+  property real s: 1
+  property bool active: false
+  property real widthBudget: 520
+
+  // The slot that hosts this panel sizes its card from the root's implicit
+  // geometry; the Omarchy body (`panel`) kept its own, so the root must
+  // surface them (the original host read `panel.implicitWidth` instead).
+  implicitWidth: root.preferredWidth
+  implicitHeight: root.preferredHeight
+
+  // Forward the host's density scale to the token shim's space() helper.
+
+  property bool opened: false
+  property var countries: []
+  readonly property var countryNames: {
+    try {
+      return JSON.parse(countryNamesFile.text() || "{}")
+    } catch (error) {
+      console.warn("Country names could not be loaded:", error)
+      return ({})
+    }
+  }
+  property var worldStations: []
+  property var results: []
+  property var favorites: []
+  property var recent: []
+  property string mode: "world"
+  onModeChanged: if (mode !== "random") randomPlaybackPending = false
+  property string activeCountryCode: ""
+  property string activeCountryName: ""
+  property string browsedCountryCode: ""
+  property bool countryCacheLoaded: false
+  property bool helpVisible: false
+  property int selectedIndex: -1
+  property var selectedStation: null
+  property bool keyboardSelectionVisible: false
+
+  property bool fetching: false
+  property bool randomPlaybackPending: false
+  property string randomPlayGeneration: "0"
+  property string fetchAction: ""
+  property string fetchValue: ""
+  property string pendingFetchAction: ""
+  property string pendingFetchValue: ""
+  property string fetchError: ""
+  property string fetchOutput: ""
+  property string fetchStderr: ""
+  property string worldExpandOutput: ""
+  readonly property int worldStationLimit: 5000
+  property int worldExpansionMisses: 0
+
+  property bool playerRunning: false
+  property bool playerPaused: false
+  property bool playerStopped: false
+  property string streamError: ""
+  property bool playerMuted: false
+  property int playerVolume: 70
+  property int reportedVolume: 70
+  property int pendingVolume: -1
+  property string playerTitle: ""
+  property string playerOutput: ""
+  property var audioOutputs: []
+  property string outputsError: ""
+  property bool outputMenuOpen: false
+  readonly property var outputChoices: {
+    var rows = [{ id: "", label: "System default" }]
+    for (var i = 0; i < audioOutputs.length; i++) rows.push(audioOutputs[i])
+    return rows
+  }
+
+  property var playingStation: null
+  property string playingStationUuid: ""
+  property string recordedStationUuid: ""
+  property string lastRandomUuid: ""
+  property bool playCancellationRequested: false
+  property string activePlayGeneration: "0"
+  property bool localStopStatusPending: false
+  property var pendingPlayStation: null
+  property string pendingPlayScope: ""
+  property var pendingPlayStations: []
+  property string pendingPlayGeneration: ""
+  property bool statusReady: false
+  readonly property bool playPreparing: playerActionProcess.running
+    && playerActionProcess.action === "play"
+  readonly property bool playerActionBusy: playerActionProcess.running || stopProcess.running
+  property int playlistPosition: -1
+  property int playlistCount: 0
+  property string playerError: ""
+  property string localError: ""
+  property bool localReloadPending: false
+  property var pendingFavoriteRequests: []
+  property var pendingRecentRequest: null
+
+  // Scripts live in the plugin's own bin/. pluginApi.pluginDir is the handle the
+  // host guarantees (R2/R8), but it arrives empty on the first load, so fall
+  // back to this file's own resolved directory.
+  readonly property string pluginRoot: pluginApi && pluginApi.pluginDir
+    ? String(pluginApi.pluginDir) : ""
+  readonly property string binDir: pluginRoot !== "" ? pluginRoot + "/bin" : ""
+
+  // pluginApi.pluginDir can arrive empty on the first load; retry until the
+  // host has handed it over rather than caching a wrong path.
+  readonly property string fetchPath: binDir + "/radio-fetch"
+  readonly property string playerPath: binDir + "/radio-player"
+  readonly property string statePath: binDir + "/radio-state"
+  // XDG_RUNTIME_DIR is the right home for a live player session (it is
+  // tmpfs and cleared at logout); the plugin keeps its own namespace under it.
+  readonly property string runtimePath: Quickshell.env("XDG_RUNTIME_DIR") + "/ryoku-radio-atlas"
+  readonly property string countryCachePath:
+    // Caches go to the plugin's own cache dir so a reinstall or a remove
+    // takes its station/logo caches with it (R8).
+    (Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache")
+      + "/ryoku/plugins/radio-atlas/countries"
+  readonly property string statusPath: runtimePath + "/status.json"
+  readonly property string playSelectionPath: runtimePath + "/play-selection.json"
+  readonly property string favoriteSelectionPath: runtimePath + "/favorite-selection.json"
+  readonly property string historySelectionPath: runtimePath + "/history-selection.json"
+
+  readonly property var displayStations: mode === "favorites"
+    ? favorites
+    : (mode === "recent" ? recent : results)
+  readonly property var currentGeoStations:
+    RadioModel.mergeGeoStations(worldStations, displayStations, countries)
+  readonly property string playingStationName: playingStation
+    ? RadioModel.cleanText(playingStation.name) : ""
+  readonly property string playingTrackTitle: {
+    var title = RadioModel.cleanText(playerTitle)
+    var station = playingStationName.toLowerCase()
+    return title && station && title.toLowerCase() !== station ? title : ""
+  }
+  property string playingLogoPath: ""
+  // Track metadata cleaned of leading junk and a repeated station-name prefix.
+  readonly property var playingTrackParts: RadioModel.trackParts(playingTrackTitle, playingStationName)
+  readonly property bool remoteMode: mode !== "favorites" && mode !== "recent"
+  readonly property bool lightTheme:
+    0.2126 * background.r + 0.7152 * background.g + 0.0722 * background.b > 0.5
+
+  property color background: Theme.cardTop
+  property color foreground: Theme.bright
+  property color border: Theme.border
+  property color accent: Theme.accent
+  property color urgent: Theme.verm
+  property color dim: Qt.rgba(foreground.r, foreground.g, foreground.b, 0.56)
+  property color faint: Qt.rgba(foreground.r, foreground.g, foreground.b, 0.12)
+  property color favoriteColor: lightTheme ? "#8a6100" : "#f2c94c"
+  property color mapBackground: lightTheme ? "#e7e6e1" : "#090a0c"
+  property color mapSphere: lightTheme ? "#d2d0ca" : "#11151a"
+  property color mapLand: lightTheme ? "#a9aaa6" : "#283039"
+  property color mapGrid: lightTheme ? "#3f454a" : "#7d8791"
+
+  property bool windowFrameReady: false
+  property string pendingOpenPayload: ""
+  // Before mapping, panel.screen can still be Quickshell's default screen.
+  readonly property var windowScreen: {
+    if (panel.screen) return panel.screen
+    var monitor = Hyprland.focusedMonitor
+    return monitor ? Quickshell.screens.find(function(screen) {
+      return screen.name === monitor.name
+    }) || null : null
+  }
+  readonly property size preferredWindowSize: {
+    var screen = windowScreen
+    if (!screen) return Qt.size(Atlas.Style.space(1180), Atlas.Style.space(760))
+    var monitor = Hyprland.monitorFor(screen)
+    var reserved = monitor && monitor.lastIpcObject.reserved || [0, 0, 0, 0]
+    var widthMargin = Math.max(Atlas.Style.space(60), reserved[0] + reserved[2] + Atlas.Style.space(40))
+    var heightMargin = Math.max(Atlas.Style.space(80), reserved[1] + reserved[3] + Atlas.Style.space(40))
+    return Qt.size(Math.max(1, Math.min(Atlas.Style.space(1180), screen.width - widthMargin)),
+      Math.max(1, Math.min(Atlas.Style.space(760), screen.height - heightMargin)))
+  }
+  // The host gives the panel its width budget; the globe pane keeps the
+  // original 1180x760 composition where the budget allows it.
+  readonly property int preferredWidth: widthBudget > 0 ? Math.round(widthBudget) : Atlas.Style.space(1180)
+  readonly property int preferredHeight: Atlas.Style.space(760)
+  // The Ryoku host owns the panel surface and its window rules, so the plugin
+  // only reports the size it wants and lets the host place it. The Omarchy
+  // original shelled out to a hyprctl-eval Lua helper for this.
+  readonly property int wantedWidth: Atlas.Style.space(1180)
+  readonly property int wantedHeight: Atlas.Style.space(760)
+  readonly property int cardWidth: panel.width
+  readonly property int cardHeight: panel.height
+  // Base outer inset (close-button edge spacing) used for every pane edge.
+  readonly property int edgeInset: Atlas.Style.spacing.md
+  // Globe overlay labels/controls: shared inset from the map pane edges.
+  readonly property int overlayInset: edgeInset * 2
+  readonly property int overlaySideInset: overlayInset + Math.round(overlayMetrics.descent)
+  // Tallest header control + edgeInset above/below. The outer 1px border overlaps the
+  // top inset and the 1px divider overlaps the bottom one, mirroring how the outer
+  // border overlaps the close button's right inset, so all three gaps read equal.
+  readonly property int headerHeight: Math.ceil(Math.max(searchField.implicitHeight,
+    randomButton.implicitHeight, helpButton.implicitHeight, closeButton.implicitHeight))
+    + edgeInset * 2
+  readonly property int sidebarWidth: Math.min(cardWidth,
+    Math.max(tabRow.implicitWidth + edgeInset * 2, Math.min(Atlas.Style.space(390), cardWidth * 0.39)))
+  readonly property var controlSections: [
+    {
+      title: "KEYBOARD",
+      inputWidth: 112,
+      controls: [
+        { input: "/", action: "Search" },
+        { input: "UP / DOWN", action: "Select station" },
+        { input: "ENTER", action: "Play selected station" },
+        { input: "SPACE", action: "Play or pause" },
+        { input: "R", action: "Tune randomly" },
+        { input: "F", action: "Favorite selected station" },
+        { input: "M", action: "Mute or unmute" },
+        { input: "+ / -", action: "Change volume" },
+        { input: "ESC", action: "Back, clear, or close" },
+        { input: "?", action: "Show or hide controls" }
+      ]
+    },
+    {
+      title: "MOUSE AND BAR",
+      inputWidth: 124,
+      controls: [
+        { input: "DRAG / FLICK", action: "Spin globe" },
+        { input: "GLOBE WHEEL", action: "Zoom" },
+        { input: "CLICK SIGNAL", action: "Play station" },
+        { input: "CLICK COUNTRY", action: "Browse stations" },
+        { input: "BAR LEFT", action: "Open or close" },
+        { input: "BAR MIDDLE", action: "Tune randomly" },
+        { input: "BAR RIGHT", action: "Stop or resume playback" },
+        { input: "BAR WHEEL", action: "Change volume" },
+        { input: "SPEAKER", action: "Choose audio output" }
+      ]
+    }
+  ]
+
+  function isHelpKey(event) {
+    return event.key === Qt.Key_Question || event.text === "?"
+      || (event.key === Qt.Key_Slash && (event.modifiers & Qt.ShiftModifier))
+  }
+
+  function toggleControls() {
+    helpVisible = !helpVisible
+    outputMenuOpen = false
+    Qt.callLater(function() { keyCatcher.forceActiveFocus() })
+  }
+
+  // No window-rule helper on Ryoku: the host maps the panel, so setup is done
+  // and any queued open payload is delivered.
+  function registerWindowSetup() {
+    root.windowFrameReady = true
+    var payload = root.pendingOpenPayload
+    root.pendingOpenPayload = ""
+    if (payload) root.openWindow(payload)
+  }
+
+  function open(payloadJson) {
+    pendingOpenPayload = payloadJson || "{}"
+    Hyprland.refreshMonitors()
+    registerWindowSetup()
+  }
+
+  function openWindow(payloadJson) {
+    var payload = ({})
+    try { payload = JSON.parse(payloadJson || "{}") || ({}) } catch (error) { payload = ({}) }
+
+    opened = true
+    worldExpansionMisses = 0
+    if (!panel.visible) {
+      windowFrameReady = false
+      windowRevealTimer.stop()
+    }
+    panel.visible = true
+    fetchError = ""
+    loadState()
+    if (payload.action === "random") {
+      if (worldStations.length === 0) showWorld()
+      tuneRandom()
+    } else if (worldStations.length === 0) showWorld()
+    scheduleWorldExpansion(800)
+    Qt.callLater(function() { keyCatcher.forceActiveFocus() })
+  }
+
+  function close() {
+    pendingOpenPayload = ""
+    helpVisible = false
+    outputMenuOpen = false
+    globe.stopKineticRotation(true)
+    opened = false
+    windowFrameReady = false
+    windowRevealTimer.stop()
+    panel.visible = false
+    worldExpandTimer.stop()
+    if (worldExpandProcess.running) worldExpandProcess.running = false
+  }
+
+  function dismiss() {
+    close()
+    if (pluginApi && typeof pluginApi.closePanel === "function")
+      pluginApi.closePanel()
+  }
+
+  function scheduleWindowReveal() {
+    if (windowFrameReady || !panel.visible) return
+    windowRevealTimer.restart()
+  }
+
+  function handleHyprlandEvent(event) {
+    var eventName = String(event && event.name || "")
+    if (eventName === "configreloaded") {
+      windowSetupReloadTimer.restart()
+      return
+    }
+    if (!opened || eventName !== "openwindow") return
+    var parts = []
+    try {
+      parts = event.parse(4)
+    } catch (error) {
+      parts = String(event && event.data || "").split(",")
+    }
+    var windowClass = String(parts[2] || "")
+    if (windowClass === "ryoku-screensaver") {
+      dismiss()
+    }
+  }
+
+  function highlightStationCountry(station, focusGlobe) {
+    if (!station) {
+      activeCountryCode = ""
+      activeCountryName = ""
+      return
+    }
+    activeCountryCode = String(station.countryCode || "").toUpperCase()
+    activeCountryName = String(station.country || activeCountryCode)
+    if (focusGlobe !== true) return
+    var latitude = Number(station.latitude)
+    var longitude = Number(station.longitude)
+    if (station.latitude !== null && station.longitude !== null
+        && isFinite(latitude) && isFinite(longitude)) {
+      globe.focusCoordinate(latitude, longitude)
+    } else if (activeCountryCode) {
+      globe.focusCountry(activeCountryCode)
+    }
+  }
+
+  function restorePlayingCountry(focusGlobe) {
+    if (playerRunning && playingStation) {
+      highlightStationCountry(playingStation, focusGlobe === true)
+      return
+    }
+    activeCountryCode = ""
+    activeCountryName = ""
+  }
+
+  function setSelection(index, fromKeyboard) {
+    keyboardSelectionVisible = fromKeyboard === true
+    var stations = displayStations
+    if (!Array.isArray(stations) || stations.length === 0) {
+      selectedIndex = -1
+      selectedStation = null
+      return
+    }
+    selectedIndex = Math.max(0, Math.min(stations.length - 1, index))
+    selectedStation = stations[selectedIndex]
+    stationList.currentIndex = selectedIndex
+    stationList.positionViewAtIndex(selectedIndex, ListView.Contain)
+  }
+
+  function moveSelection(delta) {
+    if (displayStations.length === 0) return
+    if (selectedIndex < 0) setSelection(delta < 0 ? displayStations.length - 1 : 0, true)
+    else setSelection((selectedIndex + delta + displayStations.length) % displayStations.length, true)
+    keyCatcher.forceActiveFocus()
+  }
+
+  function setStationList(nextMode, stations, preserveSelection) {
+    var selectedUuid = preserveSelection && selectedStation ? selectedStation.uuid : ""
+    var fromKeyboard = preserveSelection && keyboardSelectionVisible
+    mode = nextMode
+    if (nextMode !== "favorites" && nextMode !== "recent") results = stations
+    var index = RadioModel.indexByUuid(stations, selectedUuid)
+    setSelection(index >= 0 ? index : (stations.length > 0 ? 0 : -1), fromKeyboard)
+  }
+
+  function scheduleWorldExpansion(delay) {
+    if (!opened || worldStations.length === 0
+        || worldStations.length >= worldStationLimit || worldExpansionMisses >= 3) return
+    worldExpandTimer.interval = Math.max(500, Number(delay || 1600))
+    worldExpandTimer.restart()
+  }
+
+  function cancelPendingFetch() {
+    pendingFetchAction = ""
+    pendingFetchValue = ""
+  }
+
+  function cancelPendingPlay() {
+    pendingPlayStation = null
+    pendingPlayScope = ""
+    pendingPlayStations = []
+    pendingPlayGeneration = ""
+  }
+
+  function playerGeneration() {
+    playerGenerationFile.reload()
+    var value = playerGenerationFile.text().trim()
+    return /^[0-9]+$/.test(value) ? value : "0"
+  }
+
+  function startFetch(action, value) {
+    if (action === "random") randomPlaybackPending = true
+    var nextValue = value || ""
+    if (fetchProcess.running) {
+      if (fetchAction === action && fetchValue === nextValue) {
+        cancelPendingFetch()
+        return
+      }
+      if (pendingFetchAction === action && pendingFetchValue === nextValue) return
+      pendingFetchAction = action
+      pendingFetchValue = nextValue
+      fetching = true
+      return
+    }
+    fetching = true
+    fetchAction = action
+    fetchValue = nextValue
+    fetchError = ""
+    fetchOutput = ""
+    fetchStderr = ""
+    fetchProcess.command = nextValue ? [fetchPath, action, nextValue] : [fetchPath, action]
+    fetchProcess.running = true
+  }
+
+  function showWorld(refresh) {
+    searchDebounce.stop()
+    cancelPendingFetch()
+    searchField.text = ""
+    restorePlayingCountry(false)
+    fetchError = ""
+    localError = ""
+    setStationList("world", worldStations)
+    if (refresh !== false) startFetch("world", "")
+  }
+
+  function showFavorites() {
+    searchDebounce.stop()
+    cancelPendingFetch()
+    searchField.text = ""
+    mode = "favorites"
+    restorePlayingCountry(true)
+    fetchError = ""
+    localError = ""
+    setSelection(favorites.length > 0 ? 0 : -1)
+  }
+
+  function showRecent() {
+    searchDebounce.stop()
+    cancelPendingFetch()
+    searchField.text = ""
+    mode = "recent"
+    restorePlayingCountry(true)
+    fetchError = ""
+    localError = ""
+    setSelection(recent.length > 0 ? 0 : -1)
+  }
+
+  function previewSearch(text) {
+    var query = String(text || "").trim()
+    if (!query) {
+      showWorld()
+      return false
+    }
+    restorePlayingCountry(false)
+    fetchError = ""
+    setStationList("search", RadioModel.searchStations(worldStations, query, 150, countryNames))
+    return true
+  }
+
+  function search(text) {
+    var query = String(text || "").trim()
+    if (!previewSearch(query)) return
+    startFetch("search", query)
+  }
+
+  function browseCountry(code, name) {
+    var countryCode = String(code || "").toUpperCase()
+    if (!/^[A-Z]{2}$/.test(countryCode)) return
+    var countryName = String(name || "")
+    if (!countryName) {
+      for (var i = 0; i < countries.length; i++) {
+        var properties = countries[i] && countries[i].properties
+        if (String(properties && properties.code || "").toUpperCase() !== countryCode) continue
+        countryName = String(properties.name || "")
+        break
+      }
+    }
+    if (!countryName) countryName = countryCode
+    searchDebounce.stop()
+    cancelPendingFetch()
+    if (mode !== "country" || browsedCountryCode !== countryCode)
+      countryCacheLoaded = false
+    browsedCountryCode = countryCode
+    var cachedStations = RadioModel.stationsForCountry(worldStations, countryCode)
+    worldStations = RadioModel.prioritizeStations(
+      cachedStations, worldStations, worldStationLimit)
+    setStationList("country", cachedStations)
+    activeCountryCode = countryCode
+    activeCountryName = countryName
+    fetchError = ""
+    searchField.text = countryName
+    startFetch("country", countryCode)
+    keyCatcher.forceActiveFocus()
+  }
+
+  function applyCountryStations(code, stations) {
+    if (mode !== "country" || code !== browsedCountryCode) return
+    var countryStations = RadioModel.mergeStations(results, stations, 500)
+    worldStations = RadioModel.prioritizeStations(
+      countryStations, worldStations, worldStationLimit)
+    setStationList("country", countryStations, true)
+  }
+
+  function applyCountryCache(raw) {
+    if (mode !== "country") return
+    try {
+      if (typeof raw !== "string" || raw.length > 4194304)
+        throw new Error("Country cache is too large")
+      var stations = JSON.parse(raw)
+      if (!Array.isArray(stations) || stations.length > 25)
+        throw new Error("Country cache is not a station list")
+      for (var i = 0; i < stations.length; i++) {
+        if (!stations[i] || stations[i].countryCode !== browsedCountryCode)
+          throw new Error("Country cache does not match this country")
+      }
+      countryCacheLoaded = true
+      applyCountryStations(browsedCountryCode, stations)
+    } catch (error) {
+      console.warn("Country cache could not be loaded:", error)
+    }
+  }
+
+  function tuneRandom() {
+    searchDebounce.stop()
+    cancelPendingFetch()
+    searchField.text = ""
+    setStationList("random", [])
+    restorePlayingCountry(false)
+    fetchError = ""
+    randomPlayGeneration = playerGeneration()
+    startFetch("random", randomExclusions())
+  }
+
+  function randomExclusions() {
+    var output = []
+    var seen = ({})
+
+    function append(uuid) {
+      var value = String(uuid || "")
+      if (!/^[0-9A-Fa-f-]{20,64}$/.test(value) || seen["$" + value]) return
+      seen["$" + value] = true
+      output.push(value)
+    }
+
+    append(playingStationUuid)
+    append(lastRandomUuid)
+    for (var i = 0; i < recent.length && output.length < 32; i++)
+      append(recent[i] && recent[i].uuid)
+    return output.join(",")
+  }
+
+  function activateMapStation(station) {
+    var index = RadioModel.indexByUuid(displayStations, station.uuid)
+    if (index < 0) {
+      index = RadioModel.indexByUuid(worldStations, station.uuid)
+      if (index < 0) return
+      showWorld(false)
+    }
+    setSelection(index)
+    playSelected()
+  }
+
+  function playlistScope() {
+    if (mode === "world") return "world"
+    if (mode === "favorites") return "favorites"
+    if (mode === "recent") return "recent"
+    return "results"
+  }
+
+  function playSelected(generation) {
+    if (!selectedStation) return
+    playStation(selectedStation, playlistScope(), displayStations, generation)
+  }
+
+  function writeSelection(fileView, path, rows) {
+    if (!Array.isArray(rows) || rows.length === 0 || rows.length > 500) return false
+    var text = JSON.stringify(rows) + "\n"
+    if (RadioModel.utf8Length(text) > RadioModel.maximumSelectionBytes) return false
+    // FileView skips identical text, even when its previous write failed.
+    fileView.path = ""
+    fileView.path = path
+    fileView.saveSucceeded = false
+    fileView.setText(text)
+    return fileView.saveSucceeded
+  }
+
+  function playStation(station, scope, stations, generation) {
+    if (!station) return
+    var requestedGeneration = generation || playerGeneration()
+    if (playerActionBusy) {
+      pendingPlayStation = station
+      pendingPlayScope = scope
+      pendingPlayStations = Array.isArray(stations) ? stations.slice(0) : []
+      pendingPlayGeneration = requestedGeneration
+      return
+    }
+    if (requestedGeneration !== playerGeneration()) return
+    cancelPendingPlay()
+    var playerScope = scope
+    if (scope === "world" || scope === "results") {
+      var rows = RadioModel.stationWindow(stations, station.uuid, 500)
+      if (!writeSelection(playSelectionFile, playSelectionPath, rows)) {
+        playerError = "Could not prepare this station"
+        return
+      }
+      playerScope = "selection"
+    }
+    playCancellationRequested = false
+    activePlayGeneration = requestedGeneration
+    highlightStationCountry(station, true)
+    playerError = ""
+    playerActionProcess.action = "play"
+    playerActionProcess.output = ""
+    playerActionProcess.errorOutput = ""
+    playerActionProcess.command = [playerPath, "play", station.uuid, playerScope]
+    playerActionProcess.running = true
+  }
+
+  function playPendingStation() {
+    if (!pendingPlayStation || playerActionBusy) return
+    var station = pendingPlayStation
+    var scope = pendingPlayScope
+    var stations = pendingPlayStations
+    var generation = pendingPlayGeneration
+    cancelPendingPlay()
+    if (generation && generation !== playerGeneration()) return
+    playStation(station, scope, stations)
+  }
+
+  function playerAction(action) {
+    if (playerActionBusy) return
+    playerError = ""
+    playerActionProcess.action = action
+    playerActionProcess.output = ""
+    playerActionProcess.errorOutput = ""
+    playerActionProcess.command = [playerPath, action]
+    playerActionProcess.running = true
+  }
+
+  function stopPlayer() {
+    randomPlaybackPending = false
+    cancelPendingPlay()
+    if (stopProcess.running || playCancellationRequested) return
+    if (playerActionProcess.running && !playPreparing) return
+    if (playPreparing) playCancellationRequested = true
+    playerError = ""
+    localStopStatusPending = true
+    stopProcess.output = ""
+    stopProcess.command = [playerPath, "stop"]
+    stopProcess.running = true
+  }
+
+  function applyPlayerState(raw) {
+    try {
+      if (typeof raw !== "string" || raw.length > 65536)
+        throw new Error("Player status is too large")
+      var state = JSON.parse(raw || "{}")
+      var previousUuid = playingStationUuid
+      var playbackWasStopped = !playerRunning || playerStopped
+      var nextPlayingStation = state.station && typeof state.station === "object"
+        && String(state.station.uuid || "") ? state.station : null
+      var nextPlayingUuid = nextPlayingStation ? String(nextPlayingStation.uuid) : ""
+      playerRunning = state.running === true
+      playerPaused = state.paused === true
+      playerStopped = state.stopped === true
+      playingLogoPath = playerRunning && !playerStopped && typeof state.artwork === "string"
+        && state.artwork.indexOf("file:///") === 0 ? state.artwork : ""
+      if (!playbackWasStopped && (!playerRunning || playerStopped) && !localStopStatusPending) {
+        var generation = playerGeneration()
+        if (randomPlaybackPending && randomPlayGeneration !== generation)
+          randomPlaybackPending = false
+        if (pendingPlayStation && pendingPlayGeneration !== generation) cancelPendingPlay()
+        if (playPreparing && activePlayGeneration !== generation) playCancellationRequested = true
+      }
+      streamError = String(state.error || "").replace(/[\r\n\t]+/g, " ").slice(0, 200)
+      playerMuted = state.muted === true
+      playerOutput = /^[A-Za-z0-9._:+-]{0,160}$/.test(String(state.output || ""))
+        ? String(state.output) : ""
+      var nextVolume = Math.round(Number(state.volume === undefined ? 70 : state.volume))
+      reportedVolume = isFinite(nextVolume) ? Math.max(0, Math.min(100, nextVolume)) : 70
+      if (pendingVolume < 0) playerVolume = reportedVolume
+      playerTitle = String(state.title || (nextPlayingStation && nextPlayingStation.name) || "")
+        .replace(/[\r\n\t]+/g, " ").slice(0, 512)
+      playlistPosition = Number(state.playlistPosition === undefined ? -1 : state.playlistPosition)
+      playlistCount = Number(state.playlistCount || 0)
+
+      var playingChanged = playerRunning && nextPlayingUuid && nextPlayingUuid !== previousUuid
+      playingStation = nextPlayingStation
+      playingStationUuid = playerRunning ? nextPlayingUuid : ""
+      if (playerError === "Player status is unavailable") playerError = ""
+      if (!playerRunning) recordedStationUuid = ""
+
+      var matchingIndex = nextPlayingUuid
+        ? RadioModel.indexByUuid(displayStations, nextPlayingUuid) : -1
+      if (playingChanged && matchingIndex >= 0) setSelection(matchingIndex)
+
+      if (playingChanged) highlightStationCountry(nextPlayingStation, true)
+      if (state.loaded === true && nextPlayingUuid && nextPlayingUuid !== recordedStationUuid) {
+        recordedStationUuid = nextPlayingUuid
+        recordPlayed(nextPlayingUuid)
+      }
+      return state
+    } catch (error) {
+      playerError = "Player status is unavailable"
+    }
+  }
+
+  function setPlayerVolume(value) {
+    pendingVolume = Math.max(0, Math.min(100, Math.round(value)))
+    playerVolume = pendingVolume
+    playerError = ""
+    volumeTimer.restart()
+  }
+
+  function changePlayerVolume(delta) {
+    var current = pendingVolume >= 0 ? pendingVolume : playerVolume
+    setPlayerVolume(current + delta)
+  }
+
+  function flushPlayerVolume() {
+    if (stopProcess.running) {
+      volumeTimer.restart()
+      return
+    }
+    if (volumeProcess.running || pendingVolume < 0) return
+    volumeProcess.submittedVolume = pendingVolume
+    volumeProcess.output = ""
+    volumeProcess.errorOutput = ""
+    volumeProcess.command = [root.playerPath, "volume", String(pendingVolume)]
+    volumeProcess.running = true
+  }
+
+  function refreshOutputs() {
+    if (outputsProcess.running) return
+    outputsError = ""
+    outputsProcess.output = ""
+    outputsProcess.errorOutput = ""
+    outputsProcess.command = [playerPath, "outputs"]
+    outputsProcess.running = true
+  }
+
+  function selectOutput(value) {
+    var sink = String(value || "")
+    if (outputProcess.running) return
+    playerError = ""
+    outputProcess.output = ""
+    outputProcess.errorOutput = ""
+    outputProcess.command = sink
+      ? [playerPath, "output", sink]
+      : [playerPath, "output"]
+    outputProcess.running = true
+  }
+
+  function toggleOutputMenu() {
+    if (outputMenuOpen) {
+      outputMenuOpen = false
+      return
+    }
+    outputMenuOpen = true
+    refreshOutputs()
+  }
+
+  function outputLabel(sink) {
+    for (var i = 0; i < audioOutputs.length; i++) {
+      if (audioOutputs[i].id === sink) return audioOutputs[i].label
+    }
+    return sink
+  }
+
+  function loadState() {
+    if (stateProcess.running) {
+      localReloadPending = true
+      return
+    }
+    localReloadPending = false
+    stateProcess.action = "get"
+    stateProcess.output = ""
+    stateProcess.errorOutput = ""
+    stateProcess.command = [statePath, "get"]
+    stateProcess.running = true
+  }
+
+  function requestLocalStateReload() {
+    localReloadPending = true
+    Qt.callLater(reloadLocalStateWhenIdle)
+  }
+
+  function reloadLocalStateWhenIdle() {
+    if (!localReloadPending || stateProcess.running || historyProcess.running
+        || pendingFavoriteRequests.length > 0 || pendingRecentRequest) return
+    loadState()
+  }
+
+  function applyLocalState(raw) {
+    try {
+      var state = JSON.parse(raw || "{}")
+      favorites = Array.isArray(state.favorites) ? state.favorites : []
+      recent = Array.isArray(state.recent) ? state.recent : []
+      localError = ""
+    } catch (error) {
+      localError = "Saved stations could not be loaded"
+    }
+  }
+
+  function isFavorite(uuid) {
+    return RadioModel.indexByUuid(favorites, uuid) >= 0
+  }
+
+  function toggleFavorite(uuid) {
+    if (!uuid) return
+    if (localError === "Favorite could not be updated") localError = ""
+    var request = { uuid: uuid, rows: [] }
+    var index = RadioModel.indexByUuid(displayStations, uuid)
+    if (remoteMode && index >= 0) {
+      request.rows = [displayStations[index]]
+    }
+    pendingFavoriteRequests = pendingFavoriteRequests.concat([request])
+    startNextFavorite()
+  }
+
+  function startNextFavorite() {
+    if (stateProcess.running) return
+    if (pendingFavoriteRequests.length === 0) {
+      if (localReloadPending) requestLocalStateReload()
+      return
+    }
+    var request = pendingFavoriteRequests[0]
+    pendingFavoriteRequests = pendingFavoriteRequests.slice(1)
+    var command = [statePath, "favorite", request.uuid]
+    if (request.rows.length > 0) {
+      if (!writeSelection(favoriteSelectionFile, favoriteSelectionPath, request.rows)) {
+        localError = "Favorite could not be updated"
+        Qt.callLater(startNextFavorite)
+        return
+      }
+      command.push("selection")
+    }
+    stateProcess.action = "favorite"
+    stateProcess.output = ""
+    stateProcess.errorOutput = ""
+    stateProcess.command = command
+    stateProcess.running = true
+  }
+
+  function recordPlayed(uuid) {
+    if (!uuid) return
+    var station = null
+    try {
+      historyPlaylistFile.readSucceeded = false
+      historyPlaylistFile.reload()
+      var raw = historyPlaylistFile.text()
+      if (!historyPlaylistFile.readSucceeded) throw new Error("Playback queue is unavailable")
+      if (raw.length > 4194304) throw new Error("Playback queue is too large")
+      var stations = JSON.parse(raw)
+      if (!Array.isArray(stations) || stations.length > 500)
+        throw new Error("Playback queue is not a station list")
+      var index = RadioModel.indexByUuid(stations, uuid)
+      if (index >= 0) station = stations[index]
+    } catch (error) {
+      console.warn("Played station could not be captured:", error)
+    }
+    pendingRecentRequest = { uuid: uuid, station: station }
+    startRecordPlayed()
+  }
+
+  function startRecordPlayed() {
+    if (historyProcess.running || !pendingRecentRequest) return
+    var request = pendingRecentRequest
+    pendingRecentRequest = null
+    historyProcess.output = ""
+    historyProcess.errorOutput = ""
+    historyProcess.command = [statePath, "played", request.uuid]
+    if (request.station && writeSelection(historySelectionFile, historySelectionPath, [request.station]))
+      historyProcess.command = [statePath, "played", request.uuid, "selection"]
+    historyProcess.running = true
+  }
+
+  function refreshLocalSelection() {
+    if (mode !== "favorites" && mode !== "recent") return
+    var stations = displayStations
+    var preferredUuid = selectedStation ? selectedStation.uuid : playingStationUuid
+    var index = preferredUuid ? RadioModel.indexByUuid(stations, preferredUuid) : -1
+    if (index < 0 && stations.length > 0) index = Math.min(Math.max(selectedIndex, 0), stations.length - 1)
+    setSelection(index, keyboardSelectionVisible)
+  }
+
+  function emptyStateText() {
+    if (fetchError) return fetchError
+    if (localError) return localError
+    if (mode === "favorites") return "No favorites yet. Select a station and press F."
+    if (mode === "recent") return "No listening history yet."
+    if (mode === "search") return "No stations match “" + String(searchField.text || "").trim() + "”."
+    if (mode === "country") return "No working stations found in " + (activeCountryName || "this country") + "."
+    return "No working stations found."
+  }
+
+  FileView {
+    path: decodeURIComponent(Qt.resolvedUrl("assets/countries.json").toString().replace(/^file:\/\//, ""))
+    watchChanges: false
+    printErrors: true
+    onLoaded: {
+      try {
+        var collection = JSON.parse(text())
+        root.countries = Array.isArray(collection.features) ? collection.features : []
+      } catch (error) {
+        root.countries = []
+        root.fetchError = "Map data could not be loaded"
+      }
+    }
+  }
+
+  FileView {
+    id: countryNamesFile
+    path: decodeURIComponent(Qt.resolvedUrl("assets/country-search.json").toString().replace(/^file:\/\//, ""))
+    blockLoading: true
+    watchChanges: false
+    printErrors: true
+  }
+
+  FileView {
+    id: countryCacheFile
+    path: root.mode === "country" && root.browsedCountryCode
+      ? root.countryCachePath + "/" + root.browsedCountryCode + ".json" : ""
+    watchChanges: true
+    printErrors: false
+    onFileChanged: reload()
+    onLoaded: root.applyCountryCache(text())
+  }
+
+  FileView {
+    path: root.statusReady ? root.statusPath : ""
+    watchChanges: true
+    atomicWrites: true
+    printErrors: false
+    onLoaded: root.applyPlayerState(text())
+    onFileChanged: reload()
+  }
+
+  FileView {
+    id: playerGenerationFile
+    path: root.runtimePath + "/player.generation"
+    preload: false
+    // A cached counter could release playback canceled by a newer Stop.
+    blockAllReads: true
+    watchChanges: false
+    printErrors: false
+  }
+
+  FileView {
+    id: playSelectionFile
+    property bool saveSucceeded: false
+    path: root.playSelectionPath
+    preload: false
+    watchChanges: false
+    blockWrites: true
+    atomicWrites: true
+    printErrors: true
+    onSaved: saveSucceeded = true
+  }
+
+  FileView {
+    id: favoriteSelectionFile
+    property bool saveSucceeded: false
+    path: root.favoriteSelectionPath
+    preload: false
+    watchChanges: false
+    blockWrites: true
+    atomicWrites: true
+    printErrors: true
+    onSaved: saveSucceeded = true
+  }
+
+  FileView {
+    id: historyPlaylistFile
+    property bool readSucceeded: false
+    path: root.runtimePath + "/playlist.json"
+    preload: false
+    blockAllReads: true
+    watchChanges: false
+    printErrors: false
+    onLoaded: readSucceeded = true
+  }
+
+  FileView {
+    id: historySelectionFile
+    property bool saveSucceeded: false
+    path: root.historySelectionPath
+    preload: false
+    watchChanges: false
+    blockWrites: true
+    atomicWrites: true
+    printErrors: true
+    onSaved: saveSucceeded = true
+  }
+
+  property bool trackCopied: false
+  readonly property string trackCopyText: playingTrackParts.artist
+    ? playingTrackParts.artist + " - " + playingTrackParts.title
+    : playingTrackParts.title
+
+  function copyTrack() {
+    if (!trackCopyText || copyProcess.running) return
+    copyProcess.command = ["wl-copy", "--", trackCopyText]
+    copyProcess.running = true
+  }
+
+  Process {
+    id: copyProcess
+    onExited: function(exitCode) {
+      if (exitCode !== 0) return
+      root.trackCopied = true
+      trackCopiedTimer.restart()
+    }
+  }
+
+  Timer {
+    id: trackCopiedTimer
+    interval: 1200
+    onTriggered: root.trackCopied = false
+  }
+
+  // (window-rule setup removed: the Ryoku host owns the panel surface and its
+  //  Hyprland rules; a plugin may not write hyprctl eval window rules.)
+
+  Process {
+    id: statusInitProcess
+    command: []
+    onExited: function(exitCode) {
+      if (exitCode === 0) root.statusReady = true
+    }
+  }
+
+  Process {
+    id: fetchProcess
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: root.fetchOutput = text
+    }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: root.fetchStderr = text
+    }
+    onExited: function(exitCode) {
+      var completedOutput = root.fetchOutput
+      root.fetchOutput = ""
+      var stations = null
+      if (exitCode === 0) {
+        try {
+          var parsed = JSON.parse(completedOutput || "[]")
+          if (Array.isArray(parsed)) stations = parsed
+        } catch (error) {
+          stations = null
+        }
+      }
+      if (root.fetchAction === "world" && stations !== null)
+        root.worldStations = RadioModel.mergeStations(
+          root.worldStations, stations, root.worldStationLimit)
+      if (root.fetchAction === "world" && stations !== null)
+        root.scheduleWorldExpansion(1200)
+
+      if (root.pendingFetchAction) {
+        var nextAction = root.pendingFetchAction
+        var nextValue = root.pendingFetchValue
+        root.pendingFetchAction = ""
+        root.pendingFetchValue = ""
+        root.fetching = false
+        Qt.callLater(function() {
+          if (root.mode !== nextAction) return
+          if (nextAction === "random" && (!root.randomPlaybackPending
+              || (!root.localStopStatusPending
+                && root.randomPlayGeneration !== root.playerGeneration()))) {
+            root.randomPlaybackPending = false
+            return
+          }
+          if (nextAction === "search"
+              && String(searchField.text || "").trim() !== nextValue) return
+          if (nextAction === "country" && root.browsedCountryCode !== nextValue) return
+          root.startFetch(nextAction,
+            nextAction === "random" ? root.randomExclusions() : nextValue)
+        })
+        return
+      }
+
+      var playRandom = root.fetchAction === "random" && root.randomPlaybackPending
+        && (root.localStopStatusPending || root.randomPlayGeneration === root.playerGeneration())
+      if (root.fetchAction === "random") root.randomPlaybackPending = false
+      root.fetching = false
+      if (root.mode !== root.fetchAction) return
+      if (root.fetchAction === "search"
+          && String(searchField.text || "").trim() !== root.fetchValue) return
+      if (root.fetchAction === "country"
+          && root.fetchValue !== root.browsedCountryCode) return
+      if (exitCode !== 0) {
+        root.fetchError = root.displayStations.length > 0
+          ? "Showing cached stations · Radio Browser is unavailable"
+          : "Radio Browser is unavailable. Try again shortly."
+        return
+      }
+      if (stations === null) {
+        root.fetchError = "Station data was not valid"
+        return
+      }
+      root.fetchError = ""
+
+      if (root.fetchAction === "world") {
+        root.setStationList("world", root.worldStations, true)
+      } else if (root.fetchAction === "country") {
+        if (!root.countryCacheLoaded)
+          root.applyCountryStations(root.fetchValue, stations)
+        countryCacheFile.reload()
+      } else if (root.fetchAction === "search") {
+        root.setStationList("search", stations, true)
+      } else if (root.fetchAction === "random") {
+        root.setStationList("random", stations)
+        if (stations.length > 0 && playRandom) {
+          root.lastRandomUuid = String(stations[0].uuid || "")
+          root.playSelected(root.randomPlayGeneration)
+        }
+      }
+
+    }
+  }
+
+  Process {
+    id: worldExpandProcess
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: root.worldExpandOutput = text
+    }
+    onExited: function(exitCode) {
+      var output = root.worldExpandOutput
+      root.worldExpandOutput = ""
+      if (!root.opened) return
+      root.worldExpansionMisses += 1
+      if (exitCode !== 0) {
+        root.scheduleWorldExpansion(30000)
+        return
+      }
+
+      var stations = null
+      try {
+        var parsed = JSON.parse(output || "[]")
+        if (Array.isArray(parsed)) stations = parsed
+      } catch (error) {
+        stations = null
+      }
+      if (stations === null || stations.length === 0) {
+        root.scheduleWorldExpansion(30000)
+        return
+      }
+
+      var merged = RadioModel.mergeStations(
+        root.worldStations, stations, root.worldStationLimit)
+      var added = merged.length - root.worldStations.length
+      if (added === 0) {
+        root.scheduleWorldExpansion(10000)
+        return
+      }
+      root.worldExpansionMisses = 0
+      root.worldStations = merged
+      if (root.mode === "world") root.setStationList("world", merged, true)
+      root.scheduleWorldExpansion(1600)
+    }
+  }
+
+  Process {
+    id: volumeProcess
+    property int submittedVolume: -1
+    property string output: ""
+    property string errorOutput: ""
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: volumeProcess.output = text
+    }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: volumeProcess.errorOutput = text
+    }
+    onExited: function(exitCode) {
+      if (exitCode !== 0) {
+        if (root.pendingVolume === submittedVolume) {
+          root.pendingVolume = -1
+          root.playerVolume = root.reportedVolume
+        } else {
+          Qt.callLater(root.flushPlayerVolume)
+        }
+        root.playerError = "Could not change volume"
+        return
+      }
+
+      root.statusReady = true
+      root.playerError = ""
+      if (root.pendingVolume === submittedVolume) {
+        root.pendingVolume = -1
+        root.playerVolume = root.reportedVolume
+        return
+      }
+      Qt.callLater(root.flushPlayerVolume)
+    }
+  }
+
+  Process {
+    id: outputsProcess
+    property string output: ""
+    property string errorOutput: ""
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: outputsProcess.output = text
+    }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: outputsProcess.errorOutput = text
+    }
+    onExited: function(exitCode) {
+      if (exitCode !== 0) {
+        root.outputsError = "Audio outputs are unavailable"
+        root.audioOutputs = []
+        return
+      }
+      var parsed = null
+      try {
+        var document = JSON.parse(outputsProcess.output || "{}")
+        if (document && Array.isArray(document.outputs)) parsed = document.outputs
+      } catch (error) {
+        parsed = null
+      }
+      if (parsed === null) {
+        root.outputsError = "Audio outputs are unavailable"
+        root.audioOutputs = []
+        return
+      }
+      root.audioOutputs = parsed.filter(function(row) {
+        return row && typeof row === "object"
+          && /^[A-Za-z0-9._:+-]{1,160}$/.test(String(row.id || ""))
+      }).map(function(row) {
+        return {
+          id: String(row.id),
+          label: String(row.label || row.id).replace(/[\r\n\t]+/g, " ").slice(0, 160)
+        }
+      })
+      root.outputsError = ""
+    }
+  }
+
+  Process {
+    id: outputProcess
+    property string output: ""
+    property string errorOutput: ""
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: outputProcess.output = text
+    }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: outputProcess.errorOutput = text
+    }
+    onExited: function(exitCode) {
+      if (exitCode === 0) {
+        root.statusReady = true
+        root.playerError = ""
+        root.outputMenuOpen = false
+        return
+      }
+      root.playerError = "Could not change audio output"
+    }
+  }
+
+  Process {
+    id: playerActionProcess
+    property string action: ""
+    property string output: ""
+    property string errorOutput: ""
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: playerActionProcess.output = text
+    }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: playerActionProcess.errorOutput = text
+    }
+    onExited: function(exitCode) {
+      var canceled = playerActionProcess.action === "play"
+        && (root.playCancellationRequested
+          || root.activePlayGeneration !== root.playerGeneration())
+      root.playCancellationRequested = false
+      if (exitCode !== 0 && !canceled) {
+        root.playerError = playerActionProcess.action === "play"
+          ? "Could not play this station" : "Player action failed"
+      }
+      if (exitCode === 0) root.statusReady = true
+      Qt.callLater(root.playPendingStation)
+    }
+  }
+
+  Process {
+    id: stopProcess
+    property string output: ""
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: stopProcess.output = text
+    }
+    onExited: function(exitCode) {
+      var state = null
+      if (exitCode !== 0) root.playerError = "Could not stop the player"
+      else {
+        // Apply Stop's acknowledgment before releasing newer playback requests.
+        state = root.applyPlayerState(stopProcess.output)
+        root.statusReady = true
+      }
+      var generation = root.playerGeneration()
+      // Only this Stop's increment can preserve requests made while it was running.
+      var canceledGeneration = state && state.stopGeneration === generation
+        ? state.canceledGeneration : null
+      if (root.pendingPlayStation && root.pendingPlayGeneration === canceledGeneration)
+        root.pendingPlayGeneration = generation
+      if (root.randomPlaybackPending && root.randomPlayGeneration === canceledGeneration)
+        root.randomPlayGeneration = generation
+      if (root.pendingPlayStation && root.pendingPlayGeneration !== generation)
+        root.cancelPendingPlay()
+      if (root.randomPlaybackPending && root.randomPlayGeneration !== generation)
+        root.randomPlaybackPending = false
+      root.localStopStatusPending = false
+      Qt.callLater(root.playPendingStation)
+    }
+  }
+
+  Process {
+    id: stateProcess
+    property string action: ""
+    property string output: ""
+    property string errorOutput: ""
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: stateProcess.output = text
+    }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: stateProcess.errorOutput = text
+    }
+    onExited: function(exitCode) {
+      if (exitCode === 0) {
+        if (stateProcess.action === "get") {
+          var mutationError = root.localError === "Favorite could not be updated"
+            || root.localError === "Listening history could not be updated" ? root.localError : ""
+          root.applyLocalState(output)
+          if (mutationError && !root.localError) root.localError = mutationError
+          root.refreshLocalSelection()
+        } else {
+          if (root.localError === "Favorite could not be updated") root.localError = ""
+          root.localReloadPending = true
+        }
+      } else {
+        root.localError = stateProcess.action === "favorite"
+          ? "Favorite could not be updated" : "Saved stations could not be loaded"
+      }
+
+      if (root.pendingFavoriteRequests.length > 0) {
+        Qt.callLater(root.startNextFavorite)
+        return
+      }
+      if (root.localReloadPending) root.requestLocalStateReload()
+    }
+  }
+
+  Process {
+    id: historyProcess
+    property string output: ""
+    property string errorOutput: ""
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: historyProcess.output = text
+    }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: historyProcess.errorOutput = text
+    }
+    onExited: function(exitCode) {
+      if (exitCode === 0) {
+        if (root.localError === "Listening history could not be updated") root.localError = ""
+        root.localReloadPending = true
+      } else {
+        root.localError = "Listening history could not be updated"
+      }
+
+      if (root.pendingRecentRequest) {
+        Qt.callLater(root.startRecordPlayed)
+        return
+      }
+      if (root.localReloadPending) root.requestLocalStateReload()
+    }
+  }
+
+  Timer {
+    id: searchDebounce
+    interval: 300
+    repeat: false
+    onTriggered: root.startFetch("search", String(searchField.text || "").trim())
+  }
+
+  Timer {
+    id: worldExpandTimer
+    interval: 1600
+    repeat: false
+    onTriggered: {
+      if (!root.opened || worldExpandProcess.running
+          || root.worldStations.length >= root.worldStationLimit) return
+      root.worldExpandOutput = ""
+      worldExpandProcess.command = [root.fetchPath, "world-more"]
+      worldExpandProcess.running = true
+    }
+  }
+
+  Timer {
+    id: windowSetupReloadTimer
+    interval: 100
+    repeat: false
+    onTriggered: root.registerWindowSetup()
+  }
+
+  Timer {
+    id: windowRevealTimer
+    interval: 50
+    repeat: false
+    onTriggered: {
+      if (panel.visible) root.windowFrameReady = true
+    }
+  }
+
+  Timer {
+    id: volumeTimer
+    interval: 90
+    repeat: false
+    onTriggered: root.flushPlayerVolume()
+  }
+
+  property bool started: false
+  onPluginApiChanged: { retryStart() }
+  onBinDirChanged: { retryStart() }
+
+  function retryStart() {
+    if (root.started || root.binDir === "") return;
+    root.started = true;
+    root.registerWindowSetup();
+    statusInitProcess.command = [playerPath, "status"];
+    statusInitProcess.running = true;
+  }
+
+  Component.onCompleted: {
+    if (typeof Atlas.Style.rootDensity !== "undefined") Atlas.Style.rootDensity = s
+    retryStart()
+  }
+
+  Connections {
+    target: Hyprland
+    function onRawEvent(event) { root.handleHyprlandEvent(event) }
+  }
+
+  // The Ryoku panel host mounts this root as the panel surface and owns the
+  // window, so the root Item doubles as the panel body. `panel` stays as an id
+  // alias so the body below reads unchanged.
+  Item {
+    id: panel
+    anchors.fill: parent
+    implicitWidth: root.preferredWidth
+    implicitHeight: root.preferredHeight
+    visible: root.windowFrameReady
+    opacity: root.windowFrameReady ? 1 : 0
+
+    onVisibleChanged: {
+      if (visible) root.scheduleWindowReveal()
+      if (!visible && root.opened) root.dismiss()
+    }
+
+    Rectangle {
+      id: card
+      anchors.fill: parent
+      // Theme [menu] border is bright; keep the window edge subtle so the globe reads flush.
+      color: root.background
+      radius: Atlas.Style.cornerRadius
+      border.width: 1
+      border.color: root.faint
+
+      Keys.priority: Keys.AfterItem
+      Keys.onPressed: function(event) {
+        if (root.outputMenuOpen && event.key === Qt.Key_Escape) {
+          root.outputMenuOpen = false
+          keyCatcher.forceActiveFocus()
+          event.accepted = true
+          return
+        }
+
+        if (searchField.activeFocus) {
+          if (event.key === Qt.Key_Escape) {
+            if (searchField.text) {
+              searchField.clear()
+              root.showWorld()
+            }
+            else keyCatcher.forceActiveFocus()
+            event.accepted = true
+          }
+          return
+        }
+
+        if (root.helpVisible) {
+          if (event.key === Qt.Key_Escape || root.isHelpKey(event)) {
+            root.toggleControls()
+            event.accepted = true
+          }
+          return
+        }
+
+        if (event.key === Qt.Key_Escape) {
+          root.dismiss()
+          event.accepted = true
+        } else if (root.isHelpKey(event)) {
+          root.toggleControls()
+          event.accepted = true
+        } else if (event.key === Qt.Key_Slash) {
+          searchField.forceActiveFocus()
+          searchField.selectAll()
+          event.accepted = true
+        } else if (event.key === Qt.Key_Up) {
+          root.moveSelection(-1)
+          event.accepted = true
+        } else if (event.key === Qt.Key_Down) {
+          root.moveSelection(1)
+          event.accepted = true
+        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+          root.playSelected()
+          event.accepted = true
+        } else if (event.key === Qt.Key_Space) {
+          if (root.playerRunning) root.playerAction("toggle")
+          else root.playSelected()
+          event.accepted = true
+        } else if (event.key === Qt.Key_R) {
+          root.tuneRandom()
+          event.accepted = true
+        } else if (event.key === Qt.Key_Plus || event.key === Qt.Key_Equal) {
+          root.changePlayerVolume(5)
+          event.accepted = true
+        } else if (event.key === Qt.Key_Minus) {
+          root.changePlayerVolume(-5)
+          event.accepted = true
+        } else if (event.key === Qt.Key_M) {
+          root.playerAction("mute")
+          event.accepted = true
+        } else if (event.key === Qt.Key_F && root.selectedStation) {
+          root.toggleFavorite(root.selectedStation.uuid)
+          event.accepted = true
+        }
+      }
+
+      MouseArea {
+        id: cardMouse
+        anchors.fill: parent
+        onClicked: keyCatcher.forceActiveFocus()
+      }
+
+      Item {
+        id: keyCatcher
+        anchors.fill: parent
+        focus: true
+        z: 1
+      }
+
+      Item {
+        id: header
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        height: root.headerHeight
+        z: 2
+
+        Text {
+          id: title
+          anchors.left: parent.left
+          anchors.leftMargin: root.edgeInset
+          anchors.right: searchField.left
+          anchors.rightMargin: Atlas.Style.spacing.sm
+          anchors.verticalCenter: parent.verticalCenter
+          text: "RADIO ATLAS"
+          textFormat: Text.PlainText
+          color: root.foreground
+          font.family: Atlas.Style.fontFamily
+          font.pixelSize: Atlas.Style.font.heading
+          font.bold: true
+          elide: Text.ElideRight
+        }
+
+        TextField {
+          id: searchField
+          anchors.right: randomButton.left
+          anchors.rightMargin: Atlas.Style.spacing.sm
+          anchors.verticalCenter: parent.verticalCenter
+          width: Math.min(Atlas.Style.space(330), card.width * 0.32)
+          placeholderText: "Search station, country, or genre"
+          maximumLength: 128
+          foreground: root.foreground
+          accent: root.accent
+          onTextEdited: {
+            if (!root.previewSearch(text)) return
+            searchDebounce.restart()
+          }
+          onAccepted: {
+            searchDebounce.stop()
+            root.search(text)
+          }
+        }
+
+        Button {
+          id: randomButton
+          anchors.right: helpButton.left
+          anchors.rightMargin: Atlas.Style.spacing.xs
+          anchors.verticalCenter: parent.verticalCenter
+          iconText: "\uf074"
+          tooltipText: "Tune randomly (R)"
+          focusable: true
+          foreground: root.foreground
+          accent: root.accent
+          onClicked: root.tuneRandom()
+        }
+
+        Button {
+          id: helpButton
+          anchors.right: closeButton.left
+          anchors.rightMargin: Atlas.Style.spacing.xs
+          anchors.verticalCenter: parent.verticalCenter
+          text: "?"
+          implicitWidth: randomButton.implicitWidth
+          implicitHeight: randomButton.implicitHeight
+          tooltipText: root.helpVisible ? "Hide controls (?)" : "Show controls (?)"
+          selected: root.helpVisible
+          focusable: true
+          foreground: root.foreground
+          accent: root.accent
+          Accessible.role: Accessible.Button
+          Accessible.name: tooltipText
+          onClicked: root.toggleControls()
+        }
+
+        Button {
+          id: closeButton
+          anchors.right: parent.right
+          anchors.rightMargin: root.edgeInset
+          anchors.verticalCenter: parent.verticalCenter
+          iconText: "\uf00d"
+          tooltipText: "Close"
+          focusable: true
+          foreground: root.foreground
+          accent: root.accent
+          onClicked: root.dismiss()
+        }
+
+        Rectangle {
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: parent.bottom
+          height: 1
+          color: root.faint
+        }
+      }
+
+      Item {
+        id: body
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: header.bottom
+        anchors.bottom: parent.bottom
+        visible: !root.helpVisible
+        z: 2
+
+        Item {
+          id: mapPane
+          anchors.left: parent.left
+          anchors.top: parent.top
+          anchors.bottom: parent.bottom
+          anchors.right: sidebar.left
+
+          Globe {
+            id: globe
+            anchors.fill: parent
+            // Equal inset on all sides so the globe doesn't merge with the window border.
+            anchors.margins: root.edgeInset
+            countries: root.countries
+            stations: root.currentGeoStations
+            selectedStation: root.playingStation || root.selectedStation
+            activeCountryCode: root.activeCountryCode
+            backgroundColor: root.mapBackground
+            sphereColor: root.mapSphere
+            landColor: root.mapLand
+            gridColor: root.mapGrid
+            outlineColor: root.lightTheme ? "#3c4247" : "#9099a3"
+            signalColor: root.lightTheme ? "#202428" : "#d9dee3"
+            accentColor: root.accent
+            textColor: root.foreground
+            fontFamily: Atlas.Style.fontFamily
+            onInteractionStarted: {
+              root.keyboardSelectionVisible = false
+              keyCatcher.forceActiveFocus()
+            }
+            onPointerMoved: root.keyboardSelectionVisible = false
+            onStationActivated: function(station) { root.activateMapStation(station) }
+            onCountryActivated: function(code, name) { root.browseCountry(code, name) }
+          }
+
+          Rectangle {
+            id: zoomControls
+            anchors.right: parent.right
+            anchors.rightMargin: root.overlaySideInset
+            anchors.bottom: signalCount.top
+            anchors.bottomMargin: root.overlayInset
+            width: Atlas.Style.space(34)
+            height: Atlas.Style.space(69)
+            radius: Atlas.Style.cornerRadius
+            color: root.background
+            border.color: root.faint
+            border.width: 1
+            z: 2
+
+            Accessible.role: Accessible.Pane
+            Accessible.name: "Zoom controls"
+
+            // Keep disabled controls from passing clicks to stations underneath.
+            MouseArea {
+              anchors.fill: parent
+              acceptedButtons: Qt.LeftButton
+            }
+
+            Button {
+              id: zoomInButton
+              anchors.top: parent.top
+              anchors.left: parent.left
+              anchors.right: parent.right
+              height: Atlas.Style.space(34)
+              iconText: "\uf067"
+              tooltipText: "Zoom in"
+              focusable: true
+              foreground: globe.canZoomIn ? root.foreground : root.dim
+              accent: root.accent
+              opacity: globe.canZoomIn ? 1.0 : 0.4
+              enabled: globe.canZoomIn
+              radius: zoomControls.radius
+              bottomLeftRadius: 0
+              bottomRightRadius: 0
+              background: "transparent"
+              horizontalPadding: 0
+              verticalPadding: 0
+              Accessible.role: Accessible.Button
+              Accessible.name: "Zoom in"
+              Accessible.onPressAction: if (enabled) clicked()
+              onClicked: {
+                globe.zoomIn()
+                keyCatcher.forceActiveFocus()
+              }
+            }
+
+            Rectangle {
+              id: zoomDivider
+              anchors.top: zoomInButton.bottom
+              anchors.left: parent.left
+              anchors.right: parent.right
+              height: 1
+              color: root.faint
+            }
+
+            Button {
+              id: zoomOutButton
+              anchors.top: zoomDivider.bottom
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.bottom: parent.bottom
+              iconText: "\uf068"
+              tooltipText: "Zoom out"
+              focusable: true
+              foreground: globe.canZoomOut ? root.foreground : root.dim
+              accent: root.accent
+              opacity: globe.canZoomOut ? 1.0 : 0.4
+              enabled: globe.canZoomOut
+              radius: zoomControls.radius
+              topLeftRadius: 0
+              topRightRadius: 0
+              background: "transparent"
+              horizontalPadding: 0
+              verticalPadding: 0
+              Accessible.role: Accessible.Button
+              Accessible.name: "Zoom out"
+              Accessible.onPressAction: if (enabled) clicked()
+              onClicked: {
+                globe.zoomOut()
+                keyCatcher.forceActiveFocus()
+              }
+            }
+          }
+
+          Text {
+            id: mapHint
+            anchors.left: parent.left
+            anchors.leftMargin: root.overlaySideInset
+            anchors.right: signalCount.left
+            anchors.rightMargin: Atlas.Style.spacing.md
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: root.overlayInset
+            text: root.fetchError || root.localError
+              ? root.fetchError || root.localError
+              : (root.activeCountryName
+                ? root.activeCountryName + " · click another country to browse"
+                : "Drag or flick to spin · wheel to zoom · click a signal or country")
+            textFormat: Text.PlainText
+            color: root.fetchError || root.localError ? root.urgent : root.dim
+            font.family: Atlas.Style.fontFamily
+            font.pixelSize: Atlas.Style.font.caption
+            elide: Text.ElideRight
+          }
+
+          // Caption text sits on its line box, so the visible bottom gap includes the
+          // descent; side insets add the same amount so all edges read equal.
+          FontMetrics {
+            id: overlayMetrics
+            font.family: Atlas.Style.fontFamily
+            font.pixelSize: Atlas.Style.font.caption
+          }
+
+          Text {
+            id: signalCount
+            anchors.right: parent.right
+            anchors.rightMargin: root.overlaySideInset
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: root.overlayInset
+            text: root.currentGeoStations.length + " signals"
+            textFormat: Text.PlainText
+            color: root.dim
+            font.family: Atlas.Style.fontFamily
+            font.pixelSize: Atlas.Style.font.caption
+          }
+        }
+
+        Rectangle {
+          anchors.top: parent.top
+          anchors.bottom: parent.bottom
+          anchors.right: sidebar.left
+          width: 1
+          color: root.faint
+        }
+
+        Item {
+          id: sidebar
+          width: root.sidebarWidth
+          anchors.right: parent.right
+          anchors.top: parent.top
+          anchors.bottom: parent.bottom
+
+          Item {
+            id: tabs
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            height: Atlas.Style.spacing.controlHeight + root.edgeInset * 2
+
+            Row {
+              id: tabRow
+              anchors.left: parent.left
+              anchors.leftMargin: root.edgeInset
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: Atlas.Style.spacing.xs
+
+              Button {
+                id: worldTab
+                text: "World"
+                selected: root.mode === "world"
+                focusable: true
+                foreground: root.foreground
+                accent: root.accent
+                fontSize: Atlas.Style.font.caption
+                onClicked: root.showWorld()
+              }
+              Button {
+                id: favoritesTab
+                text: "Favorites"
+                selected: root.mode === "favorites"
+                focusable: true
+                foreground: root.foreground
+                accent: root.accent
+                fontSize: Atlas.Style.font.caption
+                onClicked: root.showFavorites()
+              }
+              Button {
+                id: recentTab
+                text: "Recent"
+                selected: root.mode === "recent"
+                focusable: true
+                foreground: root.foreground
+                accent: root.accent
+                fontSize: Atlas.Style.font.caption
+                onClicked: root.showRecent()
+              }
+            }
+
+            Rectangle {
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.bottom: parent.bottom
+              height: 1
+              color: root.faint
+            }
+
+            // Always-visible active tab marker; Button fill is overridden by hover/focus.
+            Rectangle {
+              readonly property Item tab: root.mode === "favorites" ? favoritesTab
+                : root.mode === "recent" ? recentTab : worldTab
+              x: tabRow.x + tab.x
+              width: tab.width
+              anchors.bottom: parent.bottom
+              height: 2
+              color: root.accent
+              z: 1
+            }
+          }
+
+          ListView {
+            id: stationList
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: tabs.bottom
+            anchors.bottom: playerPanel.top
+            clip: true
+            model: root.displayStations
+            currentIndex: root.selectedIndex
+            boundsBehavior: Flickable.StopAtBounds
+            cacheBuffer: 500
+            interactive: !root.outputMenuOpen
+
+            QQC.ScrollBar.vertical: QQC.ScrollBar {}
+
+            HoverHandler {
+              parent: stationList
+              property point lastPosition: Qt.point(-1, -1)
+              onHoveredChanged: if (!hovered) lastPosition = Qt.point(-1, -1)
+              onPointChanged: {
+                // Scrolling changes local hover coordinates without moving the pointer.
+                var position = point.scenePosition
+                if (!hovered || (position.x === lastPosition.x
+                    && position.y === lastPosition.y)) return
+                lastPosition = position
+                position = stationList.mapFromItem(null, position.x, position.y)
+                var row = stationList.itemAt(position.x + stationList.contentX,
+                  position.y + stationList.contentY)
+                if (stationList.interactive && row && position.x < row.selectionWidth
+                    && (row.index !== root.selectedIndex || root.keyboardSelectionVisible))
+                  root.setSelection(row.index)
+              }
+            }
+
+            delegate: Rectangle {
+              id: stationRow
+              required property var modelData
+              required property int index
+              readonly property real selectionWidth: rowMouse.width
+
+              width: stationList.width
+              height: Atlas.Style.space(64)
+              color: root.playingStationUuid === stationRow.modelData.uuid
+                ? Atlas.Style.selectedFillFor(root.foreground, root.accent)
+                : (rowMouse.containsMouse
+                  ? Atlas.Style.hoverFillFor(root.foreground, root.accent)
+                  : "transparent")
+
+              Accessible.name: modelData.name + ", " + RadioModel.stationMeta(modelData)
+              Accessible.role: Accessible.ListItem
+              Accessible.selected: root.selectedIndex === index
+              Accessible.onPressAction: {
+                root.setSelection(stationRow.index)
+                root.playSelected()
+              }
+
+              Rectangle {
+                visible: root.playingStationUuid === stationRow.modelData.uuid
+                  || (root.keyboardSelectionVisible && root.selectedIndex === stationRow.index)
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: 2
+                color: root.accent
+                z: 1
+              }
+
+              Rectangle {
+                anchors.fill: parent
+                visible: root.keyboardSelectionVisible
+                  && root.selectedIndex === stationRow.index
+                  && root.playingStationUuid !== stationRow.modelData.uuid
+                  && !rowMouse.containsMouse
+                color: "transparent"
+                border.color: root.accent
+                border.width: 1
+              }
+
+              Text {
+                anchors.left: parent.left
+                anchors.leftMargin: root.edgeInset
+                anchors.right: favoriteButton.left
+                anchors.rightMargin: Atlas.Style.spacing.sm
+                anchors.top: parent.top
+                anchors.topMargin: Atlas.Style.space(10)
+                text: RadioModel.cleanText(stationRow.modelData.name)
+                horizontalAlignment: Text.AlignLeft
+                textFormat: Text.PlainText
+                color: root.foreground
+                font.family: Atlas.Style.fontFamily
+                font.pixelSize: Atlas.Style.fontBaseSize
+                font.bold: root.playingStationUuid === stationRow.modelData.uuid
+                elide: Text.ElideRight
+              }
+
+              Text {
+                anchors.left: parent.left
+                anchors.leftMargin: root.edgeInset
+                anchors.right: favoriteButton.left
+                anchors.rightMargin: Atlas.Style.spacing.sm
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: Atlas.Style.space(9)
+                text: RadioModel.stationDetails(stationRow.modelData, 2)
+                horizontalAlignment: Text.AlignLeft
+                textFormat: Text.PlainText
+                color: root.dim
+                font.family: Atlas.Style.fontFamily
+                font.pixelSize: Atlas.Style.font.caption
+                elide: Text.ElideRight
+              }
+
+              Button {
+                id: favoriteButton
+                anchors.right: parent.right
+                anchors.rightMargin: root.edgeInset
+                anchors.verticalCenter: parent.verticalCenter
+                iconText: root.isFavorite(stationRow.modelData.uuid) ? "\uf005" : "\uf006"
+                tooltipText: root.isFavorite(stationRow.modelData.uuid) ? "Remove favorite" : "Add favorite"
+                foreground: root.isFavorite(stationRow.modelData.uuid)
+                  ? root.favoriteColor : root.foreground
+                accent: root.accent
+                onClicked: root.toggleFavorite(stationRow.modelData.uuid)
+              }
+
+              MouseArea {
+                id: rowMouse
+                anchors.left: parent.left
+                anchors.right: favoriteButton.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                  root.setSelection(stationRow.index)
+                  root.playSelected()
+                  keyCatcher.forceActiveFocus()
+                }
+              }
+
+              Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                height: 1
+                color: root.faint
+              }
+            }
+
+            Text {
+              anchors.centerIn: parent
+              width: parent.width - Atlas.Style.spacing.panelPadding * 2
+              visible: (!root.fetching || !root.remoteMode) && root.displayStations.length === 0
+              text: root.emptyStateText()
+              textFormat: Text.PlainText
+              color: root.fetchError || root.localError ? root.urgent : root.dim
+              font.family: Atlas.Style.fontFamily
+              font.pixelSize: Atlas.Style.fontBaseSize
+              horizontalAlignment: Text.AlignHCenter
+              wrapMode: Text.Wrap
+            }
+
+            Text {
+              anchors.centerIn: parent
+              visible: root.fetching && root.remoteMode && root.displayStations.length === 0
+              text: "LOADING STATIONS"
+              textFormat: Text.PlainText
+              color: root.dim
+              font.family: Atlas.Style.fontFamily
+              font.pixelSize: Atlas.Style.font.caption
+            }
+          }
+
+          Rectangle {
+            id: playerPanel
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: Math.max(Atlas.Style.space(126), Math.max(stationLogo.visible ? stationLogo.height : 0,
+                nowPlaying.height + (trackLine.visible ? Math.ceil(trackLine.font.pixelSize * 1.4) + Atlas.Style.spacing.xxs : 0)
+                + playerStatus.height + Atlas.Style.spacing.xs)
+              + playerControls.implicitHeight + root.edgeInset * 3 + Atlas.Style.spacing.md)
+            // Subtle tint + stronger divider so the block reads apart from the list.
+            color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.04)
+
+            Rectangle {
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.top: parent.top
+              height: 1
+              color: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.2)
+            }
+
+            Rectangle {
+              id: stationLogo
+              // Only shown once a real logo has loaded; otherwise the name takes its place.
+              visible: root.playerRunning && !root.playerStopped && stationLogoImage.status === Image.Ready
+              anchors.left: parent.left
+              anchors.leftMargin: root.edgeInset
+              anchors.top: parent.top
+              anchors.topMargin: root.edgeInset * 2
+              width: Atlas.Style.space(38)
+              height: width
+              radius: Atlas.Style.cornerRadius
+              clip: true
+              color: "transparent"
+
+              Image {
+                id: stationLogoImage
+                anchors.fill: parent
+                source: root.playingLogoPath
+                fillMode: Image.PreserveAspectFit
+                asynchronous: true
+                cache: true
+                smooth: true
+                sourceSize.width: width * 2
+                sourceSize.height: height * 2
+              }
+            }
+
+            Text {
+              id: nowPlaying
+              horizontalAlignment: Text.AlignLeft
+              anchors.left: stationLogo.visible ? stationLogo.right : parent.left
+              anchors.leftMargin: Atlas.Style.spacing.md
+              anchors.right: playingFavoriteButton.left
+              anchors.rightMargin: Atlas.Style.spacing.xs
+              anchors.top: parent.top
+              anchors.topMargin: root.edgeInset * 2
+              text: root.playerRunning && !root.playerStopped
+                ? (root.playingStationName || root.playerTitle || "Unknown station")
+                : "Nothing playing"
+              textFormat: Text.PlainText
+              color: root.foreground
+              font.family: Atlas.Style.fontFamily
+              font.pixelSize: Atlas.Style.fontBaseSize
+              font.bold: root.playerRunning
+              elide: Text.ElideRight
+            }
+
+            Text {
+              id: trackLine
+              horizontalAlignment: Text.AlignLeft
+              anchors.left: nowPlaying.left
+              anchors.right: nowPlaying.right
+              anchors.top: nowPlaying.bottom
+              anchors.topMargin: Atlas.Style.spacing.xxs
+              visible: root.playerRunning && !root.playerStopped && root.playingTrackParts.title !== ""
+              text: root.playingTrackParts.artist
+                ? root.playingTrackParts.title + " · " + root.playingTrackParts.artist
+                : root.playingTrackParts.title
+              textFormat: Text.PlainText
+              color: root.foreground
+
+              MouseArea {
+                id: trackCopyMouse
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: Math.min(parent.width, parent.implicitWidth)
+                enabled: parent.visible && root.trackCopyText !== ""
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.copyTrack()
+
+                PanelToolTip {
+                  visible: trackCopyMouse.containsMouse || root.trackCopied
+                  text: (root.trackCopied ? "Copied: " : "Copy: ") + root.trackCopyText
+                  delay: root.trackCopied ? 0 : 400
+                }
+              }
+              font.family: Atlas.Style.fontFamily
+              font.pixelSize: Atlas.Style.fontBaseSizeSmall
+              elide: Text.ElideRight
+            }
+
+            Text {
+              id: playerStatus
+              horizontalAlignment: Text.AlignLeft
+              anchors.left: nowPlaying.left
+              anchors.right: nowPlaying.right
+              anchors.top: trackLine.visible ? trackLine.bottom : nowPlaying.bottom
+              anchors.topMargin: Atlas.Style.spacing.xs
+              text: root.playerError
+                ? root.playerError
+                : root.streamError ? root.streamError + ". Play to retry, or Next."
+                : (!root.playerRunning ? "Choose a signal to begin"
+                : (root.playerStopped ? "Stopped" : root.playerPaused ? "Paused" : "Live")
+                  + (root.playlistCount > 1 ? " · " + root.playlistCount + " stations queued" : ""))
+              textFormat: Text.PlainText
+              color: root.playerError || root.streamError ? root.urgent : root.dim
+              font.family: Atlas.Style.fontFamily
+              font.pixelSize: Atlas.Style.font.caption
+              elide: Text.ElideRight
+            }
+
+            Button {
+              id: playingFavoriteButton
+              anchors.right: parent.right
+              anchors.rightMargin: root.edgeInset
+              anchors.top: parent.top
+              anchors.topMargin: root.edgeInset * 2
+              visible: root.playerRunning && root.playingStationUuid !== ""
+              iconText: root.isFavorite(root.playingStationUuid) ? "\uf005" : "\uf006"
+              tooltipText: root.isFavorite(root.playingStationUuid)
+                ? "Remove playing station from favorites"
+                : "Add playing station to favorites"
+              focusable: true
+              foreground: root.isFavorite(root.playingStationUuid)
+                ? root.favoriteColor : root.foreground
+              accent: root.accent
+              Accessible.role: Accessible.Button
+              Accessible.name: tooltipText
+              onClicked: root.toggleFavorite(root.playingStationUuid)
+            }
+
+            GridLayout {
+              id: playerControls
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.bottom: parent.bottom
+              anchors.leftMargin: root.edgeInset
+              anchors.rightMargin: root.edgeInset
+              anchors.bottomMargin: root.edgeInset
+              columns: width < transportControls.implicitWidth
+                + outputControls.implicitWidth - volumeSlider.Layout.preferredWidth
+                + volumeSlider.Layout.minimumWidth + columnSpacing ? 1 : 2
+              columnSpacing: Atlas.Style.spacing.xs + Atlas.Style.spacing.md
+              rowSpacing: Atlas.Style.spacing.xs
+
+              Row {
+                id: transportControls
+                Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+                spacing: Atlas.Style.spacing.xs
+
+                Button {
+                  iconText: "\uf048"
+                  implicitWidth: playerIconMetrics.buttonWidth
+                  implicitHeight: playerIconMetrics.buttonHeight
+                  tooltipText: "Previous station"
+                  enabled: root.playerRunning && !root.playerActionBusy
+                  focusable: true
+                  foreground: root.foreground
+                  accent: root.accent
+                  onClicked: root.playerAction("previous")
+                }
+                Button {
+                  iconText: root.playerRunning && !root.playerStopped && !root.playerPaused ? "\uf04c" : "\uf04b"
+                  implicitWidth: playerIconMetrics.buttonWidth
+                  implicitHeight: playerIconMetrics.buttonHeight
+                  tooltipText: root.streamError ? "Retry station"
+                    : root.playerRunning && !root.playerStopped && !root.playerPaused ? "Pause" : "Play"
+                  enabled: !root.playerActionBusy
+                  focusable: true
+                  foreground: root.foreground
+                  accent: root.accent
+                  onClicked: root.playerRunning ? root.playerAction("toggle") : root.playSelected()
+                }
+                Button {
+                  iconText: "\uf051"
+                  implicitWidth: playerIconMetrics.buttonWidth
+                  implicitHeight: playerIconMetrics.buttonHeight
+                  tooltipText: "Next station"
+                  enabled: root.playerRunning && !root.playerActionBusy
+                  focusable: true
+                  foreground: root.foreground
+                  accent: root.accent
+                  onClicked: root.playerAction("next")
+                }
+                Button {
+                  iconText: "\uf04d"
+                  implicitWidth: playerIconMetrics.buttonWidth
+                  implicitHeight: playerIconMetrics.buttonHeight
+                  tooltipText: "Stop"
+                  enabled: (root.playerRunning || root.playPreparing || root.randomPlaybackPending)
+                    && !stopProcess.running
+                    && !root.playCancellationRequested
+                    && (!playerActionProcess.running || root.playPreparing)
+                  focusable: true
+                  foreground: root.foreground
+                  accent: root.accent
+                  onClicked: root.stopPlayer()
+                }
+              }
+
+              RowLayout {
+                id: outputControls
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignRight | Qt.AlignBottom
+                spacing: Atlas.Style.spacing.xs
+
+                Button {
+                  id: muteButton
+                  iconText: root.playerMuted || root.playerVolume === 0 ? "\uf026" : "\uf028"
+                  Layout.preferredWidth: playerIconMetrics.muteWidth
+                  Layout.preferredHeight: playerIconMetrics.buttonHeight
+
+                  // Fixed widths: transport buttons share the widest transport icon and
+                  // mute uses its wider state, so toggling icons never shifts the row.
+                  Item {
+                    id: playerIconMetrics
+                    visible: false
+                    readonly property real buttonWidth: Math.max(metricPlay.implicitWidth, metricPause.implicitWidth,
+                      metricPrevious.implicitWidth, metricNext.implicitWidth, metricStop.implicitWidth)
+                    readonly property real muteWidth: Math.max(metricMuted.implicitWidth, metricVolume.implicitWidth)
+                    readonly property real buttonHeight: Math.max(metricPlay.implicitHeight, metricVolume.implicitHeight,
+                      metricOutput.implicitHeight)
+                    Button { id: metricPlay; iconText: "\uf04b"; focusable: true }
+                    Button { id: metricPause; iconText: "\uf04c"; focusable: true }
+                    Button { id: metricPrevious; iconText: "\uf048"; focusable: true }
+                    Button { id: metricNext; iconText: "\uf051"; focusable: true }
+                    Button { id: metricStop; iconText: "\uf04d"; focusable: true }
+                    Button { id: metricMuted; iconText: "\uf026"; focusable: true }
+                    Button { id: metricVolume; iconText: "\uf028"; focusable: true }
+                    Button { id: metricOutput; iconText: "\uf0a1"; focusable: true }
+                  }
+                  tooltipText: root.playerMuted ? "Unmute" : "Mute (M)"
+                  active: root.playerMuted
+                  enabled: root.playerRunning && !root.playerActionBusy
+                  focusable: true
+                  foreground: root.foreground
+                  accent: root.accent
+                  onClicked: root.playerAction("mute")
+                }
+
+                PanelSlider {
+                  id: volumeSlider
+                  Layout.fillWidth: true
+                  Layout.minimumWidth: knobSize * 2
+                  Layout.preferredWidth: Atlas.Style.space(116)
+                  minimum: 0
+                  maximum: 100
+                  step: 1
+                  integer: true
+                  value: root.playerVolume
+                  trackColor: root.faint
+                  fillColor: root.accent
+                  knobColor: root.foreground
+                  tickColor: root.background
+                  enabled: !stopProcess.running
+                  Accessible.name: "Radio volume"
+                  onMoved: function(nextVolume) { root.setPlayerVolume(nextVolume) }
+                  onRightClicked: root.playerAction("mute")
+
+                  // Floating value label; outside the layout so nothing reflows.
+                  Text {
+                    id: volumePercent
+                    visible: volumeSlider._hot || muteButton.hot
+                    text: Math.round(volumeSlider.liveValue) + "%"
+                    x: Math.max(0, Math.min(parent.width - width,
+                      parent.width * volumeSlider.progress - width / 2))
+                    anchors.bottom: parent.top
+                    anchors.bottomMargin: Atlas.Style.spacing.xxs
+                    textFormat: Text.PlainText
+                    color: root.dim
+                    font.family: Atlas.Style.fontFamily
+                    font.pixelSize: Atlas.Style.font.caption
+                  }
+                }
+
+                Button {
+                  id: outputButton
+                  Layout.preferredHeight: playerIconMetrics.buttonHeight
+                  Layout.leftMargin: Atlas.Style.spacing.md
+                  iconText: "\uf0a1"
+                  tooltipText: root.playerOutput
+                    ? "Audio output: " + root.outputLabel(root.playerOutput)
+                    : "Choose audio output"
+                  active: root.playerOutput !== ""
+                  enabled: !stopProcess.running && !outputProcess.running
+                  focusable: true
+                  foreground: root.foreground
+                  accent: root.accent
+                  onClicked: root.toggleOutputMenu()
+                }
+              }
+            }
+          }
+
+          MouseArea {
+            visible: root.outputMenuOpen
+            anchors.fill: parent
+            z: 2
+            onClicked: root.outputMenuOpen = false
+          }
+
+          Rectangle {
+            id: outputMenu
+            visible: root.outputMenuOpen
+            readonly property point buttonPosition: {
+              sidebar.width
+              sidebar.height
+              outputControls.x
+              outputControls.y
+              return outputButton.mapToItem(
+                sidebar, outputButton.width / 2, 0)
+            }
+            x: Math.max(Atlas.Style.spacing.sm, Math.min(
+              parent.width - width - Atlas.Style.spacing.sm,
+              buttonPosition.x - width / 2))
+            y: buttonPosition.y - height - Atlas.Style.spacing.xs
+            z: 3
+            width: Math.min(Atlas.Style.space(300), parent.width - Atlas.Style.spacing.md * 2)
+            height: outputMenuColumn.implicitHeight + Atlas.Style.spacing.md * 2
+            radius: Atlas.Style.cornerRadius
+            color: root.background
+            border.color: root.faint
+            border.width: 1
+
+            Accessible.role: Accessible.Pane
+            Accessible.name: "Audio output"
+
+            Column {
+              id: outputMenuColumn
+              anchors.top: parent.top
+              anchors.topMargin: Atlas.Style.spacing.md
+              anchors.left: parent.left
+              anchors.right: parent.right
+              spacing: Atlas.Style.spacing.xs
+
+              Text {
+                id: outputMenuTitle
+                anchors.left: parent.left
+                anchors.leftMargin: Atlas.Style.spacing.xs
+                text: "AUDIO OUTPUT"
+                textFormat: Text.PlainText
+                color: root.dim
+                font.family: Atlas.Style.fontFamily
+                font.pixelSize: Atlas.Style.font.caption
+                font.bold: true
+              }
+
+              ListView {
+                id: outputList
+                width: parent.width
+                height: Math.min(contentHeight, Atlas.Style.space(320), Math.max(0,
+                  outputMenu.buttonPosition.y - Atlas.Style.spacing.xs - Atlas.Style.spacing.sm
+                    - Atlas.Style.spacing.md * 2 - outputMenuTitle.height - outputMenuColumn.spacing))
+                model: root.outputChoices
+                spacing: Atlas.Style.spacing.xs
+                clip: true
+                boundsBehavior: Flickable.StopAtBounds
+
+                QQC.ScrollBar.vertical: QQC.ScrollBar {
+                  policy: QQC.ScrollBar.AsNeeded
+                }
+
+                delegate: Button {
+                  id: outputOption
+                  required property var modelData
+                  width: ListView.view.width
+                  leftAlign: true
+                  text: outputOption.modelData.label
+                  selected: outputOption.modelData.id === root.playerOutput
+                  focusable: true
+                  foreground: root.foreground
+                  accent: root.accent
+                  Accessible.role: Accessible.Button
+                  Accessible.name: outputOption.modelData.label
+                  onClicked: root.selectOutput(outputOption.modelData.id)
+                }
+              }
+
+              Text {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: Atlas.Style.spacing.xs
+                visible: root.audioOutputs.length === 0 && !outputsProcess.running
+                text: root.outputsError || "No other audio outputs found"
+                textFormat: Text.PlainText
+                color: root.outputsError ? root.urgent : root.dim
+                font.family: Atlas.Style.fontFamily
+                font.pixelSize: Atlas.Style.font.caption
+                wrapMode: Text.Wrap
+              }
+            }
+          }
+        }
+      }
+
+      Flickable {
+        id: controlsPane
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: header.bottom
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: card.borderLeft
+        anchors.rightMargin: card.borderRight
+        anchors.bottomMargin: card.borderBottom
+        visible: root.helpVisible
+        clip: true
+        contentWidth: width
+        contentHeight: Math.max(height, controlsContent.height + Atlas.Style.spacing.panelPadding * 2)
+        boundsBehavior: Flickable.StopAtBounds
+        z: 2
+        Accessible.role: Accessible.Pane
+        Accessible.name: "Radio Atlas controls"
+
+        Rectangle {
+          parent: controlsPane
+          anchors.fill: parent
+          color: root.background
+          z: -1
+        }
+
+        QQC.ScrollBar.vertical: QQC.ScrollBar {}
+
+        Column {
+          id: controlsContent
+          anchors.horizontalCenter: parent.horizontalCenter
+          y: Math.max(Atlas.Style.spacing.panelPadding, (controlsPane.height - height) / 2)
+          width: Math.min(parent.width - Atlas.Style.spacing.panelPadding * 2, Atlas.Style.space(920))
+          height: implicitHeight
+          spacing: Atlas.Style.space(24)
+
+          Text {
+            text: "CONTROLS"
+            textFormat: Text.PlainText
+            color: root.foreground
+            font.family: Atlas.Style.fontFamily
+            font.pixelSize: Atlas.Style.font.heading
+            font.bold: true
+          }
+
+          Grid {
+            id: controlsColumns
+            width: parent.width
+            height: implicitHeight
+            columns: width >= Atlas.Style.space(640) ? 2 : 1
+            columnSpacing: Atlas.Style.space(72)
+            rowSpacing: Atlas.Style.space(24)
+
+            Repeater {
+              model: root.controlSections
+
+              delegate: Column {
+                id: controlSection
+                required property var modelData
+                width: (controlsColumns.width - controlsColumns.columnSpacing * (controlsColumns.columns - 1))
+                  / controlsColumns.columns
+                height: implicitHeight
+
+                Text {
+                  width: parent.width
+                  height: Atlas.Style.space(36)
+                  text: controlSection.modelData.title
+                  textFormat: Text.PlainText
+                  color: root.dim
+                  font.family: Atlas.Style.fontFamily
+                  font.pixelSize: Atlas.Style.font.caption
+                  font.bold: true
+                  verticalAlignment: Text.AlignVCenter
+                }
+
+                Repeater {
+                  model: controlSection.modelData.controls
+
+                  delegate: Item {
+                    required property var modelData
+                    width: controlSection.width
+                    height: Atlas.Style.space(38)
+
+                    Text {
+                      id: controlInput
+                      anchors.left: parent.left
+                      anchors.verticalCenter: parent.verticalCenter
+                      width: Atlas.Style.space(controlSection.modelData.inputWidth)
+                      text: modelData.input
+                      textFormat: Text.PlainText
+                      color: root.foreground
+                      font.family: Atlas.Style.fontFamily
+                      font.pixelSize: Atlas.Style.font.caption
+                      font.bold: true
+                      elide: Text.ElideRight
+                    }
+
+                    Text {
+                      anchors.left: controlInput.right
+                      anchors.right: parent.right
+                      anchors.verticalCenter: parent.verticalCenter
+                      text: modelData.action
+                      textFormat: Text.PlainText
+                      color: root.dim
+                      font.family: Atlas.Style.fontFamily
+                      font.pixelSize: Atlas.Style.fontBaseSize
+                      elide: Text.ElideRight
+                    }
+
+                    Rectangle {
+                      anchors.left: parent.left
+                      anchors.right: parent.right
+                      anchors.bottom: parent.bottom
+                      height: 1
+                      color: root.faint
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

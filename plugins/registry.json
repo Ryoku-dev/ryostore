@@ -1941,6 +1941,36 @@
       "windowManager": "hyprland",
       "windowManagerReason": "Uses Hyprland's device API to assign layouts per keyboard.",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/kbd-layouts"
+    },
+    {
+      "id": "radio-atlas",
+      "name": "Radio Atlas",
+      "version": "0.1.15",
+      "path": "plugins/radio-atlas",
+      "author": "hshindys <hshindys@users.noreply.github.com>",
+      "summary": "Explore live radio on a rotatable globe from the bar, and play stations through mpv with an MPRIS bridge.",
+      "description": "Explore live radio on a rotatable globe from the bar, and play stations through mpv with an MPRIS bridge. Ported from akshar.radio-atlas (Omarchy bar widget, MIT, by Akshar Patel) to the Ryoku plugin contract.",
+      "tags": [
+        "radio",
+        "music",
+        "globe",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "eb5c2c82f761562e48a0f015907ae1d6e648004e38e66ea6da8974ff155e5c37",
+      "official": false,
+      "tagline": "Explore live radio on a rotatable globe from the bar, and play stations through mpv with an MPRIS bridge.",
+      "icon": "radio",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-22"
     }
   ]
 }

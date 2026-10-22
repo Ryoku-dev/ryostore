@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "id": "radio-atlas",
+  "name": "Radio Atlas",
+  "version": "0.1.15",
+  "author": "hshindys <hshindys@users.noreply.github.com>",
+  "license": "MIT",
+  "official": false,
+  "description": "Explore live radio on a rotatable globe from the bar, and play stations through mpv with an MPRIS bridge. Ported from akshar.radio-atlas (Omarchy bar widget, MIT, by Akshar Patel) to the Ryoku plugin contract.",
+  "tags": [
+    "radio",
+    "music",
+    "globe",
+    "bar-widget"
+  ],
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 520
+  },
+  "files": [
+    "bin/radio-fetch",
+    "bin/radio-player",
+    "bin/radio-state",
+    "bin/radio-session",
+    "bin/radio-sandbox",
+    "bin/radio-mpris",
+    "bin/radio-proxy",
+    "bin/radio-status.lua",
+    "bin/radio-favicon",
+    "bin/manifest.json",
+    "lib/Globe.qml",
+    "lib/RadioModel.js",
+    "lib/Style.qml",
+    "lib/qmldir",
+    "assets/countries.json",
+    "assets/country-search.json",
+    "assets/NOTICE.md",
+    "assets/preview-widget.png"
+  ],
+  "commands": [
+    "bin/radio-fetch",
+    "bin/radio-player",
+    "bin/radio-state",
+    "bin/radio-session",
+    "bin/radio-sandbox",
+    "bin/radio-mpris",
+    "bin/radio-proxy",
+    "bin/radio-favicon"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "full"
+    ],
+    "network": [
+      "all.api.radio-browser.info",
+      "api.radio-browser.info",
+      "127.0.0.1",
+      "127.0.0.1:18765"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Radio Atlas",
+    "stateDir": "$XDG_STATE_HOME/ryoku/plugins/radio-atlas",
+    "icon": "radio"
+  },
+  "dependencies": {
+    "commands": [
+      "bash",
+      "curl",
+      "flock",
+      "getent",
+      "install",
+      "ip",
+      "jq",
+      "mpv",
+      "pactl",
+      "python3",
+      "setpriv",
+      "shuf",
+      "socat",
+      "bwrap",
+      "file",
+      "stat",
+      "mktemp"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "barMode",
+        "type": "choice",
+        "label": "Bar control",
+        "group": "Radio Atlas",
+        "default": "globe",
+        "options": [
+          {
+            "value": "globe",
+            "label": "Open the globe"
+          },
+          {
+            "value": "random",
+            "label": "Tune a random station"
+          }
+        ]
+      },
+      {
+        "key": "allowFakeIp",
+        "type": "toggle",
+        "label": "Allow the benchmark IP range",
+        "group": "Radio Atlas",
+        "default": false
+      }
+    ]
+  }
+}
