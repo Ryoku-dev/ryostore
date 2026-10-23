@@ -1971,6 +1971,31 @@
       "lastUpdated": "2026-10-22",
       "license": "MIT",
       "upstream": "https://github.com/root-secyrity/window-stash"
+    },
+    {
+      "id": "gpu-monitor",
+      "name": "GPU Monitor",
+      "version": "0.1.0",
+      "path": "plugins/gpu-monitor",
+      "author": "hectorbaez81 <hector.baez@gmail.com>",
+      "summary": "Rootless GPU monitor for Intel (i915, xe), AMD (amdgpu) and NVIDIA: usage, clocks, VRAM, temperature, throttling and top GPU processes.",
+      "description": "Rootless GPU monitor for Intel (i915, xe), AMD (amdgpu) and NVIDIA: usage, clocks, VRAM, temperature, throttling and top GPU processes.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "",
+      "screenshots": [],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "b27be53ea27af278ca4cb627438a5e994dd8d960d4041137c35e7e84f4456124",
+      "official": false,
+      "tagline": "Rootless GPU monitor for Intel (i915, xe), AMD (amdgpu) and NVIDIA: usage, clocks, VRAM, temperature, throttling and top GPU processes.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-22"
     }
   ]
 }
