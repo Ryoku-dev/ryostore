@@ -1,0 +1,14 @@
+{
+  "capabilities": ["background", "overlay", "hiddenApps", "grid", "sections", "pinnedApps"],
+  "sections": [
+    { "id": "internet", "label": "Internet" },
+    { "id": "media", "label": "Media" },
+    { "id": "graphics", "label": "Graphics" },
+    { "id": "develop", "label": "Develop" },
+    { "id": "office", "label": "Office" },
+    { "id": "games", "label": "Games" },
+    { "id": "system", "label": "System" },
+    { "id": "utility", "label": "Utility" },
+    { "id": "other", "label": "Other" }
+  ]
+}

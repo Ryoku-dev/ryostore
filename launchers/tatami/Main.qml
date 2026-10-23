@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import shell.services
 import Ryoku.Ui.Singletons
 import "lib/shelf.js" as Shelf
@@ -20,8 +21,11 @@ Scope {
     property string section: "all"
     property int selected: 0
 
-    readonly property var shelf: Shelf.collect(DesktopEntries.applications.values)
-    readonly property var sections: Shelf.sections(root.shelf)
+    readonly property var settings: launcherCfg
+    readonly property var hiddenApps: launcherCfg.hiddenApps || []
+    readonly property var shelf: Shelf.collect(DesktopEntries.applications.values.filter(
+        entry => root.hiddenApps.indexOf(entry.id) < 0), launcherCfg.pinnedApps || [])
+    readonly property var sections: Shelf.sections(root.shelf, launcherCfg.sectionOrder || [], launcherCfg.hiddenSections || [])
     readonly property var results: Shelf.filter(root.shelf, root.section, root.query)
 
     // The output the host named, else the focused one, else the first.
@@ -88,6 +92,36 @@ Scope {
     Timer {
         id: closing
         interval: Tokens.dur(200)
+    }
+
+    // The choices made in Settings -> App Launcher, read live from launcher.json.
+    // Tatami only reads the file: Settings owns it, and writing it from here
+    // would drop the keys Tatami does not declare.
+    FileView {
+        id: launcherCfg
+        property alias hiddenApps: adapter.hiddenApps
+        property alias pinnedApps: adapter.pinnedApps
+        property alias sectionOrder: adapter.sectionOrder
+        property alias hiddenSections: adapter.hiddenSections
+        property alias overlayOpacity: adapter.overlayOpacity
+        property alias bgBlur: adapter.bgBlur
+        property alias columns: adapter.columns
+        property alias matWidth: adapter.matWidth
+        path: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/ryoku/launcher.json"
+        watchChanges: true
+        printErrors: false
+        onFileChanged: reload()
+        JsonAdapter {
+            id: adapter
+            property var hiddenApps: []
+            property var pinnedApps: []
+            property var sectionOrder: []
+            property var hiddenSections: []
+            property real overlayOpacity: 0.94
+            property int bgBlur: 0
+            property int columns: 8
+            property int matWidth: 144
+        }
     }
 
     LazyLoader {

@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Ryoku.Ui.Singletons
@@ -14,7 +15,9 @@ PanelWindow {
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: "launcher"
+    // Not "launcher": that namespace gets the compositor's fixed blur. This sheet
+    // draws its own, sized by Backdrop frost, and 0 means none.
+    WlrLayershell.namespace: "launcher-noblur"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     anchors {
         top: true
@@ -39,6 +42,12 @@ PanelWindow {
         onTriggered: sheet.opening = false
     }
     Component.onCompleted: sheet.reveal = Qt.binding(() => sheet.tatami.openRequested ? 1 : 0)
+
+    // The grid is columns x mat width and the sheet follows from that. On a
+    // screen too narrow for it, columns drop and the mats keep their size.
+    readonly property int matPx: Tokens.px(Math.max(90, sheet.cfg.matWidth))
+    readonly property int availW: sheet.width - Tokens.s7 * 2
+    readonly property int cols: Math.max(1, Math.min(Math.max(1, sheet.cfg.columns), Math.floor(sheet.availW / sheet.matPx)))
 
     readonly property int rows: Math.max(1, Math.floor(shelf.height / shelf.cellHeight))
 
@@ -90,10 +99,39 @@ PanelWindow {
         event.accepted = true;
     }
 
+    // The desktop as it was when the sheet opened, blurred behind the wash
+    // (Settings -> App Launcher -> Backdrop frost). Off at 0.
+    readonly property var cfg: sheet.tatami.settings
+    readonly property int blurPx: Math.max(0, Math.min(64, sheet.cfg.bgBlur | 0))
+    ScreencopyView {
+        id: frozen
+        anchors.fill: parent
+        captureSource: sheet.blurPx > 0 ? sheet.screen : null
+        live: false
+        onHasContentChanged: if (hasContent) frozenTex.scheduleUpdate()
+    }
+    ShaderEffectSource {
+        id: frozenTex
+        anchors.fill: parent
+        sourceItem: frozen
+        hideSource: true
+        live: false
+        visible: false
+    }
+    MultiEffect {
+        anchors.fill: parent
+        source: frozenTex
+        visible: sheet.blurPx > 0 && frozen.hasContent
+        blurEnabled: true
+        blurMax: 64
+        blur: Math.min(1, sheet.blurPx / 30)
+        opacity: sheet.reveal
+    }
+
     Rectangle {
         anchors.fill: parent
         color: Tokens.paper
-        opacity: 0.94 * sheet.reveal
+        opacity: Math.max(0.3, Math.min(1, sheet.cfg.overlayOpacity)) * sheet.reveal
     }
 
     MouseArea {
@@ -103,7 +141,7 @@ PanelWindow {
 
     Item {
         id: page
-        width: Math.min(sheet.width - Tokens.s7 * 2, Tokens.px(1160))
+        width: Math.min(sheet.availW, Math.max(sheet.cols * sheet.matPx, Tokens.px(760)))
         height: sheet.height - y - Tokens.s6
         anchors.horizontalCenter: parent.horizontalCenter
         y: Math.round(sheet.height * 0.08) + Math.round((1 - sheet.reveal) * Tokens.s3)
@@ -272,10 +310,11 @@ PanelWindow {
             anchors {
                 top: sectionIndex.bottom; topMargin: Tokens.s4
                 bottom: legend.top; bottomMargin: Tokens.s3
-                left: parent.left; right: parent.right
+                horizontalCenter: parent.horizontalCenter
             }
-            readonly property int columns: Math.max(3, Math.floor(width / Tokens.px(136)))
-            cellWidth: Math.floor(width / columns)
+            width: sheet.cols * sheet.matPx
+            readonly property int columns: sheet.cols
+            cellWidth: sheet.matPx
             cellHeight: Tokens.px(128)
             clip: true
             boundsBehavior: Flickable.StopAtBounds

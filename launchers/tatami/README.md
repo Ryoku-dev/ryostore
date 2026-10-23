@@ -15,5 +15,19 @@ Tatami uses Ryoku's own palette, type and motion, so it follows your colour
 scheme and the reduced-motion setting. Apps start through the shell's launcher
 service, so terminal apps open in your chosen terminal.
 
+## Settings
+
+Settings -> App Launcher shows these for Tatami (`settings.json` lists them):
+
+- **Backdrop frost** blurs the desktop behind the sheet; 0 leaves it sharp.
+- **Overlay opacity** sets how opaque the wash behind the sheet is.
+- **Hidden apps** drops the apps you never open from the shelf.
+- **Grid** sets the columns and the width of each mat. The sheet is columns
+  times that width, and columns drop on a screen too narrow for them.
+- **Sections** orders the section chips and hides the ones you do not use. A
+  hidden section still shows its apps under All and in search.
+- **Favorites** pins apps first in every section and in search, marked with a
+  star.
+
 Install it from RyoStore -> App launchers, then pick it in
 Settings -> App Launcher.

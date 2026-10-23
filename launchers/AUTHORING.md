@@ -85,6 +85,41 @@ It runs inside Settings, not the shell, so it may import only `QtQuick` and the
 `Ryoku.Ui` modules, and it must not start anything. Without one, Settings shows
 your store art instead.
 
+## Settings controls (optional)
+
+Settings -> App Launcher shows only the shared controls for a store launcher
+until it asks for more. Add a `settings.json` beside `Main.qml` naming what
+your launcher honours:
+
+```json
+{
+  "capabilities": ["background", "overlay", "hiddenApps", "grid", "sections", "pinnedApps"],
+  "sections": [{ "id": "internet", "label": "Internet" }]
+}
+```
+
+| Capability | Card in Settings | Keys it writes to `~/.config/ryoku/launcher.json` |
+| --- | --- | --- |
+| `background` | Backdrop frost | `bgBlur` (px, 0 means none) |
+| `overlay` | Overlay opacity | `overlayOpacity` (0.3 to 1) |
+| `hiddenApps` | Hidden apps | `hiddenApps` (desktop entry ids) |
+| `grid` | Columns and tile width | `columns`, `matWidth` (px) |
+| `sections` | Section order and visibility | `sectionOrder`, `hiddenSections` (section ids) |
+| `pinnedApps` | Favorites | `pinnedApps` (desktop entry ids) |
+
+Ask only for what you implement: a card for a setting your launcher ignores
+is a lie. `sections` also needs the `sections` list, the `{ id, label }` rows
+your launcher files apps under (ids are lowercase letters, digits and dashes;
+labels are English and are translated for display). Unknown capability names
+are ignored, and a missing or malformed file offers nothing.
+
+Read the keys yourself, live, and fall back to a sensible default when one is
+absent (`FileView` with `watchChanges` and a `JsonAdapter`, see Tatami's
+`Main.qml`). Never write `launcher.json`: Settings owns it, and a write from
+your launcher would drop every key you did not declare. If you blur the
+backdrop yourself, use the namespace `"launcher-noblur"` so the compositor's
+fixed blur does not stack on yours.
+
 ## Traps that blank a launcher
 
 - Never name a property after an `Item` anchor line (`left`, `right`, `top`,

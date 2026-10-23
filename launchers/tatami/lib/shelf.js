@@ -30,30 +30,51 @@ function nameOf(entry) {
     return String(entry && entry.name || "");
 }
 
-// collect files every displayable entry once, alphabetically.
-function collect(entries) {
+// collect files every displayable entry once, alphabetically. Pinned ids are
+// marked so the filter can lift them above the rest.
+function collect(entries, pinned) {
+    var pins = {};
+    var list = pinned ? Array.prototype.slice.call(pinned).map(String) : [];
+    for (var p = 0; p < list.length; p++)
+        pins[list[p]] = true;
     var shelf = [];
     for (var i = 0; i < entries.length; i++) {
         var entry = entries[i];
         if (!entry || entry.noDisplay || nameOf(entry).length === 0)
             continue;
-        shelf.push({ entry: entry, name: nameOf(entry), key: nameOf(entry).toLowerCase(), section: sectionOf(entry) });
+        shelf.push({ entry: entry, name: nameOf(entry), key: nameOf(entry).toLowerCase(), section: sectionOf(entry), pinned: pins[String(entry.id)] === true });
     }
     shelf.sort(function (a, b) { return a.key.localeCompare(b.key); });
     return shelf;
 }
 
-// sections lists All, then each section with apps in it, in shelf order.
-function sections(shelf) {
+// sections lists All, then each section with apps in it. order names section
+// ids in the wanted sequence (any it leaves out follow in the shipped order);
+// hidden drops a section's chip, its apps stay under All and in search.
+function sections(shelf, order, hidden) {
     var counts = {};
     for (var i = 0; i < shelf.length; i++)
         counts[shelf[i].section] = (counts[shelf[i].section] || 0) + 1;
+    var labels = { other: "Other" };
+    var ids = [];
+    for (var j = 0; j < SECTIONS.length; j++) {
+        labels[SECTIONS[j].id] = SECTIONS[j].label;
+        ids.push(SECTIONS[j].id);
+    }
+    ids.push("other");
+    var wanted = order ? Array.prototype.slice.call(order).map(String) : [];
+    var skip = hidden ? Array.prototype.slice.call(hidden).map(String) : [];
+    var seq = [];
+    for (var k = 0; k < wanted.length; k++)
+        if (ids.indexOf(wanted[k]) >= 0 && seq.indexOf(wanted[k]) < 0)
+            seq.push(wanted[k]);
+    for (var m = 0; m < ids.length; m++)
+        if (seq.indexOf(ids[m]) < 0)
+            seq.push(ids[m]);
     var list = [{ id: "all", label: "All", count: shelf.length }];
-    for (var j = 0; j < SECTIONS.length; j++)
-        if (counts[SECTIONS[j].id])
-            list.push({ id: SECTIONS[j].id, label: SECTIONS[j].label, count: counts[SECTIONS[j].id] });
-    if (counts.other)
-        list.push({ id: "other", label: "Other", count: counts.other });
+    for (var n = 0; n < seq.length; n++)
+        if (counts[seq[n]] && skip.indexOf(seq[n]) < 0)
+            list.push({ id: seq[n], label: labels[seq[n]], count: counts[seq[n]] });
     return list;
 }
 
@@ -91,6 +112,8 @@ function filter(shelf, section, query) {
         if (score >= 0)
             hits.push({ item: item, score: score, order: i });
     }
-    hits.sort(function (a, b) { return a.score - b.score || a.order - b.order; });
+    hits.sort(function (a, b) {
+        return a.score - b.score || (b.item.pinned ? 1 : 0) - (a.item.pinned ? 1 : 0) || a.order - b.order;
+    });
     return hits.map(function (hit) { return hit.item; });
 }

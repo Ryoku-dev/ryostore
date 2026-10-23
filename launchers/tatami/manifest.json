@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "tatami",
   "category": "launchers",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "destination": "ryoku/launchers/tatami",
   "files": [
     {
@@ -24,9 +24,9 @@
     {
       "source": "Main.qml",
       "destination": "Main.qml",
-      "sha256": "8091f5931ec44a677f82c449d93c078692d5616680a417748151f3196945083f",
+      "sha256": "1359b4b46a0aeb9535229ef526e43c4c3d12fc8022db4bc55617fc69c15f26a7",
       "mode": "0644",
-      "size": 3130,
+      "size": 4700,
       "install": true
     },
     {
@@ -48,25 +48,25 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "c1f7b3766f89b6748c088ef88b9989a32baaaaf0c32682c7b23ad5f44e2edb35",
+      "sha256": "c97b4bb3ba9a8a691831204eea0d14feb2fef39116ba74fd80178d9df28419a7",
       "mode": "0644",
-      "size": 869,
+      "size": 1542,
       "install": true
     },
     {
       "source": "Sheet.qml",
       "destination": "Sheet.qml",
-      "sha256": "c5d618522755b32152aefed6f65f6ce29a64c38d4cfdc2a0446d1dc06934ae10",
+      "sha256": "736b1e61cb748c48b7d97a05a7c914d981561053482d58382089f512dcc4d46a",
       "mode": "0644",
-      "size": 14300,
+      "size": 15895,
       "install": true
     },
     {
       "source": "Tile.qml",
       "destination": "Tile.qml",
-      "sha256": "29e026124907d0d9da046ae315cfaf658706c30cc1fade6b9b97dc4b0a0cb1bb",
+      "sha256": "07d61421597520fe00063489dce35a651e90fe7637387dd98fc3d5bf67736024",
       "mode": "0644",
-      "size": 2814,
+      "size": 3097,
       "install": true
     },
     {
@@ -88,9 +88,17 @@
     {
       "source": "lib/shelf.js",
       "destination": "lib/shelf.js",
-      "sha256": "47b59e26eeee1a19322d2596c7e1d7243a055761e76ca67b832a8cd6a42f3e75",
+      "sha256": "e30c190033d14167ba60b12b2a22a09ec2b4e8f58f99997ae68eddd634662514",
       "mode": "0644",
-      "size": 4769,
+      "size": 5838,
+      "install": true
+    },
+    {
+      "source": "settings.json",
+      "destination": "settings.json",
+      "sha256": "c0c7da767e0206bad906bc93d066fbef59e1135c1cdf831493892a5a0fb89305",
+      "mode": "0644",
+      "size": 509,
       "install": true
     }
   ],

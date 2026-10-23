@@ -26,6 +26,15 @@ Item {
         Behavior on color { ColorAnimation { duration: Tokens.snap } }
     }
 
+    Text {
+        visible: tile.item.pinned === true
+        anchors { top: plate.top; right: plate.right; topMargin: Tokens.s1; rightMargin: Tokens.s2 }
+        text: "\u2605"
+        color: Tokens.inkDim
+        font.family: Tokens.ui
+        font.pixelSize: Tokens.fSmall
+    }
+
     CornerTicks {
         anchors.fill: plate
         visible: tile.selected
