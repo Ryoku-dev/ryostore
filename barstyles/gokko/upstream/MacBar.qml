@@ -3075,7 +3075,10 @@ Scope {
         return hits.map(function (h) { return h.e; });
     }
     function appSearchSection(q) {
+        // A single-letter search can match hundreds of desktop entries.
+        // Rendering every matching icon in a QML Repeater stalls input.
         var r = searchApps(q);
+        if (r.length > 48) r = r.slice(0, 48);
         return r.length > 0 ? [{ name: "Top Hits", apps: r }] : [];
     }
     function launchApp(e) {
@@ -3307,10 +3310,6 @@ Scope {
                 m.push(mi("Search\u2026", "", function () { root.search(); }));
                 if (has) m.push(mi(n + " Help", "", function () { root.helpFor(id, n); }));
                 m.push(msep());
-                m.push(mi("Hyprland Keybinds", "", function () { Quickshell.execDetached(["xdg-open", "https://github.com/0-ss/MacShell#hyprland-configuration-lua"]); }));
-                m.push(mi("Reload Hyprland Config", "", function () { Quickshell.execDetached(["hyprctl", "reload"]); }));
-                m.push(msep());
-                m.push(mi("Hyprland Wiki", "", function () { Quickshell.execDetached(["xdg-open", "https://wiki.hypr.land"]); }));
                 m.push(mi("Quickshell Documentation", "", function () { Quickshell.execDetached(["xdg-open", "https://quickshell.org/docs"]); }));
             }
         }
@@ -3775,8 +3774,8 @@ Scope {
 
     // ═════════════ LIQUID GLASS BACKEND (same pipeline as macdock) ═════════════
     property string glassState: "idle"       // idle → building → ready | failed
+    // Gokko's Niri output-snapshot path feeds the same shader as Hyprland.
     readonly property bool liquidActive: barStyle === "liquid" && glassState === "ready" && !gaming
-        && !(hub && hub.nativeBackdrop)
     readonly property string glassShaderSrc: decodeURIComponent(Qt.resolvedUrl("liquidglass.frag").toString().replace("file://", ""))
     readonly property string glassShaderOut: configDir + "/liquidglass.frag.qsb"
     readonly property url glassShaderUrl: "file://" + glassShaderOut
@@ -3808,9 +3807,13 @@ Scope {
     readonly property var wallpaperMap: hub ? hub.wallpaperMap : ({})
     Binding { target: root.hub; property: "barWantsWallpaper"; value: root.liquidActive }
     function wallpaperFor(screenName) {
-        var p = wallpaperPath !== "" ? wallpaperPath
-              : (wallpaperMap["wallpaper.monitors." + screenName] || wallpaperMap["wallpaper.last"]
-                 || wallpaperMap["wallpaper.default"] || "");
+        var current = wallpaperMap["wallpaper.monitors." + screenName]
+                   || wallpaperMap["wallpaper.last"] || wallpaperMap["wallpaper.default"] || "";
+        // Ryogami is authoritative on Niri: don't keep showing a former MacShell override.
+        // On Niri, never fall back to a stale MacShell wallpaper override.
+        // The shared Ryogami poster bridge is the only wallpaper authority.
+        var p = (hub && hub.nativeBackdrop) ? current
+            : (wallpaperPath !== "" ? wallpaperPath : current);
         if (p.indexOf("~/") === 0) p = Quickshell.env("HOME") + p.substring(1);
         return p;
     }
@@ -3834,7 +3837,8 @@ Scope {
     }
     property string awwwWallpaperPath: ""
     readonly property string dominantWallpaperPath: {
-        if (root.awwwWallpaperPath !== "") return root.awwwWallpaperPath;
+        // Only non-Niri legacy sessions use awww as their wallpaper source.
+        if (!(root.hub && root.hub.nativeBackdrop) && root.awwwWallpaperPath !== "") return root.awwwWallpaperPath;
         var screens = Quickshell.screens;
         return root.wallpaperFor(screens && screens.length ? screens[0].name : "");
     }
@@ -3873,7 +3877,7 @@ Scope {
                 if (path.indexOf("~/") === 0) path = Quickshell.env("HOME") + path.substring(1);
                 if (root.awwwWallpaperPath !== path) root.awwwWallpaperPath = path;
                 var fallback = root.wallpaperFor(Quickshell.screens && Quickshell.screens.length ? Quickshell.screens[0].name : "");
-                var p = path || fallback;
+                var p = root.hub && root.hub.nativeBackdrop ? fallback : (path || fallback);
                 if (p.indexOf("file://") === 0) p = decodeURIComponent(p.substring(7));
                 if (p === "") return;
                 if (p === root.wallpaperAccentFor && !root.wallpaperSampleForce) return;   // same picture, nothing to do
@@ -3908,7 +3912,8 @@ Scope {
     readonly property var glassClients: hub ? hub.glassClients : []
     property int popCount: 0
     onBarEnabledChanged: { if (!barEnabled) popCount = 0; clipStart(); }
-    Binding { target: root.hub; property: "barWantsGeo"; value: root.liquidActive }
+    Binding { target: root.hub; property: "barWantsGeo";
+        value: root.liquidActive && !(root.hub && root.hub.nativeBackdrop) }
     // window captures are admitted by the shared gate in shell.qml (hub.tlFor): 0.2 s after a window appears, one every 110 ms
 
     Component.onCompleted: {
@@ -4265,6 +4270,8 @@ Scope {
     ].join("\n")
     property string wpAppliedPair: ""
     function wpApplyAppearance() {
+        // Ryogami owns automatic wallpaper transitions on hosted Ryoku.
+        if (hub) return;
         if (!wpHasPair) return;
         var mode = wallpaperAppearance === "auto" ? (darkMode ? "dark" : "light") : wallpaperAppearance;
         var rise = 390, set_ = 1110;
@@ -4296,6 +4303,15 @@ Scope {
     Timer { interval: 2500; running: true; onTriggered: root.wpApplyAppearance() }
 
     function wpApply(path) {
+        if (hub) {
+            // Ryoku is the wallpaper owner; its daemon also updates Session.wallpaper.
+            // Do not mutate the obsolete MacShell override or launch awww/mpvpaper.
+            if (wpApplyProc.running) return;
+            wpPairLight = ""; wpPairDark = ""; wpAppliedPair = "";
+            wpApplyProc.command = ["ryogami", "wallpaper", "set", path];
+            wpApplyProc.running = true;
+            return;
+        }
         var pair = wpPairOf(path);
         if (pair) { wpPairLight = pair.light; wpPairDark = pair.dark; root.wpAppliedPair = ""; wpApplyAppearance(); return; }
         wpPairLight = ""; wpPairDark = ""; root.wpAppliedPair = "";
@@ -4318,6 +4334,8 @@ Scope {
     // Wallpaper that survives a reboot: awww / mpvpaper start empty at login, so the shell puts the last choice back.
     // A picture is skipped when awww already shows it; light/dark pairs are handled by wpApplyAppearance.
     function wpRestore() {
+        // Ryogami restores the desktop at login. Never replay an old MacShell path.
+        if (hub) return;
         if (wpHasPair) return;
         if (wallpaperVideo !== "") {
             setwallProc.command = ["sh", "-c", '[ -x "$1" ] && exec "$1" "$2"', "sh", setwallScript, wallpaperVideo];
@@ -4352,6 +4370,13 @@ Scope {
         stderr: StdioCollector { onStreamFinished: if (text.trim() !== "") console.log("[wallpaper] error:", text.trim()) }
     }
     function wpToggle() {
+        if (hub) {
+            // Ryogami owns the picker as well as wallpaper application.
+            // Keep the legacy UI out of hosted Gokko entirely.
+            root.wpOpen = false;
+            Quickshell.execDetached(["ryogami", "wallpaper", "ui"]);
+            return;
+        }
         root.wpOpen = !root.wpOpen;
         if (root.wpOpen) root.wpRefresh();
     }
@@ -4560,7 +4585,7 @@ Scope {
         PanelWindow {
             id: barBgWin
             screen: perScreen.modelData
-            visible: root.barBgOpacity > 0.001 || (root.hub && root.hub.nativeBackdrop)
+            visible: !(root.hub && root.hub.nativeBackdrop) && root.barBgOpacity > 0.001
             anchors { left: true; right: true; top: true }
             implicitHeight: root.barHeight
             color: "transparent"
@@ -4601,7 +4626,7 @@ Scope {
             WlrLayershell.namespace: "macbar"
             // Blur only painted chrome, not the transparent 900px popup host.
             BackgroundEffect.blurRegion: Region {
-                width: root.hub && root.hub.nativeBackdrop ? win.width : 0
+                width: 0 // transparent menu-bar strip, popup regions below still blur independently
                 height: root.barHeight
                 Region {
                     x: menuPop.x; y: menuPop.y
@@ -4622,6 +4647,17 @@ Scope {
             Item {
                 id: ui
                 anchors.fill: parent
+
+                // Keep the native-blurred bar tint behind its own text, not on a separate layer.
+                Rectangle {
+                    width: parent.width
+                    height: root.barHeight
+                    // The Niri top strip is genuinely transparent, with no fallback tint.
+                    visible: false
+                    color: root.darkMode
+                        ? Qt.rgba(0.10, 0.10, 0.11, root.barBgOpacity)
+                        : Qt.rgba(1, 1, 1, root.barBgOpacity)
+                }
 
                 property string pop: ""          // "", apple, app, file, edit, view, window, help, cc, cal
                 property real menuX: 0
@@ -4684,6 +4720,22 @@ Scope {
                 // Spotlight state
                 property string spMode: "home"          // home | actions | apps
                 property string spQuery: ""
+                // TextInput changes instantly; only the result model is coalesced.
+                property string spPaintQuery: ""
+                Timer {
+                    id: spResultDebounce
+                    interval: 65
+                    repeat: false
+                    onTriggered: ui.spPaintQuery = ui.spQuery
+                }
+                function spHomeItemsMeasured(q) {
+                    var start = Date.now();
+                    var result = root.homeItems(q);
+                    var elapsed = Date.now() - start;
+                    if (elapsed >= 40)
+                        console.warn("[gokko-spotlight] slow query: " + elapsed + "ms");
+                    return result;
+                }
                 property string spHoverLabel: ""
                 property int spSel: 0
                 property var spExpanded: ({})
@@ -4694,13 +4746,13 @@ Scope {
                 property bool spHover: false            // spSel was just changed by the pointer, so lists must not scroll to it
                 readonly property int emCols: 12
                 readonly property bool spFull: spMode === "apps" || spMode === "clip" || spMode === "emoji"
-                property var spResults: spMode === "actions" ? root.actionItems(spQuery)
+                property var spResults: spMode === "actions" ? root.actionItems(spPaintQuery)
                                         : (spMode === "clip" ? root.clipFiltered(spQuery)
                                         : (spMode === "emoji" ? root.emojiItems(spQuery, emCat)
-                                        : (spQuery.trim() === "" ? [] : root.homeItems(spQuery))))
+                                        : (spPaintQuery.trim() === "" ? [] : spHomeItemsMeasured(spPaintQuery))))
 
                 function spSetMode(m) {
-                    spMode = m; spQuery = ""; spHoverLabel = ""; spSel = 0; armed = ""; clipMenu = false;
+                    spMode = m; spQuery = ""; spPaintQuery = ""; spResultDebounce.stop(); spHoverLabel = ""; spSel = 0; armed = ""; clipMenu = false;
                     spInput.text = ""; appsInput.text = ""; clipInput.text = ""; emojiInput.text = "";
                     if (m === "clip") root.clipRefresh();
                     if (m === "emoji") emCat = root.emojiRecent.length > 0 ? 0 : 1;
@@ -4801,7 +4853,7 @@ Scope {
                     if (pop === "wifi") { root.wifiError = ""; root.scanWifi(); root.refreshConnections(); }
                     if (pop === "bt") { root.btError = ""; root.scanBt(); root.refreshBt(); }
                     if (pop === "spot") {
-                        spMode = "home"; spQuery = ""; spSel = 0; spExpanded = ({}); clipMenu = false;
+                        spMode = "home"; spQuery = ""; spPaintQuery = ""; spResultDebounce.stop(); spSel = 0; spExpanded = ({}); clipMenu = false;
                         spInput.text = ""; appsInput.text = ""; clipInput.text = ""; emojiInput.text = "";
                         spFocusTimer.restart();
                     }
@@ -4868,6 +4920,8 @@ Scope {
                 // ready-made, current window pixels.
                 Loader {
                     id: glassBackdrop
+                    // Both backends use this full-screen offscreen backdrop. On Niri
+                    // it contains a whole-output capture rather than Hyprland toplevels.
                     active: root.liquidActive
                     sourceComponent: backdropComp
                     onLoaded: item.region = Qt.binding(function () { return ui.glassRect; })
@@ -4881,11 +4935,41 @@ Scope {
                     x: 0; y: 0
                     width: win.modelData.width; height: win.modelData.height
                     opacity: 0                      // only ever captured by the glass, never drawn itself
-                    captureSource: root.liquidActive && !root.captureQuiet && !glassBackdrop.item ? win.modelData : null     // fallback only
+                    captureSource: root.liquidActive && !root.captureQuiet
+                        && ((root.hub && root.hub.nativeBackdrop) || !glassBackdrop.item)
+                        ? win.modelData : null
                     live: false
                     paintCursor: false
                     property real takenAt: 0
                     function grab() { if (captureSource && typeof captureFrame === "function") { captureFrame(); takenAt = Date.now(); } }
+                    onHasContentChanged: {
+                        if (hasContent) ui.snapFresh = true;
+                        console.log("[gokko-niri] output snapshot content:", hasContent);
+                    }
+                }
+
+                // Capture periodically while no popover is open, then freeze its backdrop.
+                Timer {
+                    // A transparent bar needs fewer idle full-screen grabs.
+                    interval: root.barGlass ? 180 : 280
+                    repeat: true
+                    triggeredOnStart: true
+                    running: !!(root.hub && root.hub.nativeBackdrop)
+                        && root.liquidActive && !root.captureQuiet && ui.pop === ""
+                    onTriggered: screenSnap.grab()
+                }
+
+                // One-shot probe of the actual pixel pipeline, not only qsb build.
+                Timer {
+                    interval: 2600
+                    repeat: false
+                    running: !!(root.hub && root.hub.nativeBackdrop)
+                        && root.liquidActive && root.barEnabled
+                    onTriggered: console.log("[gokko-niri] bar backend:",
+                        "glassReady=" + root.liquidActive,
+                        "captureSource=" + !!screenSnap.captureSource,
+                        "hasContent=" + screenSnap.hasContent,
+                        "shaderInput=" + !!ui.glassSrc)
                 }
                 property bool snapFresh: false
                 // a moment after a popover starts opening (its rect is known), measure what's behind it
@@ -4910,7 +4994,12 @@ Scope {
                 }
                 // The live backdrop (wallpaper + desktop widgets + live window captures) is always the source, so a window dragged
                 // under an open menu keeps moving. The one-shot screen snapshot is only a fallback while the backdrop is not up.
-                readonly property Item glassSrc: glassBackdrop.item ? glassBackdrop.item : ((snapFresh && screenSnap.hasContent) ? screenSnap : null)
+                // A zero-opacity standalone Niri Item was not reliably providing a
+                // composited shader source. Capture the same backdropComp that
+                // the established Liquid Glass controls use on Hyprland.
+                readonly property Item glassSrc: glassBackdrop.item
+                    ? glassBackdrop.item
+                    : ((snapFresh && screenSnap.hasContent) ? screenSnap : null)
                 HoverHandler {
                     id: barHover
                     onHoveredChanged: if (hovered && ui.pop === "") screenSnap.grab()
@@ -4946,15 +5035,48 @@ Scope {
                             anchors.fill: parent
                             color: "#20232C" // neutral fallback while the wallpaper poster is unresolved
                         }
+                        // Niri exposes whole-output screencopy, not the
+                        // per-window export used on Hyprland. Keep the output
+                        // aligned to the full monitor instead of constructing
+                        // it inside a zero-opacity miniature wrapper.
+                        ShaderEffectSource {
+                            z: -2
+                            anchors.fill: parent
+                            sourceItem: screenSnap
+                            sourceRect: Qt.rect(0, 0, bd.width, bd.height)
+                            live: true
+                            visible: !!(root.hub && root.hub.nativeBackdrop)
+                                && screenSnap.hasContent
+                        }
                         Image {
                             z: -2
                             anchors.fill: parent
                             visible: status === Image.Ready
+                                && (!(root.hub && root.hub.nativeBackdrop)
+                                    || !screenSnap.hasContent)
                             source: root.fileUrl(root.wallpaperFor(win.modelData.name))
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             sourceSize.width: bd.width
                             smooth: true
+                        }
+                        // Never refract a prior image of our own menu bar.
+                        Item {
+                            z: -1
+                            visible: !!(root.hub && root.hub.nativeBackdrop)
+                                && screenSnap.hasContent
+                            x: 0; y: 0; width: bd.width; height: root.barHeight
+                            clip: true
+                            Image {
+                                anchors.top: parent.top
+                                width: bd.width; height: bd.height
+                                source: root.fileUrl(root.wallpaperFor(win.modelData.name))
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                sourceSize.width: bd.width
+                                smooth: true
+                                visible: status === Image.Ready
+                            }
                         }
                         // animated wallpaper: plays behind the glass (menus, bar, Spotlight, switcher) only while "Animated wallpaper in glass" is on
                         // (root.glassVideo is "" otherwise, and then no decoder exists at all)
@@ -5118,7 +5240,7 @@ Scope {
                 // Settings → Menu Bar → "Liquid Glass bar". Sits under every bar item.
                 LGlass {
                     id: barGlassStrip
-                    visible: root.barGlass && root.liquidActive
+                    visible: root.barGlass && root.liquidActive && !(root.hub && root.hub.nativeBackdrop)
                     x: 0; y: 0
                     width: ui.width
                     height: root.barHeight
@@ -7516,9 +7638,15 @@ Scope {
                         dark: root.ccDark
                         // macOS style: the panel is the glass, so each control only keeps a faint shape on top of it
                         property bool niriTiles: root.hub && root.hub.nativeBackdrop
-                        tint: root.ccStyle === "macos" ? root.glassOpacity * 0.30 : root.glassOpacity
-                        strength: root.ccStyle === "macos" ? root.glassLiquid * 0.30 : root.glassLiquid
-                        rim: root.ccStyle === "macos" ? root.glassRim * 0.10 : root.glassRim * 0.25
+                        tint: root.ccStyle === "macos" ? root.glassOpacity * 0.30
+                            : (root.hub && root.hub.nativeBackdrop ? root.glassOpacity * 0.76 : root.glassOpacity)
+                        strength: root.ccStyle === "macos" ? root.glassLiquid * 0.30
+                            : (root.hub && root.hub.nativeBackdrop ? root.glassLiquid * 1.08 : root.glassLiquid)
+                        rim: root.ccStyle === "macos" ? root.glassRim * 0.10
+                            : (root.hub && root.hub.nativeBackdrop ? root.glassRim * 0.62 : root.glassRim * 0.25)
+                        // A single blur pass on Niri preserves visible image detail
+                        // and costs less than the former 80px two-pass treatment.
+                        blurMul: root.hub && root.hub.nativeBackdrop && root.ccStyle !== "macos" ? 0.50 : 1.0
                         rimTint: 1
                         ringW: 0                            // the border is the QML CornerBorder now (see component CornerBorder)
                         borderTint: root.menuBorderColor
@@ -8816,7 +8944,14 @@ Scope {
             // Hyprland's layer animation, which is what made Spotlight flicker or vanish. Closed = invisible + click-through.
             visible: root.spotlightEnabled
             readonly property bool openish: ui.pop === "spot" || spot.vis > 0
-            onOpenishChanged: root.popCount += (openish ? 1 : -1)     // keeps the window-geometry poller running while Spotlight is open
+            onOpenishChanged: {
+                root.popCount += (openish ? 1 : -1);
+                if (openish && root.hub && root.hub.nativeBackdrop)
+                    Qt.callLater(function () {
+                        spSrc.scheduleUpdate();
+                        spBlur.scheduleUpdate();
+                    });
+            }     // keeps the window-geometry poller running while Spotlight is open
             mask: Region { item: spotWin.openish ? spotRoot : spotNoInput }
             Item { id: spotNoInput; width: 0; height: 0 }
             anchors { left: true; right: true; top: true; bottom: true }
@@ -8826,7 +8961,7 @@ Scope {
             WlrLayershell.namespace: "macspot"
             BackgroundEffect.blurRegion: Region {
                 x: spot.x; y: spot.y
-                width: root.hub && root.hub.nativeBackdrop && spotWin.openish ? spot.width : 0
+                width: 0 // no compositor blur bridge between Spotlight controls
                 height: spot.height
                 radius: 24
             }
@@ -8837,9 +8972,40 @@ Scope {
                 id: spotRoot
                 anchors.fill: parent
 
+                // Niri Spotlight is a DIFFERENT PanelWindow from the main bar.
+                // Its glass source must belong to this window's scene graph.
+                // Capture the output before opening and freeze it while open,
+                // so Spotlight never captures/refractions its own controls.
+                ScreencopyView {
+                    id: niriSpotSnap
+                    anchors.fill: parent
+                    opacity: 0
+                    paintCursor: false
+                    captureSource: root.liquidActive && root.hub && root.hub.nativeBackdrop
+                        ? spotWin.screen : null
+                    live: false
+                    function grab() {
+                        if (captureSource !== null && typeof captureFrame === "function")
+                            captureFrame();
+                    }
+                    onHasContentChanged: if (root.hub && root.hub.nativeBackdrop)
+                        console.log("[gokko-niri] Spotlight capture:", hasContent)
+                }
+                Timer {
+                    interval: 320
+                    repeat: true
+                    triggeredOnStart: true
+                    running: root.liquidActive && root.spotlightEnabled
+                        && !!(root.hub && root.hub.nativeBackdrop)
+                        && !spotWin.openish
+                    onTriggered: niriSpotSnap.grab()
+                }
+
                 Loader {
                     id: spotBackdrop
-                    active: root.liquidActive          // stays loaded (warm) so the window opens on ready-made frames
+                    // Keep the Hyprland backdrop; Niri now has an independent
+                    // output capture in this same Spotlight window.
+                    active: root.liquidActive && !(root.hub && root.hub.nativeBackdrop)          // stays loaded (warm) so the window opens on ready-made frames
                     sourceComponent: backdropComp
                     onLoaded: { item.hostShown = Qt.binding(function () { return !root.gaming; });
                                 item.region = Qt.binding(function () { return Qt.rect(spot.x - 128, spot.y - 128, spot.width + 256, spot.height + 256); }); }
@@ -8923,9 +9089,15 @@ Scope {
                 // blob mid-fade (the fade looked broken). Out here they always produce the real backdrop.
                 ShaderEffectSource {
                     id: spSrc
-                    sourceItem: spotBackdrop.item     // wallpaper + live windows, captured inside this layer
+                    // Cross-window ShaderEffectSource from the menu bar is unreliable.
+                    // This source now stays inside the same spotlight PanelWindow.
+                    sourceItem: (root.hub && root.hub.nativeBackdrop)
+                        ? (niriSpotSnap.hasContent ? niriSpotSnap : null)
+                        : spotBackdrop.item
                     hideSource: true
-                    live: spotWin.openish
+                    // Niri screen capture is already frozen while the picker is
+                    // open. Prevent render-thread work on every text edit.
+                    live: !(root.hub && root.hub.nativeBackdrop) && spotWin.openish
                     visible: false
                     sourceRect: Qt.rect(spot.x - 128, spot.y - 128, spot.width + 256, 684)
                 }
@@ -8944,7 +9116,7 @@ Scope {
                 ShaderEffectSource {
                     id: spBlur
                     sourceItem: spBlurFx
-                    live: spotWin.openish
+                    live: !(root.hub && root.hub.nativeBackdrop) && spotWin.openish
                     visible: false
                 }
                 MultiEffect {
@@ -8969,10 +9141,14 @@ Scope {
                     src: spBlur2
                     srcRect: spSrc.sourceRect
                     frame: spotRoot
-                    liquid: root.liquidActive
+                    // If Niri has no frame yet, use GGlass's honest fallback
+                    // rather than feeding an empty shader pipeline.
+                    liquid: root.liquidActive && (!(root.hub && root.hub.nativeBackdrop)
+                        || niriSpotSnap.hasContent)
                     shaderUrl: root.glassShaderUrl
                     dark: root.panelDarkMode
-                    tint: root.hub && root.hub.nativeBackdrop ? Math.max(0.86, root.glassOpacity) : root.glassOpacity
+                    // Niri previously forced 0.86+ opaque tint, hiding the image entirely.
+                    tint: root.hub && root.hub.nativeBackdrop ? Math.min(0.42, root.glassOpacity * 0.70) : root.glassOpacity
                     strength: root.glassLiquid               // full refraction, like the Dock / Control Center
                     rim: root.glassRim                       // same wallpaper-coloured rim + border line as the top-bar menus
                     rimTint: 1
@@ -8980,7 +9156,8 @@ Scope {
                     whiteEdge: false
                     grain: root.glassGrain
                     blur: 15                                // Spotlight has its own blur: it ignores the global blur slider
-                    blurMul: 10.0                   // strong smooth blur (two stacked Gaussian passes); lower to see more refraction, raise to frost more
+                    blurMul: root.hub && root.hub.nativeBackdrop ? 2.25 : 10.0
+                    // Niri: preserve actual wallpaper detail in the search pill.
                     debug: root.glassDebug
                     onFailed: root.glassState = "failed"
                 }
@@ -9025,6 +9202,21 @@ Scope {
                     ]
 
                     Timer { id: spHoverClear; interval: 350; onTriggered: ui.spHoverLabel = "" }
+                    Timer {
+                        id: spLagWatch
+                        interval: 100
+                        repeat: true
+                        running: spotWin.openish
+                        property double previousBeat: 0
+                        onRunningChanged: previousBeat = 0
+                        onTriggered: {
+                            var now = Date.now();
+                            if (previousBeat > 0 && now - previousBeat > 450)
+                                console.warn("[gokko-spotlight] UI event-loop stall: "
+                                    + (now - previousBeat) + "ms mode=" + ui.spMode);
+                            previousBeat = now;
+                        }
+                    }
                     Timer {
                         id: spFocusTimer
                         interval: 60
@@ -9077,7 +9269,7 @@ Scope {
                                 selectedTextColor: "white"
                                 font.family: root.fontForWeight(font.weight, panelPal.fam); font.pixelSize: 17
                                 horizontalAlignment: /[\u0590-\u08ff]/.test(text) ? Text.AlignRight : Text.AlignLeft
-                                onTextChanged: { if (!ui.spFull) { ui.spQuery = text; ui.spSel = 0; ui.armed = ""; if (/^(file|find)\s+/i.test(text)) root.updateFileSearch(text.replace(/^(file|find)\s+/i, "").trim()); } }
+                                onTextChanged: { if (!ui.spFull) { ui.spQuery = text; ui.spSel = 0; ui.armed = ""; if (text === "") { ui.spPaintQuery = ""; spResultDebounce.stop(); } else spResultDebounce.restart(); if (/^(file|find)\s+/i.test(text)) root.updateFileSearch(text.replace(/^(file|find)\s+/i, "").trim()); } }
                                 Keys.onPressed: event => ui.spKey(event)
                             }
                         }
@@ -9741,7 +9933,11 @@ Scope {
 
                                 Repeater {
                                     id: appsRep
-                                    model: ui.spQuery.trim() === "" ? root.appSections : root.appSearchSection(ui.spQuery)
+                                    // Only instantiate an Apps grid while its panel is selected.
+                                    // Hidden QML Repeaters remain live otherwise and can block typing.
+                                    model: ui.spMode === "apps"
+                                        ? (ui.spQuery.trim() === "" ? root.appSections : root.appSearchSection(ui.spQuery))
+                                        : []
                                     delegate: Column {
                                         id: sec
                                         required property var modelData

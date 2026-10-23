@@ -183,7 +183,7 @@
     {
       "id": "tansu",
       "name": "Tansu",
-      "version": "1.4.4",
+      "version": "1.4.64",
       "path": "barstyles/tansu",
       "author": "dodo986",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/barstyles/tansu",
@@ -203,15 +203,15 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "f90f41ab27eedd386b54eacb9ec6099f3843956def5d34b0299b1782ef7030fb",
-      "lastUpdated": "2026-10-21",
+      "manifestSha256": "88a6e41bcb8a0238d3fcdde241f64a679ef04f2ec7785194b56a9a8b8eb4b923",
+      "lastUpdated": "2026-10-23",
       "official": false,
       "license": "GPL-3.0-only"
     },
     {
       "id": "gokko",
       "name": "Gokko",
-      "version": "0.1.0",
+      "version": "0.3.0",
       "path": "barstyles/gokko",
       "author": "aethctl",
       "upstream": "https://github.com/0-ss/MacShell",
@@ -230,10 +230,42 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "be1d81c82a8b6149a736580332713f21e355606eaa412810f9226eaa89c11ec3",
+      "manifestSha256": "4597afd2f95c02c58c0a67e398e0760422f3bf4f40c290447ca0b1672197a58b",
       "lastUpdated": "2026-10-23",
       "official": false,
       "license": "MIT"
+    },
+    {
+      "id": "caelestia",
+      "name": "Caelestia",
+      "version": "1.0.0",
+      "path": "barstyles/caelestia",
+      "author": "lhen",
+      "upstream": "https://github.com/caelestia-dots/shell",
+      "summary": "Framed Material 3 shell",
+      "description": "The Caelestia shell's framed bar, dock, dashboard, session menu, sidebar and OSD, in plain QML, with its own settings panel.",
+      "tags": [
+        "left",
+        "framed",
+        "material3",
+        "dashboard",
+        "dock",
+        "customizable"
+      ],
+      "accent": "#b4befe",
+      "surface": "#2c2c3f",
+      "preview": "assets/preview.webp",
+      "screenshots": [
+        "assets/screenshot-bar-bluetooth.webp",
+        "assets/screenshot-performance.webp",
+        "assets/screenshot-session.webp",
+        "assets/screenshot-settings.webp"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "590b0acc49576366669d1de35325e494a3b4a1a2aca242c0827c4d06c31728ea",
+      "lastUpdated": "2026-10-23",
+      "official": false,
+      "license": "GPL-3.0-only"
     }
   ]
 }

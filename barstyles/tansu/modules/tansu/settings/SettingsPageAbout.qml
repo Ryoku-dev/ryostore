@@ -1,10 +1,20 @@
 import QtQuick
+import Quickshell.Io
 import "../../../services"
 import "../../../modules/common"
 import "../../../modules/common/widgets"
 
 SettingsPage {
     id: page
+
+    readonly property string version: versionFile.loaded ? versionFile.text().trim() : ""
+
+    FileView {
+        id: versionFile
+        path: Directories.shell + "/VERSION"
+        blockLoading: true
+        printErrors: false
+    }
 
     SectionCard {
         id: heroCard
@@ -84,6 +94,12 @@ SettingsPage {
                     label: "Ported by dodo986"
                     icon: "sell"
                     selected: true
+                    enabled: false
+                }
+
+                SettingChip {
+                    label: page.version !== "" ? "v" + page.version : ""
+                    icon: "info"
                     enabled: false
                 }
 

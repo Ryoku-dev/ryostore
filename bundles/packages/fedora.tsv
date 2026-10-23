@@ -1,5 +1,4 @@
 arch	fedora	lanes	notes
-ananicy-cpp	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
 antimicrox	antimicrox	gaming	
 asciiquarium	asciiquarium	rice-showcase	
 audacity	audacity	the-influencer	
@@ -8,8 +7,8 @@ blender	blender	the-influencer
 brave-bin	-	web-browsers	Brave publishes its Fedora package from its own repository, which Ryoku does not add; get it from Flathub (com.brave.Browser).
 btop	btop	rice-showcase	
 bun	-	developer-essentials	Bun is not packaged for Fedora; install it with the official script from bun.sh.
-cachyos-ananicy-rules	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
-cachyos-settings	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
+cachyos-gaming-meta	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
+cachyos-settings	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
 cava	cava	rice-showcase	
 cbonsai	cbonsai	rice-showcase	
 chromium	chromium	web-browsers	
@@ -60,8 +59,8 @@ libretro-mesen	-	gaming	Not packaged for Fedora; the Flathub RetroArch (org.libr
 libretro-mupen64plus-next	-	gaming	Not packaged for Fedora; the Flathub RetroArch (org.libretro.RetroArch) can download this core.
 libretro-snes9x	-	gaming	Not packaged for Fedora; the Flathub RetroArch (org.libretro.RetroArch) can download this core.
 librewolf	-	web-browsers	LibreWolf is not packaged for Fedora; get it from Flathub (io.gitlab.librewolf-community).
-linux-cachyos	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
-linux-cachyos-headers	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
+linux-cachyos	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
+linux-cachyos-headers	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
 linux-headers	kernel-devel kernel-headers	the-influencer	
 lldb	lldb	developer-essentials	
 lolcat	lolcat	rice-showcase	
@@ -87,7 +86,6 @@ owncast-bin	-	the-influencer	Owncast is not packaged for Fedora; download it fro
 pcsx2	-	gaming	PCSX2 is not packaged for Fedora; get it from Flathub (net.pcsx2.PCSX2).
 pipes.sh	-	rice-showcase	Not packaged for Fedora; pipes.sh is a single script from github.com/pipeseroni/pipes.sh.
 ppsspp	-	gaming	PPSSPP is not packaged for Fedora; get it from Flathub (org.ppsspp.PPSSPP).
-proton-cachyos-native	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
 proton-vpn-gtk-app	-	vpn-networking	Proton VPN publishes its Fedora app from its own repository, which Ryoku does not add.
 protontricks	protontricks	gaming	
 protonup-qt	-	gaming	ProtonUp-Qt is not packaged for Fedora; get it from Flathub (net.davidotek.pupgui2).
@@ -102,10 +100,10 @@ rustup	rustup	developer-essentials
 ryotunes	ryotunes	ryotunes	repo=ryoku
 sc-controller	-	gaming	SC Controller is not packaged for Fedora.
 scummvm	scummvm	gaming	
-scx-scheds	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
+scx-scheds	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
 shotcut	shotcut	the-influencer	
 sl	sl	rice-showcase	
-steam	-	gaming	Steam needs RPM Fusion on Fedora, which Ryoku does not enable; get it from Flathub (com.valvesoftware.Steam).
+steam	-	cachyos-layer,gaming	Steam needs RPM Fusion on Fedora, which Ryoku does not enable; get it from Flathub (com.valvesoftware.Steam).
 subtitleedit	-	the-influencer	Subtitle Edit is not packaged for Fedora; Subtitle Editor (subtitleeditor) is a native alternative.
 tmux	tmux	developer-essentials	
 toilet	toilet	rice-showcase	

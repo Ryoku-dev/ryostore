@@ -1,5 +1,4 @@
 arch	void	lanes	notes
-ananicy-cpp	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
 antimicrox	antimicrox	gaming	
 asciiquarium	asciiquarium	rice-showcase	
 audacity	audacity	the-influencer	
@@ -8,8 +7,8 @@ blender	blender	the-influencer
 brave-bin	-	web-browsers	Brave is not packaged for Void; get it from Flathub (com.brave.Browser).
 btop	btop	rice-showcase	
 bun	-	developer-essentials	Bun is not packaged for Void; install it with the official script from bun.sh.
-cachyos-ananicy-rules	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
-cachyos-settings	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
+cachyos-gaming-meta	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
+cachyos-settings	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
 cava	cava	rice-showcase	
 cbonsai	cbonsai	rice-showcase	
 chromium	chromium	web-browsers	
@@ -60,8 +59,8 @@ libretro-mesen	-	gaming	Not packaged for Void; download the core from RetroArch'
 libretro-mupen64plus-next	-	gaming	Not packaged for Void; download the core from RetroArch's Online Updater.
 libretro-snes9x	-	gaming	Not packaged for Void; download the core from RetroArch's Online Updater.
 librewolf	-	web-browsers	LibreWolf is not packaged for Void; get it from Flathub (io.gitlab.librewolf-community).
-linux-cachyos	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
-linux-cachyos-headers	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
+linux-cachyos	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
+linux-cachyos-headers	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
 linux-headers	linux-headers	the-influencer	
 lldb	lldb	developer-essentials	
 lolcat	lolcat-c	rice-showcase	
@@ -87,7 +86,6 @@ owncast-bin	-	the-influencer	Owncast is not packaged for Void; download it from 
 pcsx2	-	gaming	PCSX2 is not packaged for Void; get it from Flathub (net.pcsx2.PCSX2).
 pipes.sh	-	rice-showcase	Not packaged for Void; the pipes.c package has the same screensaver as the cpipes command.
 ppsspp	ppsspp	gaming	
-proton-cachyos-native	-	cachyos-layer	Part of the CachyOS performance layer, which only Ryoku on Arch and CachyOS can add.
 proton-vpn-gtk-app	-	vpn-networking	Proton VPN's app is not packaged for Void.
 protontricks	protontricks	gaming	
 protonup-qt	-	gaming	ProtonUp-Qt is not packaged for Void; get it from Flathub (net.davidotek.pupgui2).
@@ -102,10 +100,10 @@ rustup	rustup	developer-essentials
 ryotunes	ryotunes	ryotunes	repo=ryoku
 sc-controller	sc-controller	gaming	
 scummvm	scummvm	gaming	
-scx-scheds	scx	cachyos-layer	
+scx-scheds	-	cachyos-layer	CachyOS Gaming is only available on Arch and CachyOS.
 shotcut	shotcut	the-influencer	
 sl	sl	rice-showcase	
-steam	steam libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit	gaming	repo=nonfree,multilib
+steam	steam libgcc-32bit libstdc++-32bit libdrm-32bit libglvnd-32bit	cachyos-layer,gaming	repo=nonfree,multilib
 subtitleedit	-	the-influencer	Subtitle Edit is not packaged for Void; Subtitle Editor (subtitleeditor) is a native alternative.
 tmux	tmux	developer-essentials	
 toilet	toilet	rice-showcase	

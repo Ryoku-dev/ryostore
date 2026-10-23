@@ -1,0 +1,8 @@
+AnimatedRepeater 1.0 AnimatedRepeater.qml
+ButtonRow 1.0 ButtonRow.qml
+CircularIndicatorManager 1.0 CircularIndicatorManager.qml
+LazyListView 1.0 LazyListView.qml
+LinearIndicatorManager 1.0 LinearIndicatorManager.qml
+LinearIndicatorSegment 1.0 LinearIndicatorSegment.qml
+SparklineItem 1.0 SparklineItem.qml
+WavyLine 1.0 WavyLine.qml

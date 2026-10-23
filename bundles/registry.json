@@ -786,29 +786,29 @@
     },
     {
       "id": "cachyos-layer",
-      "name": "CachyOS Layer",
-      "version": "1.0.0",
+      "name": "CachyOS Gaming",
+      "version": "1.1.0",
       "path": "bundles/cachyos-layer",
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/cachyos-layer",
       "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "kernel \u00b7 tuning \u00b7 schedulers \u00b7 proton",
-      "description": "Turn Ryoku into CachyOS: the performance-tuned kernel, cachyos-settings tuning, sched-ext schedulers, the ananicy-cpp auto-nice daemon and ruleset, and the CachyOS Proton build. Adds the CachyOS repos above Arch's, so opting in goes full CachyOS; the stock kernel stays as the boot fallback. Install all, or pick individual tools. Every item but scx-scheds needs the CachyOS repo.",
+      "summary": "kernel · tuning · schedulers · Steam · CachyOS gaming",
+      "description": "Adds the CachyOS repositories below the Arch repositories, so Arch packages stay authoritative and nothing in the Arch userland is converted. Installs the x86-64-v3 CachyOS kernel beside the Arch kernel, which stays available as the fallback; choose the CachyOS kernel in the boot menu and Limine remembers it. Includes CachyOS system tuning with ananicy-cpp and its rules, sched-ext schedulers, Steam, and CachyOS gaming packages: Proton-CachyOS, Wine-CachyOS, umu-launcher, winetricks, and protontricks. Requires an x86-64-v3 CPU. NVIDIA users on the open driver should also install linux-cachyos-nvidia-open. Arch only.",
       "packageManagers": [
         "pacman"
       ],
-      "packageManagersReason": "Adds CachyOS's own repositories and kernel, which only Ryoku on Arch and CachyOS can use.",
+      "packageManagersReason": "CachyOS Gaming needs pacman and the CachyOS repositories, so it is only available on Arch and CachyOS.",
       "tags": [
-        "faster kernel",
-        "cachyos repo",
-        "keeps stock as fallback"
+        "CachyOS gaming",
+        "Arch stays authoritative",
+        "keeps Arch kernel"
       ],
       "accent": "#f97316",
       "surface": "#101010",
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "bundle.json",
-      "manifestSha256": "49405b732295dda8d36b07eddacc3a07e2f7ebc1b60b40415809a63a66e04bc8",
+      "manifestSha256": "69f017b8e27268dfebc439ee213f35bc1b751f7d707b62736b0efe3e4f2f5041",
       "components": [
         {
           "type": "package",
@@ -816,7 +816,7 @@
           "detect": "linux-cachyos",
           "tier": "core",
           "interactive": false,
-          "summary": "The CachyOS kernel: EEVDF with sched-ext, Clang ThinLTO and AutoFDO, the Cachy patchset, x86-64-v3. Needs the CachyOS repo; not on plain Arch."
+          "summary": "The x86-64-v3 CachyOS kernel, installed beside the Arch kernel so either remains available at boot."
         },
         {
           "type": "package",
@@ -824,7 +824,7 @@
           "detect": "linux-cachyos-headers",
           "tier": "core",
           "interactive": false,
-          "summary": "Headers for the CachyOS kernel, needed to rebuild DKMS modules (NVIDIA, VirtualBox) against it. Needs the CachyOS repo; not on plain Arch."
+          "summary": "Headers used to build DKMS modules for the CachyOS kernel."
         },
         {
           "type": "package",
@@ -832,23 +832,7 @@
           "detect": "cachyos-settings",
           "tier": "core",
           "interactive": false,
-          "summary": "CachyOS system tuning: sysctl, udev, modprobe and systemd defaults for a responsive desktop. Needs the CachyOS repo; not on plain Arch."
-        },
-        {
-          "type": "package",
-          "name": "ananicy-cpp",
-          "detect": "ananicy-cpp",
-          "tier": "core",
-          "interactive": false,
-          "summary": "Auto-nice daemon that reprioritizes processes so the compositor and foreground apps stay responsive under load. From the CachyOS repo (AUR on plain Arch)."
-        },
-        {
-          "type": "package",
-          "name": "cachyos-ananicy-rules",
-          "detect": "cachyos-ananicy-rules",
-          "tier": "core",
-          "interactive": false,
-          "summary": "The CachyOS ruleset ananicy-cpp applies. Needs the CachyOS repo; not on plain Arch."
+          "summary": "CachyOS system tuning, including ananicy-cpp and the CachyOS ananicy rules as dependencies."
         },
         {
           "type": "package",
@@ -856,19 +840,27 @@
           "detect": "scx-scheds",
           "tier": "core",
           "interactive": false,
-          "summary": "sched-ext userspace schedulers (bpfland, rusty, lavd). In Arch extra, so it runs on plain Arch too; it just shines on the CachyOS kernel."
+          "summary": "sched-ext userspace schedulers for selecting workload-specific CPU scheduling policies."
         },
         {
           "type": "package",
-          "name": "proton-cachyos-native",
-          "detect": "proton-cachyos-native",
+          "name": "cachyos-gaming-meta",
+          "detect": "cachyos-gaming-meta",
           "tier": "core",
           "interactive": false,
-          "summary": "The CachyOS-tuned Proton build for Steam and Lutris. Needs the CachyOS repo (and multilib for its 32-bit libraries); not on plain Arch."
+          "summary": "CachyOS gaming stack with Proton-CachyOS SLR, Wine-CachyOS, umu-launcher, winetricks, and protontricks."
+        },
+        {
+          "type": "package",
+          "name": "steam",
+          "detect": "steam",
+          "tier": "core",
+          "interactive": false,
+          "summary": "Valve game store and client, installed from Arch's multilib repository."
         }
       ],
-      "tagline": "kernel \u00b7 tuning \u00b7 schedulers \u00b7 proton",
-      "sources": "CachyOS repo / Arch"
+      "tagline": "kernel · tuning · schedulers · Steam · CachyOS gaming",
+      "sources": "CachyOS repo / Arch multilib"
     },
     {
       "id": "developer-essentials",

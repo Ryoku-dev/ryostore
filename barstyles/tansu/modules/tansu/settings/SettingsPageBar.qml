@@ -51,6 +51,15 @@ SettingsPage {
             onToggled: SettingsService.toggle("bar.visible")
         }
 
+        SettingToggle {
+            icon: "visibility_off"
+            label: "Auto-hide"
+            detail: SettingsService.flag("bar.autohide")
+                ? "Slides away · hover the edge" : "Always on screen"
+            checked: SettingsService.flag("bar.autohide")
+            onToggled: SettingsService.toggle("bar.autohide")
+        }
+
         SettingChoice {
             label: "Style"
             sublabel: "How the bar is drawn"
@@ -62,6 +71,17 @@ SettingsPage {
                 { id: "capsule", label: "Capsule", edge: "top", variant: "capsule" }
             ]
             onPicked: id => BarStyleService.setStyle(id)
+        }
+
+        SettingSlider {
+            icon: "rounded_corner"
+            label: "Corner radius"
+            from: 0
+            to: 100
+            step: 1
+            suffix: "%"
+            value: SettingsService.get("bar.roundness", 100)
+            onMoved: v => SettingsService.set("bar.roundness", Math.round(v))
         }
 
         SettingChoice {
@@ -119,7 +139,7 @@ SettingsPage {
                 icon: modelData.icon
                 label: modelData.label
                 checked: BarLayoutService.isOn(moduleToggle.moduleId, page.screenName)
-                onToggled: BarLayoutService.setOff(moduleToggle.moduleId, !moduleToggle.checked, page.screenName)
+                onToggled: BarLayoutService.setOff(moduleToggle.moduleId, moduleToggle.checked, page.screenName)
             }
         }
 
@@ -244,8 +264,27 @@ SettingsPage {
         title: "Size"
 
         SettingStepper {
+            icon: "height"
+            label: "Bar size"
+            from: 0.7
+            to: 1.3
+            step: 0.05
+            decimals: 2
+            suffix: "×"
+            value: ShellScale.barScale
+            onMoved: v => ShellScale.setBarScale(v)
+        }
+
+        SettingAction {
+            icon: "restart_alt"
+            label: "Reset bar size"
+            detail: "Back to 1.00×"
+            onActivated: ShellScale.setBarScale(1)
+        }
+
+        SettingStepper {
             icon: "aspect_ratio"
-            label: "Shell size"
+            label: "Tansu size"
             from: 0.5
             to: 3
             step: 0.05
@@ -257,8 +296,8 @@ SettingsPage {
 
         SettingAction {
             icon: "restart_alt"
-            label: "Reset size"
-            detail: "Back to the monitor's own scale"
+            label: "Reset Tansu size"
+            detail: "Back to 1.00× on this monitor"
             onActivated: { if (page.host) ShellScale.resetScale(page.screenName) }
         }
     }

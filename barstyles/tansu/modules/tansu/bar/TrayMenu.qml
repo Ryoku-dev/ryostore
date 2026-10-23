@@ -26,6 +26,8 @@ Pill {
 
     property bool pinned: false
     property bool showPin: true
+    // The bar's corner-radius setting, so the menu matches the bar.
+    property real roundness: 1
     property bool showBack: false
 
     // The same entry and dismiss as the bar's other popups (TansuPopup.qml): the
@@ -110,7 +112,7 @@ Pill {
     signal entryTriggered(var entry)
     signal submenuRequested(var entry)
 
-    cornerRadius: Theme.radiusOuter
+    cornerRadius: Theme.radiusOuter * root.roundness
     ringWidth: Theme.borderWidth
     innerRing: Theme.cardRing
     fillColor: Theme.surface

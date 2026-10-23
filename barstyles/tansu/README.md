@@ -8,12 +8,15 @@ theme as the rest of the shell.
 
 - **The bar** — workspaces, active window, media, weather, clock and date, tray,
   system status, resource gauges, battery, package updates, notifications,
-  privacy (mic / screen-share), keyboard layout, and the utility keys.
+  privacy (mic / screen-share), keyboard layout, and the utility keys. It can
+  auto-hide, sliding away until the pointer reaches its edge.
 - **The phone** — the Quick Panel as a phone: quick tiles and sliders,
-  a now-playing card while something is playing, notifications, dialogs, and
-  the power menu.
+  a now-playing card while something is playing (tap it for the lyrics, and pin
+  the phone into the corner), notifications, dialogs, and the power menu.
 - **Built-in Apps** — browse, search and launch desktop applications within
   the same phone, without installing a separate launcher.
+- **Rashin** — swipe left on the phone for Ryoku's AI agent: a transcript over
+  your wallpaper, with its own composer and stop key.
 - **Wallpapers** — a wallpaper board reached from the phone (Desktop and
   Lockscreen sides), backed by `ryogami`.
 - **Native backends** — window and workspace state from Ryoku's `Wm` facade,
@@ -35,8 +38,20 @@ The pages are **Quick**, **General**, **Bar**, and **About**. They are stored in
 |------|---------------|
 | Quick | The phone's look (including the now-playing card), and the shell switches (notifications, Night Light, Keep Awake, the bar) |
 | General | 24-hour time, the phone's alert, the Quick Panel's hot edge and behaviour, shell reload and reset |
-| Bar | Which modules the bar carries (every pill and key), the workspace count, the update badge, media/tray/scroll behaviour, and the utility keys |
+| Bar | Which modules the bar carries (every pill and key), auto-hide, the corner radius, the workspace count, the bar's size, the update badge, media/tray/scroll behaviour, and the utility keys |
 | About | What this barstyle is, and its credits |
+
+## Sizes
+
+Tansu draws in logical pixels and never multiplies the compositor's display
+scale in on top, so the bar keeps its size across scale changes. **Bar → Size**
+has two knobs, both in `~/.config/ryoku/barstyle-tansu.json`: **Bar size**
+(0.70–1.30×, the bar strip alone) and **Tansu size** (0.50–3.00×, everything
+Tansu draws on that monitor). Neither writes Ryoku's own display scale.
+
+The bar is drawn for 1920 × 1080 at scale 1.0. Below roughly 1,350 logical
+pixels of width its modules stop fitting side by side: lower **Bar size** or
+switch off pills in **Modules**.
 
 ## Compositor support
 

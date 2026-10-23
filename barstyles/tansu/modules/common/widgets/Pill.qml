@@ -42,6 +42,16 @@ Item {
     property real cornerRadius: height / 2
     property real ringWidth: 8
 
+    // The bar's corner-radius setting (Status_Bar sets it), found up the tree
+    // so every module follows the bar. 1 for anything outside the bar.
+    readonly property real barRoundness: {
+        for (let p = root.parent; p; p = p.parent)
+            if (p.barRoundness !== undefined)
+                return p.barRoundness
+        return 1
+    }
+    readonly property real effectiveRadius: Math.max(0, root.cornerRadius * root.barRoundness)
+
     property real innerRing: 0
 
     // Outline thickness, and where the hard shadow sits. The bar's pills
@@ -76,7 +86,7 @@ Item {
         y: root.shadowDy
         width: root.capWidth
         height: root.capHeight
-        radius: root.cornerRadius
+        radius: root.effectiveRadius
         color: root.capRim ? Theme.capShade
             : (root.classicScope ? Theme.pLineShadow : Theme.lineShadow)
         antialiasing: true
@@ -112,7 +122,7 @@ Item {
             id: face
             visible: !root.capsule && !root.bare
             anchors.fill: parent
-            radius: root.cornerRadius
+            radius: root.effectiveRadius
             border.width: root.borderWidth
             border.color: root.capRim ? Theme.capRim
                 : (root.classicScope ? Theme.pLine : Theme.line)
@@ -136,7 +146,8 @@ Item {
             id: fill
             anchors.fill: face
             anchors.margins: root.capsule ? 0 : root.ringWidth
-            radius: root.capsule ? Math.min(width, height) / 2 : Math.max(0, root.cornerRadius - root.ringWidth)
+            radius: root.capsule ? Math.min(width, height) / 2 * root.barRoundness
+                : Math.max(0, root.effectiveRadius - root.ringWidth)
             color: root.bare ? "transparent"
                 : (root.capsule
                     ? (root.capKeepsFill ? root.fillColor : Theme.capChip)

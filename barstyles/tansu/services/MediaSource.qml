@@ -22,6 +22,14 @@ Scope {
             : (root.player.identity ?? "")
     }
     readonly property string artist: root.player?.trackArtist ?? ""
+    readonly property string album: root.player?.trackAlbum ?? ""
+    readonly property real length: (root.player && root.player.length > 0) ? root.player.length : 0
+    // What the lyrics services ask for beyond artist and title (YouTube Music
+    // and SimpMusic look a song up by its URL).
+    readonly property string url: {
+        const meta = root.player ? root.player.metadata : null
+        return meta && meta["xesam:url"] ? String(meta["xesam:url"]) : ""
+    }
 
     readonly property string artUrl: {
         if (root.player === null)

@@ -633,6 +633,7 @@ Scope {
     // ───────────── Liquid Glass backend ─────────────
     // Same shader as the Dock / Menu Bar (liquidglass.frag), compiled with qsb into ~/.config/macwidgets/.
     property string glassState: "idle"                     // idle → building → ready | failed
+    onGlassStateChanged: console.log("[gokko-niri] widget glass:", glassState, "anyLiquid=" + anyLiquid)
     readonly property string glassShaderSrc: decodeURIComponent(Qt.resolvedUrl("liquidglass.frag").toString().replace("file://", ""))
     readonly property string glassShaderOut: configDir + "/liquidglass.frag.qsb"
     onAnyLiquidChanged: if (anyLiquid) startGlass()
@@ -670,9 +671,12 @@ Scope {
     // wallpaper behind the widgets (same lookup as the Dock's Liquid Glass)
     readonly property var wallpaperMap: hub ? hub.wallpaperMap : ({})
     function wallpaperFor(screenName) {
-        var p = (dock && dock.wallpaperPath !== "") ? dock.wallpaperPath
-              : (wallpaperMap["wallpaper.monitors." + screenName] || wallpaperMap["wallpaper.last"]
-                 || wallpaperMap["wallpaper.default"] || "");
+        var current = wallpaperMap["wallpaper.monitors." + screenName]
+                   || wallpaperMap["wallpaper.last"] || wallpaperMap["wallpaper.default"] || "";
+        // Critical: the old path was always preferred, so widgets showed a
+        // different wallpaper even after the bar and Dock followed Ryogami.
+        var p = (hub && hub.nativeBackdrop) ? current
+              : ((dock && dock.wallpaperPath !== "") ? dock.wallpaperPath : current);
         if (p.indexOf("~/") === 0) p = Quickshell.env("HOME") + p.substring(1);
         return p;
     }

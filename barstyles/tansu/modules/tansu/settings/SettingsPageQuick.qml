@@ -35,6 +35,28 @@ SettingsPage {
             checked: SettingsService.flag("quick.media")
             onToggled: SettingsService.toggle("quick.media")
         }
+
+        SettingSlider {
+            icon: "photo_size_select_large"
+            label: "Pinned size"
+            from: 30
+            to: 90
+            step: 1
+            suffix: "%"
+            value: SettingsService.get("quick.pinScale", 58)
+            onMoved: v => SettingsService.set("quick.pinScale", Math.round(v))
+        }
+
+        SettingSlider {
+            icon: "opacity"
+            label: "Pinned opacity"
+            from: 30
+            to: 100
+            step: 5
+            suffix: "%"
+            value: SettingsService.get("quick.pinOpacity", 100)
+            onMoved: v => SettingsService.set("quick.pinOpacity", Math.round(v))
+        }
     }
 
     SectionCard {

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "gokko",
   "category": "barstyles",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "destination": "ryoku/barstyles/gokko",
   "files": [
     {
@@ -25,16 +25,16 @@
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
       "mode": "0644",
-      "size": 286,
-      "sha256": "80da762ca281b2e6e14690217b7c3eed0e72385895fc8bb9bc509b2028833193",
+      "size": 376,
+      "sha256": "3f5adf6adce5cc1fa307126fad2a8f64f8944880a406a40477167b9b47a76aef",
       "install": true
     },
     {
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 1636,
-      "sha256": "fd2897664e1e42da47c7c992301ad6f816d7be293a773058a5bbd7a594df8176",
+      "size": 11805,
+      "sha256": "5b5721d9f523997eab592356c6b3e1c62ebff8727f92c81614a92d819d75d44e",
       "install": true
     },
     {
@@ -50,7 +50,7 @@
       "destination": "VERSION",
       "mode": "0644",
       "size": 6,
-      "sha256": "e9dd8507f4bf0c6f42458e41aea833ad0bd3f6127272335eee9bf4d58541ed67",
+      "sha256": "d915cc95d6ca8f47ae297713ed46d4e5c5d99ddd29fc3c61e263bdf305f2b5b0",
       "install": true
     },
     {
@@ -65,8 +65,8 @@
       "source": "upstream/AboutApp.qml",
       "destination": "upstream/AboutApp.qml",
       "mode": "0644",
-      "size": 16795,
-      "sha256": "8ece0b0ef2ffa4680bac87484255347707998e1fff79f7e28a654cc49951ef77",
+      "size": 16037,
+      "sha256": "6483649258f3a54951ea6d02cc147dbd344dc3db486c9f9ccc4601ea234e6fd7",
       "install": true
     },
     {
@@ -265,32 +265,32 @@
       "source": "upstream/MacBar.qml",
       "destination": "upstream/MacBar.qml",
       "mode": "0644",
-      "size": 583600,
-      "sha256": "2cc822b430532b54f0deaffd9565f7032dbf2528353cea3cf2e60a9444f7978e",
+      "size": 594530,
+      "sha256": "131df77e9c65bbe686e61af7c913b1223f00c6e41ad390d248e8c45e35c2b882",
       "install": true
     },
     {
       "source": "upstream/MacDock.qml",
       "destination": "upstream/MacDock.qml",
       "mode": "0644",
-      "size": 325015,
-      "sha256": "abcd6765046925b52099f9bef0c0fcc965f8d19b63b6cfebdd85cc4dc0e57f64",
+      "size": 308833,
+      "sha256": "c3e57add86f9f5ee6c8aa000653703d9bc84419f567fb8ffc0141700a6cd5c6c",
       "install": true
     },
     {
       "source": "upstream/MacRoot.qml",
       "destination": "upstream/MacRoot.qml",
       "mode": "0644",
-      "size": 21372,
-      "sha256": "2c4eee845c0c6165ca19bedcacbd4fc32a0ad0e8acb02a8b7cda911b73bc8430",
+      "size": 22608,
+      "sha256": "dcb506c8afc2b782d8c0ba92f3dcf1afffaa21cfd9dd6bf68d960901cdb1d61d",
       "install": true
     },
     {
       "source": "upstream/MacWidgets.qml",
       "destination": "upstream/MacWidgets.qml",
       "mode": "0644",
-      "size": 42662,
-      "sha256": "b2d011d9203800690d6fa6faec470305d3164a9d7d491965c660350b4ad35051",
+      "size": 42993,
+      "sha256": "b79c6815c90db965cf9748f5d957634522535e1f1d95b306a028e6b73d869275",
       "install": true
     },
     {
@@ -569,8 +569,16 @@
       "source": "upstream/dockglass.frag",
       "destination": "upstream/dockglass.frag",
       "mode": "0644",
-      "size": 9320,
-      "sha256": "bf23b7f28c047fb5271ece96e4bea464f10ca8009b048f25198ad566ca22bc8b",
+      "size": 9186,
+      "sha256": "f1ebcf553c2dfb007050799f6c44d74556c2b49e4aac661c77f39b94ded0a631",
+      "install": true
+    },
+    {
+      "source": "upstream/dockglass.frag.qsb",
+      "destination": "upstream/dockglass.frag.qsb",
+      "mode": "0644",
+      "size": 11516,
+      "sha256": "6d253bea1eea5c21479786bd21eb6c1459b5f0ad0d30bf2e6d3fbae9b59f2477",
       "install": true
     },
     {
@@ -707,6 +715,14 @@
       "mode": "0644",
       "size": 2540,
       "sha256": "7b5e5c627cd42c9acbec0ba2cb1c48860a4c9dd84313ec7d343034d545dd212c",
+      "install": true
+    },
+    {
+      "source": "upstream/gokko-icons.py",
+      "destination": "upstream/gokko-icons.py",
+      "mode": "0644",
+      "size": 13589,
+      "sha256": "f3c3ba8e7c7722c5186f58bc0eed3dafef72775083f030ced8aac84890d62c74",
       "install": true
     }
   ],

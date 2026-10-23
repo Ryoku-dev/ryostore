@@ -18,9 +18,20 @@ Item {
     signal toggleRequested()
     signal previousRequested()
     signal nextRequested()
+    // The card is also the door to the lyrics tab (QuickPanel.qml).
+    signal lyricsRequested()
 
     implicitWidth: 575
     implicitHeight: 130
+
+    // Hovering lifts it a touch, so it reads as something you can open.
+    scale: openArea.containsMouse ? 1.03 : 1
+    Behavior on scale {
+        NumberAnimation {
+            duration: 150
+            easing.type: Easing.OutCubic
+        }
+    }
 
     Rectangle {
         x: Theme.quickFlat ? 0 : 5
@@ -131,6 +142,16 @@ Item {
                 font.family: Theme.fontFamily
                 font.pixelSize: 15
             }
+        }
+
+        // The whole card opens the lyrics; the transport keys sit above this
+        // and keep their own clicks.
+        MouseArea {
+            id: openArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.lyricsRequested()
         }
 
         Row {

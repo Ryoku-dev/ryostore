@@ -544,6 +544,8 @@ Scope {
                 id: menuCard
 
                 capRim: root.capsuleStyle
+                roundness: root.parentWindow && root.parentWindow.barRoundness !== undefined
+                    ? root.parentWindow.barRoundness : 1
                 x: root.menuPadL + (root.parentWindow && root.parentWindow.vertical
                     ? (root.barEdge === "right" ? maxWidth - width : 0)
                     : (maxWidth - width) / 2)

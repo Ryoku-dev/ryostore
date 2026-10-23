@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "tansu",
   "category": "barstyles",
-  "version": "1.4.4",
+  "version": "1.4.64",
   "destination": "ryoku/barstyles/tansu",
   "files": [
     {
@@ -25,8 +25,8 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 4040,
-      "sha256": "0cb3c671b79e2493f6920cb7465115e5e3bac2cf6dc96974c3eec3a9d185a273",
+      "size": 4935,
+      "sha256": "adcb94438f4be3b289a9a9819aa21ead0f587c16e7dc909a2d35a19d13723bf4",
       "install": true
     },
     {
@@ -41,8 +41,8 @@
       "source": "VERSION",
       "destination": "VERSION",
       "mode": "0644",
-      "size": 6,
-      "sha256": "d03d8b268b4171328ac2458ce8ca82d69a1fde38469d4e4faae4f8fa8d8a5e35",
+      "size": 7,
+      "sha256": "9d58cc230c308ffbe089b06330f41dde4f8c52ddce8b5cd9f8418122bf9944c9",
       "install": true
     },
     {
@@ -5929,8 +5929,8 @@
       "source": "modules/common/widgets/Pill.qml",
       "destination": "modules/common/widgets/Pill.qml",
       "mode": "0644",
-      "size": 6905,
-      "sha256": "b7ea8c79d5e4424008638cc49299ef80eb62e5129de552083c0a0297742a630f",
+      "size": 7398,
+      "sha256": "70118929fec69d0693f45eac32156a826c2de73bcb5fb7a21461cb2619d70110",
       "install": true
     },
     {
@@ -6065,8 +6065,8 @@
       "source": "modules/tansu/bar/Bar.qml",
       "destination": "modules/tansu/bar/Bar.qml",
       "mode": "0644",
-      "size": 26407,
-      "sha256": "59589a718210871c515d145da854215fe3daff1341ac06fed2ef7ce2d1c5a081",
+      "size": 28707,
+      "sha256": "0822405166e8f0adea7c76b7771d0e0ebedf2ffe0254afd3aef04032bde349fa",
       "install": true
     },
     {
@@ -6161,8 +6161,8 @@
       "source": "modules/tansu/bar/MediaPill.qml",
       "destination": "modules/tansu/bar/MediaPill.qml",
       "mode": "0644",
-      "size": 14544,
-      "sha256": "12ae29cef51ab30d2f47d95f046388c4e864112f0e57b249c564958062643ed4",
+      "size": 14550,
+      "sha256": "af48301f59a4102d3693b1bf5ad7f85e05bf305847c0495cb3b48caff4a9da93",
       "install": true
     },
     {
@@ -6241,16 +6241,16 @@
       "source": "modules/tansu/bar/Status_Bar.qml",
       "destination": "modules/tansu/bar/Status_Bar.qml",
       "mode": "0644",
-      "size": 40849,
-      "sha256": "4205bf74fe5a1053dce47cce2690441fddb24ce54d75782ec12aadd8ab26fee2",
+      "size": 41186,
+      "sha256": "2916cfd56f60fa1390b64d5614c78750f11507001e32e59567747c1b6ea6499e",
       "install": true
     },
     {
       "source": "modules/tansu/bar/TansuPopup.qml",
       "destination": "modules/tansu/bar/TansuPopup.qml",
       "mode": "0644",
-      "size": 9897,
-      "sha256": "5c9b1cdc911c406cea9cc633861c45856f03116df9bcd6cb3b62331c6228a96c",
+      "size": 10145,
+      "sha256": "d93b9e4f4b56d43ff69a7c37d4e73820cbf886b2f785d373be7137a8b79e21d5",
       "install": true
     },
     {
@@ -6265,16 +6265,16 @@
       "source": "modules/tansu/bar/TrayMenu.qml",
       "destination": "modules/tansu/bar/TrayMenu.qml",
       "mode": "0644",
-      "size": 8439,
-      "sha256": "ab6ff5f7fb278635fb8bb5bdbe4f6c098143932c1e0bbd66649e7ad8342d3781",
+      "size": 8556,
+      "sha256": "1374709d5852f8ed2cb3951f721011465843a8394cc228b6c64f02b16f832786",
       "install": true
     },
     {
       "source": "modules/tansu/bar/TrayPopups.qml",
       "destination": "modules/tansu/bar/TrayPopups.qml",
       "mode": "0644",
-      "size": 20025,
-      "sha256": "9b2f62f4131d66df2dce2d7590886ac0610ca43baaac79190171fa5ed333ed7b",
+      "size": 20175,
+      "sha256": "5c9d4b3f931cdf5fab7a4393307bc9e0b869df555832e7ebc502301aef5be259",
       "install": true
     },
     {
@@ -6337,8 +6337,8 @@
       "source": "modules/tansu/bar/WorkspaceBadges.qml",
       "destination": "modules/tansu/bar/WorkspaceBadges.qml",
       "mode": "0644",
-      "size": 14844,
-      "sha256": "82f3138a48306b34bffa398a2f32bd4158d5963c49b26a5687003e7bba24afaa",
+      "size": 14990,
+      "sha256": "7792183f0e443e9a2c7a5f52efc08140e3998df9111eda1a5053c4a4795c5f43",
       "install": true
     },
     {
@@ -6454,6 +6454,14 @@
       "install": true
     },
     {
+      "source": "modules/tansu/quickPanel/AskFace.qml",
+      "destination": "modules/tansu/quickPanel/AskFace.qml",
+      "mode": "0644",
+      "size": 15746,
+      "sha256": "9048bef1332601ccbfecf948462e0ac19f157381f02498e922373c0cee2c2472",
+      "install": true
+    },
+    {
       "source": "modules/tansu/quickPanel/BluetoothDialog.qml",
       "destination": "modules/tansu/quickPanel/BluetoothDialog.qml",
       "mode": "0644",
@@ -6467,6 +6475,14 @@
       "mode": "0644",
       "size": 6010,
       "sha256": "7cd967273901854580f9943c1fed738b3aa23cbffcdbfdded8c5c2ba5d0bdcec",
+      "install": true
+    },
+    {
+      "source": "modules/tansu/quickPanel/LyricsFace.qml",
+      "destination": "modules/tansu/quickPanel/LyricsFace.qml",
+      "mode": "0644",
+      "size": 20951,
+      "sha256": "45222ad74a6fb528054a900da26e5a36542ed015bd286b98086fc13357cc897a",
       "install": true
     },
     {
@@ -6489,24 +6505,24 @@
       "source": "modules/tansu/quickPanel/NotificationCard.qml",
       "destination": "modules/tansu/quickPanel/NotificationCard.qml",
       "mode": "0644",
-      "size": 9439,
-      "sha256": "ee653097071bbfaf06ea02ac00148f3595276df1f9b5148b55d77d45cae5c9fd",
+      "size": 9551,
+      "sha256": "8bc32aa7fbc04e4c6d59bedfff25731e61b12d8c7913dae332e4847a877677e7",
       "install": true
     },
     {
       "source": "modules/tansu/quickPanel/NowPlayingCard.qml",
       "destination": "modules/tansu/quickPanel/NowPlayingCard.qml",
       "mode": "0644",
-      "size": 5970,
-      "sha256": "7353a20ca59e322a2515cf0ab06e73299b6f2ed668970adaa88b2ceaa23bb2d8",
+      "size": 6649,
+      "sha256": "9212d4c87dec964e35e873a93c44b4f485a84430e673a680c64caab2fde895ab",
       "install": true
     },
     {
       "source": "modules/tansu/quickPanel/PhoneRoute.js",
       "destination": "modules/tansu/quickPanel/PhoneRoute.js",
       "mode": "0644",
-      "size": 2276,
-      "sha256": "f3859563e0a7452fd8a2af764de6e4ac673cb0b455e8b53f5cb258e0a9d3e895",
+      "size": 2294,
+      "sha256": "cfa9c6950a6e66685d4d7bef518fd97de5ff29513c7cd3d8be29dd99211a25a7",
       "install": true
     },
     {
@@ -6529,16 +6545,16 @@
       "source": "modules/tansu/quickPanel/QuickPanel.qml",
       "destination": "modules/tansu/quickPanel/QuickPanel.qml",
       "mode": "0644",
-      "size": 88672,
-      "sha256": "fabf334545fca16830d913361f15abc35644db61e4c54ad01120eb80906c9a82",
+      "size": 108000,
+      "sha256": "f0b8492f979dd14ee6dca9a2ca54a863524acbd7cef5f3625175bb20ab2fbb0c",
       "install": true
     },
     {
       "source": "modules/tansu/quickPanel/QuickPanelFace.qml",
       "destination": "modules/tansu/quickPanel/QuickPanelFace.qml",
       "mode": "0644",
-      "size": 76619,
-      "sha256": "cebd8ca0ec122da8c08d3076279fe18cb7023673fc29b437ba56a9d5c8a2ac27",
+      "size": 76698,
+      "sha256": "b1f81e6487bc3eccf5311c746b7d2cc1f18cd01735031fca94c5e3dbcd7a470f",
       "install": true
     },
     {
@@ -6673,16 +6689,16 @@
       "source": "modules/tansu/settings/SettingsPageAbout.qml",
       "destination": "modules/tansu/settings/SettingsPageAbout.qml",
       "mode": "0644",
-      "size": 4401,
-      "sha256": "9d22708cf54ca3bb4286d74958d784acfb7adffd2aee138ed098e83efecb03b2",
+      "size": 4848,
+      "sha256": "803bddd6ef33c3cda8b5ad5899c49c6ef7aead936f176a4d0cff245d7d35c3e0",
       "install": true
     },
     {
       "source": "modules/tansu/settings/SettingsPageBar.qml",
       "destination": "modules/tansu/settings/SettingsPageBar.qml",
       "mode": "0644",
-      "size": 9848,
-      "sha256": "59bdf5e53f478c1b5b47c8ae7d80dad72316352e74ad14e6af080c223a995e37",
+      "size": 11018,
+      "sha256": "e260aaac2c9b2aa23273d91dfb46d00f404e4c316d805e2267a85ea5a4c69e28",
       "install": true
     },
     {
@@ -6697,8 +6713,8 @@
       "source": "modules/tansu/settings/SettingsPageQuick.qml",
       "destination": "modules/tansu/settings/SettingsPageQuick.qml",
       "mode": "0644",
-      "size": 2445,
-      "sha256": "272a9682e2b4c338007cffb28f677116e9c45f03f203d6f70344b2852cae4d00",
+      "size": 3110,
+      "sha256": "fcb4a988f2aa888e40c526e861532a676bad117eed1651c13ca8c121755bb35f",
       "install": true
     },
     {
@@ -7121,8 +7137,8 @@
       "source": "services/MediaSource.qml",
       "destination": "services/MediaSource.qml",
       "mode": "0644",
-      "size": 1649,
-      "sha256": "15325ddd477df3e891d0b7fa1b2ec1f6a0b887a3c176d0f47d046db4278e25c5",
+      "size": 2122,
+      "sha256": "1ecb1267adf067b8463247e66e4c653902f1af51d83a15e953a482312fb30956",
       "install": true
     },
     {
@@ -7249,16 +7265,16 @@
       "source": "services/SettingsService.qml",
       "destination": "services/SettingsService.qml",
       "mode": "0644",
-      "size": 8085,
-      "sha256": "7b44d1e1282b04fa583537e54d9ca38985a941bc42c38a94496f15fb7c23ce0d",
+      "size": 8259,
+      "sha256": "1064a3910da9848e63b1b85615011a8c6ff131659e79d7b049629c6cec23356d",
       "install": true
     },
     {
       "source": "services/ShellScale.qml",
       "destination": "services/ShellScale.qml",
       "mode": "0644",
-      "size": 1814,
-      "sha256": "117de94ad16416b612e8e70dfb4dad08cabd898f1055d30b16afe09be2019fba",
+      "size": 2183,
+      "sha256": "192642c8d0964581bb17c479104baa7c9f1511c283ed219bf5f218ea1f2b2d70",
       "install": true
     },
     {

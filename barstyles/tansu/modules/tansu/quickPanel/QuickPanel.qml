@@ -3,7 +3,9 @@ import Quickshell.Io
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick
+import QtQuick.Effects
 import Ryoku.Ui.Singletons
+import shell.services as Ryoku
 import "../../../services"
 import "../../common/functions/PhoneMath.js" as PM
 import "../../common/functions/FlipMath.js" as FM
@@ -61,12 +63,16 @@ import "../../../modules/tansu/settings"
 // while it animates stutters.
 //
 // This is also the ONE phone's front door (Concept D, "Phone + Stage"):
-//   - Quick is the first screen. Apps (LauncherFace.qml) is a second screen of the
-//     same body: the grid button on the header, typing a letter, or Super+A bring
-//     it in (a short vertical slide, no new pose). Settings keep their turn.
+//   - Quick is the first screen, with Rashin (AskFace.qml) to its right: a pull
+//     left brings the agent in, a pull right goes back. Apps (LauncherFace.qml)
+//     is not a page: typing a letter, Super+A or a jump slides it in over Quick.
+//     Settings keep their turn.
 //   - Back undoes the steps you took and never invents one (PhoneRoute.js): Escape
 //     or the Back chip goes back one screen; at the screen the phone was opened on
 //     it closes. Ctrl+1..4 jump (1 Quick, 2 Apps, 3 Wallpapers, 4 Settings).
+//   - the now-playing card opens the Lyrics tab (LyricsFace.qml). Its push-pin
+//     turns the phone into the corner player, bottom left (Back, or the pin
+//     again, brings it back).
 //   - one IPC target for all of it:  qs -c tansu ipc call phone toggle | show | hide
 //     | go <quick|apps|wallpapers|settings> | back | home
 //     (`quickpanel`, `launcherphone` and `settings` keep working).
@@ -98,17 +104,31 @@ Scope {
     readonly property string faceScreen: {
         const st = root.phoneRoute.stack
         for (let i = st.length - 1; i >= 0; i--) {
-            if (st[i] === "apps" || st[i] === "quick")
+            if (st[i] === "apps" || st[i] === "quick" || st[i] === "ai")
                 return st[i]
         }
         return "quick"
     }
-    property real routeK: 0
-    readonly property bool routing: routePrep.running || routeAnim.running
+    // Rashin is one face right of Quick. Apps is not a page at all (see
+    // appsLayer); the pager is one face wide per page, so a page is always a
+    // whole face and the neighbours stay outside the screen.
+    readonly property bool routing: slideAnim.running || pager.moving
 
     property var picker: null
 
     property bool settingsOpen: false
+
+    // The lyrics tab, opened from the now-playing card.
+    property bool lyricsShown: false
+
+    // The corner player (Settings > Quick Panel for its size and opacity).
+    property bool pinned: false
+    property real pinScale: SettingsService.get("quick.pinScale", 58) / 100
+    property real pinOpacity: SettingsService.get("quick.pinOpacity", 100) / 100
+    property int pinMs: 560
+    // How much of the phone hangs past the screen's edges, of its own size.
+    property real pinPeekX: 0.12
+    property real pinPeekY: 0.07
 
     property string landscape: "settings"
     property bool wallpapersStraight: true
@@ -264,8 +284,14 @@ Scope {
     // frame instead of sliding in during the pull-out.
     function openOn(screen, entry) {
         stopRing()
-        if (!open)
+        if (!open) {
             setRoute(PR.open(entry || "quick"))
+            // A fresh pull-out starts on Quick, in the middle, whatever the last
+            // visit left behind.
+            root.lyricsShown = false
+            root.pinned = false
+            stage.pin = 0
+        }
         if (settingsOpen) {
             if (open && (!screen || screen === targetScreen)) {
                 turningBack = true
@@ -305,6 +331,64 @@ Scope {
         turningBack = false
         open = false
         closeSettings()
+    }
+
+    // ===== the lyrics tab =====
+    // The shell's interpolated clock plus LyricsService's per-track offset,
+    // stepped at 30Hz: the words and the wave don't need 60, and every step
+    // re-renders the phone's screen.
+    readonly property real lyricTime: Math.round((Ryoku.Music.position
+        + LyricsService.syncTotal / 1000) * 30) / 30
+    readonly property real lyricDuration: Ryoku.Music.length
+    readonly property string lyricSource: LyricsService.source !== ""
+        ? LyricsService.providerName(LyricsService.source) : ""
+
+    // Opening the tab again is the retry after a miss: LyricsService keeps a
+    // miss for ten minutes, but here the listener is asking on purpose.
+    function syncLyrics() {
+        if (!root.mediaSource)
+            return
+        const retry = LyricsService.status === "none" || LyricsService.status === "offline"
+        LyricsService.request(root.mediaSource.artist, root.mediaSource.title,
+                              root.mediaSource.album, root.mediaSource.length,
+                              root.mediaSource.url, retry)
+    }
+
+    function openLyrics() {
+        if (!root.open || root.settingsShown || root.lyricsShown)
+            return
+        closeQuickDialogs()
+        root.lyricsShown = true
+        root.focusPhoneKeys()
+    }
+
+    function closeLyrics() {
+        if (!root.lyricsShown)
+            return
+        root.lyricsShown = false
+        root.setPinned(false)
+    }
+
+    function setPinned(on) {
+        if (root.pinned === on)
+            return
+        root.pinned = on
+        stage.setPin(on)
+    }
+
+    onLyricsShownChanged: {
+        Ryoku.Music.hold(root, root.lyricsShown && root.open)
+        if (root.lyricsShown)
+            root.syncLyrics()
+    }
+
+    Connections {
+        target: root.mediaSource
+        ignoreUnknownSignals: true
+        function onTitleChanged() {
+            if (root.lyricsShown)
+                root.syncLyrics()
+        }
     }
 
     function openSettings(screen) {
@@ -409,7 +493,7 @@ Scope {
 
         property int count: 0
 
-        running: flipPrep.running || routePrep.running
+        running: flipPrep.running
         onTriggered: count++
     }
 
@@ -500,24 +584,34 @@ Scope {
         phoneRoute = state
     }
 
-    // The face follows the route: it slides while the window is up and just
-    // snaps while it is hidden. The slide starts a beat later because the phone is
-    // redrawn on the light settings a couple of frames before anything moves
-    // (the same trick the Settings turn uses).
+    // The strip follows the route: it slides while the window is up and just
+    // snaps while it is hidden.
     function syncFace() {
-        const want = faceScreen === "apps" ? 1 : 0
-        routeAnim.stop()
-        routePrep.stop()
+        slideAnim.stop()
+        const target = (faceScreen === "ai" ? 1 : 0) * phone.faceWidth
         if (!win.visible) {
-            routeK = want
+            pager.contentX = target
             return
         }
-        if (routeK === want) {
+        if (Math.abs(pager.contentX - target) < 0.5) {
+            pager.contentX = target
             focusPhoneKeys()
             return
         }
-        routeAnim.to = want
-        armPrep(routePrep)
+        slideAnim.to = target
+        slideAnim.start()
+    }
+
+    // The pull has stopped: take the page it came to rest on. Only Quick and
+    // Rashin page: the Apps screen slides in on its own, never as a page.
+    function settleSwipe() {
+        const page = Math.round(pager.contentX / phone.faceWidth)
+        if (page >= 1 && faceScreen !== "ai")
+            goAsk()
+        else if (page <= 0 && faceScreen !== "quick")
+            homeNow()
+        else
+            syncFace()
     }
     onFaceScreenChanged: syncFace()
 
@@ -538,6 +632,24 @@ Scope {
         if (seed)
             appsFace.appendText(seed)
         setRoute(PR.go(phoneRoute, "apps"))
+    }
+
+    function goAsk() {
+        if (!open || settingsShown || faceScreen === "ai")
+            return
+        closeQuickDialogs()
+        setRoute(PR.go(phoneRoute, "ai"))
+    }
+
+    function openAskOn(screen) {
+        if (open && !settingsShown && (!screen || screen === targetScreen)) {
+            goAsk()
+            return
+        }
+        const wasOpen = open
+        openOn(screen, "ai")
+        if (wasOpen)
+            setRoute(PR.open("ai"))
     }
 
     function openAppsOn(screen) {
@@ -597,6 +709,10 @@ Scope {
             settingsBack()
             return
         }
+        if (root.lyricsShown) {
+            root.closeLyrics()
+            return
+        }
         if (!open) {
             close()
             return
@@ -619,6 +735,8 @@ Scope {
             openSettings(targetScreen)
         else if (name === "wallpapers")
             openWallpapers(targetScreen)
+        else if (name === "ai")
+            goAsk()
     }
 
     function runBuiltin(id) {
@@ -642,6 +760,8 @@ Scope {
             openSettings(screen)
         } else if (name === "wallpapers") {
             openWallpapers(screen)
+        } else if (name === "ai") {
+            openAskOn(screen)
         }
     }
 
@@ -673,7 +793,8 @@ Scope {
             else
                 root.back()
             event.accepted = true
-        } else if (SettingsService.flag("panel.typeToSearch") && PR.startsSearch(event.text, ctrl, alt, meta)) {
+        } else if (!root.lyricsShown && SettingsService.flag("panel.typeToSearch")
+                   && PR.startsSearch(event.text, ctrl, alt, meta)) {
             root.goApps(event.text)
             event.accepted = true
         }
@@ -686,11 +807,14 @@ Scope {
             keys.forceActiveFocus()
         else if (faceScreen === "apps")
             appsFace.focusSearch()
+        else if (faceScreen === "ai")
+            askFace.focusDraft()
         else
             keys.forceActiveFocus()
     }
 
-    readonly property bool phoneKeysWanted: open && !settingsShown
+    // Not while pinned: a corner player leaves the keyboard where it is.
+    readonly property bool phoneKeysWanted: open && !settingsShown && !pinned
 
     Timer {
         id: focusTimer
@@ -714,29 +838,27 @@ Scope {
         onTriggered: root.focusLandscape()
     }
 
-    Timer {
-        id: routePrep
-        interval: 16
-        onTriggered: {
-            if (!root.prepReady()) {
-                routePrep.restart()
-                return
-            }
-            routeAnim.restart()
-        }
+    NumberAnimation {
+        id: slideAnim
+        target: pager
+        property: "contentX"
+        duration: 240
+        easing.type: Easing.OutCubic
+        // A turn later, so routing is already false and the keys are not handed
+        // out while the page is still moving.
+        onFinished: Qt.callLater(root.focusPhoneKeys)
     }
 
-    property int routeMs: 200
-    readonly property var routeCurve: [0.40, 0.0, 0.20, 1.0, 1.0, 1.0]
-
-    NumberAnimation {
-        id: routeAnim
-        target: root
-        property: "routeK"
-        duration: root.routeMs
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: root.routeCurve
-        onFinished: root.focusPhoneKeys()
+    Timer {
+        id: settleTimer
+        interval: 50
+        repeat: true
+        onTriggered: {
+            if (pager.moving || pager.flicking)
+                return
+            stop()
+            root.settleSwipe()
+        }
     }
 
     onOpenChanged: {
@@ -1169,7 +1291,9 @@ Scope {
         }
     }
 
-    readonly property bool useCatcher: open && (launching || root.clickOutside)
+    // A pinned phone is a corner player: a click on the desktop beside it must
+    // not close it, so the click-away holds off while it is pinned.
+    readonly property bool useCatcher: open && !root.pinned && (launching || root.clickOutside)
 
     PanelWindow {
         id: catcher
@@ -1314,13 +1438,15 @@ Scope {
         exclusionMode: ExclusionMode.Ignore
         // The Settings (like they always were) go over everything, fullscreen
         // windows included.
+        // Also the notification alert: a fullscreen window is above Top, and the
+        // whole point of the phone rising is to be seen.
         // Also while Apps is up: the click-away window (`catcher`) is on Top, so the phone
         // must be above it.
         // Also while Edit Desktop is on: its shelf and guides windows are on Overlay, and
         // the phone is opened after them, so on the same layer it is drawn over them.
         WlrLayershell.layer: (BarPositionService.position === "bottom" || root.settingsShown
-                              || root.useCatcher || root.coverCheat
-                              || EditMode.active) ? WlrLayer.Overlay
+                              || root.alertMode || root.useCatcher || root.coverCheat
+                              || EditMode.active || root.pinned) ? WlrLayer.Overlay
                                                   : WlrLayer.Top
         readonly property bool atTop: root.corner === "topLeft" || root.corner === "topRight"
         readonly property bool atRight: root.corner === "topRight" || root.corner === "bottomRight"
@@ -1374,10 +1500,18 @@ Scope {
                                       || root.phoneKeysWanted) ? WlrKeyboardFocus.OnDemand
                                                                : WlrKeyboardFocus.None
 
+        // Pinned, only the push-pin takes a click: the rest of the window is
+        // click-through, so whatever is under the phone still works.
         mask: Region {
             item: hitRect
             Region { item: railHost }
             Region { item: setHit }
+            Region {
+                x: Math.floor(stage.pinKeyBox.x)
+                y: Math.floor(stage.pinKeyBox.y)
+                width: Math.ceil(stage.pinKeyBox.w)
+                height: Math.ceil(stage.pinKeyBox.h)
+            }
         }
 
         // Click away, from inside the phone's own window. On some setups the
@@ -1545,11 +1679,13 @@ Scope {
         onVisibleChanged: {
             if (!visible) {
                 root.alertMode = false
-                routeAnim.stop()
-                routePrep.stop()
+                slideAnim.stop()
                 root.setRoute(PR.open("quick"))
-                root.routeK = 0
+                pager.contentX = 0
                 appsFace.reset()
+                root.lyricsShown = false
+                root.pinned = false
+                stage.pin = 0
             }
         }
 
@@ -1597,14 +1733,23 @@ Scope {
             return { u: Math.min(needU + 4, monitorH + Math.ceil(bleed)),
                      halfW: Math.min(needHalfW + 4, monitorW / 2) }
         }
-        readonly property real padX: Math.max(0, Math.ceil(flipRoom.halfW - baseW / 2))
+        // The window is as wide as the monitor, so the phone can be pinned
+        // into a corner without the layer surface being moved or resized (a
+        // live resize is what stutters).
+        readonly property real turnPadX: Math.max(0, Math.ceil(flipRoom.halfW - baseW / 2))
+        readonly property real padX: Math.max(turnPadX, Math.ceil((monitorW - baseW) / 2))
+        // A hot corner now shifts the phone inside the window instead of the
+        // window itself, which lands it exactly where anchoring used to.
+        readonly property real cornerDX: win.atLeft ? turnPadX - padX
+            : win.atRight ? monitorW - baseW - turnPadX - padX : 0
         readonly property real padTop: Math.max(0, Math.ceil(flipRoom.u) - baseH - cornerRoom)
 
         readonly property real setMidX: implicitWidth / 2
         readonly property real setMidY: implicitHeight - Math.ceil(bleed) - monitorH / 2
 
         readonly property real dpr: root.targetScreen ? root.targetScreen.devicePixelRatio : 1
-        implicitWidth: root.flat2d ? 2 * Math.ceil((baseW + 2 * padX) / 2) : baseW + 2 * padX
+        implicitWidth: Math.min(monitorW, root.flat2d ? 2 * Math.ceil((baseW + 2 * padX) / 2)
+                                                      : baseW + 2 * padX)
         implicitHeight: baseH + padTop + cornerRoom
 
         FocusScope {
@@ -1645,6 +1790,81 @@ Scope {
             readonly property real flipCX: quickCX + (win.setMidX - quickCX) * flip
             readonly property real flipCY: quickCY + (win.setMidY - quickCY) * flip
 
+            // ===== the pin =====
+            // 0 = the phone where it always is, 1 = the corner player. Only
+            // the pose changes (a redraw in the cheap moving quality, like the
+            // pull-out); the move and the size are item transforms.
+            property real pin: 0
+            property bool pinMoving: false
+            readonly property real pinZoom: 1 - pin * (1 - root.pinScale)
+            readonly property real pinFade: 1 - pin * (1 - root.pinOpacity)
+            // Turned the other way round, so the screen looks into the desktop
+            // (at rest it is turned out of it). Absolute, because the resting
+            // pose is whatever the pull-out left behind.
+            property real pinYawTarget: -33
+            property real pinRollTarget: 0
+            readonly property real pinYaw: (pinYawTarget - phone.yaw - tilt * root.tiltYaw) * pin
+            readonly property real pinRoll: (pinRollTarget - tilt * root.tiltRoll) * pin
+
+            // The body is a 3D shape inside the pose box, so the corner is
+            // measured on the body itself in the pinned pose.
+            readonly property real pinS: win.fit * root.pinScale
+            readonly property var pinBounds: PM.boundsFor(phone.faceWidth, phone.faceHeight,
+                                                          phone.thickness, phone.cornerRadius,
+                                                          phone.yaw + pinYawTarget, phone.pitch,
+                                                          phone.roll + pinRollTarget,
+                                                          phone.perspective, phone.pose)
+            // boundsFor answers in the item's own coordinates already.
+            readonly property real pinBodyLeft: pinBounds.minX
+            readonly property real pinBodyTop: pinBounds.minY
+            readonly property real pinBodyW: pinBounds.maxX - pinBounds.minX
+            readonly property real pinBodyH: pinBounds.maxY - pinBounds.minY
+            // The left and bottom edges hang past the monitor: tucked in.
+            readonly property real pinCX: (phone.screenCenterX - pinBodyLeft - root.pinPeekX * pinBodyW) * pinS
+            readonly property real pinCY: (win.implicitHeight - Math.ceil(win.bleed))
+                                          + (root.pinPeekY * pinBodyH
+                                             - (pinBodyTop + pinBodyH - phone.screenCenterY)) * pinS
+
+            // The push-pin is the only thing a pinned phone takes a click on,
+            // so the input mask is this box: the key's corners through the same
+            // projection the screen uses, then the phone's own move and scale.
+            readonly property var pinKeyBox: {
+                const r = lyricsFace.pinRect
+                const inset = phone.screenInset
+                let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9
+                for (const c of [[r.x, r.y], [r.x + r.width, r.y],
+                                 [r.x, r.y + r.height], [r.x + r.width, r.y + r.height]]) {
+                    const p = PM.apply(phone.drawBase, c[0] - inset, c[1] - inset, 0)
+                    x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x)
+                    y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y)
+                }
+                const s = stage.quickScale * stage.pinZoom
+                return { x: restRect.x + phone.x + x0 * s, y: restRect.y + phone.y + y0 * s,
+                         w: (x1 - x0) * s, h: (y1 - y0) * s }
+            }
+
+            readonly property real phoneCX: flipCX + (pinCX - flipCX) * pin
+            readonly property real phoneCY: flipCY + (pinCY - flipCY) * pin
+            // The pose box, wherever the phone is: what the click mask covers.
+            readonly property real poseX: phoneCX - phone.screenCenterX * quickScale * pinZoom
+            readonly property real poseY: phoneCY - phone.screenCenterY * quickScale * pinZoom
+
+            function setPin(on) {
+                pinAnim.stop()
+                pinAnim.to = on ? 1 : 0
+                pinMoving = true
+                pinAnim.start()
+            }
+
+            NumberAnimation {
+                id: pinAnim
+                target: stage
+                property: "pin"
+                duration: root.pinMs
+                easing.type: Easing.InOutCubic
+                onStopped: stage.pinMoving = false
+            }
+
             property real rise: root.alertMode ? win.alertLift : 0
             Behavior on rise {
                 enabled: win.visible
@@ -1658,7 +1878,7 @@ Scope {
             readonly property real buzzX: buzzOffset(0)
             readonly property real buzzY: buzzOffset(1) * 0.35
 
-            readonly property bool direct: root.flat2d && phone.flat && flip === 0 && wob === 0
+            readonly property bool direct: root.flat2d && phone.flat && flip === 0 && wob === 0 && pin === 0
             readonly property real faceMidX: buzzX + flipCX
             readonly property real faceMidY: lift * dir + rise + buzzY + flipCY
             readonly property real faceLeftDev: ((win.monitorW - win.implicitWidth) / 2 + faceMidX) * win.dpr
@@ -1720,11 +1940,16 @@ Scope {
             Item {
                 id: hitRect
                 readonly property real drop: root.alertMode ? win.alertLift : 0
-                x: restRect.x
-                y: restRect.y + drop
-                width: stage.quickInput ? restRect.width + (root.flat2d ? phone.powerStick : phone.buttonStick) * win.fit : 0
-                height: stage.quickInput
-                    ? Math.max(0, (win.atTop ? phone.implicitHeight * win.fit : restRect.height) - drop) : 0
+                readonly property real zoom: stage.quickScale * stage.pinZoom
+                readonly property real full: phone.implicitHeight * zoom
+                // Follows the phone into the corner. Pinned it is empty: the
+                // phone is click-through, see pinKeyBox and the window's mask.
+                x: root.pinned ? 0 : stage.poseX
+                y: root.pinned ? 0 : stage.poseY + drop
+                width: stage.quickInput && !root.pinned
+                    ? phone.implicitWidth * zoom + (root.flat2d ? phone.powerStick : phone.buttonStick) * win.fit : 0
+                height: stage.quickInput && !root.pinned
+                    ? Math.max(0, Math.max(win.atTop ? full : restRect.height, full) - drop) : 0
             }
 
             Item {
@@ -1738,7 +1963,7 @@ Scope {
             Item {
                 id: restRect
 
-                x: win.padX + win.leftExtent - phone.screenCenterX * win.fit
+                x: win.padX + win.cornerDX + win.leftExtent - phone.screenCenterX * win.fit
                 y: win.padTop + win.topRoom + win.cornerShiftY
                 width: phone.implicitWidth * win.fit
                 height: win.shownHeight
@@ -1755,27 +1980,31 @@ Scope {
                     plain: root.flat2d
                     faceDirect: stage.direct
 
-                    x: stage.buzzX + stage.flipCX - restRect.x - phone.screenCenterX * stage.quickScale + stage.snapX
-                    y: stage.lift * stage.dir + stage.rise + stage.buzzY + stage.flipCY - restRect.y - phone.screenCenterY * stage.quickScale + stage.snapY
+                    x: stage.buzzX + stage.phoneCX - restRect.x - phone.screenCenterX * stage.quickScale * stage.pinZoom + stage.snapX
+                    y: stage.lift * stage.dir + stage.rise + stage.buzzY + stage.phoneCY - restRect.y - phone.screenCenterY * stage.quickScale * stage.pinZoom + stage.snapY
                     transformOrigin: Item.TopLeft
-                    scale: stage.quickScale
+                    scale: stage.quickScale * stage.pinZoom
 
-                    opacity: stage.quickAlpha
+                    opacity: stage.quickAlpha * stage.pinFade
                     visible: opacity > 0.001
                     enabled: stage.flip === 0 && !stage.flipping
 
                     windowShown: win.visible
 
+                    // Not root.routing: a page slide only moves the face inside
+                    // the phone, and switching the body to its moving samples
+                    // reallocates every layer mid-swipe (that was the stutter).
                     moving: enterAnim.running || exitAnim.running
                             || exitDelay.running || !win.visible || stage.flipping || ring.running
-                            || root.routing
+                            || stage.pinMoving
                     busy: PanelActivity.busy
 
                     turnRoll: stage.flipping ? -90 : 0
 
-                    rollOffset: stage.tilt * root.tiltRoll + FM.quickRoll(stage.flip) + stage.wob
+                    rollOffset: stage.tilt * root.tiltRoll + FM.quickRoll(stage.flip) + stage.wob + stage.pinRoll
                     pitchOffset: stage.tilt * root.tiltPitch + (sstage.pitchEnd - phone.pitch) * stage.flip + stage.wob * 0.5
                     yawOffset: stage.tilt * root.tiltYaw + (sstage.yawEnd - phone.yaw) * stage.flip
+                               + stage.pinYaw
 
                     swingRoll: root.tiltRoll
                     swingPitch: root.tiltPitch
@@ -1787,240 +2016,383 @@ Scope {
                     // the edges come out jagged (see PhoneBody.renderScale).
                     renderScale: win.fit * (root.targetScreen ? root.targetScreen.devicePixelRatio : 1)
 
-                    QuickPanelFace {
-                        id: panelFace
+                    // Everything on the screen is cut to the phone's shape here,
+                    // once: the pages move under a fixed mask, so a page's own
+                    // corners can't cross the bezel while it slides.
+                    Item {
+                        id: faceClip
 
-                        opacity: 1 - FM.smooth(0.0, 0.7, root.routeK)
-                        y: -34 * root.routeK
-                        visible: opacity > 0.001
-                        enabled: root.faceScreen === "quick"
-                        renderScale: phone.renderScale
-                        bannerSource: PanelImages.banner !== "" ? PanelImages.banner : root.bannerSource
-                        avatarSource: PanelImages.avatar !== "" ? PanelImages.avatar : root.avatarSource
-                        onBannerPickRequested: PanelImages.pick("banner")
-                        onAvatarPickRequested: PanelImages.pick("avatar")
-                        onBannerResetRequested: PanelImages.clear("banner")
-                        onAvatarResetRequested: PanelImages.clear("avatar")
+                        x: phone.screenInset
+                        y: phone.screenInset
+                        width: phone.faceWidth - 2 * phone.screenInset
+                        height: phone.faceHeight - 2 * phone.screenInset
+                        clip: true
 
-                        clockText: Qt.formatDateTime(clock.date, SettingsService.flag("time.use24h") ? "HH:mm" : "hh:mmAP")
-                        dateText: Qt.formatDate(clock.date, "ddd, d  MMM")
-                        userName: root.source.userName
-                        hostName: root.source.hostName
-
-                        downloadBps: root.source.downloadBps
-                        uploadBps: root.source.uploadBps
-
-                        networkKind: root.source.networkKind
-                        networkOn: root.source.networkOn
-                        networkDetail: root.source.networkDetail
-                        bluetoothOn: root.source.bluetoothOn
-                        bluetoothConnected: root.source.bluetoothDevice !== ""
-                        bluetoothDetail: root.source.bluetoothDetail
-                        microphoneOn: root.source.microphoneOn
-                        speakerOn: root.source.speakerOn
-                        microphoneVolume: root.source.microphoneVolume
-                        speakerVolume: root.source.speakerVolume
-                        brightness: root.source.brightness
-                        gamma: root.source.gamma
-                        keepAwakeOn: root.source.keepAwakeOn
-                        notificationsOn: root.source.notificationsOn
-                        editing: root.source.editing
-                        nightLightOn: root.source.nightLightOn
-                        nightLightTemperature: root.source.nightLightTemperature
-                        nightLightAuto: root.source.nightLightAuto
-                        nightLightAutoFrom: root.source.nightLightAutoFrom
-                        nightLightAutoTo: root.source.nightLightAutoTo
-                        gameModeOn: root.source.gameModeOn
-                        darkModeOn: root.source.darkModeOn
-                        darkModeName: root.source.darkModeName
-                        easyEffectsOn: root.source.easyEffectsOn
-                        warpOn: root.source.warpOn
-                        warpConnecting: root.source.warpConnecting
-                        warpInstalled: root.source.warpInstalled
-                        keyboardOn: root.source.keyboardOn
-                        powerProfileName: root.source.powerProfileName
-                        musicListening: root.source.musicListening
-                        antiFlashbangOn: root.source.antiFlashbangOn
-                        antiFlashbangLevel: root.source.antiFlashbangLevel
-                        tiles: root.source.tiles
-                        tileColumns: root.source.tileColumns
-                        mediaOn: SettingsService.flag("quick.media")
-                        mediaPresent: root.mediaSource ? root.mediaSource.present : false
-                        mediaPlaying: root.mediaSource ? root.mediaSource.playing : false
-                        mediaTitle: root.mediaSource ? root.mediaSource.title : ""
-                        mediaArtist: root.mediaSource ? root.mediaSource.artist : ""
-                        mediaArt: root.mediaSource ? root.mediaSource.artUrl : ""
-                        onMediaToggleRequested: if (root.mediaSource) root.mediaSource.togglePlaying()
-                        onMediaPreviousRequested: if (root.mediaSource) root.mediaSource.previous()
-                        onMediaNextRequested: if (root.mediaSource) root.mediaSource.next()
-                        notifications: root.notificationSource.entries
-                        alertEntry: root.notificationSource.toast
-                        alertShown: root.notificationSource.toastActive
-                        visibleBottomLeft: win.faceCutoffLeftY
-                        visibleBottomRight: win.faceCutoffRightY
-                        visibleExtra: win.faceRevealLeft
-
-                        wifiNetworks: root.source.wifiNetworks
-                        wifiScanning: root.source.wifiScanning
-                        wifiManualScanning: root.source.wifiManualScanning
-                        wifiConnectingSsid: root.source.wifiConnectingSsid
-                        wifiConnectError: root.source.wifiConnectError
-                        bluetoothDevices: root.source.bluetoothDevices
-                        bluetoothScanning: root.source.bluetoothScanning
-                        bluetoothManualScanning: root.source.bluetoothManualScanning
-                        bluetoothConnectingAddress: root.source.bluetoothConnectingAddress
-                        bluetoothConnectError: root.source.bluetoothConnectError
-
-                        speakerDevices: root.source.speakerDevices
-                        microphoneDevices: root.source.microphoneDevices
-                        speakerStreams: root.source.speakerStreams
-                        microphoneStreams: root.source.microphoneStreams
-                        audioDevicesScanning: root.source.audioDevicesScanning
-                        audioDevicesManualScanning: root.source.audioDevicesManualScanning
-                        audioDeviceSelectingId: root.source.audioDeviceSelectingId
-
-                        onNetworkToggled: root.source.toggleNetwork()
-                        onBluetoothToggled: root.source.toggleBluetooth()
-                        onMicrophoneToggled: root.source.toggleMicrophone()
-                        onSpeakerToggled: root.source.toggleSpeaker()
-                        onMicrophoneVolumeMoved: value => root.source.setMicrophoneVolume(value)
-                        onSpeakerVolumeMoved: value => root.source.setSpeakerVolume(value)
-                        onBrightnessMoved: value => root.source.setBrightness(value)
-                        onGammaMoved: value => root.source.setGamma(value)
-                        onKeepAwakeToggled: root.source.toggleKeepAwake()
-                        onNotificationsToggled: root.source.toggleNotifications()
-                        onEditToggled: root.source.toggleEditing()
-                        onNightLightToggled: root.source.toggleNightLight()
-                        onNightLightTemperatureMoved: kelvin => root.source.setNightLightTemperature(kelvin)
-                        onNightLightAutoRequested: on => root.source.setNightLightAuto(on)
-                        onNightLightScheduleRequested: (from, to) => root.source.setNightLightSchedule(from, to)
-                        onGameModeToggled: root.source.toggleGameMode()
-                        onDarkModeToggled: root.source.toggleDarkMode()
-                        onEasyEffectsToggled: root.source.toggleEasyEffects()
-                        onWarpToggled: root.source.toggleWarp()
-                        onKeyboardToggled: root.source.toggleKeyboard()
-                        onPowerProfileCycled: root.source.cyclePowerProfile()
-                        onMusicRecognitionToggled: root.source.toggleMusicRecognition()
-                        onAntiFlashbangToggled: root.source.toggleAntiFlashbang()
-                        onTileActionRequested: id => root.source.runTileAction(id)
-                        onTileMoveRequested: (from, to) => root.source.moveTile(from, to)
-                        onTileResizeRequested: index => root.source.resizeTile(index)
-                        onTileRemoveRequested: index => root.source.removeTile(index)
-                        onTileAddRequested: id => root.source.addTile(id)
-                        onTileColumnsRequested: columns => root.source.setTileColumns(columns)
-                        onRefreshRequested: Quickshell.reload(true)
-                        onSettingsRequested: root.openSettings(root.targetScreen)
-                        // claim() first: hideToast() makes toastActive false,
-                        // and onToastActiveChanged lowers a phone that is only
-                        // up for the alert. A click never hit this (its press
-                        // had already claimed the phone), but a hover has no
-                        // press, so the phone was lowered before it was claimed.
-                        onAlertActivated: {
-                            root.claim()
-                            root.notificationSource.hideToast()
+                        layer.enabled: true
+                        layer.smooth: true
+                        layer.textureSize: Qt.size(Math.ceil(width * phone.renderScale * 2),
+                                                   Math.ceil(height * phone.renderScale * 2))
+                        layer.effect: MultiEffect {
+                            maskEnabled: true
+                            maskSource: screenMask
                         }
-                        onAlertDismissRequested: key => {
-                            root.claim()
-                            root.notificationSource.dismiss(key)
-                            root.notificationSource.hideToast()
-                        }
-                        onAlertClicked: key => {
-                            if (root.notificationSource.activate(key)) {
-                                root.notificationSource.hideToast()
-                                root.close()
-                            } else {
-                                root.claim()
-                                root.notificationSource.hideToast()
+
+                        // Quick | Rashin, one face wide per page. The faces are
+                        // wider than the screen by the bezel on each side, so
+                        // each sits inset inside its page.
+                        Flickable {
+                            id: pager
+
+                            anchors.fill: parent
+                            contentWidth: 2 * phone.faceWidth
+                            contentHeight: height
+                            flickableDirection: Flickable.HorizontalFlick
+                            boundsBehavior: Flickable.DragAndOvershootBounds
+                            maximumFlickVelocity: 2000
+                            flickDeceleration: 2500
+                            interactive: root.open && !root.settingsShown && !stage.flipping
+                                       && root.faceScreen !== "apps" && !root.lyricsShown
+                            clip: true
+
+                            Component.onCompleted: contentX = 0
+                            onMovementStarted: slideAnim.stop()
+                            // MovementEnded comes at the release, before the
+                            // fling has run, so the page is only chosen once the
+                            // content has actually stopped (settleTimer).
+                            onMovementEnded: settleTimer.restart()
+
+                            QuickPanelFace {
+                                id: panelFace
+
+                                x: -phone.screenInset
+                                y: -phone.screenInset
+
+                                enabled: root.faceScreen === "quick" && root.open
+                                renderScale: phone.renderScale
+                                bannerSource: PanelImages.banner !== "" ? PanelImages.banner : root.bannerSource
+                                avatarSource: PanelImages.avatar !== "" ? PanelImages.avatar : root.avatarSource
+                                onBannerPickRequested: PanelImages.pick("banner")
+                                onAvatarPickRequested: PanelImages.pick("avatar")
+                                onBannerResetRequested: PanelImages.clear("banner")
+                                onAvatarResetRequested: PanelImages.clear("avatar")
+
+                                clockText: Qt.formatDateTime(clock.date, SettingsService.flag("time.use24h") ? "HH:mm" : "hh:mmAP")
+                                dateText: Qt.formatDate(clock.date, "ddd, d  MMM")
+                                userName: root.source.userName
+                                hostName: root.source.hostName
+
+                                downloadBps: root.source.downloadBps
+                                uploadBps: root.source.uploadBps
+
+                                networkKind: root.source.networkKind
+                                networkOn: root.source.networkOn
+                                networkDetail: root.source.networkDetail
+                                bluetoothOn: root.source.bluetoothOn
+                                bluetoothConnected: root.source.bluetoothDevice !== ""
+                                bluetoothDetail: root.source.bluetoothDetail
+                                microphoneOn: root.source.microphoneOn
+                                speakerOn: root.source.speakerOn
+                                microphoneVolume: root.source.microphoneVolume
+                                speakerVolume: root.source.speakerVolume
+                                brightness: root.source.brightness
+                                gamma: root.source.gamma
+                                keepAwakeOn: root.source.keepAwakeOn
+                                notificationsOn: root.source.notificationsOn
+                                editing: root.source.editing
+                                nightLightOn: root.source.nightLightOn
+                                nightLightTemperature: root.source.nightLightTemperature
+                                nightLightAuto: root.source.nightLightAuto
+                                nightLightAutoFrom: root.source.nightLightAutoFrom
+                                nightLightAutoTo: root.source.nightLightAutoTo
+                                gameModeOn: root.source.gameModeOn
+                                darkModeOn: root.source.darkModeOn
+                                darkModeName: root.source.darkModeName
+                                easyEffectsOn: root.source.easyEffectsOn
+                                warpOn: root.source.warpOn
+                                warpConnecting: root.source.warpConnecting
+                                warpInstalled: root.source.warpInstalled
+                                keyboardOn: root.source.keyboardOn
+                                powerProfileName: root.source.powerProfileName
+                                musicListening: root.source.musicListening
+                                antiFlashbangOn: root.source.antiFlashbangOn
+                                antiFlashbangLevel: root.source.antiFlashbangLevel
+                                tiles: root.source.tiles
+                                tileColumns: root.source.tileColumns
+                                mediaOn: SettingsService.flag("quick.media")
+                                mediaPresent: root.mediaSource ? root.mediaSource.present : false
+                                mediaPlaying: root.mediaSource ? root.mediaSource.playing : false
+                                mediaTitle: root.mediaSource ? root.mediaSource.title : ""
+                                mediaArtist: root.mediaSource ? root.mediaSource.artist : ""
+                                mediaArt: root.mediaSource ? root.mediaSource.artUrl : ""
+                                onLyricsRequested: root.openLyrics()
+                                onMediaToggleRequested: if (root.mediaSource) root.mediaSource.togglePlaying()
+                                onMediaPreviousRequested: if (root.mediaSource) root.mediaSource.previous()
+                                onMediaNextRequested: if (root.mediaSource) root.mediaSource.next()
+                                notifications: root.notificationSource.entries
+                                alertEntry: root.notificationSource.toast
+                                alertShown: root.notificationSource.toastActive
+                                visibleBottomLeft: win.faceCutoffLeftY
+                                visibleBottomRight: win.faceCutoffRightY
+                                visibleExtra: win.faceRevealLeft
+
+                                wifiNetworks: root.source.wifiNetworks
+                                wifiScanning: root.source.wifiScanning
+                                wifiManualScanning: root.source.wifiManualScanning
+                                wifiConnectingSsid: root.source.wifiConnectingSsid
+                                wifiConnectError: root.source.wifiConnectError
+                                bluetoothDevices: root.source.bluetoothDevices
+                                bluetoothScanning: root.source.bluetoothScanning
+                                bluetoothManualScanning: root.source.bluetoothManualScanning
+                                bluetoothConnectingAddress: root.source.bluetoothConnectingAddress
+                                bluetoothConnectError: root.source.bluetoothConnectError
+
+                                speakerDevices: root.source.speakerDevices
+                                microphoneDevices: root.source.microphoneDevices
+                                speakerStreams: root.source.speakerStreams
+                                microphoneStreams: root.source.microphoneStreams
+                                audioDevicesScanning: root.source.audioDevicesScanning
+                                audioDevicesManualScanning: root.source.audioDevicesManualScanning
+                                audioDeviceSelectingId: root.source.audioDeviceSelectingId
+
+                                onNetworkToggled: root.source.toggleNetwork()
+                                onBluetoothToggled: root.source.toggleBluetooth()
+                                onMicrophoneToggled: root.source.toggleMicrophone()
+                                onSpeakerToggled: root.source.toggleSpeaker()
+                                onMicrophoneVolumeMoved: value => root.source.setMicrophoneVolume(value)
+                                onSpeakerVolumeMoved: value => root.source.setSpeakerVolume(value)
+                                onBrightnessMoved: value => root.source.setBrightness(value)
+                                onGammaMoved: value => root.source.setGamma(value)
+                                onKeepAwakeToggled: root.source.toggleKeepAwake()
+                                onNotificationsToggled: root.source.toggleNotifications()
+                                onEditToggled: root.source.toggleEditing()
+                                onNightLightToggled: root.source.toggleNightLight()
+                                onNightLightTemperatureMoved: kelvin => root.source.setNightLightTemperature(kelvin)
+                                onNightLightAutoRequested: on => root.source.setNightLightAuto(on)
+                                onNightLightScheduleRequested: (from, to) => root.source.setNightLightSchedule(from, to)
+                                onGameModeToggled: root.source.toggleGameMode()
+                                onDarkModeToggled: root.source.toggleDarkMode()
+                                onEasyEffectsToggled: root.source.toggleEasyEffects()
+                                onWarpToggled: root.source.toggleWarp()
+                                onKeyboardToggled: root.source.toggleKeyboard()
+                                onPowerProfileCycled: root.source.cyclePowerProfile()
+                                onMusicRecognitionToggled: root.source.toggleMusicRecognition()
+                                onAntiFlashbangToggled: root.source.toggleAntiFlashbang()
+                                onTileActionRequested: id => root.source.runTileAction(id)
+                                onTileMoveRequested: (from, to) => root.source.moveTile(from, to)
+                                onTileResizeRequested: index => root.source.resizeTile(index)
+                                onTileRemoveRequested: index => root.source.removeTile(index)
+                                onTileAddRequested: id => root.source.addTile(id)
+                                onTileColumnsRequested: columns => root.source.setTileColumns(columns)
+                                onRefreshRequested: Quickshell.reload(true)
+                                onSettingsRequested: root.openSettings(root.targetScreen)
+                                // claim() first: hideToast() makes toastActive false,
+                                // and onToastActiveChanged lowers a phone that is only
+                                // up for the alert. A click never hit this (its press
+                                // had already claimed the phone), but a hover has no
+                                // press, so the phone was lowered before it was claimed.
+                                onAlertActivated: {
+                                    root.claim()
+                                    root.notificationSource.hideToast()
+                                }
+                                onAlertDismissRequested: key => {
+                                    root.claim()
+                                    root.notificationSource.dismiss(key)
+                                    root.notificationSource.hideToast()
+                                }
+                                onAlertClicked: key => {
+                                    if (root.notificationSource.activate(key)) {
+                                        root.notificationSource.hideToast()
+                                        root.close()
+                                    } else {
+                                        root.claim()
+                                        root.notificationSource.hideToast()
+                                    }
+                                }
+                                onNotificationActivated: key => {
+                                    if (root.notificationSource.activate(key))
+                                        root.close()
+                                    else
+                                        root.notificationSource.dismiss(key)
+                                }
+                                onNotificationDismissed: key => root.notificationSource.dismiss(key)
+                                onNotificationsDismissed: keys => root.notificationSource.dismissMany(keys)
+                                onNotificationsCleared: root.notificationSource.clearAll()
+                                onPanelCloseRequested: root.close()
+
+                                onNetworkDialogOpenChanged: {
+                                    root.source.networkDialogOpen = networkDialogOpen
+                                    if (networkDialogOpen)
+                                        root.source.scanWifi(false)
+                                }
+                                onBluetoothDialogOpenChanged: {
+                                    root.source.bluetoothDialogOpen = bluetoothDialogOpen
+                                    if (bluetoothDialogOpen)
+                                        root.source.scanBluetooth()
+                                }
+                                onWifiScanRequested: root.source.scanWifi(true, true)
+                                onWifiAdvancedRequested: {
+                                    root.source.openNetworkSettings()
+                                    panelFace.networkDialogOpen = false
+                                    root.close()
+                                }
+                                onWifiConnectRequested: (ssid, password) => root.source.connectWifi(ssid, password)
+                                onWifiDisconnectRequested: ssid => root.source.disconnectWifi(ssid)
+                                onBluetoothScanRequested: root.source.scanBluetooth(true)
+                                onBluetoothAdvancedRequested: {
+                                    root.source.openBluetoothSettings()
+                                    panelFace.bluetoothDialogOpen = false
+                                    root.close()
+                                }
+                                onBluetoothConnectRequested: address => root.source.connectBluetoothDevice(address)
+                                onBluetoothDisconnectRequested: address => root.source.disconnectBluetoothDevice(address)
+
+                                onAudioDialogKindChanged: {
+                                    root.source.audioMixerActive = (audioDialogKind !== "")
+                                    if (audioDialogKind !== "")
+                                        root.source.scanAudioDevices()
+                                }
+                                onAudioDeviceScanRequested: root.source.scanAudioDevices(true)
+                                onSpeakerDeviceSelected: id => root.source.setDefaultSink(id)
+                                onMicrophoneDeviceSelected: id => root.source.setDefaultSource(id)
+                                onSpeakerStreamVolumeChanged: (id, value) => root.source.setStreamVolume("sink-input", id, value)
+                                onSpeakerStreamMuteToggled: (id, muted) => root.source.setStreamMuted("sink-input", id, muted)
+                                onMicrophoneStreamVolumeChanged: (id, value) => root.source.setStreamVolume("source-output", id, value)
+                                onMicrophoneStreamMuteToggled: (id, muted) => root.source.setStreamMuted("source-output", id, muted)
+                                onSpeakerStreamDragStarted: id => root.source.beginStreamDrag("sink-input", id)
+                                onSpeakerStreamDragEnded: id => root.source.endStreamDrag("sink-input", id)
+                                onMicrophoneStreamDragStarted: id => root.source.beginStreamDrag("source-output", id)
+                                onMicrophoneStreamDragEnded: id => root.source.endStreamDrag("source-output", id)
+                            }
+
+                            AskFace {
+                                id: askFace
+
+                                x: phone.faceWidth - phone.screenInset
+                                y: -phone.screenInset
+
+                                enabled: root.faceScreen === "ai" && root.open
+                                active: root.faceScreen === "ai" && root.open
+                                renderScale: phone.renderScale
+                                screenInset: phone.screenInset
                             }
                         }
-                        onNotificationActivated: key => {
-                            if (root.notificationSource.activate(key))
-                                root.close()
-                            else
-                                root.notificationSource.dismiss(key)
-                        }
-                        onNotificationDismissed: key => root.notificationSource.dismiss(key)
-                        onNotificationsDismissed: keys => root.notificationSource.dismissMany(keys)
-                        onNotificationsCleared: root.notificationSource.clearAll()
-                        onPanelCloseRequested: root.close()
 
-                        onNetworkDialogOpenChanged: {
-                            root.source.networkDialogOpen = networkDialogOpen
-                            if (networkDialogOpen)
-                                root.source.scanWifi(false)
-                        }
-                        onBluetoothDialogOpenChanged: {
-                            root.source.bluetoothDialogOpen = bluetoothDialogOpen
-                            if (bluetoothDialogOpen)
-                                root.source.scanBluetooth()
-                        }
-                        onWifiScanRequested: root.source.scanWifi(true, true)
-                        onWifiAdvancedRequested: {
-                            root.source.openNetworkSettings()
-                            panelFace.networkDialogOpen = false
-                            root.close()
-                        }
-                        onWifiConnectRequested: (ssid, password) => root.source.connectWifi(ssid, password)
-                        onWifiDisconnectRequested: ssid => root.source.disconnectWifi(ssid)
-                        onBluetoothScanRequested: root.source.scanBluetooth(true)
-                        onBluetoothAdvancedRequested: {
-                            root.source.openBluetoothSettings()
-                            panelFace.bluetoothDialogOpen = false
-                            root.close()
-                        }
-                        onBluetoothConnectRequested: address => root.source.connectBluetoothDevice(address)
-                        onBluetoothDisconnectRequested: address => root.source.disconnectBluetoothDevice(address)
+                        // The Apps screen is not a page: it slides in over Quick
+                        // from the left, and Back slides it out.
+                        Item {
+                            id: appsLayer
 
-                        onAudioDialogKindChanged: {
-                            root.source.audioMixerActive = (audioDialogKind !== "")
-                            if (audioDialogKind !== "")
-                                root.source.scanAudioDevices()
+                            x: (root.faceScreen === "apps" ? 0 : -phone.faceWidth) - phone.screenInset
+                            y: -phone.screenInset
+                            width: phone.faceWidth
+                            height: phone.faceHeight
+                            z: 1
+
+                            Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
+                            LauncherFace {
+                                id: appsFace
+
+                                anchors.fill: parent
+
+                                enabled: root.faceScreen === "apps" && root.open
+
+                                source: root.appSource
+                                renderScale: phone.renderScale
+                                screenName: root.targetScreen ? root.targetScreen.name : ""
+                                visibleBottom: Math.min(win.faceCutoffLeftY, win.faceCutoffRightY)
+                                visibleReach: Math.max(win.faceCutoffLeftY, win.faceCutoffRightY) + win.faceRevealLeft
+                                clockText: panelFace.clockText
+                                dateText: panelFace.dateText
+                                downloadBps: root.source.downloadBps
+                                uploadBps: root.source.uploadBps
+
+                                onAppActivated: app => {
+                                    root.close()
+                                    if (root.appSource && typeof root.appSource.launch === "function")
+                                        root.appSource.launch(app)
+                                    else if (app && typeof app.execute === "function")
+                                        app.execute()
+                                }
+                                onCloseRequested: root.back()
+                                onJumpRequested: n => root.jump(n)
+                                onDoneRequested: root.close()
+                                onPickerRequested: root.close()
+                                onColorPickedBack: hex => {
+                                    root.openAppsOn(root.focusedScreen())
+                                    appsFace.setText("color " + hex)
+                                }
+                            }
                         }
-                        onAudioDeviceScanRequested: root.source.scanAudioDevices(true)
-                        onSpeakerDeviceSelected: id => root.source.setDefaultSink(id)
-                        onMicrophoneDeviceSelected: id => root.source.setDefaultSource(id)
-                        onSpeakerStreamVolumeChanged: (id, value) => root.source.setStreamVolume("sink-input", id, value)
-                        onSpeakerStreamMuteToggled: (id, muted) => root.source.setStreamMuted("sink-input", id, muted)
-                        onMicrophoneStreamVolumeChanged: (id, value) => root.source.setStreamVolume("source-output", id, value)
-                        onMicrophoneStreamMuteToggled: (id, muted) => root.source.setStreamMuted("source-output", id, muted)
-                        onSpeakerStreamDragStarted: id => root.source.beginStreamDrag("sink-input", id)
-                        onSpeakerStreamDragEnded: id => root.source.endStreamDrag("sink-input", id)
-                        onMicrophoneStreamDragStarted: id => root.source.beginStreamDrag("source-output", id)
-                        onMicrophoneStreamDragEnded: id => root.source.endStreamDrag("source-output", id)
+
+                        // The lyrics tab, sliding up from under the screen.
+                        Item {
+                            id: lyricsLayer
+
+                            x: -phone.screenInset
+                            y: (root.lyricsShown ? 0 : phone.faceHeight) - phone.screenInset
+                            width: phone.faceWidth
+                            height: phone.faceHeight
+                            z: 2
+
+                            Behavior on y {
+                                NumberAnimation {
+                                    duration: 260
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+
+                            LyricsFace {
+                                id: lyricsFace
+
+                                anchors.fill: parent
+
+                                enabled: root.lyricsShown && root.open
+
+                                renderScale: phone.renderScale
+                                visibleBottom: Math.min(win.faceCutoffLeftY, win.faceCutoffRightY)
+
+                                title: panelFace.mediaTitle
+                                artist: panelFace.mediaArtist
+                                art: panelFace.mediaArt
+                                playing: panelFace.mediaPlaying
+
+                                lines: LyricsService.lines
+                                status: LyricsService.status
+                                sourceKind: LyricsService.sourceKind
+                                sourceName: root.lyricSource
+
+                                time: root.lyricTime
+                                duration: root.lyricDuration
+
+                                pinned: root.pinned
+                                live: root.lyricsShown
+
+                                onCloseRequested: root.closeLyrics()
+                                onPinToggled: root.setPinned(!root.pinned)
+                                onToggleRequested: if (root.mediaSource) root.mediaSource.togglePlaying()
+                                onSeekRequested: seconds => Ryoku.Music.seek(seconds)
+                                onRetryRequested: LyricsService.refresh()
+                            }
+                        }
                     }
 
-                    LauncherFace {
-                        id: appsFace
+                    Item {
+                        id: screenMask
 
-                        opacity: FM.smooth(0.3, 1.0, root.routeK)
-                        y: 34 * (1 - root.routeK)
-                        visible: opacity > 0.001
-                        enabled: root.faceScreen === "apps" && root.open
+                        width: faceClip.width
+                        height: faceClip.height
+                        visible: false
+                        layer.enabled: true
+                        layer.smooth: true
+                        layer.textureSize: Qt.size(Math.ceil(width * phone.renderScale * 2),
+                                                   Math.ceil(height * phone.renderScale * 2))
 
-                        source: root.appSource
-                        renderScale: phone.renderScale
-                        screenName: root.targetScreen ? root.targetScreen.name : ""
-                        visibleBottom: Math.min(win.faceCutoffLeftY, win.faceCutoffRightY)
-                        visibleReach: Math.max(win.faceCutoffLeftY, win.faceCutoffRightY) + win.faceRevealLeft
-                        clockText: panelFace.clockText
-                        dateText: panelFace.dateText
-                        downloadBps: root.source.downloadBps
-                        uploadBps: root.source.uploadBps
-
-                        onAppActivated: app => {
-                            root.close()
-                            if (root.appSource && typeof root.appSource.launch === "function")
-                                root.appSource.launch(app)
-                            else if (app && typeof app.execute === "function")
-                                app.execute()
-                        }
-                        onCloseRequested: root.back()
-                        onJumpRequested: n => root.jump(n)
-                        onDoneRequested: root.close()
-                        onPickerRequested: root.close()
-                        onColorPickedBack: hex => {
-                            root.openAppsOn(root.focusedScreen())
-                            appsFace.setText("color " + hex)
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: phone.cornerRadius - phone.screenInset
+                            color: "black"
+                            antialiasing: true
                         }
                     }
                 }
@@ -2045,8 +2417,9 @@ Scope {
                     x: win.railMinX * win.fit
                     y: win.railMinY * win.fit - root.bounce * win.fit
                        + (root.alertMode ? win.alertLift : 0)
-                    width: stage.quickInput ? (win.railMaxX - win.railMinX) * win.fit : 0
-                    height: stage.quickInput ? (win.railMaxY - win.railMinY) * win.fit + root.bounce * win.fit * 2 : 0
+                    width: stage.quickInput && !root.pinned ? (win.railMaxX - win.railMinX) * win.fit : 0
+                    height: stage.quickInput && !root.pinned
+                        ? (win.railMaxY - win.railMinY) * win.fit + root.bounce * win.fit * 2 : 0
                 }
 
                 Item {
@@ -2159,4 +2532,5 @@ Scope {
             }
         }
     }
+
 }

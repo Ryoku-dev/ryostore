@@ -28,6 +28,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
+import shell.services as Ryoku
 import "I18n.js" as I18n
 import "Fonts.js" as Fonts
 import "." as MacParts
@@ -665,7 +666,6 @@ Scope {
             // 2 · System
             { id: "general",    sec: 2, name: "General",         glyph: "behavior", c1: "#8E8E93", c2: "#636366", keys: "language shell enable disable dock menu bar panel show hide off on" },
             { id: "appearance", sec: 2, name: "Appearance",      glyph: "appearance", c1: "#3A3A3C", c2: "#1C1C1E", keys: "theme dark light auto mode accent color glass liquid apple style translucency blur font spotlight top bar menus" },
-            { id: "wallpaper",  sec: 2, name: "Wallpaper",       glyph: "wallpaper", c1: "#5AC8FA", c2: "#007AFF", keys: "wallpaper background picture image video animated live motion desktop dynamic" },
             { id: "displays",   sec: 2, name: "Displays",        wg: "sun",        c1: "#3D9BFF", c2: "#0A6CFF", keys: "brightness night shift monitor resolution refresh scale" },
             { id: "battery",    sec: 2, name: "Battery",         wg: "bolt",       c1: "#4CD964", c2: "#28A745", keys: "power energy charge profile performance game mode gaming fullscreen" },
             // 3 · Desktop
@@ -678,12 +678,8 @@ Scope {
             { id: "sound",      sec: 4, name: "Sound",           wg: "speaker",    c1: "#FF5E7E", c2: "#E8344F", keys: "volume output input microphone speakers headphones effects ui sounds" },
             { id: "focus",      sec: 4, name: "Focus",           wg: "moon",       c1: "#7D7AFF", c2: "#5856D6", keys: "do not disturb keep awake sleep" },
             // 5 · Security & Accounts
-            { id: "lockscreen", sec: 5, name: "Lock Screen",     wg: "lock",       c1: "#3A3A3C", c2: "#1C1C1E", keys: "lock password album lyrics media clock" },
             { id: "users",      sec: 5, name: "Users & Groups",  wg: "smile",      c1: "#3D9BFF", c2: "#0A6CFF", keys: "account user name picture avatar" },
             // 6 · Input
-            { id: "keyboard",   sec: 6, name: "Keyboard",        wg: "keyboard",   c1: "#A7A7AD", c2: "#7C7C82", keys: "repeat rate delay layout typing" },
-            { id: "mouse",      sec: 6, name: "Mouse",           wg: "mouse",      c1: "#A7A7AD", c2: "#7C7C82", keys: "tracking speed scroll natural" },
-            { id: "trackpad",   sec: 6, name: "Trackpad",        wg: "trackpad",   c1: "#A7A7AD", c2: "#7C7C82", keys: "tap click natural scroll touchpad gestures" },
             // 7 · Apps & About
             { id: "apps",       sec: 7, name: "Applications",    glyph: "apps",     c1: "#FFB340", c2: "#FF9500", keys: "pinned apps keep remove reset dock" },
             { id: "about",      sec: 7, name: "About",           glyph: "about",    c1: "#A7A7AD", c2: "#7C7C82", keys: "version reset config folder macdock macbar macshell" }
@@ -796,7 +792,13 @@ Scope {
             id: frame
             anchors.fill: parent
             radius: 12
-            color: "transparent"        // the sidebar is translucent (blur of what is behind the window), the pages are opaque
+            // Niri paints its focus/border rectangle behind transparent windows.
+            // The old transparent frame let that rectangle recolour the sidebar
+            // whenever Settings gained or lost focus. Paint an opaque frame on
+            // Niri, then let the existing translucent sidebar blend over THIS
+            // stable colour rather than over Niri's changing focus ring.
+            // Rounded corners remain transparent because the frame is rounded.
+            color: root.hub && root.hub.nativeBackdrop ? pal.sidebar : "transparent"
             border.width: 1
             border.color: pal.edgeOuter
 
@@ -1436,20 +1438,6 @@ Scope {
 
                 SCard {
                     t: pal
-                    SRow {
-                        t: pal
-                        title: I18n.tr("Menu Bar style")
-                        subtitle: (root.bar && root.bar.barStyle === "liquid" && root.bar.glassState === "failed")
-                                  ? I18n.tr("Liquid Glass couldn't start (install qt6-shadertools)")
-                                  : I18n.tr("Style of the menus and popovers")
-                        SSegmented {
-                            t: pal
-                            model: ["Normal Blur", "Apple Liquid Glass"]
-                            segWidth: 128
-                            current: (root.bar && root.bar.barStyle === "liquid") ? 1 : 0
-                            onPicked: i => { if (root.bar) root.bar.barStyle = (i === 1 ? "liquid" : "blur"); }
-                        }
-                    }
                     SRow {
                         t: pal
                         title: I18n.tr("Liquid Glass bar")
@@ -3443,341 +3431,30 @@ Scope {
         }
 
         // ── Wallpaper ──
+        // Ryoku owns wallpapers through Ryogami. No independent gallery,
+        // selection state, or setter should run inside the hosted Gokko style.
         Component {
             id: paneWallpaper
             Column {
-                id: wpPane
                 spacing: 10
-                property int filter: 0          // 0 all, 1 pictures, 2 animated, 3 favourites
-                property string searchText: ""
-                readonly property var files: root.bar ? root.bar.wpFiles : []
-                readonly property var shown: {
-                    var out = [], f = files, q = searchText.trim().toLowerCase();
-                    for (var i = 0; i < f.length; i++) {
-                        var typeMatch = filter === 0 || (filter === 1 && !f[i].video) || (filter === 2 && f[i].video) || (filter === 3 && f[i].fav);
-                        var textMatch = q === "" || f[i].name.toLowerCase().indexOf(q) >= 0;
-                        if (typeMatch && textMatch) out.push(f[i]);
-                    }
-                    return out;
-                }
-                readonly property string curVideo: root.bar ? root.bar.wallpaperVideo : ""
-                readonly property string curStill: root.bar ? root.bar.wallpaperPath : root.wallpaperPath
-                readonly property string curPath: curVideo !== "" ? curVideo : curStill
-                readonly property string curPreview: (root.bar && curVideo !== "") ? (root.bar.wpPreviews[curVideo] || "") : ""
-                function nameOf(p) { var n = p.substring(p.lastIndexOf("/") + 1); var k = n.lastIndexOf("."); return k > 0 ? n.substring(0, k) : n; }
-                Component.onCompleted: if (root.bar) root.bar.wpRefresh()
-
-                // current wallpaper, big, playing if it's animated
+                SLabel { t: pal; header: true; text: I18n.tr("Wallpaper") }
                 SCard {
                     t: pal
-                    Item {
-                        width: parent.width
-                        height: 190
-                        Item {
-                            id: curBox
-                            x: 14; y: 14
-                            width: 256; height: 160
-                            Item {
-                                id: curMask
-                                anchors.fill: parent; visible: false
-                                layer.enabled: true; layer.smooth: true
-                                Rectangle { anchors.fill: parent; radius: 10; color: "black" }
-                            }
-                            Item {
-                                anchors.fill: parent
-                                layer.enabled: true; layer.smooth: true
-                                layer.effect: MultiEffect { maskEnabled: true; maskSource: curMask; maskThresholdMin: 0.5; maskSpreadAtMin: 1.0 }
-                                Rectangle { anchors.fill: parent; color: pal.ctrl }
-                                Image {
-                                    anchors.fill: parent
-                                    source: wpPane.curStill !== "" ? "file://" + wpPane.curStill : ""
-                                    sourceSize.width: 520
-                                    fillMode: Image.PreserveAspectCrop
-                                    asynchronous: true; smooth: true
-                                }
-                                Loader {
-                                    anchors.fill: parent
-                                    active: wpPane.curVideo !== "" && prefsWindow.visible && wpPane.curPreview !== ""
-                                    sourceComponent: AnimatedImage {
-                                        source: "file://" + wpPane.curPreview
-                                        fillMode: Image.PreserveAspectCrop
-                                        asynchronous: true; cache: false; playing: true
-                                    }
-                                }
-                            }
-                            Rectangle { anchors.fill: parent; radius: 10; color: "transparent"; border.width: 1; border.color: pal.cardBorder }
-                        }
-                        Column {
-                            x: curBox.x + curBox.width + 18
-                            anchors.verticalCenter: curBox.verticalCenter
-                            width: parent.width - x - 14
-                            spacing: 6
-                            Text {
-                                width: parent.width; elide: Text.ElideRight
-                                text: wpPane.curPath !== "" ? wpPane.nameOf(wpPane.curPath) : I18n.tr("No wallpaper")
-                                color: pal.text; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 15; font.weight: Font.DemiBold
-                            }
-                            Text {
-                                width: parent.width
-                                text: wpPane.curVideo !== "" ? I18n.tr("Animated wallpaper") : I18n.tr("Picture")
-                                color: pal.text2; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 12
-                            }
-                            Text {
-                                width: parent.width; wrapMode: Text.WordWrap
-                                visible: wpPane.curVideo !== ""
-                                text: I18n.tr("Plays on every display and pauses behind fullscreen windows. The Liquid Glass and the lock screen use it too.")
-                                color: pal.text3; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 11
-                            }
-                            Row {
-                                spacing: 8
-                                topPadding: 4
-                                SButton { t: pal; text: I18n.tr("Open Folder"); onClicked: Quickshell.execDetached(["xdg-open", root.bar ? root.bar.wpDirEff : ""]) }
-                                SButton { t: pal; text: I18n.tr("Refresh"); onClicked: if (root.bar) root.bar.wpRefresh() }
-                            }
-                        }
-                    }
-                }
-
-                SCard {
-                    t: pal
-                    visible: wpPane.curVideo !== "" || (root.bar && root.bar.liveWallGlass)
                     SRow {
                         t: pal
-                        title: I18n.tr("Animated wallpaper in glass")
-                        subtitle: I18n.tr("Play the animated wallpaper inside the Liquid Glass in real time. Off by default: the glass refracts a still frame and uses no video memory.")
-                        SSwitch {
+                        title: I18n.tr("Ryogami Wallpaper Manager")
+                        subtitle: I18n.tr("Manage wallpapers, animations and per-monitor settings in Ryogami.")
+                        SButton {
                             t: pal
-                            checked: root.bar ? root.bar.liveWallGlass : false
-                            onToggled: v => { if (root.bar) root.bar.liveWallGlass = v; }
+                            text: I18n.tr("Open Ryogami")
+                            onClicked: Quickshell.execDetached(["ryogami", "wallpaper", "ui"])
                         }
-                    }
-                }
-
-                // macOS: a wallpaper that comes in light and dark versions gets an appearance picker
-                SCard {
-                    t: pal
-                    visible: root.bar && root.bar.wpHasPair
-                    SRow {
-                        t: pal
-                        title: I18n.tr("Appearance")
-                        subtitle: {
-                            var a = root.bar ? root.bar.wallpaperAppearance : "auto";
-                            return a === "auto" ? "Follows Light / Dark Mode"
-                                 : a === "dynamic" ? "Changes through the day: light by day, dark at night, blending at sunrise and sunset"
-                                 : a === "light" ? "Always the light version" : "Always the dark version";
-                        }
-                        SSegmented {
-                            t: pal
-                            model: ["Automatic", "Light", "Dark", "Dynamic"]
-                            segWidth: 78
-                            current: ["auto", "light", "dark", "dynamic"].indexOf(root.bar ? root.bar.wallpaperAppearance : "auto")
-                            onPicked: i => { if (root.bar) root.bar.wallpaperAppearance = ["auto", "light", "dark", "dynamic"][i]; }
-                        }
-                    }
-                }
-
-                Item {
-                    width: parent.width; height: 30
-                    SLabel { t: pal; header: true; width: 200; anchors.verticalCenter: parent.verticalCenter; text: I18n.tr("Wallpapers"); topPadding: 0 }
-                    SSegmented {
-                        t: pal
-                        anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
-                        model: ["All", "Pictures", "Animated", "★ Favourites"]
-                        segWidth: 88
-                        current: wpPane.filter
-                        onPicked: i => wpPane.filter = i
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width
-                    height: 36
-                    radius: 10
-                    color: pal.ctrl
-                    border.width: 1
-                    border.color: wpSearchInput.activeFocus ? pal.accent : pal.cardBorder
-                    Row {
-                        anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 8
-                        spacing: 8
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "⌕"
-                            color: pal.text3
-                            font.family: Fonts.forWeight(font.weight, pal.fam); font.pixelSize: 19
-                        }
-                        Item {
-                            width: parent.width - 52
-                            height: parent.height
-                            TextInput {
-                                id: wpSearchInput
-                                anchors.fill: parent
-                                verticalAlignment: TextInput.AlignVCenter
-                                color: pal.text
-                                selectionColor: pal.accent
-                                font.family: root.fontForWeight(font.weight, pal.fam)
-                                font.pixelSize: 12
-                                clip: true
-                                selectByMouse: true
-                                onTextChanged: wpPane.searchText = text
-                            }
-                            Text {
-                                anchors.fill: parent
-                                verticalAlignment: Text.AlignVCenter
-                                text: I18n.tr("Search wallpapers")
-                                color: pal.text3
-                                font.family: root.fontForWeight(font.weight, pal.fam)
-                                font.pixelSize: 12
-                                visible: wpSearchInput.text === "" && !wpSearchInput.activeFocus
-                                MouseArea { anchors.fill: parent; onClicked: wpSearchInput.forceActiveFocus() }
-                            }
-                        }
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            visible: wpSearchInput.text !== ""
-                            text: "×"
-                            color: pal.text2
-                            font.family: Fonts.forWeight(font.weight, pal.fam); font.pixelSize: 18
-                            MouseArea {
-                                anchors.fill: parent
-                                anchors.margins: -6
-                                onClicked: { wpSearchInput.clear(); wpSearchInput.forceActiveFocus(); }
-                            }
-                        }
-                    }
-                }
-
-                GridView {
-                    id: wpFlow
-                    width: parent.width
-                    cellWidth: Math.floor((width - 20) / 3)
-                    cellHeight: Math.round(cellWidth * 0.625) + 32
-                    height: Math.min(contentHeight, cellHeight * 3)
-                    clip: true
-                    boundsBehavior: Flickable.StopAtBounds
-                    model: wpPane.shown
-                    ScrollBar.vertical: ScrollBar {
-                        policy: ScrollBar.AsNeeded
-                        width: 6
-                        background: Rectangle {
-                            color: pal.cardBorder
-                            radius: 3
-                            opacity: 0.45
-                        }
-                        contentItem: Rectangle {
-                            color: pal.text3
-                            radius: 3
-                        }
-                    }
-                    delegate: Item {
-                            id: wt
-                            required property var modelData
-                            width: wpFlow.cellWidth
-                            height: wpFlow.cellHeight
-                            readonly property bool cur: modelData.video ? wpPane.curVideo === modelData.path
-                                                                        : (wpPane.curVideo === "" && wpPane.curStill === modelData.path)
-                            Item {
-                                id: wtBox
-                                x: 5; y: 5
-                                width: parent.width - 10; height: parent.height - 32
-                                scale: wtMa.pressed ? 0.98 : 1
-                                Item {
-                                    id: wtMask
-                                    anchors.fill: parent; visible: false
-                                    layer.enabled: true; layer.smooth: true
-                                    Rectangle { anchors.fill: parent; radius: 9; color: "black" }
-                                }
-                                Item {
-                                    anchors.fill: parent
-                                    layer.enabled: true; layer.smooth: true
-                                    layer.effect: MultiEffect { maskEnabled: true; maskSource: wtMask; maskThresholdMin: 0.5; maskSpreadAtMin: 1.0 }
-                                    Rectangle { anchors.fill: parent; color: pal.ctrl }
-                                    Image {
-                                        anchors.fill: parent
-                                        source: "file://" + (wt.modelData.video ? wt.modelData.thumb : wt.modelData.path)
-                                        sourceSize.width: 260
-                                        fillMode: Image.PreserveAspectCrop
-                                        asynchronous: true; smooth: true
-                                        opacity: status === Image.Ready ? 1 : 0
-                                        Behavior on opacity { NumberAnimation { duration: 250 } }
-                                    }
-                                    Loader {
-                                        anchors.fill: parent
-                                        active: wt.modelData.video && wt.modelData.preview !== "" && wtMa.containsMouse
-                                        sourceComponent: AnimatedImage {
-                                            source: "file://" + wt.modelData.preview
-                                            fillMode: Image.PreserveAspectCrop
-                                            asynchronous: true; cache: false; playing: true
-                                        }
-                                    }
-                                    Rectangle {
-                                        visible: wt.modelData.video
-                                        x: 6; y: 6
-                                        width: wtBadge.implicitWidth + 12; height: 18; radius: 9
-                                        color: Qt.rgba(0, 0, 0, 0.5)
-                                        Text {
-                                            id: wtBadge
-                                            anchors.centerIn: parent
-                                            text: I18n.tr("\u25B6  Animated")
-                                            color: "white"; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 9; font.weight: Font.DemiBold
-                                        }
-                                    }
-                                }
-                                Rectangle {
-                                    anchors.fill: parent; anchors.margins: wt.cur ? -3 : 0
-                                    radius: wt.cur ? 12 : 9
-                                    color: "transparent"
-                                    border.width: wt.cur ? 2.5 : 1
-                                    border.color: wt.cur ? pal.accent : pal.cardBorder
-                                }
-                                MouseArea {
-                                    id: wtMa
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: if (root.bar) root.bar.wpApply(wt.modelData.path)
-                                }
-                                    Rectangle {
-                                        anchors.right: parent.right; anchors.top: parent.top
-                                        anchors.margins: 7
-                                        width: 26; height: 26; radius: 13
-                                        visible: wt.modelData.fav || wtMa.containsMouse || wtFavMa.containsMouse
-                                        color: Qt.rgba(0, 0, 0, wtFavMa.containsMouse ? 0.72 : 0.52)
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: wt.modelData.fav ? "★" : "☆"
-                                            color: wt.modelData.fav ? "#ffd60a" : "white"
-                                            font.family: Fonts.forWeight(font.weight, pal.fam); font.pixelSize: 16
-                                        }
-                                        MouseArea {
-                                            id: wtFavMa
-                                            anchors.fill: parent
-                                            hoverEnabled: true
-                                            onClicked: if (root.bar) root.bar.wpToggleFav(wt.modelData.path)
-                                        }
-                                    }
-                            }
-                            Text {
-                                anchors.bottom: parent.bottom
-                                x: 5
-                                width: parent.width - 10
-                                horizontalAlignment: Text.AlignHCenter
-                                elide: Text.ElideMiddle
-                                text: wt.modelData.name
-                                color: wt.cur ? pal.text : pal.text2
-                                font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 11
-                            }
                     }
                 }
                 SLabel {
                     t: pal
-                    visible: wpPane.shown.length === 0
-                    text: wpPane.searchText.trim() !== "" ? I18n.tr("No wallpapers match “") + wpPane.searchText + "”."
-                        : wpPane.filter === 2 ? "No animated wallpapers yet. Drop .mp4 / .webm videos into " + (root.bar ? root.bar.wpDirEff : "~/Pictures/Wallpapers") + "."
-                                              : I18n.tr("Nothing here yet.")
+                    text: I18n.tr("The Dock, widgets and glass follow Ryogami's current wallpaper automatically.")
                 }
-                SLabel { t: pal; text: I18n.tr("Tip: Ctrl+Alt+W opens the quick wallpaper picker, which shows animated wallpapers too.") }
             }
         }
 
@@ -3786,8 +3463,6 @@ Scope {
             Column {
                 id: aboutCol
                 spacing: 10
-                property bool armed: false
-                Timer { id: disarm; interval: 3000; onTriggered: aboutCol.armed = false }
 
                 SCard {
                     t: pal
@@ -3807,7 +3482,7 @@ Scope {
                             y: 108
                             width: parent.width
                             horizontalAlignment: Text.AlignHCenter
-                            text: "macshell"
+                            text: "Gokko"
                             color: pal.text
                             font.family: root.fontForWeight(font.weight, pal.fam)
                             font.pixelSize: 21
@@ -3817,7 +3492,7 @@ Scope {
                             y: 138
                             width: parent.width
                             horizontalAlignment: Text.AlignHCenter
-                            text: I18n.tr("Version 0.3.5 \u2022 Hyprland \u2022 Quickshell")
+                            text: "Ryoku • Quickshell"
                             color: pal.text2
                             font.family: root.fontForWeight(font.weight, pal.fam)
                             font.pixelSize: 12
@@ -3831,7 +3506,7 @@ Scope {
                         t: pal
                         title: I18n.tr("Configuration")
                         Text {
-                            text: "~/.config/macdock"
+                            text: "~/.config/ryoku"
                             color: pal.text2
                             font.family: root.fontForWeight(font.weight, pal.fam)
                             font.pixelSize: 13
@@ -3843,7 +3518,7 @@ Scope {
                         SButton {
                             t: pal
                             text: I18n.tr("Open")
-                            onClicked: Quickshell.execDetached(["xdg-open", root.configDir])
+                            onClicked: Quickshell.execDetached(["xdg-open", Quickshell.env("HOME") + "/.config/ryoku"])
                         }
                     }
                 }
@@ -3861,118 +3536,31 @@ Scope {
                         }
                     }
                 }
+                // ── Ryoku Gokko credits ──
+                SLabel { t: pal; header: true; text: I18n.tr("Credits") }
                 SCard {
                     t: pal
                     SRow {
                         t: pal
-                        title: I18n.tr("Reset MacShell")
-                        subtitle: I18n.tr("Restore every setting to its default (appearance, Dock, Menu Bar, widgets, lock screen, input). Pinned apps and your widgets' layout are kept.")
+                        title: "Aethctl"
+                        subtitle: "Full port of MacShell to Ryoku (Gokko)"
+                    }
+                    SRow {
+                        t: pal
+                        title: "Feelyourwarmth"
+                        subtitle: "Liquid Glass improvements and small UI tweaks"
+                    }
+                }
+                SCard {
+                    t: pal
+                    SRow {
+                        t: pal
+                        title: "Upstream"
+                        subtitle: "MacShell by 0-ss and contributors"
                         SButton {
                             t: pal
-                            destructive: true
-                            text: aboutCol.armed ? I18n.tr("Click to Confirm") : I18n.tr("Reset\u2026")
-                            onClicked: {
-                                if (aboutCol.armed) { aboutCol.armed = false; root.resetSettings(); }
-                                else { aboutCol.armed = true; disarm.restart(); }
-                            }
-                        }
-                    }
-                }
-
-                // ── Credits ──
-                SLabel { t: pal; header: true; text: I18n.tr("Credits") }
-                SCard {
-                    t: pal
-                    Repeater {
-                        model: [
-                            { img: "assets/credits/0-ss.jpg", name: "Rickky", gh: "0-ss",
-                              role: "Owner — the menu bar, the Dock, the Liquid Glass the widgets and more... The one who actually knew what he was doing" },
-                            { img: "assets/credits/vsoultann.png", name: "vSuol", gh: "vsoultann",
-                              role: "Contributors — improved the Settings app, and most of the bugs you would find" }
-                        ]
-                        delegate: Item {
-                            id: cr
-                            required property var modelData
-                            width: parent.width; height: 72
-                            Rectangle { visible: cr.y > 0.5; x: 14; width: parent.width - 14; height: 1; color: pal.sep }
-                            Item {
-                                id: crPic
-                                x: 14; anchors.verticalCenter: parent.verticalCenter
-                                width: 44; height: 44
-                                Item { id: crMask; anchors.fill: parent; visible: false; layer.enabled: true; Rectangle { anchors.fill: parent; radius: width / 2; color: "black" } }
-                                Image {
-                                    anchors.fill: parent
-                                    source: Qt.resolvedUrl(cr.modelData.img)
-                                    sourceSize: Qt.size(96, 96)
-                                    fillMode: Image.PreserveAspectCrop; smooth: true; mipmap: true
-                                    layer.enabled: true
-                                    layer.effect: MultiEffect { maskEnabled: true; maskSource: crMask; maskThresholdMin: 0.5; maskSpreadAtMin: 1.0 }
-                                }
-                                Rectangle { anchors.fill: parent; radius: width / 2; color: "transparent"; border.width: 1; border.color: pal.cardBorder }
-                            }
-                            Column {
-                                x: 70; anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width - 70 - 90
-                                spacing: 2
-                                Text { text: cr.modelData.name; color: pal.text; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 13; font.weight: Font.DemiBold }
-                                Text { width: parent.width; text: I18n.tr(cr.modelData.role); wrapMode: Text.WordWrap; color: pal.text2; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 11 }
-                            }
-                            Text {
-                                anchors.right: parent.right; anchors.rightMargin: 14; anchors.verticalCenter: parent.verticalCenter
-                                text: "@" + cr.modelData.gh
-                                color: pal.accent; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 12
-                                font.underline: crMa.containsMouse
-                                MouseArea { id: crMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Quickshell.execDetached(["xdg-open", "https://github.com/" + cr.modelData.gh]) }
-                            }
-                        }
-                    }
-                }
-                Text {
-                    width: parent.width
-                    horizontalAlignment: Text.AlignHCenter
-                    topPadding: 4
-                    text: I18n.tr("Designed by Apple in California.\nRebuilt on Linux by two people who could not afford the Mac.")
-                    color: pal.text3; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 11
-                }
-
-                // (keep scrolling…)
-                Item { width: 1; height: 900 }
-
-                // ── AppleCare+ — nobody asked. The button does nothing. ──
-                SCard {
-                    t: pal
-                    Item {
-                        width: parent.width; height: 214
-                        Image {
-                            anchors.horizontalCenter: parent.horizontalCenter; y: 16
-                            width: 36; height: 36
-                            source: Qt.resolvedUrl(pal.dark ? "apple-logo-white.svg" : "apple-logo-black.svg")
-                            sourceSize: Qt.size(72, 72); fillMode: Image.PreserveAspectFit; smooth: true
-                        }
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter; y: 64
-                            text: I18n.tr("Protect your MacShell with AppleCare+")
-                            color: pal.text; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 17; font.weight: Font.DemiBold
-                        }
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter; y: 90
-                            width: parent.width - 60; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
-                            text: I18n.tr("Unlimited repairs for accidental damage, 24/7 priority access to Apple experts, and battery service coverage. Same price as for a MacBook Pro.")
-                            color: pal.text2; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 12
-                        }
-                        Text {
-                            anchors.horizontalCenter: parent.horizontalCenter; y: 136
-                            text: I18n.tr("$279.00 for 3 years or $99.99/yr.")
-                            color: pal.text; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 13; font.weight: Font.Medium
-                        }
-                        Rectangle {
-                            anchors.horizontalCenter: parent.horizontalCenter; y: 166
-                            width: 150; height: 32; radius: 16
-                            color: careMa.pressed ? Qt.darker(pal.accent, 1.15) : pal.accent
-                            scale: careMa.pressed ? 0.96 : 1
-                            Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutQuint } }
-                            Text { anchors.centerIn: parent; text: I18n.tr("Add AppleCare+"); color: "white"; font.family: root.fontForWeight(font.weight, pal.fam); font.pixelSize: 13; font.weight: Font.DemiBold }
-                            MouseArea { id: careMa; anchors.fill: parent; cursorShape: Qt.PointingHandCursor }
+                            text: "MacShell repository"
+                            onClicked: Quickshell.execDetached(["xdg-open", "https://github.com/0-ss/MacShell"])
                         }
                     }
                 }
@@ -4017,6 +3605,12 @@ Scope {
     // ───────────── LOGIC ─────────────
     function openPrefs(pane) {
         if (!settingsEnabled) return;
+        if (pane === "wallpaper" && hub) {
+            Quickshell.execDetached(["ryogami", "wallpaper", "ui"]);
+            return;
+        }
+        if (["lockscreen", "keyboard", "mouse", "trackpad"].indexOf(pane) >= 0)
+            pane = "general";
         if (bar) {
             darkMode = bar.darkMode;
             appearanceMode = bar.appearanceMode;
@@ -4159,18 +3753,192 @@ Scope {
     }
     Timer { id: youngWin; interval: 250; onTriggered: root.rebuild() }
 
+    // Use Ryoku's reactive, file-backed icon index instead of Qt's cached
+    // Quickshell.iconPath(). The index follows GTK icon-theme changes live,
+    // including WhiteSur selected when Gokko starts, without a shell restart.
     function iconSrc(icon) {
-        if (!icon) return Quickshell.iconPath("application-x-executable");
-        if (icon.charAt(0) === "/") return "file://" + icon;
-        return Quickshell.iconPath(icon, "application-x-executable");
+        var n = icon === undefined || icon === null ? "" : String(icon);
+        var themed = Ryoku.Icons.path(n, true);
+        if (themed !== "") return themed;
+        return Ryoku.Icons.path("application-x-executable", true)
+            || (n && n.charAt(0) === "/" ? "file://" + n
+                : Quickshell.iconPath(n || "application-x-executable", "application-x-executable"));
     }
-    // icon of a dock cell; the Trash switches to the "full" icon while there is something in it
-    function cellIconSrc(it) {
-        if (it && it.special === "trash" && trashFull) {
-            var p = Quickshell.iconPath("user-trash-full", true);
-            if (p !== "") return p;
+
+    // Gokko owns this macOS-themed Dock, not the desktop's QIcon cache.
+    // These explicit SVG overrides are a visible, deterministic canary for the
+    // active versioned Scene and WhiteSur file:// loading in Quickshell.
+    // Keep the ordinary resolver for missing/unknown/custom application IDs.
+    // Use the Ryoku icon index directly. Calling ryoku-shell from this view
+    // avoids depending on the Qt icon-provider cache or on another QML
+    // singleton's initialization order. Only one process runs on startup and
+    // after an actual user icon-theme change, never per Dock cell.
+    property var gokkoThemeIcons: ({})
+    property string gokkoIconThemeName: ""
+    Process {
+        id: gokkoIconIndexProc
+        running: true
+        command: ["ryoku-shell", "icons"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    var data = JSON.parse(text);
+                    if (!data || !data.icons || typeof data.icons !== "object")
+                        throw new Error("Missing icons index");
+                    root.gokkoIconThemeName = String(data.theme || "");
+                    root.gokkoThemeIcons = data.icons;
+                    console.log("[gokko-icons] index ready: theme="
+                        + root.gokkoIconThemeName
+                        + " entries=" + Object.keys(data.icons).length);
+                } catch (e) {
+                    console.warn("[gokko-icons] index unavailable: " + e);
+                }
+            }
         }
-        return iconSrc(it ? it.icon : "");
+    }
+    Timer {
+        id: gokkoIconRefresh
+        interval: 600
+        onTriggered: {
+            if (!gokkoIconIndexProc.running)
+                gokkoIconIndexProc.running = true;
+        }
+    }
+    FileView {
+        path: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config"))
+            + "/gtk-3.0/settings.ini"
+        watchChanges: true
+        printErrors: false
+        onFileChanged: gokkoIconRefresh.restart()
+    }
+
+    function gokkoIconCandidates(it) {
+        var out = [];
+        function add(raw) {
+            var name = raw === undefined || raw === null ? "" : String(raw).trim();
+            if (!name) return;
+            name = name.replace(/^image:\/\/icon\//, "").replace(/[?].*$/, "");
+            name = name.replace(/\.desktop$/i, "");
+            if (name.indexOf("/") >= 0)
+                name = name.substring(name.lastIndexOf("/") + 1).replace(/\.(svg|png|xpm)$/i, "");
+            if (!name) return;
+            if (out.indexOf(name) < 0) out.push(name);
+            var lower = name.toLowerCase();
+            if (out.indexOf(lower) < 0) out.push(lower);
+            if (name.indexOf(".") >= 0) {
+                var last = name.split(".").pop();
+                if (out.indexOf(last) < 0) out.push(last);
+                last = last.toLowerCase();
+                if (out.indexOf(last) < 0) out.push(last);
+            }
+        }
+        add(it.icon);
+        add(it.appId);
+        if (it.entry) add(it.entry.id);
+        add(it.name);
+        var key = (String(it.appId || "") + " " + String(it.icon || "")
+            + " " + String(it.name || "")).toLowerCase();
+        // Desktop IDs don't necessarily match the WhiteSur SVG names. Use
+        // specific aliases, but only if the index confirms an actual file.
+        if (/nautilus|org\.gnome\.files/.test(key)) {
+            add("nautilus"); add("org.gnome.Nautilus"); add("folder");
+        }
+        if (/dolphin|org\.kde\.dolphin/.test(key)) {
+            add("dolphin"); add("org.kde.dolphin"); add("folder");
+        }
+        if (/thunar/.test(key)) { add("thunar"); add("folder"); }
+        if (/zen/.test(key)) { add("zen-browser"); add("zen"); }
+        if (/vesktop|discord/.test(key)) { add("vesktop"); add("discord"); }
+        if (/ghostty/.test(key)) { add("ghostty"); add("com.mitchellh.ghostty"); }
+        if (/visual studio code|vscode|code-oss|\bcode\b/.test(key)) { add("code"); add("visual-studio-code"); }
+        return out;
+    }
+
+    function gokkoIndexedIcon(name) {
+        var path = root.gokkoThemeIcons[name];
+        return (typeof path === "string" && path.charAt(0) === "/") ? path : "";
+    }
+
+    function gokkoIconSrc(it) {
+        // This property access makes QML re-evaluate every icon when the
+        // asynchronous index arrives or the user changes their icon theme.
+        var theme = root.gokkoIconThemeName;
+        var index = root.gokkoThemeIcons;
+        if (!it) return root.logoPath;
+        if (it.special === "trash") {
+            var trashName = root.trashFull ? "user-trash-full" : "user-trash";
+            var trash = gokkoIndexedIcon(trashName);
+            if (trash !== "") return "file://" + trash;
+            // This known WhiteSur path avoids the broken Qt image://icon
+            // provider, which was producing a magenta checkerboard for Trash.
+            return "file://" + Quickshell.env("HOME")
+                + "/.local/share/icons/WhiteSur-dark/places/scalable/"
+                + trashName + ".svg";
+        }
+        var raw = String(it.icon || "");
+        if (raw === root.logoPath || it.special === "custom")
+            return root.iconSrc(raw);
+        var choices = gokkoIconCandidates(it);
+        var fallback = "";
+        var themeMarker = theme ? "/" + theme + "/" : "";
+        for (var i = 0; i < choices.length; i++) {
+            var match = gokkoIndexedIcon(choices[i]);
+            if (match === "") continue;
+            if (themeMarker && match.indexOf(themeMarker) >= 0)
+                return "file://" + match;
+            if (fallback === "") fallback = match;
+        }
+        if (fallback !== "") return "file://" + fallback;
+        // Explicit paths from desktop files are valid app-provided fallbacks.
+        if (raw.indexOf("file://") === 0) return raw;
+        if (raw.charAt(0) === "/") return "file://" + raw;
+        // Prefer a known indexed fallback. Never return image://icon/...: on
+        // this Niri/Quickshell build it rendered the missing-image checkerboard.
+        var generic = gokkoIndexedIcon("application-x-executable");
+        return generic !== "" ? "file://" + generic : "file://" + root.logoPath;
+    }
+
+    // Desktop entries can provide an absolute /nix/store/... icon. For regular
+    // application icons, prefer a name matched in the selected theme. Keep
+    // Gokko's own explicitly bundled logo and unknown custom files unchanged.
+    // Ryoku.Icons.path() reads Icons.rev, making every Dock Image binding reactive.
+    function cellIconSrc(it) {
+        void Ryoku.Icons.rev;
+        if (!it) return iconSrc("");
+        if (it.special === "trash" && trashFull) {
+            var full = Ryoku.Icons.path("user-trash-full", true);
+            if (full !== "") return full;
+        }
+        var raw = it.icon === undefined || it.icon === null ? "" : String(it.icon);
+        if (raw === root.logoPath || it.special === "custom")
+            return iconSrc(raw);
+
+        var candidates = [];
+        function add(value) {
+            var n = value === undefined || value === null ? "" : String(value);
+            if (!n) return;
+            n = n.replace(/\.desktop$/i, "");
+            if (n.charAt(0) === "/" || n.indexOf("file://") === 0)
+                n = n.substring(n.lastIndexOf("/") + 1).replace(/\.(svg|png|xpm)$/i, "");
+            if (n && candidates.indexOf(n) < 0) candidates.push(n);
+            var lower = n.toLowerCase();
+            if (lower !== n && candidates.indexOf(lower) < 0) candidates.push(lower);
+        }
+        add(raw);
+        add(it.appId);
+        if (it.entry) add(it.entry.id);
+        // Some desktop IDs are reversed domains (org.mozilla.firefox), while
+        // WhiteSur provides an ordinary firefox icon. Use the final component.
+        var appId = String(it.appId || "").replace(/\.desktop$/i, "");
+        if (appId.indexOf(".") >= 0) add(appId.split(".").pop());
+        // Friendly name only as a last hint, for an unambiguous exact match.
+        if (it.name) add(String(it.name).replace(/\s+/g, "-").toLowerCase());
+
+        for (var i = 0; i < candidates.length; i++) {
+            var path = Ryoku.Icons.path(candidates[i], true);
+            if (path !== "") return path;
+        }
+        return iconSrc(raw);
     }
 
     // ── Trash state: the standard XDG trash (~/.local/share/Trash/files) is what Dolphin's trash:/ shows ──
@@ -4498,8 +4266,9 @@ Scope {
     // ═════════════ LIQUID GLASS BACKEND ═════════════
     // glassState: "idle" → "building" (qsb running) → "ready" | "failed". "failed" falls back to Normal Blur.
     property string glassState: "idle"
+    // Allow wallpaper-refraction glass on Niri, not just the blur fallback.
+    // Live per-window Dock refraction still requires a separate Niri capture test.
     readonly property bool liquidActive: dockStyle === "liquid" && glassState === "ready" && !(bar && bar.gaming)
-        && !(hub && hub.nativeBackdrop)
     // Settings' own glass (back / forward pill, knobs of switches and sliders): available whenever the shader is built,
     // whatever the Dock style is
     readonly property bool settingsGlass: glassState === "ready" && !(bar && bar.gaming)
@@ -4509,6 +4278,7 @@ Scope {
 
     onDockStyleChanged: if (dockStyle === "liquid") startGlass()
     onGlassStateChanged: console.log("[macdock-glass] state:", glassState)
+    onDockGlassStateChanged: console.log("[gokko-niri] Dock-specific shader state:", dockGlassState)
     function startGlass() {
         if (dockGlassState === "idle" || dockGlassState === "failed") {
             dockGlassState = "building";
@@ -4562,9 +4332,12 @@ Scope {
     Binding { target: root.hub; property: "dockWantsWallpaper"; value: root.liquidActive }
     onWallpaperMapChanged: console.log("[macdock-glass] wallpaper sources:", JSON.stringify(wallpaperMap))
     function wallpaperFor(screenName) {
-        var p = wallpaperPath !== "" ? wallpaperPath
-              : (wallpaperMap["wallpaper.monitors." + screenName] || wallpaperMap["wallpaper.last"]
-                 || wallpaperMap["wallpaper.default"] || "");
+        var current = wallpaperMap["wallpaper.monitors." + screenName]
+                   || wallpaperMap["wallpaper.last"] || wallpaperMap["wallpaper.default"] || "";
+        // Hosted Niri Dock always follows Ryogami; never restore the
+        // saved MacDock background while its poster is being refreshed.
+        var p = (hub && hub.nativeBackdrop) ? current
+            : (wallpaperPath !== "" ? wallpaperPath : current);
         if (p.indexOf("~/") === 0) p = Quickshell.env("HOME") + p.substring(1);
         return p;
     }
@@ -4682,6 +4455,20 @@ Scope {
     Timer { id: settle; interval: 350; onTriggered: root.rebuild() }
     Timer { id: pruneTimer; interval: 8200; onTriggered: root.rebuild() }
 
+    // Runtime probe. Shader build success alone does not prove the Dock
+    // glass layer has a usable image source or shader variant.
+    Timer {
+        interval: 2600
+        repeat: false
+        running: !!(root.hub && root.hub.nativeBackdrop)
+            && root.settingsReady && root.dockEnabled
+        onTriggered: console.log("[gokko-niri] Dock backend:",
+            "style=" + root.dockStyle,
+            "glassReady=" + root.liquidActive,
+            "sharedShader=" + root.glassState,
+            "dockShader=" + root.dockGlassState,
+            "wallpaper=" + root.wallpaperFor(Quickshell.screens.length ? Quickshell.screens[0].name : ""))
+    }
     // ───────────── UI ─────────────
     Variants {
         model: (root.settingsReady && root.dockEnabled) ? Quickshell.screens : []
@@ -4702,7 +4489,7 @@ Scope {
             WlrLayershell.namespace: "macdock"
             BackgroundEffect.blurRegion: Region {
                 x: dock.x; y: dock.y
-                width: root.hub && root.hub.nativeBackdrop ? dock.width : 0
+                width: root.hub && root.hub.nativeBackdrop && !root.liquidActive ? dock.width : 0
                 height: dock.height
                 radius: root.cornerRadius
             }
@@ -5055,29 +4842,22 @@ Scope {
                             anchors.fill: parent
                             color: "#20232C" // neutral fallback while the wallpaper poster is unresolved
                         }
-                        // the wallpaper that is SHOWN only switches once the new one has finished loading, so a wallpaper change never
-                        // flashes the placeholder gradient (or a black hole) through the glass
+                        // Bind the image directly to Ryogami's current poster.
+                        // The old hidden wpNext -> wpShown hand-off could remain
+                        // on the previous image when the hidden loader didn't fire.
                         Image {
                             id: wpShown
                             anchors.fill: parent
+                            source: root.fileUrl(root.wallpaperFor(win.modelData.name))
                             visible: status === Image.Ready
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             sourceSize.width: bd.width
                             smooth: true
-                        }
-                        Image {
-                            id: wpNext
-                            visible: false
-                            width: 1; height: 1
                             onStatusChanged: {
-                                console.log("[macdock-glass] wallpaper image status:", status, "(1 = ready, 2 = loading, 3 = error)", source);
-                                if (status === Image.Ready) wpShown.source = source;
+                                if (status === Image.Error)
+                                    console.warn("[gokko-niri] Dock poster failed:", source);
                             }
-                            source: root.fileUrl(root.wallpaperFor(win.modelData.name))
-                            fillMode: Image.PreserveAspectCrop
-                            asynchronous: true
-                            sourceSize.width: bd.width
                         }
                         // animated wallpaper: plays behind the Dock glass only while Real-time glass is on
                         MacParts.LiveWall {
@@ -5444,7 +5224,23 @@ Scope {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     anchors.bottom: parent.bottom
                                     anchors.bottomMargin: lift
-                                    source: cell.isSep ? "" : root.cellIconSrc(cell.modelData)
+                                    property string preferredIconSource: cell.isSep ? "" : root.gokkoIconSrc(cell.modelData)
+                                    property bool iconLoadFailed: false
+                                    source: cell.isSep ? "" : (iconLoadFailed
+                                        ? ("file://" + root.logoPath) : preferredIconSource)
+                                    onPreferredIconSourceChanged: iconLoadFailed = false
+                                    onStatusChanged: {
+                                        if (!cell.isSep && status === Image.Error && !iconLoadFailed) {
+                                            console.warn("[gokko-icons] failed to load " + source);
+                                            iconLoadFailed = true;
+                                        }
+                                    }
+                                    onSourceChanged: {
+                                        if (!cell.isSep && cell.modelData)
+                                            console.log("[gokko-icons] "
+                                                + String(cell.modelData.appId || cell.modelData.name || "unknown")
+                                                + " -> " + source);
+                                    }
                                     sourceSize: Qt.size(Math.ceil(root.iconSize * root.magnification * 1.25),
                                                         Math.ceil(root.iconSize * root.magnification * 1.25))
                                     fillMode: Image.PreserveAspectFit

@@ -1,0 +1,3 @@
+BatteryStatus 1.0 BatteryStatus.qml
+BluetoothStatus 1.0 BluetoothStatus.qml
+LockStatus 1.0 LockStatus.qml

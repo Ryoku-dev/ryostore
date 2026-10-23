@@ -132,6 +132,7 @@ Item {
     signal mediaToggleRequested()
     signal mediaPreviousRequested()
     signal mediaNextRequested()
+    signal lyricsRequested()
 
     property string audioDialogKind: ""
 
@@ -1369,6 +1370,7 @@ Item {
         onToggleRequested: face.mediaToggleRequested()
         onPreviousRequested: face.mediaPreviousRequested()
         onNextRequested: face.mediaNextRequested()
+        onLyricsRequested: face.lyricsRequested()
 
         Behavior on opacity {
             NumberAnimation {

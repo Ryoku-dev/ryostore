@@ -15,10 +15,11 @@
 
 var QUICK = "quick"
 var APPS = "apps"
+var AI = "ai"
 var SETTINGS = "settings"
 var WALLPAPERS = "wallpapers"
 
-var ALL = [QUICK, APPS, WALLPAPERS, SETTINGS]
+var ALL = [QUICK, APPS, WALLPAPERS, SETTINGS, AI]
 
 function isScreen(name) {
     return ALL.indexOf(name) >= 0

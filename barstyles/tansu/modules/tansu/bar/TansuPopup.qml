@@ -60,6 +60,9 @@ Scope {
     readonly property real uiScale: host.parentWindow && host.parentWindow.uiScale ? host.parentWindow.uiScale : 1
 
     readonly property bool capsuleStyle: !!host.parentWindow && host.parentWindow.barStyle === 3
+    // The bar's corner-radius setting, so the card matches the bar it hangs off.
+    readonly property real roundness: host.parentWindow && host.parentWindow.barRoundness !== undefined
+        ? host.parentWindow.barRoundness : 1
 
     property real contentWidth: 320
     property real contentHeight: 200
@@ -240,7 +243,7 @@ Scope {
                     id: card
                     visible: !host.bare
                     capRim: host.capsuleStyle
-                    cornerRadius: Theme.radiusOuter
+                    cornerRadius: Theme.radiusOuter * host.roundness
                     ringWidth: Theme.borderWidth
                     innerRing: Theme.cardRing
                     fillColor: Theme.surface

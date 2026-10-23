@@ -325,6 +325,10 @@ Item {
     signal discordAuthorizeRequested()
     signal discordPanelRequested()
 
+    // How round the bar and its modules are: 0 is square, 1 fully round.
+    // Pill.qml reads this off the tree, so every module follows it.
+    property real barRoundness: 1
+
     readonly property color bgRingColor: Theme.surfaceRing
     readonly property real bgRingWidth: Theme.outerRingWidth
 
@@ -333,7 +337,8 @@ Item {
     // snapping. Straight: radius 0, and the background is pushed out by
     // outline + ring (+1 so no seam shows) so the side outline and ring
     // land off screen and only the top and bottom edges are seen.
-    property real bgRadius: status_Bar.barStyle === 0 ? Theme.radiusOuter : 0
+    property real bgRadius: status_Bar.barStyle === 0
+        ? Theme.radiusOuter * status_Bar.barRoundness : 0
     property real bgBleed: status_Bar.barStyle === 1
         ? Theme.borderWidth + status_Bar.bgRingWidth + 1 : 0
 
@@ -402,7 +407,7 @@ Item {
             y: Theme.capShadowDy
             width: parent.width
             height: parent.height - Theme.capShadowDy
-            radius: Math.min(width, height) / 2
+            radius: Math.min(width, height) / 2 * status_Bar.barRoundness
             color: Theme.capShade
             antialiasing: true
         }
@@ -411,7 +416,7 @@ Item {
             id: capFace
             width: parent.width
             height: parent.height - Theme.capShadowDy
-            radius: Math.min(width, height) / 2
+            radius: Math.min(width, height) / 2 * status_Bar.barRoundness
             color: Theme.capRim
             antialiasing: true
         }
@@ -419,7 +424,7 @@ Item {
         Rectangle {
             anchors.fill: capFace
             anchors.margins: Theme.capRimWidth
-            radius: Math.min(width, height) / 2
+            radius: Math.min(width, height) / 2 * status_Bar.barRoundness
             color: Theme.capBody
             antialiasing: true
         }
@@ -480,6 +485,7 @@ Item {
             Layout.alignment: status_Bar.crossAlign
             Layout.rightMargin: status_Bar.vertical ? 0 : badges.neighborShift
             vertical: status_Bar.vertical
+            roundness: status_Bar.barRoundness
             active: status_Bar.activeWorkspace
             count: status_Bar.workspaceCount
             maxLength: status_Bar.badgesRoom

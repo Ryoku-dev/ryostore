@@ -38,7 +38,7 @@ PanelWindow {
         left: win.barPosition !== "right"
         right: win.barPosition !== "left"
     }
-    readonly property real uiScale: ShellScale.forScreen(win.screen)
+    readonly property real uiScale: ShellScale.forScreen(win.screen) * ShellScale.barScale
     readonly property real thickness: BarPositionService.thicknessFor(win.barPosition)
     readonly property real stripSize: Math.round((win.barStyle === 3 ? (win.vertical ? Theme.capStripV : Theme.capStrip)
     : win.thickness) * win.uiScale)
@@ -78,7 +78,9 @@ PanelWindow {
     ? (win.compactWindow ? Math.min(Math.round(win.screen.width), win.stripSize + win.windowRoom)
     : Math.round(win.screen.width))
     : win.stripSize) : 0
-    exclusionMode: ExclusionMode.Normal
+    // An auto-hiding bar never holds space: the windows take it and the bar
+    // floats over them while it is up.
+    exclusionMode: win.autoHide ? ExclusionMode.Ignore : ExclusionMode.Normal
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     // Transparent style: the pills sit straight on the wallpaper, so the space
     // under (or beside) them should be small. Two things are taken off what the
@@ -94,11 +96,44 @@ PanelWindow {
     readonly property real transparentTrim: win.barStyle === 2
         ? Math.min(Math.round(win.transparentExtraGap * win.uiScale), Math.round(win.stripSize * 0.6))
         : 0
-    exclusiveZone: win.stripSize - win.transparentTrim
+    exclusiveZone: win.autoHide ? 0 : win.stripSize - win.transparentTrim
     color: "transparent"
 
     readonly property bool gameMode: false
     readonly property bool passive: win.editing || win.gameMode
+
+    // Auto-hide: the bar slides off its edge, reserves no space, and comes back
+    // when the pointer reaches the edge. A popup of its own keeps it out.
+    readonly property bool autoHide: SettingsService.flag("bar.autohide") && !win.passive
+    property bool autoReveal: false
+    readonly property bool popupsOpen: win.trayOpen || win.mediaPopupOpen || win.batteryPopupOpen
+        || win.resourcePopupOpen || win.calendarPopupOpen || win.weatherPopupOpen || win.utilPopupOpen
+    readonly property bool barOut: PresetMotion.barOut || (win.autoHide && !win.autoReveal)
+    // While it is away only a thin strip of the edge takes input, so clicks and
+    // the desktop reach the screen; the strip is what brings it back.
+    readonly property real maskThickness: win.autoHide && !win.autoReveal
+        ? Math.max(2, Math.round(3 * win.uiScale)) : win.stripSize
+
+    onAutoHideChanged: if (!win.autoHide) win.autoReveal = false
+    onBarOutChanged: win.syncSlide()
+    onPopupsOpenChanged: {
+        if (win.popupsOpen) {
+            win.autoReveal = true
+            hideTimer.stop()
+        } else {
+            hideTimer.restart()
+        }
+    }
+
+    function syncSlide() {
+        if (win.barOut) {
+            slideIn.stop()
+            slideOut.restart()
+        } else {
+            slideOut.stop()
+            slideIn.restart()
+        }
+    }
     readonly property var gameLayout: ({ left: [], center: ["date", "clock", "weather"], right: [] })
 
     // Only the strip takes input, and nothing while editing or in Game Mode (1 px
@@ -122,10 +157,10 @@ PanelWindow {
     }
     Item {
         id: barMask
-        x: win.passive ? 0 : (win.barPosition === "right" ? win.width - win.stripSize : 0)
-        y: win.passive ? 0 : (win.barPosition === "bottom" ? win.height - win.stripSize : 0)
-        width: win.passive ? 1 : (win.vertical ? win.stripSize : win.width)
-        height: win.passive ? 1 : (win.vertical ? win.height : win.stripSize)
+        x: win.passive ? 0 : (win.barPosition === "right" ? win.width - win.maskThickness : 0)
+        y: win.passive ? 0 : (win.barPosition === "bottom" ? win.height - win.maskThickness : 0)
+        width: win.passive ? 1 : (win.vertical ? win.maskThickness : win.width)
+        height: win.passive ? 1 : (win.vertical ? win.height : win.maskThickness)
     }
 
     readonly property real popupGap: win.barStyle === 3 ? 0 : 4
@@ -152,6 +187,15 @@ PanelWindow {
     SystemClock {
         id: clock
         precision: SystemClock.Minutes
+    }
+
+    Timer {
+        id: hideTimer
+        interval: 550
+        onTriggered: {
+            if (win.autoHide && !win.popupsOpen && !barHover.hovered)
+                win.autoReveal = false
+        }
     }
 
     property bool trayOpen: false
@@ -474,6 +518,9 @@ PanelWindow {
     }
 
     readonly property int barStyle: BarStyleService.index
+    // How round the bar and its modules are: 0 is square, 1 fully round.
+    readonly property real barRoundness: Math.max(0, Math.min(100,
+        Number(SettingsService.get("bar.roundness", 100)))) / 100
     Item {
         id: geometry
         property real sideInset: (win.barStyle === 0 || win.barStyle === 3) ? Theme.barFloatInset : 0
@@ -499,23 +546,13 @@ PanelWindow {
             easing.type: Easing.OutBack
             easing.overshoot: 1.1
         }
-        Connections {
-            target: PresetMotion
-            function onBarOutChanged() {
-                if (PresetMotion.barOut) {
-                    slideIn.stop()
-                    slideOut.restart()
-                } else {
-                    slideOut.stop()
-                    slideIn.restart()
-                }
-            }
-        }
         Component.onCompleted: {
             if (PresetMotion.barBusy) {
                 geometry.slide = 1
-                if (!PresetMotion.barOut)
+                if (!win.barOut)
                     slideIn.restart()
+            } else if (win.barOut) {
+                geometry.slide = 1
             }
         }
     }
@@ -524,6 +561,22 @@ PanelWindow {
         id: stage
         anchors.fill: parent
         clip: true
+
+        // The pointer over the bar keeps it up; leaving it starts the countdown.
+        // On the stage, so it still sees the pointer when the content is away
+        // and only the thin edge strip of the window takes input.
+        HoverHandler {
+            id: barHover
+            enabled: win.autoHide
+            onHoveredChanged: {
+                if (hovered) {
+                    win.autoReveal = true
+                    hideTimer.stop()
+                } else {
+                    hideTimer.restart()
+                }
+            }
+        }
 
         ScaleHost {
             anchors.fill: parent
@@ -545,6 +598,7 @@ PanelWindow {
                 width: win.vertical ? (win.barStyle === 3 ? Theme.capVBarFace : Theme.barVBody) : parent.width - 2 * geometry.sideInset
                 height: win.vertical ? parent.height - 2 * geometry.sideInset : (win.barStyle === 3 ? Theme.capBarHeight : 61)
                 barStyle: win.barStyle
+                barRoundness: win.barRoundness
 
                 activeWorkspace: win.activeWorkspace
                 occupiedWorkspaces: win.occupiedWorkspaces

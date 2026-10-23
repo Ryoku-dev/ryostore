@@ -23,7 +23,24 @@ import shell.services as Ryoku
 import "." as MacParts
 
 Scope {
+    id: gokkoRoot
     MacParts.MacWmBridge { id: macWm }
+
+    // The Gokko package may be installed while another style is selected.
+    // Activate desktop icons only when this Scene actually loads.
+    readonly property string iconHookPath: decodeURIComponent(
+        String(Qt.resolvedUrl("gokko-icons.py")).replace("file://", ""))
+    Process {
+        id: gokkoIconInstall
+        command: ["python3", gokkoRoot.iconHookPath, "activate"]
+        stdout: StdioCollector {
+            onStreamFinished: if (text.trim() !== "") console.log(text.trim())
+        }
+        stderr: StdioCollector {
+            onStreamFinished: if (text.trim() !== "") console.warn("[gokko-icons]", text.trim())
+        }
+        onExited: (code, status) => { if (code === 0) macDock.rebuild(); }
+    }
 
     // The UI font ("Open Runde") ships with MacShell: registered here, first, so every Text below can use it
     // without installing anything. (The installer also copies it to ~/.local/share/fonts.)
@@ -48,9 +65,10 @@ Scope {
         readonly property var wallpaperMap: hostWallpaper === "" ? ({})
             : ({ "wallpaper.default": hostWallpaper })
         function resolvePoster() {
-            posterPath = "";
             if (posterProc.running) posterProc.running = false;
-            if (wallpaperInput === "") return;
+            if (wallpaperInput === "") { posterPath = ""; return; }
+            // Do not emit an empty wallpaper map between Ryogami updates:
+            // every glass surface stays on the last resolved image until ready.
             posterProc.command = ["sh", wallpaperResolver, wallpaperInput, Ryoku.Session.livePoster];
             posterProc.running = true;
         }
@@ -305,6 +323,7 @@ Scope {
 
     Component.onCompleted: {
         Ryoku.BarProducts.gokkoWidgets = macWidgets;
+        gokkoIconInstall.running = true;
         sharedHub.bar = macBar;
         sharedHub.dock = macDock;
         sharedHub.widgets = macWidgets;
@@ -317,6 +336,10 @@ Scope {
     Component.onDestruction: {
         if (Ryoku.BarProducts.gokkoWidgets === macWidgets)
             Ryoku.BarProducts.gokkoWidgets = null;
+        // This script checks shell.json: a Quickshell restart with Gokko still
+        // selected does not restore the previous icon theme. A real style
+        // change restores only settings still owned by Gokko.
+        Quickshell.execDetached(["python3", gokkoRoot.iconHookPath, "restore"]);
     }
 
     // reopen settings even when both the Dock and the Menu Bar are disabled:

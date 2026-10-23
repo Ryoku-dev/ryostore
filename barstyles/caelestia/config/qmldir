@@ -1,0 +1,11 @@
+BarWorkspaceDisplay 1.0 BarWorkspaceDisplay.qml
+ClockFormat 1.0 ClockFormat.qml
+singleton Config 1.0 Config.qml
+ConfigList 1.0 ConfigList.qml
+DataUnit 1.0 DataUnit.qml
+DockWindowGrouping 1.0 DockWindowGrouping.qml
+FontStyle 1.0 FontStyle.qml
+singleton GlobalConfig 1.0 GlobalConfig.qml
+TemperatureUnit 1.0 TemperatureUnit.qml
+singleton TokenConfig 1.0 TokenConfig.qml
+singleton Tokens 1.0 Tokens.qml

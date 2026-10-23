@@ -69,8 +69,9 @@ are routed, each idempotent and safe to repeat:
 - `multilib` enables Arch's `[multilib]` repo (Steam and every `lib32-` package
   live there). Fedora needs no step, and Void enables its multilib and nonfree
   repositories per package, as the table rows name them.
-- `cachyos` adds the `[cachyos-v3]` repo (the CachyOS Kernel bundle). Only Arch
-  and CachyOS can, so that bundle carries a `packageManagers` gate.
+- `cachyos` adds the `[cachyos-v3]` and `[cachyos]` repositories below every
+  Arch repository, so Arch packages stay authoritative. Only Arch and CachyOS
+  can use it, so the CachyOS Gaming bundle carries a `packageManagers` gate.
 - `gpu-lib32` runs `ryoku-gpu-lib32` to install the 32-bit GPU drivers matching
   the machine, on every edition (Gaming lists it after `multilib`, so the repo
   is on first).

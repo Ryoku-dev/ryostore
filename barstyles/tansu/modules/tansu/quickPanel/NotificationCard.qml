@@ -268,6 +268,8 @@ Item {
         cursorShape: Qt.PointingHandCursor
         acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
         enabled: !card.leaving && !card.blocked
+        // Keep the dismiss pull: the phone's page flick would otherwise take it.
+        preventStealing: true
         drag.target: slide
         drag.axis: Drag.XAxis
         drag.minimumX: -card.width

@@ -224,7 +224,7 @@ Pill {
                         width: root.vertical ? art.width + root.ringWidth * 2
                                              : root.artWidth + root.cornerRadius * 4
                         height: parent.height + root.ringWidth * 2
-                        radius: root.cornerRadius
+                        radius: root.effectiveRadius
                         color: "transparent"
                         border.width: root.ringWidth
                         border.color: Theme.ringWhite
@@ -236,7 +236,7 @@ Pill {
                         width: root.vertical ? art.width + root.ringWidth * 2
                                              : root.artWidth + root.cornerRadius * 4
                         height: parent.height + root.ringWidth * 2
-                        radius: root.cornerRadius
+                        radius: root.effectiveRadius
                         color: "transparent"
                         border.width: Theme.borderWidth
                         border.color: Theme.line

@@ -55,6 +55,8 @@ Item {
     readonly property bool capsule: Theme.capsuleFor(root)
 
     property bool vertical: false
+    // The bar's corner-radius setting (the capsule style's dots follow it too).
+    property real roundness: 1
 
     signal requested(int workspace)
 
@@ -279,7 +281,7 @@ Item {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: height / 2
+                    radius: height / 2 * root.roundness
                     color: Theme.capRim
                     antialiasing: true
                 }
@@ -287,7 +289,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: Theme.capDotRing
-                    radius: height / 2
+                    radius: height / 2 * root.roundness
                     color: Theme.capWsColors[(dot.number - 1) % Theme.capWsColors.length]
                     antialiasing: true
                 }

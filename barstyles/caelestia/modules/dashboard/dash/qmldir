@@ -1,0 +1,6 @@
+ControlsConnections 1.0 ControlsConnections.qml
+ControlsLevels 1.0 ControlsLevels.qml
+ControlsToggles 1.0 ControlsToggles.qml
+Media 1.0 Media.qml
+MediaShapes 1.0 MediaShapes.qml
+User 1.0 User.qml

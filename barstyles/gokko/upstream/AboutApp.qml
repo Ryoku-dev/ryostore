@@ -242,7 +242,7 @@ Scope {
                     wrapMode: Text.Wrap
                     maximumLineCount: 2
                     elide: Text.ElideRight
-                    text: "MacShell"
+                    text: "Gokko"
                     color: pal.text
                     font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 24; font.weight: Font.Bold
                 }
@@ -318,24 +318,12 @@ Scope {
                 }
                 Item { width: 1; height: 20 }
 
-                // ── links and legal ──
-                Item {
-                    width: parent.width; height: siteTxt.implicitHeight
-                    Text {
-                        id: siteTxt
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: (root.info.osname || "Linux") + " " + I18n.tr("Website")
-                        color: pal.text2
-                        font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 11; font.underline: true
-                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Quickshell.execDetached(["xdg-open", root.info.home || "https://www.kernel.org"]) }
-                    }
-                }
-                Item { width: 1; height: 10 }
+                // ── Legal attribution remains intact ──
                 Text {
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
                     wrapMode: Text.Wrap
-                    text: "Linux® is a registered trademark of Linus Torvalds.\nMacShell 0.3.5"
+                    text: "Linux® is a registered trademark of Linus Torvalds."
                     color: pal.text3
                     font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 10
                     lineHeight: 1.1

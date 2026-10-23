@@ -22,6 +22,7 @@ Singleton {
 
     readonly property var defaults: ({
         "bar.visible": true,
+        "bar.autohide": false,
         "bar.workspaces": true,
         "bar.activeWindow": true,
         "bar.media": true,
@@ -41,6 +42,8 @@ Singleton {
         "bar.compactWindow": false,
         "bar.perMonitor": false,
         "bar.style": "transparent",
+        "bar.roundness": 100,
+        "bar.scale": 1,
         "bar.position": "top",
         "bar.layout": ({
             left: ["activeWindow", "media", "tray"],
@@ -68,6 +71,8 @@ Singleton {
         "quick.phoneShadow": true,
         "quick.flat": false,
         "quick.media": true,
+        "quick.pinScale": 58,
+        "quick.pinOpacity": 100,
         "quick.tiles": QT.defaultTiles,
         "quick.tileColumns": QT.defaultColumns,
         "util.darkMode": true,
@@ -154,7 +159,7 @@ Singleton {
         for (const key of Object.keys(root.values))
             if (key.indexOf("bar.") === 0 && root.values[key] === true
                     && key !== "bar.visible" && key !== "bar.compactWindow"
-                    && key !== "bar.perMonitor")
+                    && key !== "bar.perMonitor" && key !== "bar.autohide")
                 out.push(key.slice(4))
         return out
     }
