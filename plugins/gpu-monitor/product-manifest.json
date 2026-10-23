@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "id": "gpu-monitor",
+  "category": "plugins",
+  "version": "0.1.0",
+  "destination": "ryoku/plugins/gpu-monitor",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "523b51c0aa64d1e8e23aabb2e1deea429e10bf53f222fc6b8efd214ec27a4ba5",
+      "mode": "0644",
+      "size": 3960,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "6c10b9b653b0eb8dd2afff51e41c62cea5a9311bb88f6dbcdf1ca932a885a260",
+      "mode": "0644",
+      "size": 1069,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "295bb05a63fd0ce8ef2236cd15caff64ab4b7bf16bc7e2e979e600a71a1604bb",
+      "mode": "0644",
+      "size": 2170,
+      "install": false
+    },
+    {
+      "source": "bin/gpu-stat.sh",
+      "destination": "bin/gpu-stat.sh",
+      "sha256": "b3765162665a3fe9ee3aff13388cf7b919fec6ae52fc32f48d78de29ee2ea00d",
+      "mode": "0755",
+      "size": 8394,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "dd573b2b5580b1c6adb380d0606a8cfb737ef32aa953ac4e58b2884b59899b21",
+      "mode": "0644",
+      "size": 13521,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "fd034d3f1799abb82e3cc540a651ebbbccd44f4d15a061e9f95f056ad50f639b",
+      "mode": "0644",
+      "size": 1503,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "aea11af4fa32d28102922f5b8ab314a0dffe59133c9c4a1bdd97bd7e284d2ec2",
+      "mode": "0644",
+      "size": 1383,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "83b50b5ab3b83b2d19fd2b172b88ab8612cde8e1b51477236eca758497fbd6af",
+      "mode": "0644",
+      "size": 8342,
+      "install": true
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "id": "gpu-monitor",
+  "name": "GPU Monitor",
+  "version": "0.1.0",
+  "author": "hectorbaez81 <hector.baez@gmail.com>",
+  "description": "Rootless GPU monitor for Intel (i915, xe), AMD (amdgpu) and NVIDIA: usage, clocks, VRAM, temperature, throttling and top GPU processes.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 340
+  },
+  "files": [
+    "bin/gpu-stat.sh"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "GPU Monitor"
+  },
+  "dependencies": {
+    "commands": [
+      "lspci",
+      "btop",
+      "kitty",
+      "nvidia-smi",
+      "awk",
+      "grep",
+      "date",
+      "readlink",
+      "basename",
+      "cat"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "gpu",
+        "type": "text",
+        "label": "GPU to show: auto, or a card (card1), PCI slot or driver (i915, xe, amdgpu, nvidia)",
+        "group": "Behavior",
+        "default": "auto"
+      },
+      {
+        "key": "terminal",
+        "type": "text",
+        "label": "Terminal used to open btop (run as: <terminal> -e btop)",
+        "group": "Behavior",
+        "default": "kitty"
+      }
+    ]
+  }
+}
