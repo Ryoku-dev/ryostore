@@ -3,6 +3,7 @@ Caelestia Ryoku Bar Style
 Source: Caelestia shell, https://github.com/caelestia-dots/shell (GPL-3.0)
 Via: the KDE port by ladybug-me, https://github.com/ladybug-me/caelestia-kde, commit 6769205
 Ported to Ryoku by: lhen
+Maintained by: dodo986 (from 2026-10-24)
 Shape and wavy line components: adapted from the imi bar style in this store (dodo986, GPL-3.0)
 License: GNU General Public License version 3; see LICENSE
 

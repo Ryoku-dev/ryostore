@@ -240,7 +240,7 @@
       "name": "Caelestia",
       "version": "1.0.0",
       "path": "barstyles/caelestia",
-      "author": "lhen",
+      "author": "dodo986",
       "upstream": "https://github.com/caelestia-dots/shell",
       "summary": "Framed Material 3 shell",
       "description": "The Caelestia shell's framed bar, dock, dashboard, session menu, sidebar and OSD, in plain QML, with its own settings panel.",
@@ -262,8 +262,8 @@
         "assets/screenshot-settings.webp"
       ],
       "manifest": "manifest.json",
-      "manifestSha256": "590b0acc49576366669d1de35325e494a3b4a1a2aca242c0827c4d06c31728ea",
-      "lastUpdated": "2026-10-23",
+      "manifestSha256": "f866586b57fe50642ae3c8c6fb625cc81888dc96b8234dc87e986dabada7c256",
+      "lastUpdated": "2026-10-24",
       "official": false,
       "license": "GPL-3.0-only"
     }
