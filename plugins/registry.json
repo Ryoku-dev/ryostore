@@ -1971,6 +1971,31 @@
       "lastUpdated": "2026-10-22",
       "license": "MIT",
       "upstream": "https://github.com/root-secyrity/window-stash"
+    },
+    {
+      "id": "power-menu-v2",
+      "name": "Power Menu V2",
+      "version": "0.1.0",
+      "path": "plugins/power-menu-v2",
+      "author": "hectorbaez81 <hector.baez@gmail.com>",
+      "summary": "Profile-style power menu: avatar, Ryoku version and uptime, plus lock, log out, suspend, hibernate, reboot and power off.",
+      "description": "Profile-style power menu: avatar, Ryoku version and uptime, plus lock, log out, suspend, hibernate, reboot and power off. Follows the Ryoku theme.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "",
+      "screenshots": [],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7b5a79cddcf7c99d36e4d6cfc0e16934d0b1cc6a2b43eed5d268677fb645a6d6",
+      "official": false,
+      "tagline": "Profile-style power menu: avatar, Ryoku version and uptime, plus lock, log out, suspend, hibernate, reboot and power off.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-22"
     }
   ]
 }

@@ -1,0 +1,98 @@
+{
+  "id": "power-menu-v2",
+  "name": "Power Menu V2",
+  "version": "0.1.0",
+  "author": "hectorbaez81 <hector.baez@gmail.com>",
+  "description": "Profile-style power menu: avatar, Ryoku version and uptime, plus lock, log out, suspend, hibernate, reboot and power off. Follows the Ryoku theme.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 280
+  },
+  "files": [
+    "bin/hibernate.sh"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Power Menu V2"
+  },
+  "dependencies": {
+    "commands": [
+      "ryoku-shell",
+      "systemctl",
+      "hyprctl",
+      "journalctl",
+      "notify-send",
+      "pacman",
+      "uname",
+      "cat"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "confirm",
+        "type": "toggle",
+        "label": "Ask before acting (click twice)",
+        "group": "Behavior",
+        "default": true
+      },
+      {
+        "key": "show_lock",
+        "type": "toggle",
+        "label": "Show Lock",
+        "group": "Actions",
+        "default": true
+      },
+      {
+        "key": "show_logout",
+        "type": "toggle",
+        "label": "Show Log out",
+        "group": "Actions",
+        "default": true
+      },
+      {
+        "key": "show_suspend",
+        "type": "toggle",
+        "label": "Show Suspend",
+        "group": "Actions",
+        "default": true
+      },
+      {
+        "key": "show_hibernate",
+        "type": "toggle",
+        "label": "Show Hibernate",
+        "group": "Actions",
+        "default": true
+      },
+      {
+        "key": "show_reboot",
+        "type": "toggle",
+        "label": "Show Reboot",
+        "group": "Actions",
+        "default": true
+      },
+      {
+        "key": "show_poweroff",
+        "type": "toggle",
+        "label": "Show Power off",
+        "group": "Actions",
+        "default": true
+      }
+    ]
+  }
+}
