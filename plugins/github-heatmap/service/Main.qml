@@ -25,16 +25,30 @@ Item {
         return d;
     }
     function setSetting(k, v) {
+        var patch = ({});
+        patch[k] = v;
+        setSettings(patch);
+    }
+    // several keys in one write (a preset), not one process per key
+    function setSettings(patch) {
         var o = JSON.parse(JSON.stringify(_over));
-        o[k] = v;
+        for (var k in patch) o[k] = patch[k];
         _over = o;
         if (pluginApi && typeof pluginApi.saveSetting === "function") {
-            pluginApi.saveSetting(k, v);
+            for (var j in patch) pluginApi.saveSetting(j, patch[j]);
         } else {
-            var patch = ({});
-            patch[k] = v;
             Quickshell.execDetached(["ryoku-plugins-place", "github-heatmap", "settings", JSON.stringify(patch)]);
         }
+    }
+    // Once the host reads a value back, it owns that key again: a later change
+    // from the right-click menu must win over what the card set earlier.
+    onSettingsChanged: {
+        var o = ({}), dropped = false;
+        for (var k in _over) {
+            if (settings && settings[k] === _over[k]) dropped = true;
+            else o[k] = _over[k];
+        }
+        if (dropped) _over = o;
     }
 
     readonly property string username: String(cfg("username", "")).trim()
@@ -43,8 +57,51 @@ Item {
 
     function setUsername(name) { setSetting("username", String(name).trim()); }
 
+    // ── designs: one-click looks, each sets several settings at once ──
+    // `design` is a plain setting, so the desktop's right-click menu can pick
+    // one too; a change (from either side) applies its values once, and any
+    // option can be tuned on top afterwards.
+    readonly property var designs: ({
+        github: { monthGap: 0, cellSize: 11, cellGap: 3, cellShape: "rounded", palette: "github",
+            showMonths: true, showWeekdays: true, showStats: false, showLegend: true, showToolbar: true,
+            weekdayStyle: "alt", monthFormat: "short", background: "glass" },
+        blocks: { monthGap: 6, cellSize: 13, cellGap: 3, cellShape: "rounded", palette: "mono",
+            showMonths: false, showWeekdays: false, showStats: false, showLegend: false, showToolbar: true,
+            colorScale: "github", showEmpty: true, background: "glass" },
+        minimal: { monthGap: 4, cellSize: 10, cellGap: 2, cellShape: "circle", palette: "accent",
+            showMonths: false, showWeekdays: false, showStats: false, showLegend: false, showToolbar: false,
+            background: "none" },
+        full: { monthGap: 8, cellSize: 12, cellGap: 3, cellShape: "rounded",
+            showMonths: true, showWeekdays: true, showStats: true, showLegend: true, showToolbar: true,
+            monthFormat: "cap", weekdayStyle: "alt", background: "glass" }
+    })
+    readonly property string design: cfg("design", "")
+    // null until the saved settings have loaded, so loading never re-applies
+    property var _design: null
+    onDesignChanged: {
+        if (_design === null) return;
+        // applied a tick later: writing settings inside this handler would
+        // re-enter the `design` binding
+        var v = designs[design];
+        if (design !== _design && v) Qt.callLater(function () { svc.setSettings(v); });
+        _design = design;
+    }
+
     // ── data ─────────────────────────────────────────────────────────────────
-    readonly property int thisYear: new Date().getFullYear()
+    // The clock the card reads "today" from, ticked each minute so the grid,
+    // the today mark and the streak roll over at midnight (and after a resume).
+    property date now: new Date()
+    readonly property string todayIso: _iso(now)
+    readonly property int thisYear: now.getFullYear()
+    Timer {
+        interval: 60 * 1000
+        running: true
+        repeat: true
+        onTriggered: svc.now = new Date()
+    }
+    onTodayIsoChanged: refresh()
+    // New Year: move on to the new year instead of staying on the old one.
+    onThisYearChanged: if (year === thisYear - 1) { year = thisYear; refresh(); }
     property int year: thisYear
 
     // { "YYYY-MM-DD": { count, level } }, the total and the stats over it.
@@ -98,7 +155,7 @@ Item {
         }
         // Current streak: back from today (or yesterday, if today is still 0).
         var cur = 0;
-        var t = new Date();
+        var t = new Date(now);
         if (!(map[_iso(t)] && map[_iso(t)].count > 0)) t.setDate(t.getDate() - 1);
         while (map[_iso(t)] && map[_iso(t)].count > 0) { cur += 1; t.setDate(t.getDate() - 1); }
         days = map;
@@ -139,7 +196,11 @@ Item {
 
     onUsernameChanged: { days = ({}); total = 0; refresh(); }
     onRangeChanged: refresh()
-    onPluginApiChanged: { detectUser(); refresh(); }
+    onPluginApiChanged: {
+        detectUser();
+        refresh();
+        Qt.callLater(function () { svc._design = svc.design; });
+    }
 
     Timer {
         interval: svc.refreshMin * 60 * 1000

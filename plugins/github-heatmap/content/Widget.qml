@@ -8,9 +8,9 @@ import Ryoku.PluginKit.Singletons
 // The desktop card: a toolbar (edit user, user, year stepper, total, the hovered
 // day, settings, refresh) over a GitHub-style grid, one column per week, with
 // optional month and weekday labels, a stats line and a legend. Months can sit
-// in separate blocks. The gear opens an in-card settings panel; every option
-// there is also in the desktop's right-click menu (manifest metadata.settings),
-// both persisted by the service.
+// in separate blocks. The gear opens an in-card panel with every option; the
+// desktop's right-click menu (manifest metadata.settings) keeps only Design and
+// Background. Both are persisted by the service.
 Item {
     id: root
 
@@ -20,6 +20,13 @@ Item {
     property string density: "compact"
     property real s: 1
     property real widthBudget: 0
+    // pushed by the desktop host (capabilities.colors): the colour picked in
+    // its right-click menu, Auto (wallpaper accent) or a pinned one
+    property color accentColor: Theme.accent
+    property bool accentFromHost: false
+    // Gradient mode: the levels run from accentColor to accentColor2
+    property color accentColor2: accentColor
+    property bool accentGradient: false
 
     readonly property var service: pluginApi ? pluginApi.mainInstance : null
     function cfg(k, d) { return service ? service.cfg(k, d) : d; }
@@ -29,7 +36,9 @@ Item {
     // ── settings in use ──
     readonly property string range: cfg("range", "year")
     readonly property int months: Math.round(num("months", 12, 1, 12))
-    readonly property string palette: cfg("palette", "accent")
+    // a colour pinned from the host menu wins over the palette, as on built-ins
+    readonly property bool colorPinned: cfg("colorAuto", true) === false && String(cfg("color", "")).length > 0
+    readonly property string palette: colorPinned ? "accent" : cfg("palette", "accent")
     readonly property string colorScale: cfg("colorScale", "github")
     readonly property string shape: cfg("cellShape", "rounded")
     readonly property bool mondayFirst: cfg("weekStart", "sun") === "mon"
@@ -47,13 +56,16 @@ Item {
     // Hovered day: a floating tip (default), in the toolbar, or nowhere.
     readonly property string hoverStyle: cfg("hoverStyle", cfg("hoverInfo", true) === false ? "off" : "tooltip")
     readonly property bool showTodayCount: cfg("showTodayCount", true) === true
-    readonly property bool showBorder: cfg("showBorder", true) === true
     readonly property bool clickOpens: cfg("clickOpens", false) === true
-    readonly property real bgAlpha: num("bgOpacity", 100, 0, 100) / 100
-    // glass: the frosted wallpaper plate the calendar uses, when the host hands
-    // over its wallpaper mirror; otherwise (or by choice) a solid card.
+    // Background: glass | paper | card | none. Glass and paper are the
+    // calendar's two designs; card is the desktop's plain plugin tile. Older
+    // installs had bgStyle + bgOpacity.
+    readonly property string bgMode: cfg("background", Number(cfg("bgOpacity", 100)) === 0 ? "none"
+        : cfg("bgStyle", "glass") === "solid" ? "card" : "glass")
+    // frosted plate, only when the host hands over its wallpaper mirror;
+    // without it glass is the host's tinted sheen
     readonly property var wpSource: pluginApi && pluginApi.wallpaperSource ? pluginApi.wallpaperSource : null
-    readonly property bool glass: cfg("bgStyle", "glass") === "glass" && wpSource !== null
+    readonly property bool glass: bgMode === "glass" && wpSource !== null
 
     readonly property int year: service ? service.year : new Date().getFullYear()
     readonly property string user: service ? service.username : ""
@@ -74,10 +86,15 @@ Item {
     readonly property real gearSpace: !showToolbar && !cornerGear ? 30 * s : 0
 
     // ── range ──
-    readonly property string todayIso: _iso(new Date())
+    readonly property string todayIso: service ? service.todayIso : _iso(new Date())
+    // midnight today, rebuilt only when the day changes, not on every clock tick
+    readonly property var today: {
+        var p = todayIso.split("-");
+        return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    }
     readonly property date startDate: {
         if (range === "last") {
-            var t = new Date();
+            var t = today;
             return new Date(t.getFullYear(), t.getMonth() - months, t.getDate() + 1);
         }
         return new Date(year, 0, 1);
@@ -85,8 +102,7 @@ Item {
     // In "last" mode the grid ends today; in a year it runs to Dec 31, or to
     // today when future days are hidden.
     readonly property int dayCount: {
-        var t = new Date();
-        var today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+        var t = today;
         var upToToday = Math.round((today - startDate) / 86400000) + 1;
         if (range === "last") return upToToday;
         var full = ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? 366 : 365;
@@ -160,12 +176,13 @@ Item {
     readonly property bool barHover: hoverStyle === "bar" && hoverText.length > 0
     property bool editing: field.activeFocus
     property bool settingsOpen: false
-    // Which settings sections are unfolded; only the presets start open.
-    property var openSections: ({ presets: true })
-    function toggleSection(t) {
-        var o = JSON.parse(JSON.stringify(openSections));
-        o[t] = !o[t];
-        openSections = o;
+    // the settings tab on show
+    property string settingsTab: "design"
+    // the four tones a palette paints, for its chip
+    function swatchOf(p) {
+        if (_palettes[p]) return _palettes[p];
+        var b = p === "mono" ? Theme.bright : accentFromHost ? accentColor : Theme.accent;
+        return [0.42, 0.62, 0.82, 1].map(function (a) { return Qt.rgba(b.r, b.g, b.b, a); });
     }
 
     // ── language: English is the source; Spanish ships alongside. "auto"
@@ -176,11 +193,8 @@ Item {
         return l === "es" ? "es" : "en";
     }
     readonly property var _es: ({
-        "Month blocks": "Bloques por mes",
         "Minimal": "Mínimo",
         "Full": "Completo",
-        "Quick styles": "Estilos rápidos",
-        "Apply": "Aplicar",
         "Data": "Datos",
         "Period": "Periodo",
         "Year": "Año",
@@ -193,12 +207,12 @@ Item {
         "Relative to your best": "Relativa a tu máximo",
         "Refresh every": "Actualizar cada",
         "Click opens the day on GitHub": "Clic abre el día en GitHub",
-        "Info on hover": "Info al pasar el cursor",
+        "On hover": "Al pasar",
         "In the bar": "En la barra",
         "Floating": "Flotante",
         "Don't show": "No mostrar",
         "Show today's contributions": "Mostrar contribuciones de hoy",
-        "Colors and shape": "Colores y forma",
+        "Text": "Texto",
         "Colors": "Colores",
         "Theme": "Tema",
         "Green": "Verde",
@@ -231,11 +245,10 @@ Item {
         "Top bar": "Barra superior",
         "Streaks and record": "Rachas y récord",
         "Legend": "Leyenda",
-        "Card border": "Borde del fondo",
+        "Design": "Diseño", "Style": "Estilo",
         "Background": "Fondo",
-        "Glass (like the calendar)": "Cristal (como el calendario)",
-        "Solid": "Sólido",
-        "Background opacity": "Opacidad del fondo",
+        "Glass": "Cristal", "Paper": "Papel", "Solid": "Sólido",
+        "None": "Ninguno",
         "Card corners": "Esquinas del fondo",
         "Language": "Idioma", "Auto": "Automático",
         "contribution": "contribución", "contributions": "contribuciones",
@@ -299,7 +312,11 @@ Item {
         var l = Math.min(level, 4);
         var p = _palettes[palette];
         if (p) return p[l - 1];
-        var base = palette === "mono" ? Theme.bright : Theme.accent;
+        if (palette !== "mono" && accentFromHost && accentGradient) {
+            var f = (l - 1) / 3, a = accentColor, b = accentColor2;
+            return Qt.rgba(a.r + (b.r - a.r) * f, a.g + (b.g - a.g) * f, a.b + (b.b - a.b) * f, 1);
+        }
+        var base = palette === "mono" ? Theme.bright : accentFromHost ? accentColor : Theme.accent;
         return Qt.rgba(base.r, base.g, base.b, [0, 0.42, 0.62, 0.82, 1.0][l]);
     }
     readonly property real cellRadius: shape === "square" ? 0 : shape === "circle" ? cell / 2 : cell * 0.23
@@ -316,50 +333,42 @@ Item {
     // The settings the gear panel lists, by section; the same keys and
     // defaults as the manifest schema the right-click menu renders. `only`
     // shows a row just for that period.
-    // One-click looks: each sets several settings at once.
+    // One-click looks; their values live in the service (setting `design`).
     readonly property var presets: [
-        { l: root.tr("Month blocks"), v: { monthGap: 6, cellSize: 13, cellGap: 3, cellShape: "rounded", palette: "mono",
-            showMonths: false, showWeekdays: false, showStats: false, showLegend: false, showToolbar: true,
-            colorScale: "github", showEmpty: true, bgOpacity: 88 } },
-        { l: "GitHub", v: { monthGap: 0, cellSize: 11, cellGap: 3, cellShape: "rounded", palette: "github",
-            showMonths: true, showWeekdays: true, showStats: false, showLegend: true, showToolbar: true,
-            weekdayStyle: "alt", monthFormat: "short" } },
-        { l: root.tr("Minimal"), v: { monthGap: 4, cellSize: 10, cellGap: 2, cellShape: "circle", palette: "accent",
-            showMonths: false, showWeekdays: false, showStats: false, showLegend: false, showToolbar: false,
-            showBorder: false, bgOpacity: 0 } },
-        { l: root.tr("Full"), v: { monthGap: 8, cellSize: 12, cellGap: 3, cellShape: "rounded",
-            showMonths: true, showWeekdays: true, showStats: true, showLegend: true, showToolbar: true,
-            monthFormat: "cap", weekdayStyle: "alt" } }
+        { id: "github", l: "GitHub" },
+        { id: "blocks", l: root.tr("Grid") },
+        { id: "minimal", l: root.tr("Minimal") },
+        { id: "full", l: root.tr("Full") }
     ]
-    function applyPreset(v) { for (var k in v) set(k, v[k]); }
 
+    // The gear panel, one tab at a time. `only` shows a row for that period,
+    // `need` only while that toggle is on; `sw` / `shape` draw the option.
     readonly property var sections: [
-        { id: "presets", title: root.tr("Quick styles"), items: [{ key: "_preset", label: root.tr("Apply"), type: "preset" }] },
+        { id: "design", title: root.tr("Design"), items: [
+            { key: "design", label: root.tr("Style"), type: "preset" },
+            { key: "palette", label: root.tr("Colors"), type: "choice", def: "accent",
+              options: ["accent", "github", "blue", "purple", "pink", "halloween", "ice", "mono"].map(function (v) {
+                  return { v: v, sw: true, l: root.tr({ accent: "Theme", github: "Green", blue: "Blue", purple: "Purple",
+                      pink: "Pink", halloween: "Orange", ice: "Ice", mono: "Mono" }[v]) };
+              }) },
+            { key: "cellShape", label: root.tr("Shape"), type: "choice", def: "rounded",
+              options: [{ v: "rounded", shape: true, l: root.tr("Rounded") }, { v: "square", shape: true, l: root.tr("Square") },
+                        { v: "circle", shape: true, l: root.tr("Circle") }] },
+            { key: "colorScale", label: root.tr("Color scale"), type: "choice", def: "github",
+              options: [{ v: "github", l: "GitHub" }, { v: "relative", l: root.tr("Relative to your best") }] },
+            { key: "showEmpty", label: root.tr("Empty days"), type: "toggle", def: true },
+            { key: "highlightToday", label: root.tr("Mark today"), type: "toggle", def: true }
+        ] },
         { id: "data", title: root.tr("Data"), items: [
-            { key: "language", label: root.tr("Language"), type: "choice", def: "auto",
-              options: [{ v: "auto", l: root.tr("Auto") }, { v: "es", l: "Español" }, { v: "en", l: "English" }] },
             { key: "range", label: root.tr("Period"), type: "choice", def: "year",
               options: [{ v: "year", l: root.tr("Year") }, { v: "last", l: root.tr("Last months") }] },
             { key: "months", label: root.tr("Months to show"), type: "step", def: 12, min: 1, max: 12, step: 1, unit: "", only: "last" },
             { key: "futureDays", label: root.tr("Future days"), type: "choice", def: "dim", only: "year",
               options: [{ v: "dim", l: root.tr("Dim") }, { v: "hide", l: root.tr("Hide") }, { v: "show", l: root.tr("Normal") }] },
-            { key: "colorScale", label: root.tr("Color scale"), type: "choice", def: "github",
-              options: [{ v: "github", l: "GitHub" }, { v: "relative", l: root.tr("Relative to your best") }] },
-            { key: "refreshMin", label: root.tr("Refresh every"), type: "step", def: 30, min: 10, max: 240, step: 10, unit: " min" },
+            { key: "hoverStyle", label: root.tr("On hover"), type: "choice", def: "tooltip",
+              options: [{ v: "tooltip", l: root.tr("Floating") }, { v: "bar", l: root.tr("In the bar") }, { v: "off", l: root.tr("Don't show") }] },
             { key: "clickOpens", label: root.tr("Click opens the day on GitHub"), type: "toggle", def: false },
-            { key: "hoverStyle", label: root.tr("Info on hover"), type: "choice", def: "tooltip",
-              options: [{ v: "bar", l: root.tr("In the bar") }, { v: "tooltip", l: root.tr("Floating") }, { v: "off", l: root.tr("Don't show") }] },
-            { key: "showTodayCount", label: root.tr("Show today's contributions"), type: "toggle", def: true }
-        ] },
-        { id: "look", title: root.tr("Colors and shape"), items: [
-            { key: "palette", label: root.tr("Colors"), type: "choice", def: "accent",
-              options: [{ v: "accent", l: root.tr("Theme") }, { v: "github", l: root.tr("Green") }, { v: "blue", l: root.tr("Blue") },
-                        { v: "purple", l: root.tr("Purple") }, { v: "pink", l: root.tr("Pink") }, { v: "halloween", l: root.tr("Orange") },
-                        { v: "ice", l: root.tr("Ice") }, { v: "mono", l: root.tr("Mono") }] },
-            { key: "cellShape", label: root.tr("Shape"), type: "choice", def: "rounded",
-              options: [{ v: "rounded", l: root.tr("Rounded") }, { v: "square", l: root.tr("Square") }, { v: "circle", l: root.tr("Circle") }] },
-            { key: "showEmpty", label: root.tr("Empty days"), type: "toggle", def: true },
-            { key: "highlightToday", label: root.tr("Mark today"), type: "toggle", def: true }
+            { key: "refreshMin", label: root.tr("Refresh every"), type: "step", def: 30, min: 10, max: 240, step: 10, unit: " min" }
         ] },
         { id: "grid", title: root.tr("Grid"), items: [
             { key: "cellSize", label: root.tr("Cell size"), type: "step", def: 11, min: 6, max: 20, step: 1, unit: " px" },
@@ -368,27 +377,29 @@ Item {
             { key: "weekStart", label: root.tr("Week starts"), type: "choice", def: "sun",
               options: [{ v: "sun", l: root.tr("Sunday") }, { v: "mon", l: root.tr("Monday") }] }
         ] },
-        { id: "labels", title: root.tr("Labels"), items: [
+        { id: "labels", title: root.tr("Text"), items: [
             { key: "showMonths", label: root.tr("Months"), type: "toggle", def: true },
-            { key: "monthFormat", label: root.tr("Month format"), type: "choice", def: "short",
+            { key: "monthFormat", label: root.tr("Month format"), type: "choice", def: "short", need: "showMonths",
               options: [{ v: "short", l: root.monthName(0, "short") }, { v: "cap", l: root.monthName(0, "cap") },
                         { v: "initial", l: root.monthName(0, "initial") }, { v: "number", l: "1" }] },
             { key: "showWeekdays", label: root.tr("Weekdays"), type: "toggle", def: true },
-            { key: "weekdayStyle", label: root.tr("Weekday style"), type: "choice", def: "alt",
+            { key: "weekdayStyle", label: root.tr("Weekday style"), type: "choice", def: "alt", need: "showWeekdays",
               options: [{ v: "alt", l: [1, 3, 5].map(function (d) { return root.dayNames()[d]; }).join(" ") },
                         { v: "all", l: root.tr("All") },
                         { v: "initial", l: [1, 2, 3].map(function (d) { return root.dayInitials()[d]; }).join(" ") }] },
-            { key: "textScale", label: root.tr("Text size"), type: "step", def: 100, min: 70, max: 160, step: 10, unit: "%" }
+            { key: "textScale", label: root.tr("Text size"), type: "step", def: 100, min: 70, max: 160, step: 10, unit: "%" },
+            { key: "language", label: root.tr("Language"), type: "choice", def: "auto",
+              options: [{ v: "auto", l: root.tr("Auto") }, { v: "es", l: "Español" }, { v: "en", l: "English" }] }
         ] },
         { id: "card", title: root.tr("Card"), items: [
+            { key: "background", label: root.tr("Background"), type: "choice", def: root.bgMode,
+              options: [{ v: "glass", l: root.tr("Glass") }, { v: "paper", l: root.tr("Paper") },
+                        { v: "card", l: root.tr("Solid") }, { v: "none", l: root.tr("None") }] },
+            { key: "cardRadius", label: root.tr("Card corners"), type: "step", def: 14, min: 0, max: 24, step: 2, unit: " px" },
             { key: "showToolbar", label: root.tr("Top bar"), type: "toggle", def: true },
+            { key: "showTodayCount", label: root.tr("Show today's contributions"), type: "toggle", def: true, need: "showToolbar" },
             { key: "showStats", label: root.tr("Streaks and record"), type: "toggle", def: true },
-            { key: "showLegend", label: root.tr("Legend"), type: "toggle", def: true },
-            { key: "showBorder", label: root.tr("Card border"), type: "toggle", def: true },
-            { key: "bgStyle", label: root.tr("Background"), type: "choice", def: "glass",
-              options: [{ v: "glass", l: root.tr("Glass (like the calendar)") }, { v: "solid", l: root.tr("Solid") }] },
-            { key: "bgOpacity", label: root.tr("Background opacity"), type: "step", def: 100, min: 0, max: 100, step: 10, unit: "%" },
-            { key: "cardRadius", label: root.tr("Card corners"), type: "step", def: 14, min: 0, max: 24, step: 2, unit: " px" }
+            { key: "showLegend", label: root.tr("Legend"), type: "toggle", def: true }
         ] }
     ]
 
@@ -482,20 +493,39 @@ Item {
         anchors.fill: parent
         implicitHeight: col.implicitHeight + 2 * root.pad
         radius: root.cardRadius
-        color: root.glass ? "transparent" : Qt.rgba(Theme.cardBot.r, Theme.cardBot.g, Theme.cardBot.b, root.bgAlpha)
-        border.width: root.showBorder && root.bgAlpha > 0 ? 1 : 0
-        border.color: cardHover.hovered ? Theme.lineStrong : Theme.border
+        // the same tints the desktop host gives plugin tiles, so the card
+        // sits with the rest of the wallpaper widgets
+        color: root.bgMode === "none" || root.glass ? "transparent"
+            : root.bgMode === "paper" ? Theme.cardTop
+            : root.bgMode === "card" ? Qt.rgba(0, 0, 0, 0.42) : Qt.rgba(16 / 255, 16 / 255, 24 / 255, 0.26)
+        border.width: root.bgMode === "none" ? 0 : 1
+        // paper: the calendar's ink hairline, stronger on hover
+        border.color: root.bgMode === "paper"
+            ? (cardHover.hovered ? Theme.lineStrong : Qt.rgba(Theme.bright.r, Theme.bright.g, Theme.bright.b, 0.16))
+            : Qt.rgba(1, 1, 1, (root.bgMode === "card" ? 0.08 : 0.16) + (cardHover.hovered ? 0.06 : 0))
+        Behavior on border.color { ColorAnimation { duration: 120 } }
+
+        // glass sheen when there is no frosted plate
+        Rectangle {
+            visible: root.bgMode === "glass" && !root.glass
+            anchors.fill: parent
+            radius: parent.radius
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0.10) }
+                GradientStop { position: 0.5; color: Qt.rgba(1, 1, 1, 0.0) }
+                GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.06) }
+            }
+        }
 
         // the frosted plate, as the shell's WidgetGlass draws it: the patch of
         // wallpaper behind the card (with a bleed so the blur has no dark rim),
-        // blurred and washed in the palette. Opacity scales the whole plate.
+        // blurred and washed in the palette.
         ClippingRectangle {
             id: glassPlate
             visible: root.glass
             anchors.fill: parent
             radius: parent.radius
             color: "transparent"
-            opacity: root.bgAlpha
             z: -1
 
             readonly property rect wr: root.pluginApi && root.pluginApi.wallpaperRect ? root.pluginApi.wallpaperRect : Qt.rect(0, 0, 1, 1)
@@ -923,55 +953,64 @@ Item {
                     width: parent.width - 20 * root.s
                     spacing: 4 * root.s
 
+                    // tabs: one section at a time, and a close button
+                    Item {
+                        width: parent.width
+                        height: 24 * root.s
+                        Row {
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2 * root.s
+                            Repeater {
+                                model: root.sections
+                                delegate: Rectangle {
+                                    id: tab
+                                    required property var modelData
+                                    readonly property bool on: root.settingsTab === modelData.id
+                                    height: 24 * root.s
+                                    width: tabText.implicitWidth + 18 * root.s
+                                    radius: 6 * root.s
+                                    color: tab.on ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30)
+                                        : tabMa.containsMouse ? Qt.rgba(Theme.bright.r, Theme.bright.g, Theme.bright.b, 0.10) : "transparent"
+                                    Text {
+                                        id: tabText
+                                        anchors.centerIn: parent
+                                        text: tab.modelData.title
+                                        color: tab.on ? Theme.bright : Theme.dim
+                                        font.family: Theme.font
+                                        font.pixelSize: 11.5 * root.s
+                                        font.weight: tab.on ? Font.DemiBold : Font.Medium
+                                    }
+                                    MouseArea {
+                                        id: tabMa
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: root.settingsTab = tab.modelData.id
+                                    }
+                                }
+                            }
+                        }
+                        IconButton {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            s: root.s * 0.85
+                            icon: "close"
+                            color: "transparent"
+                            onClicked: root.settingsOpen = false
+                        }
+                    }
+                    Rectangle { width: parent.width; height: 1; color: Theme.hair }
+
                     Repeater {
                         model: root.sections
                         delegate: Column {
                             id: sect
                             required property var modelData
                             width: sectionsCol.width
-                            spacing: 6 * root.s
-
-                            readonly property bool unfolded: root.openSections[modelData.id] === true
-
-                            Item {
-                                width: parent.width
-                                height: 20 * root.s
-                                Row {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 4 * root.s
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: "chevron_right"
-                                        rotation: sect.unfolded ? 90 : 0
-                                        Behavior on rotation { NumberAnimation { duration: 120 } }
-                                        font.family: "Material Symbols Rounded"
-                                        font.pixelSize: 16 * root.s
-                                        renderType: Text.QtRendering
-                                        color: Theme.accent
-                                    }
-                                    Text {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: sect.modelData.title
-                                        color: headMa.containsMouse ? Theme.bright : Theme.accent
-                                        font.family: Theme.font
-                                        font.pixelSize: 10 * root.s
-                                        font.weight: Font.DemiBold
-                                        font.capitalization: Font.AllUppercase
-                                        font.letterSpacing: 1.2 * root.s
-                                    }
-                                }
-                                MouseArea {
-                                    id: headMa
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: root.toggleSection(sect.modelData.id)
-                                }
-                            }
+                            visible: root.settingsTab === modelData.id
 
                             Grid {
                                 id: settingsGrid
-                                visible: sect.unfolded
                                 width: parent.width
                                 columns: width > 640 * root.s ? 2 : 1
                                 columnSpacing: 18 * root.s
@@ -984,13 +1023,17 @@ Item {
                                         required property var modelData
                                         readonly property var f: modelData
                                         readonly property var cur: root.cfg(f.key, f.def)
-                                        visible: !f.only || f.only === root.range
+                                        // chip rows share one label column so their chips line up
+                                        readonly property bool chips: f.type === "choice" || f.type === "preset"
+                                        visible: (!f.only || f.only === root.range) && (!f.need || root.cfg(f.need, true) === true)
                                         width: (settingsGrid.width - (settingsGrid.columns - 1) * settingsGrid.columnSpacing) / settingsGrid.columns
                                         height: Math.max(22 * root.s, controls.implicitHeight)
 
                                         Text {
                                             id: rowLabel
                                             anchors.verticalCenter: parent.verticalCenter
+                                            width: fieldRow.chips ? 104 * root.s : implicitWidth
+                                            elide: Text.ElideRight
                                             text: fieldRow.f.label
                                             color: Theme.bright
                                             font.family: Theme.font
@@ -1001,7 +1044,7 @@ Item {
                                             id: controls
                                             anchors.right: parent.right
                                             anchors.verticalCenter: parent.verticalCenter
-                                            width: parent.width - rowLabel.implicitWidth - 12 * root.s
+                                            width: parent.width - rowLabel.width - 12 * root.s
                                             implicitHeight: choiceFlow.visible ? choiceFlow.implicitHeight
                                                 : presetFlow.visible ? presetFlow.implicitHeight : 22 * root.s
                                             height: implicitHeight
@@ -1011,7 +1054,7 @@ Item {
                                                 id: choiceFlow
                                                 visible: fieldRow.f.type === "choice"
                                                 width: parent.width
-                                                                                                spacing: 4 * root.s
+                                                spacing: 4 * root.s
                                                 Repeater {
                                                     model: fieldRow.f.type === "choice" ? fieldRow.f.options : []
                                                     delegate: Rectangle {
@@ -1019,19 +1062,48 @@ Item {
                                                         required property var modelData
                                                         readonly property bool on: fieldRow.cur === modelData.v
                                                         height: 22 * root.s
-                                                        width: chipText.implicitWidth + 14 * root.s
+                                                        width: chipRow.implicitWidth + 14 * root.s
                                                         radius: 6 * root.s
                                                         color: on ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30)
                                                             : chipMa.containsMouse ? Qt.rgba(Theme.bright.r, Theme.bright.g, Theme.bright.b, 0.12)
                                                             : Qt.rgba(Theme.bright.r, Theme.bright.g, Theme.bright.b, 0.06)
-                                                        Text {
-                                                            id: chipText
+                                                        Row {
+                                                            id: chipRow
                                                             anchors.centerIn: parent
-                                                            text: chip.modelData.l
-                                                            color: chip.on ? Theme.bright : Theme.dim
-                                                            font.family: Theme.font
-                                                            font.pixelSize: 11 * root.s
-                                                            font.weight: chip.on ? Font.DemiBold : Font.Normal
+                                                            spacing: 5 * root.s
+                                                            // palette: its four tones
+                                                            Row {
+                                                                visible: chip.modelData.sw === true
+                                                                anchors.verticalCenter: parent.verticalCenter
+                                                                spacing: 1 * root.s
+                                                                Repeater {
+                                                                    model: chip.modelData.sw === true ? root.swatchOf(chip.modelData.v) : []
+                                                                    delegate: Rectangle {
+                                                                        required property var modelData
+                                                                        width: 6 * root.s
+                                                                        height: 6 * root.s
+                                                                        radius: 1.5 * root.s
+                                                                        color: modelData
+                                                                    }
+                                                                }
+                                                            }
+                                                            // shape: a sample cell
+                                                            Rectangle {
+                                                                visible: chip.modelData.shape === true
+                                                                anchors.verticalCenter: parent.verticalCenter
+                                                                width: 9 * root.s
+                                                                height: 9 * root.s
+                                                                radius: chip.modelData.v === "circle" ? width / 2 : chip.modelData.v === "rounded" ? 2.5 * root.s : 0
+                                                                color: chip.on ? Theme.bright : Theme.dim
+                                                            }
+                                                            Text {
+                                                                anchors.verticalCenter: parent.verticalCenter
+                                                                text: chip.modelData.l
+                                                                color: chip.on ? Theme.bright : Theme.dim
+                                                                font.family: Theme.font
+                                                                font.pixelSize: 11 * root.s
+                                                                font.weight: chip.on ? Font.DemiBold : Font.Normal
+                                                            }
                                                         }
                                                         MouseArea {
                                                             id: chipMa
@@ -1049,7 +1121,7 @@ Item {
                                                 id: presetFlow
                                                 visible: fieldRow.f.type === "preset"
                                                 width: parent.width
-                                                                                                spacing: 4 * root.s
+                                                spacing: 4 * root.s
                                                 Repeater {
                                                     model: fieldRow.f.type === "preset" ? root.presets : []
                                                     delegate: Rectangle {
@@ -1058,22 +1130,27 @@ Item {
                                                         height: 22 * root.s
                                                         width: pText.implicitWidth + 14 * root.s
                                                         radius: 6 * root.s
-                                                        color: pMa.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30)
+                                                        readonly property bool on: root.cfg("design", "") === modelData.id
+                                                        color: on || pMa.containsMouse ? Qt.rgba(Theme.accent.r, Theme.accent.g, Theme.accent.b, 0.30)
                                                             : Qt.rgba(Theme.bright.r, Theme.bright.g, Theme.bright.b, 0.06)
                                                         Text {
                                                             id: pText
                                                             anchors.centerIn: parent
                                                             text: pchip.modelData.l
-                                                            color: Theme.bright
+                                                            color: pchip.on ? Theme.bright : Theme.dim
                                                             font.family: Theme.font
                                                             font.pixelSize: 11 * root.s
+                                                            font.weight: pchip.on ? Font.DemiBold : Font.Normal
                                                         }
                                                         MouseArea {
                                                             id: pMa
                                                             anchors.fill: parent
                                                             hoverEnabled: true
                                                             cursorShape: Qt.PointingHandCursor
-                                                            onClicked: root.applyPreset(pchip.modelData.v)
+                                                            // the current one again puts its values back after tweaks
+                                                            onClicked: pchip.on && root.service
+                                                                ? root.service.setSettings(root.service.designs[pchip.modelData.id])
+                                                                : root.set("design", pchip.modelData.id)
                                                         }
                                                     }
                                                 }

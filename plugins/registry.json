@@ -1323,12 +1323,12 @@
     {
       "id": "github-heatmap",
       "name": "GitHub Heatmap",
-      "version": "0.7.1",
+      "version": "0.8.0",
       "path": "plugins/github-heatmap",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/github-heatmap",
       "author": "safloresmo <safloresmo@gmail.com>",
-      "summary": "Your GitHub contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
-      "description": "Your GitHub contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+      "summary": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
+      "description": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
       "tags": [
         "github",
         "contributions",
@@ -1346,14 +1346,14 @@
         "assets/preview-settings.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "198116bb38fc65e02fa7179e18ccd76b017623afc81be1ca82fd97e2da3c15f4",
+      "manifestSha256": "51e2daebd9a27a179ec22e57e5435137013f830d47673f3c0d3dcc1a1c0abaf4",
       "official": false,
-      "tagline": "Your GitHub contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+      "tagline": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
       "icon": "calendar_month",
       "hosts": [
         "desktopWidget"
       ],
-      "lastUpdated": "2026-10-02"
+      "lastUpdated": "2026-10-24"
     },
     {
       "id": "gitlab-heatmap",

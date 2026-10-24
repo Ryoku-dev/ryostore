@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "github-heatmap",
   "category": "plugins",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "destination": "ryoku/plugins/github-heatmap",
   "files": [
     {
@@ -24,41 +24,41 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "5f078d6cd51fffc7d323ba8a35e20dfc0712f3c443f7ff9949168acc8ee7b81b",
+      "sha256": "ca3c37facaca6f6e114e098f39d2ffec72230837cc5c31ee7e9731f8ca1da158",
       "mode": "0644",
-      "size": 3597,
+      "size": 4281,
       "install": false
     },
     {
       "source": "assets/preview-github.png",
       "destination": "assets/preview-github.png",
-      "sha256": "36dafe8ca4de5586d6b6c8b7ae6eb55621e88fb4eed87aa4d3f3e129de99da2c",
+      "sha256": "7595dc80389bf75108178cb9e473069627c946a1b8a974da73309d4d67bc3578",
       "mode": "0644",
-      "size": 931924,
+      "size": 274254,
       "install": false
     },
     {
       "source": "assets/preview-minimal.png",
       "destination": "assets/preview-minimal.png",
-      "sha256": "b3a048486c95a0a3efc34f51782dae2284571f9204c4525df6e8d5acdf8a835e",
+      "sha256": "bf2a260f3c1cea44f683612abb80428b41f541fccef16a34c29a42172ae0c532",
       "mode": "0644",
-      "size": 1116439,
+      "size": 337924,
       "install": false
     },
     {
       "source": "assets/preview-settings.png",
       "destination": "assets/preview-settings.png",
-      "sha256": "f43ccb9a5c2107bb2b39e29f4c5aa9cf5163d0d23522e97ab15ebcbd0ac93df9",
+      "sha256": "0da83622d64fdb0ae0ed96929a4ff462e40f8f18b15454f7a643b88172b0875a",
       "mode": "0644",
-      "size": 704525,
+      "size": 400954,
       "install": false
     },
     {
       "source": "assets/preview-widget.png",
       "destination": "assets/preview-widget.png",
-      "sha256": "bbfa7720b9122d224f89745d5aa56c0316c20c8a7759107e92a2de3b82203375",
+      "sha256": "582b19346249c377b4acee5db11f15b64969750e68979c32d8a64e1fc5ae393b",
       "mode": "0644",
-      "size": 1051864,
+      "size": 399784,
       "install": false
     },
     {
@@ -72,25 +72,25 @@
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "cc55b9872888d30590a5bf83c38ec025ece2db36d89f311505be98a342a830cf",
+      "sha256": "51342a664936eab5769fdba2cf80edb04d9a87b2139d79908c170b69a35685a6",
       "mode": "0644",
-      "size": 61053,
+      "size": 66270,
       "install": true
     },
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "c6d40a0063d0408225cb6e12ef94e832df2f005c35b9ecb76616af399493aefc",
+      "sha256": "f890a5492092b5358ffc2e3d14d90abc2c32d58df9b05c11d32851b42cdc9cea",
       "mode": "0644",
-      "size": 9911,
+      "size": 2419,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "2101fdcf6893b10d82ed237461bebb38709421452289c192850153687285fc75",
+      "sha256": "40f2749e48281ff81e945eda88b7bc50c3eb392d12fa7304077de07c41dbe2e8",
       "mode": "0644",
-      "size": 5903,
+      "size": 9015,
       "install": true
     }
   ]
