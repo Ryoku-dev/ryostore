@@ -1048,7 +1048,7 @@
   {
    "id": "jurai-fastfetch",
    "name": "Jurai Fastfetch",
-   "version": "1.0.1",
+   "version": "1.0.2",
    "path": "fastfetch/jurai-fastfetch",
    "author": "0xSrcAura",
    "summary": "The Jurai suite visiting card",
@@ -1062,7 +1062,7 @@
    "accent": "#22D3EE",
    "surface": "#050A12",
    "manifest": "manifest.json",
-   "manifestSha256": "2d249ec71df6bb84af41836df1c880aedcd860e206fbd07d5d0998fe9e34c7e5",
+   "manifestSha256": "8323141b898039207f8903c36f09cc0676751748374b8c1d9fbc1c4635f1806c",
    "license": "GPL-3.0-or-later",
    "lastUpdated": "2026-10-25",
    "preview": "preview.webp",

@@ -2,7 +2,7 @@
     "schema": 1,
     "id": "jurai-fastfetch",
     "category": "fastfetch",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "destination": "ryoku/fastfetch/jurai-fastfetch",
     "files": [
         {
@@ -33,8 +33,8 @@
             "source": "emblem.png",
             "destination": "emblem.png",
             "mode": "0644",
-            "size": 166123,
-            "sha256": "c97711d6a5ac6be886cad7ceeb292730633f8d8466e328742d9968a2458e42b1",
+            "size": 182320,
+            "sha256": "e4c57a5b1ef5dbcfc11a5f872250bec2bc084cf4dbfa7704fc00821fcc720173",
             "install": true
         },
         {
