@@ -29,7 +29,7 @@
     {
       "id": "yatagarasu",
       "name": "Yatagarasu",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "path": "notifications/yatagarasu",
       "author": "0xSrcAura",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/notifications/yatagarasu",
@@ -50,7 +50,7 @@
         "assets/shot-unfold.webp"
       ],
       "manifest": "manifest.json",
-      "manifestSha256": "fbb03bd888e4985e9d06ffef1c441c7ad0763e41e6b16ff7595c7d5ebc81dfa3",
+      "manifestSha256": "97445d676d48cfb6593f7870a686256d21db986a2f2bdb94cdcfb3ff91fe9901",
       "license": "GPL-3.0-or-later",
       "lastUpdated": "2026-10-25",
       "official": false

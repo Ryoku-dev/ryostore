@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "yatagarasu",
   "category": "notifications",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "destination": "ryoku/notifications/yatagarasu",
   "files": [
     {
@@ -40,9 +40,9 @@
     {
       "source": "assets/preview.webp",
       "destination": "assets/preview.webp",
-      "sha256": "8ae5be737fc2d460e22c4c07f909d13b71f3594f4b440941e39ea9db1560cedf",
+      "sha256": "ec0e996538c4bd105bf9a4b571fecc00e8980e471032c2132997c4c1d9c7e199",
       "mode": "0644",
-      "size": 7756,
+      "size": 70330,
       "install": false
     },
     {
