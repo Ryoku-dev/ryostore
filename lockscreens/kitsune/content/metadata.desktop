@@ -1,0 +1,7 @@
+[SddmGreeterTheme]
+Name=Kitsune
+Description=Ase, the seven-tailed kitsune, and her seven tarot folds — the Jurai lock, at the outer door
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6

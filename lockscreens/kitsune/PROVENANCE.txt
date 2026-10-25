@@ -1,0 +1,43 @@
+KITSUNE — provenance
+
+The face is 0xSrcAura's own work, built 2026-10-21 for Jurai shell:
+Ase, the seven-tailed kitsune, and her seven tarot folds — his lock
+and login composition, first raised on his own machines, preview-
+proven the night it was built (typing binds the folds one by one;
+at seven the Cast rises; a refusal hurts her and scatters the
+cards; the true key transforms her and opens the seal).
+
+Two roots were written then, and both are preserved in this repo:
+
+  content/Main.qml   — the greeter root, seated over SDDM's own
+                       machinery (and, through Ryoku's SddmShim,
+                       over the session lock as well). Unmodified.
+  faces/lock/Main.qml — the lock-face root, driven by the shell's
+                       threshold `gate` contract. Kept as the
+                       record of the original seat; not installed.
+
+Her scene (content/gotchi/, the Insei* files and their qmldir),
+her shaders (content/shaders/, .frag sources beside the compiled
+.qsb), and her palette-and-accents singleton
+(content/tw/TransparentWorld.qml) are carried byte-for-byte from
+the Jurai shell tree (apsara/mandara/soul/). Nothing of hers was
+redrawn, renamed, or reworded for the store.
+
+The port's own hand, kept as small as the Fūin port's:
+
+  * content/tw/ArOrchestrator.qml — a resting singleton under the
+    real one's name. In the shell he is the AR stage's living
+    state; the one scene seat that reads him (InseiHub) is never
+    raised at the door, so his shape stands here at rest and the
+    scene files stay untouched.
+  * content/tw/qmldir — declares the two singletons; a greeter
+    registers singletons only when their folder stands as a module.
+  * content/theme.conf + metadata.desktop — the store/greeter
+    dress: the one config key her greeter reads
+    (AllowUppercaseLettersInUsernames=false, her original rule)
+    and her name plate.
+  * Her ground: the greeter still looks for a theme-local
+    Backgrounds/wallpaper.jpg under a manager-published still at
+    /var/lib/valence-greeter/wallpaper.jpg. Neither is bundled —
+    where neither exists she stands on the veiled dark, exactly
+    as the sealed resting state was drawn.
