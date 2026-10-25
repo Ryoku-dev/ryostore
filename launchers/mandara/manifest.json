@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "mandara",
+  "category": "launchers",
+  "version": "1.0.1",
+  "destination": "ryoku/launchers/mandara",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mode": "0644",
+      "size": 35149,
+      "install": true
+    },
+    {
+      "source": "Main.qml",
+      "destination": "Main.qml",
+      "sha256": "b26171ae68e25f66726fafae3fad86e4ebe006a20551edff9359f84dca42cca2",
+      "mode": "0644",
+      "size": 22100,
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "sha256": "2dd79131edcf88f6577c550159513ec01005f7a6071d259db052331afc71b428",
+      "mode": "0644",
+      "size": 1344,
+      "install": true
+    },
+    {
+      "source": "Preview.qml",
+      "destination": "Preview.qml",
+      "sha256": "f7356f329bea78ffd0813a52ef909015bde7d87c8e352ad0e01765d61773bc21",
+      "mode": "0644",
+      "size": 5555,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "c37f1d58c68bb7d1d4506f731b2fe098b82edc15c1602d763550a57afbf41938",
+      "mode": "0644",
+      "size": 1309,
+      "install": true
+    },
+    {
+      "source": "RuneChip.qml",
+      "destination": "RuneChip.qml",
+      "sha256": "30ada19aa4db476d8a6a78090d5cd9cbc9df9818c9d9113f8a5314415a3b8ef6",
+      "mode": "0644",
+      "size": 2196,
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "sha256": "30679be5f9af915e946df417e3365a69e8b35c31c6f26e669c10dd11b60b52fe",
+      "mode": "0644",
+      "size": 21038,
+      "install": false
+    }
+  ],
+  "license": "GPL-3.0-or-later"
+}

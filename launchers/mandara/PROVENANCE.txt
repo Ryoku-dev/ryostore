@@ -1,0 +1,27 @@
+Mandara — provenance
+
+Born in Jurai shell as the court's palace: an AI core in Python,
+a lineage of ROMs, organs and a war room around an omnibar. Ruled
+a launcher in 2026 and cut down to it — what crossed into this
+repo is the omnibar and its manners, and nothing else:
+
+  * The face: one centred dark-glass plate, the input's voice
+    ("speak or command"), the beam, quiet rows that answer with
+    a glyph, a name, and a hint of what the row is.
+  * The rune chips and the locking segments: TAB locks a lane
+    and the lock rides above the field as a crystal token in
+    the Obelisk runes' shape (RuneChip.qml, re-dressed lean —
+    the SDF crystallize shader stayed with the shell; it can
+    return when the chips learn their deeper work).
+  * Her name, lettered small at the foot.
+
+Left behind, deliberately: the Python core (routers, bridge,
+venv — the mind passes to Manteion's keeping, private), the
+ROM lineage (sibyls-rom, ase, conduit-sage, shigurui), the
+organs and the speculum, the daemon readouts. ROMs are not a
+separate world here; anything that runs is an ordinary result.
+
+Written fresh against Ryoku's launcher contract (AUTHORING.md):
+DesktopEntries for apps, AppLaunch to start them, Tokens for
+colour, type and motion — she follows the user's scheme, scale
+and reduced-motion setting. No Ryoku Team assets.
