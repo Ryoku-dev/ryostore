@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "yatagarasu-roost",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/yatagarasu-roost",
   "name": "Yatagarasu Roost",
   "author": "0xSrcAura",

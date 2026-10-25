@@ -2021,7 +2021,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "cf3bdc83321afc6188f8d51b0aca609b1570eb6c55c68b443416c265262688f6",
+      "manifestSha256": "c0cf08dd119efc30afae506e80ab261f0dd9b10981b77c2a92ec06c26bcd7864",
       "lastUpdated": "2026-10-25",
       "official": false,
       "license": "GPL-3.0-or-later",
@@ -2029,7 +2029,7 @@
         "desktopWidget"
       ],
       "icon": "",
-      "version": "1.0.0"
+      "version": "1.0.1"
     }
   ]
 }

@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "yatagarasu-roost",
   "category": "plugins",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/plugins/yatagarasu-roost",
   "files": [
     {
@@ -24,9 +24,9 @@
     {
       "source": "assets/preview-widget.png",
       "destination": "assets/preview-widget.png",
-      "sha256": "2bd669935493c4ed89a7bfab52ae7f57fd79035793fb8f453296ba623d519ed4",
+      "sha256": "803df33eb69f0cd09e4859d5163fc9424b44b9a16c6e7535d22974bb1ddfe8ad",
       "mode": "0644",
-      "size": 24473,
+      "size": 57310,
       "install": false
     },
     {
@@ -56,7 +56,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "1fc72d1ce1994f0abc5f279ba25a06d1747e9db80d5c0a53fda55b886c4a025a",
+      "sha256": "14f57fe23b3a34ac3dc0ca804e07bd169184be89c37a6d6df683a422209d3bf1",
       "mode": "0644",
       "size": 1195,
       "install": true
