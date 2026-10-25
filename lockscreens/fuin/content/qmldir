@@ -1,0 +1,15 @@
+singleton Theme 1.0 Theme.qml
+singleton Timing 1.0 Timing.qml
+singleton Metrics 1.0 Metrics.qml
+singleton Typography 1.0 Typography.qml
+singleton Config 1.0 Config.qml
+singleton Insei 1.0 Insei.qml
+Threshold 1.0 Threshold.qml
+Dial 1.0 Dial.qml
+MinuteHand 1.0 MinuteHand.qml
+Portrait 1.0 Portrait.qml
+Rim 1.0 Rim.qml
+Logotype 1.0 Logotype.qml
+Mark 1.0 Mark.qml
+WallpaperImage 1.0 WallpaperImage.qml
+SystemClock 1.0 SystemClock.qml

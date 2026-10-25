@@ -936,6 +936,30 @@
       "official": false,
       "license": "MIT",
       "lastUpdated": "2026-10-01"
+    },
+    {
+      "id": "fuin",
+      "name": "Fūin",
+      "version": "1.0.0",
+      "path": "lockscreens/fuin",
+      "author": "0xSrcAura",
+      "upstream": "https://github.com/SourceAura/fuin",
+      "summary": "Jurai's Threshold as a greeter — the veiled door, the bell, the welcome.",
+      "description": "The Jurai shell's lock face seated on SDDM: your wallpaper blurred past reading behind a drawn veil, the time in the bell's expressive face with its dial, the portrait badge, and a password field that grows from its middle and breathes prism light. A correct password is welcomed — portrait, name, and the Jurai logotype — before the session. No video, no bundled photograph: drawn QML only, light enough for a two-core machine. Bundles the Spectral and Orbitron faces it speaks in.",
+      "tags": [
+        "minimal",
+        "jurai",
+        "drawn",
+        "dark"
+      ],
+      "accent": "#B9DE6B",
+      "surface": "#12160F",
+      "preview": "assets/preview.webp",
+      "screenshots": [
+        "assets/preview.webp"
+      ],
+      "manifest": "manifest.json",
+      "manifestSha256": "e40586f9143cdfa4b580133f3623f9b94ed31361b098718bb65b740c232b4d70"
     }
   ]
 }

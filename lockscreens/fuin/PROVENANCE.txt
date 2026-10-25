@@ -1,0 +1,59 @@
+Fūin 封印 — provenance
+======================
+
+The face is Jurai's Threshold, the lock screen of the Jurai shell
+(github.com/SourceAura/jurai-shell), carried into the SDDM greeter
+contract by its author. Threshold was written against a small "gate"
+contract — the face never learns who checks the password — and already
+served three hosts in the shell (the session lock on PAM, the greetd
+greeter, and the gate apsara). This theme is its fourth host: Main.qml
+implements the gate against SDDM (sddm.login, userModel, sessionModel),
+and the face's files stand as they are in the shell.
+
+Carried verbatim but for their imports (the shell's qs.* modules resolve
+to the local singletons below): Threshold.qml, Dial.qml, MinuteHand.qml,
+Portrait.qml, Rim.qml, Logotype.qml, Mark.qml.
+
+Written for this seat:
+- Main.qml — the SDDM gate adapter, the user/session choices at the
+  foot (shown only when a real choice exists), and the welcome kept
+  faithful (the session handover is SDDM's, and the greeter may exit
+  while the welcome is still on screen — as with every welcoming theme).
+- Theme.qml / Timing.qml / Metrics.qml / Typography.qml — the shell's
+  token singletons with their derivations intact and their sources
+  fixed: the palette is Jurai's shipped default ("Jurai": background
+  #12160F, text #EAF1E6, primary #B9DE6B, secondary #3FBFA0; the alert
+  state colour #FF6B5D), timings at speed 1.0, fonts by role.
+- Config.qml — the bridge from Jurai's dotted keys to theme.conf.
+- SystemClock.qml — a Timer-driven namesake for Quickshell's clock, so
+  Threshold's bindings stand unchanged.
+- Insei.qml — an empty seat, on purpose: the shell shows Insei's
+  medallion only while she is present, and a greeter has no Insei to
+  witness. The medallion code stands verbatim, hidden by her own
+  absence rule.
+- WallpaperImage.qml — the shell's component minus its span machinery
+  (which reads Quickshell's screen list): a greeter shows one screen
+  its own picture whole; fill and fit are unchanged.
+
+One repair against upstream: Metrics gains `cellHeight` (30, the row
+unit). Threshold's portrait badge has always sized itself by it; the
+shell's Metrics never defined it, and the badge's glass silently
+collapsed. Here it stands at its intended width.
+
+No photograph is bundled. Jurai's own lock falls back to a forest
+photograph inside the shell; a greeter theme shipping a stranger's
+wallpaper would be the wrong default, so Fūin's resting state is the
+drawn, veiled dark — and theme.conf's `background` seats any picture
+of the machine's own.
+
+Fonts (content/fonts): Spectral and Orbitron, SIL Open Font License
+1.1 (see content/fonts/OFL.txt), from the Google Fonts library.
+The mark in Logotype/Mark is Jurai's Tree-Thunder （樹雷）, drawn in QML.
+
+Two seating notes from the port. The theme ships a qmldir declaring
+its singletons and components: SDDM's greeter resolves sibling types
+from the folder but registers `pragma Singleton` files only when the
+folder stands as a module — without it the face loads and paints
+nothing. And Threshold declares its gate `required`, so Main.qml's
+Loader carries the gate as a property and the component binds to it
+at creation; a gate assigned after creation never lands.

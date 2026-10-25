@@ -1,0 +1,7 @@
+[SddmGreeterTheme]
+Name=Fūin
+Description=Jurai's Threshold as a greeter — the veiled door, the bell, the welcome
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6

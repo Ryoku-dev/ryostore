@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "id": "fuin",
+  "category": "lockscreens",
+  "version": "1.0.0",
+  "destination": "qylock/themes/fuin",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 3254,
+      "sha256": "bb781c147af61330b445b5c74a2b257f13253f9e47bcb31973ce7ef93622a8f6",
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 9034,
+      "sha256": "376315791dd306e90548d1f5a1c9d7c1a380c066c23ee025f9efbdb66445ba0c",
+      "install": false
+    },
+    {
+      "source": "content/Config.qml",
+      "destination": "Config.qml",
+      "mode": "0644",
+      "size": 1091,
+      "sha256": "d981cbf99261ac20cb271f2347476249158bf4e0bbcd06db44044dcc63e4a9d5",
+      "install": true
+    },
+    {
+      "source": "content/Dial.qml",
+      "destination": "Dial.qml",
+      "mode": "0644",
+      "size": 8751,
+      "sha256": "f8e97d2fe2963dce7d700bbbe8ee4be03c954e7596e76b5bb5a4b764d4bef650",
+      "install": true
+    },
+    {
+      "source": "content/Insei.qml",
+      "destination": "Insei.qml",
+      "mode": "0644",
+      "size": 525,
+      "sha256": "b0423f0903978b24b181f2acf2c54d8630c64f33d1c1d5e6263daa462cf0bfab",
+      "install": true
+    },
+    {
+      "source": "content/Logotype.qml",
+      "destination": "Logotype.qml",
+      "mode": "0644",
+      "size": 2752,
+      "sha256": "240d70500d8931951d55af26a3a4a22e3e7ffb58daf1103116fab612abd06527",
+      "install": true
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 9697,
+      "sha256": "b0c7bf87e4892b3a88f66e96640facc2211164615c6367a01d2148ca435a27f3",
+      "install": true
+    },
+    {
+      "source": "content/Mark.qml",
+      "destination": "Mark.qml",
+      "mode": "0644",
+      "size": 3455,
+      "sha256": "922df2435a4e684746399f4925148f718ddaa5faff570c77add5f8fa0c0bd295",
+      "install": true
+    },
+    {
+      "source": "content/Metrics.qml",
+      "destination": "Metrics.qml",
+      "mode": "0644",
+      "size": 3718,
+      "sha256": "91edd12e86884aaae05a12db4600d243478173d20565cb42f582d2a9b6a29250",
+      "install": true
+    },
+    {
+      "source": "content/MinuteHand.qml",
+      "destination": "MinuteHand.qml",
+      "mode": "0644",
+      "size": 1223,
+      "sha256": "68adb9e8668c7526a1fff0473b1c9440f99c42a152d43d36ddd62080b1903c11",
+      "install": true
+    },
+    {
+      "source": "content/Portrait.qml",
+      "destination": "Portrait.qml",
+      "mode": "0644",
+      "size": 3529,
+      "sha256": "6798d0ec32f1ed573580e8eb404ee2ee2925b03ab9f31400998cfd37971b0c68",
+      "install": true
+    },
+    {
+      "source": "content/Rim.qml",
+      "destination": "Rim.qml",
+      "mode": "0644",
+      "size": 5102,
+      "sha256": "61fee3e59e83ea27a6d35dfe5642da05357221ed0e508e8cccebb5615446cfe4",
+      "install": true
+    },
+    {
+      "source": "content/SystemClock.qml",
+      "destination": "SystemClock.qml",
+      "mode": "0644",
+      "size": 912,
+      "sha256": "e07ec2ca943192d8b953e16c2bbad7916bea9603e67fff47d33a9d6cfeb6af5d",
+      "install": true
+    },
+    {
+      "source": "content/Theme.qml",
+      "destination": "Theme.qml",
+      "mode": "0644",
+      "size": 3566,
+      "sha256": "d520aa1b9148a9e00669976def17823cf351e737e461e78d58c06acc369c0952",
+      "install": true
+    },
+    {
+      "source": "content/Threshold.qml",
+      "destination": "Threshold.qml",
+      "mode": "0644",
+      "size": 25014,
+      "sha256": "c58347df6b1ba60ba7066c73a142909299592ecc2b3f1e03d1f7f28b635a2da1",
+      "install": true
+    },
+    {
+      "source": "content/Timing.qml",
+      "destination": "Timing.qml",
+      "mode": "0644",
+      "size": 1720,
+      "sha256": "8b17de5a4d464453cf867c26c4d3eed58f2fac8a9b977f4559ab3df575022726",
+      "install": true
+    },
+    {
+      "source": "content/Typography.qml",
+      "destination": "Typography.qml",
+      "mode": "0644",
+      "size": 1648,
+      "sha256": "d476ffe779cdf5ed06e649c64de4f873163a44e646b31300c6809f97b0155ad1",
+      "install": true
+    },
+    {
+      "source": "content/WallpaperImage.qml",
+      "destination": "WallpaperImage.qml",
+      "mode": "0644",
+      "size": 2025,
+      "sha256": "d8a2e7e32504bcdd471863f2318e93f116ba05e7b51f5395763d784f211fe2da",
+      "install": true
+    },
+    {
+      "source": "content/fonts/OFL.txt",
+      "destination": "fonts/OFL.txt",
+      "mode": "0644",
+      "size": 4392,
+      "sha256": "501d6ceca8e552630fe3aa9442b9a818565680a1a2f79f3fb8c13d6f309a9e98",
+      "install": true
+    },
+    {
+      "source": "content/fonts/Orbitron.ttf",
+      "destination": "fonts/Orbitron.ttf",
+      "mode": "0644",
+      "size": 38576,
+      "sha256": "f42db2dd16e642258e35782916eceb1dcdbea06fb958d77ad71dc5963587e8fd",
+      "install": true
+    },
+    {
+      "source": "content/fonts/Spectral-Medium.ttf",
+      "destination": "fonts/Spectral-Medium.ttf",
+      "mode": "0644",
+      "size": 272920,
+      "sha256": "f385bc588599c879112272711d4acecc126674009d747a27284f59e93a240e83",
+      "install": true
+    },
+    {
+      "source": "content/fonts/Spectral-Regular.ttf",
+      "destination": "fonts/Spectral-Regular.ttf",
+      "mode": "0644",
+      "size": 261088,
+      "sha256": "c89021dc20720c8d0dcf40b0b2f6e00c13665fa8041717f581396f51b8c78f5d",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 186,
+      "sha256": "82fd56cf0fcd099ce173cdd3add9fe35cd5d86bde969e44bd5a42b24a98e1ccb",
+      "install": true
+    },
+    {
+      "source": "content/qmldir",
+      "destination": "qmldir",
+      "mode": "0644",
+      "size": 430,
+      "sha256": "504390c52aba7c2f9adb71964af0728d3413eeb0e5721a7d6df8cf146c4802bb",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 1233,
+      "sha256": "a591bbe943534f01cf367fa98f07e1cfdf74ce93304e821ebf91b320b37ebb1a",
+      "install": true
+    }
+  ]
+}
