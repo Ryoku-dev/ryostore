@@ -1044,6 +1044,30 @@
       "lastUpdated": "2026-10-20",
       "official": false,
       "license": "GPL-3.0-only"
+    },
+    {
+      "id": "jurai-fastfetch",
+      "name": "Jurai Fastfetch",
+      "version": "1.0.0",
+      "path": "fastfetch/jurai-fastfetch",
+      "author": "0xSrcAura",
+      "summary": "The Jurai suite visiting card",
+      "description": "A prism-keyed system readout in the Jurai house grammar: cyan-to-violet rules, the Kasugai priority triad on the percents, vitals / system / session sections, and the faceted prism-tree emblem, its seal 樹 pressed at the corner.",
+      "tags": [
+        "jurai",
+        "prism",
+        "suite",
+        "mono"
+      ],
+      "accent": "#22D3EE",
+      "surface": "#050A12",
+      "manifest": "manifest.json",
+      "manifestSha256": "f3739ba21b9b05c9146a0e1a08e465bc926113317edc879161cc68f3a7f135c4",
+      "license": "GPL-3.0-or-later",
+      "lastUpdated": "2026-10-25",
+      "preview": "preview.webp",
+      "screenshots": [],
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/fastfetch/jurai-fastfetch"
     }
   ]
 }

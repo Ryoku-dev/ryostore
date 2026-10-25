@@ -1,0 +1,109 @@
+// Jurai — the suite's visiting card.
+// ryoku:recolor keys=primary title=foreground output=onSurface separator=tertiary
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "kitty-direct",
+    "source": "~/.local/share/ryoku/fastfetch/jurai-fastfetch/emblem.png",
+    "width": 26,
+    "height": 12,
+    "padding": { "left": 2, "right": 4, "top": 2 }
+  },
+  "display": {
+    "color": {
+      "keys": "#22d3ee",
+      "separator": "#a78bfa",
+      "title": "#f2f0fa"
+    },
+    "key": {
+      "width": 9
+    },
+    "percent": {
+      "color": {
+        "green": "#10d9a3",
+        "red": "#f43f5e",
+        "yellow": "#f5b300"
+      },
+      "type": 9
+    },
+    "separator": "  "
+  },
+  "modules": [
+    "break",
+    {
+      "type": "title",
+      "format": "{#1;title}{user-name}{#}{#separator} @ {#}{#1;title}{host-name}{#}"
+    },
+    {
+      "format": "\u001b[38;2;34;211;238m■\u001b[0m \u001b[38;2;167;139;250m■\u001b[0m {#separator}JURAI · 樹 · modular apps & applets for Ryoku{#}",
+      "type": "custom"
+    },
+    "break",
+    {
+      "format": "\u001b[38;2;34;211;238m──\u001b[0m \u001b[1;38;2;242;240;250m{#keys}──{#} {#1;title}VITALS{#} {#38;2;88;80;140}──────────────────────────{#}\u001b[0m \u001b[38;2;88;80;140m────\u001b[0m",
+      "type": "custom"
+    },
+    {
+      "key": "CPU",
+      "type": "cpu"
+    },
+    {
+      "detectionMethod": "pci",
+      "key": "GPU",
+      "type": "gpu"
+    },
+    {
+      "key": "MEMORY",
+      "type": "memory"
+    },
+    {
+      "key": "DISK",
+      "type": "disk"
+    },
+    "break",
+    {
+      "format": "\u001b[38;2;34;211;238m──\u001b[0m \u001b[1;38;2;242;240;250m{#keys}──{#} {#1;title}SYSTEM{#} {#38;2;88;80;140}──────────────────────────{#}\u001b[0m \u001b[38;2;88;80;140m────\u001b[0m",
+      "type": "custom"
+    },
+    {
+      "key": "OS",
+      "type": "os"
+    },
+    {
+      "key": "KERNEL",
+      "type": "kernel"
+    },
+    {
+      "key": "WM",
+      "type": "wm"
+    },
+    {
+      "key": "SHELL",
+      "type": "shell"
+    },
+    {
+      "key": "PKGS",
+      "type": "packages"
+    },
+    "break",
+    {
+      "format": "\u001b[38;2;34;211;238m──\u001b[0m \u001b[1;38;2;242;240;250m{#keys}──{#} {#1;title}SESSION{#} {#38;2;88;80;140}─────────────────────────{#}\u001b[0m \u001b[38;2;88;80;140m────\u001b[0m",
+      "type": "custom"
+    },
+    {
+      "key": "UPTIME",
+      "type": "uptime"
+    },
+    {
+      "key": "TERM",
+      "type": "terminal"
+    },
+    "break",
+    {
+      "type": "colors",
+      "symbol": "circle",
+      "paddingLeft": 2
+    },
+    "break"
+  ]
+}

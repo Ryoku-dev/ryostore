@@ -1,0 +1,49 @@
+{
+ "schema": 1,
+ "id": "jurai-fastfetch",
+ "category": "fastfetch",
+ "version": "1.0.0",
+ "destination": "ryoku/fastfetch/jurai-fastfetch",
+ "files": [
+  {
+   "source": "LICENSE",
+   "destination": "LICENSE",
+   "mode": "0644",
+   "size": 35149,
+   "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+   "install": true
+  },
+  {
+   "source": "PROVENANCE.txt",
+   "destination": "PROVENANCE.txt",
+   "mode": "0644",
+   "size": 446,
+   "sha256": "926dcf5e36ad42e5d7d658cfef804dd99fbb2f947d5fa67c15bb9e218cd77b09",
+   "install": true
+  },
+  {
+   "source": "config.jsonc",
+   "destination": "config.jsonc",
+   "mode": "0644",
+   "size": 2817,
+   "sha256": "cc94b94a1addbefef23ec6b5d389008af6f54ffd80aa830f9e219902d3dda9aa",
+   "install": true
+  },
+  {
+   "source": "emblem.png",
+   "destination": "emblem.png",
+   "mode": "0644",
+   "size": 147938,
+   "sha256": "108d3476333c1ea38a2bf898e3ee867e914949e282dd67b8d65d805fbd5f2f2f",
+   "install": true
+  },
+  {
+   "source": "preview.webp",
+   "destination": "preview.webp",
+   "mode": "0644",
+   "size": 77186,
+   "sha256": "44ca330ac6fee38e65c6ed26a17c242578c56560b9c0410eb1771e2c226a5fcb",
+   "install": false
+  }
+ ]
+}
