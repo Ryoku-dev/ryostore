@@ -1721,7 +1721,7 @@
     {
       "id": "yatagarasu",
       "name": "Yatagarasu — the Kasugai Kit",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "bundles/yatagarasu",
       "author": "0xSrcAura",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/yatagarasu",
@@ -1740,7 +1740,7 @@
         "assets/preview.png"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "f851f83b362fc3d359b7bae83e9a01d3cbac2e6358f99a3da1b20293e8b9b590",
+      "manifestSha256": "fd3c2cf8e2c721be63845818c277b77aede1a8838774555d94d2e56699ef9d0b",
       "components": [
         {
           "type": "plugin",
