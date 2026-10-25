@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "id": "yatagarasu-roost",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/yatagarasu-roost",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mode": "0644",
+      "size": 35149,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "f18118ab4257ed7002dd82a1a086d8a8f0ebd5d48550aea25a91f6b5248003c4",
+      "mode": "0644",
+      "size": 797,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "2bd669935493c4ed89a7bfab52ae7f57fd79035793fb8f453296ba623d519ed4",
+      "mode": "0644",
+      "size": 24473,
+      "install": false
+    },
+    {
+      "source": "bin/monitor.py",
+      "destination": "bin/monitor.py",
+      "sha256": "c0dcbffbae95a4e8b6c124988f56668ef923b0590e240cf1391012139795a9e2",
+      "mode": "0755",
+      "size": 3644,
+      "install": true
+    },
+    {
+      "source": "content/KasugaiCrow.qml",
+      "destination": "content/KasugaiCrow.qml",
+      "sha256": "d597c572599572affc8d20e7447db3be8c97c175cecd32f3680967bf4121259d",
+      "mode": "0644",
+      "size": 5638,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "f211a9e5bbcdc2dbe4ed0e9f3de408443078027afe743d27f457515a4d855a98",
+      "mode": "0644",
+      "size": 2123,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "1fc72d1ce1994f0abc5f279ba25a06d1747e9db80d5c0a53fda55b886c4a025a",
+      "mode": "0644",
+      "size": 1195,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "06e34f2dcec9d62ebcd493f135bab2c90edb928e7114fe4b72a7455b5223e0e9",
+      "mode": "0644",
+      "size": 1205,
+      "install": true
+    }
+  ],
+  "license": "GPL-3.0-or-later"
+}
