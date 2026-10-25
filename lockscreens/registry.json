@@ -1,941 +1,965 @@
 {
-  "schema": 1,
-  "lockscreens": [
-    {
-      "id": "clockwork-tape",
-      "name": "Tape",
-      "version": "1.0.1",
-      "path": "lockscreens/clockwork-tape",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "Clockwork mechanics drift across warm magnetic tape.",
-      "description": "A complete qylock scene with a tactile clock face, deep shadow, and an amber tape-era palette.",
-      "tags": [
-        "clockwork",
-        "retro",
-        "warm"
-      ],
-      "accent": "#d7a45f",
-      "surface": "#101010",
-      "preview": "assets/preview.webp",
-      "screenshots": [],
-      "manifest": "manifest.json",
-      "manifestSha256": "11a60cd3d278410f5190ccb0f2c32aea4c8a25e52a0b734b87f4434dd0bcdec8"
-    },
-    {
-      "id": "dog-samurai",
-      "name": "Dog Samurai",
-      "version": "1.0.1",
-      "path": "lockscreens/dog-samurai",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A painterly samurai hound under drifting red petals.",
-      "description": "A cinematic video lock: a straw-hatted samurai dog with a sheathed katana as crimson petals fall, paired with a bold clock and a minimal login.",
-      "tags": [
-        "samurai",
-        "painterly",
-        "cinematic"
-      ],
-      "accent": "#945a46",
-      "surface": "#141612",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "ba957bc1ae884d5df67ab39ba9ab21850af5bfc9faec50014c06a4aefe571470"
-    },
-    {
-      "id": "enfield",
-      "name": "Enfield",
-      "version": "1.0.1",
-      "path": "lockscreens/enfield",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "Golden hour spilling through a plant-framed window.",
-      "description": "A warm, atmospheric lock: late sun pours past ivy and a weathered window frame, with a quiet login.",
-      "tags": [
-        "cozy",
-        "warm",
-        "scenic"
-      ],
-      "accent": "#111418",
-      "surface": "#111418",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "42d2cd29b6cdd2d356ff2c25217be87268b68958a260a7e3d5a670fc717d1287"
-    },
-    {
-      "id": "field",
-      "name": "Field",
-      "version": "1.0.1",
-      "path": "lockscreens/field",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "An open pasture under soft light with a feather-light clock.",
-      "description": "A serene qylock scene: a wide field, a thin Orbitron clock, and a quiet amber login tucked into the corner.",
-      "tags": [
-        "scenic",
-        "minimal",
-        "calm"
-      ],
-      "accent": "#3c6678",
-      "surface": "#19180f",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "05b8731d4e438f9ba1246ecada52d87f01bb3efca5ff24063db2bba91a1e1bad"
-    },
-    {
-      "id": "forest",
-      "name": "Forest",
-      "version": "1.0.1",
-      "path": "lockscreens/forest",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "Sunbeams pouring through a misty autumn canopy.",
-      "description": "A tranquil video lock: light rays drift over an aerial autumn forest wrapped in fog, with a soft clock and an unobtrusive login.",
-      "tags": [
-        "scenic",
-        "nature",
-        "calm"
-      ],
-      "accent": "#051612",
-      "surface": "#051612",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "d57a82bfb8b3b27df93e93e9ae0b90bcffebb1eebb5be83705dbe7a14ddc8b03"
-    },
-    {
-      "id": "genshin",
-      "name": "Genshin Impact",
-      "version": "1.0.0",
-      "path": "lockscreens/genshin",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A moonlit abyss of drifting pillars in deep blue.",
-      "description": "A Genshin Impact inspired lock: towering ruins beneath a pale moon, slow-drifting clouds, and a clean login on the descending path.",
-      "tags": [
-        "game",
-        "anime",
-        "night"
-      ],
-      "accent": "#192e6d",
-      "surface": "#07101f",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "370fd6d19c8b0b8c111c5fb77b3e1f7533644a3272c9415d176438b004c41caf"
-    },
-    {
-      "id": "girl-coffee",
-      "name": "Coffee Break",
-      "version": "1.0.1",
-      "path": "lockscreens/girl-coffee",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A cosy hand-drawn morning with a warm mug in hand.",
-      "description": "A lo-fi illustrated character taking a coffee break, paired with the rounded Itim typeface and a soft, unobtrusive login.",
-      "tags": [
-        "anime",
-        "cozy",
-        "illustrated"
-      ],
-      "accent": "#8eb9b6",
-      "surface": "#695b76",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "f55205b272b11cccf29bc9840f18bfdd81268d72ea1bcfca6d78e2ed6b925660"
-    },
-    {
-      "id": "girl-pillow",
-      "name": "Lazy Sunday",
-      "version": "1.0.1",
-      "path": "lockscreens/girl-pillow",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A soft illustrated scene, curled up and half awake.",
-      "description": "A relaxed lo-fi illustration with the rounded Itim font and a gentle right-aligned login - quiet, warm, and unhurried.",
-      "tags": [
-        "anime",
-        "cozy",
-        "illustrated"
-      ],
-      "accent": "#737588",
-      "surface": "#625f6c",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "1b0a2f1f99ad1bf0f0a0135b2e5363212017f27543ba30a3cbce83956abfc402"
-    },
-    {
-      "id": "last-of-us",
-      "name": "The Last of Us",
-      "version": "1.0.1",
-      "path": "lockscreens/last-of-us",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A lone blossom tree adrift in cold grey mist.",
-      "description": "A The Last of Us inspired lock: a solitary cherry tree on a rocky outcrop among fog-veiled cliffs, with a spare, moody login.",
-      "tags": [
-        "game",
-        "scenic",
-        "moody"
-      ],
-      "accent": "#88683b",
-      "surface": "#131210",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "cb8e5fd420c113f5407144f3d2304b5541978105da25fd05ae91c484651ad242"
-    },
-    {
-      "id": "man-bicycle",
-      "name": "Evening Ride",
-      "version": "1.0.1",
-      "path": "lockscreens/man-bicycle",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A lone cyclist against a wide illustrated sky.",
-      "description": "A cinematic lo-fi ride with the Itim typeface and a minimal login tucked into the frame.",
-      "tags": [
-        "scenic",
-        "illustrated",
-        "calm"
-      ],
-      "accent": "#2e8692",
-      "surface": "#395551",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "08fe1c4fc9c646904ea57778974025266f3b7d5eccd5e723953956b727549ed8"
-    },
-    {
-      "id": "material-you",
-      "name": "Material You",
-      "version": "1.0.1",
-      "path": "lockscreens/material-you",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "Google's Material You language, clean and adaptive.",
-      "description": "A crisp Material You lock with the Google Sans typeface, rounded surfaces, and a tidy centred login.",
-      "tags": [
-        "material",
-        "clean",
-        "modern"
-      ],
-      "accent": "#1a3c32",
-      "surface": "#1a3c32",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "c0356b4a2419a42a9f7752551ed97991aca578576486598ba798dc219d0c09fc"
-    },
-    {
-      "id": "material-you-dark",
-      "name": "Material You Dark",
-      "version": "1.0.1",
-      "path": "lockscreens/material-you-dark",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "The Material You language in a deep, quiet dark palette.",
-      "description": "The dark sibling of the Material You lock: the Google Sans typeface and rounded surfaces over a low-light palette, with a tidy centred login.",
-      "tags": [
-        "material",
-        "dark",
-        "clean"
-      ],
-      "accent": "#291f48",
-      "surface": "#141316",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "d881d8b36b6c7a2236a61d4eec4f5928fa1771bba623e3500c119525b017f710"
-    },
-    {
-      "id": "minecraft",
-      "name": "Minecraft Menu",
-      "version": "1.0.1",
-      "path": "lockscreens/minecraft",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "The blocky main-menu look, splash text and all.",
-      "description": "A nostalgic Minecraft title-screen lock: stone-button widgets, a random yellow splash line, and the classic logo.",
-      "tags": [
-        "game",
-        "retro",
-        "playful"
-      ],
-      "accent": "#251b12",
-      "surface": "#0f0b08",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "7e2e756ca2b48688892e93b41b9e51678a0013e0d55caff909a9eff5e6993472"
-    },
-    {
-      "id": "nier-automata",
-      "name": "NieR: Automata",
-      "version": "1.0.1",
-      "path": "lockscreens/nier-automata",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "The stark beige-and-black UI of YoRHa.",
-      "description": "A faithful NieR: Automata lock with bordered YoRHa buttons, the signature muted palette, and a precise login.",
-      "tags": [
-        "game",
-        "minimal",
-        "monochrome"
-      ],
-      "accent": "#1a1713",
-      "surface": "#1a1713",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "08045d52f8dad638f1e6fe16264d0b7d6777345bab42b03086e88450d9dfb56e"
-    },
-    {
-      "id": "ninja-gaiden",
-      "name": "Ninja Gaiden",
-      "version": "1.0.1",
-      "path": "lockscreens/ninja-gaiden",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "High-contrast action styling with the Tektur face.",
-      "description": "A sharp Ninja Gaiden lock: bold Tektur type, a dark cinematic background, and a decisive login.",
-      "tags": [
-        "game",
-        "bold",
-        "dark"
-      ],
-      "accent": "#040201",
-      "surface": "#020101",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "ffd96cc2705ca8f549d6ab5a39a9b0e688f5e7ce431babd3cbe3a2b17177c7e7"
-    },
-    {
-      "id": "nothing",
-      "name": "Nothing OS",
-      "version": "1.0.1",
-      "path": "lockscreens/nothing",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "Dot-matrix minimalism in red and black.",
-      "description": "A Nothing-inspired lock: NDot dot-matrix numerals, twin rounded widgets, and a bright, airy backdrop.",
-      "tags": [
-        "minimal",
-        "monochrome",
-        "modern"
-      ],
-      "accent": "#b71c23",
-      "surface": "#0e0e0e",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "c59741f9666945fa068283813b76705b21280d2f5d74c302f79731653fcfb7c0"
-    },
-    {
-      "id": "osu",
-      "name": "osu!",
-      "version": "1.0.0",
-      "path": "lockscreens/osu",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "The osu! rhythm game, tap-circles and all.",
-      "description": "An osu! inspired lock with difficulty menus, neon tap-circles, and a playful, score-driven login.",
-      "tags": [
-        "game",
-        "rhythm",
-        "playful"
-      ],
-      "accent": "#84fa04",
-      "surface": "#060504",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "02d6a89c8240e86c0f7966fc08e125e98d52201db7e015374271054ce017bbc6"
-    },
-    {
-      "id": "osumania",
-      "name": "osu!mania",
-      "version": "1.0.1",
-      "path": "lockscreens/osumania",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A four-key note highway glowing in neon green.",
-      "description": "An osu!mania inspired lock: vertical scrolling notes, key-binding widgets, and PERFECT combos over a dark stage.",
-      "tags": [
-        "game",
-        "rhythm",
-        "neon"
-      ],
-      "accent": "#050902",
-      "surface": "#050902",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "58e08d256426ff0722cf5f3a565c3e6ab5544accf46c11635b1e50b599312807"
-    },
-    {
-      "id": "pixel-coffee",
-      "name": "Pixel Coffee",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-coffee",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A warm pixel cafe glowing after dark.",
-      "description": "A cosy pixel-art lock: amber lamps over a late-night cafe, city lights through the window, and a tidy login.",
-      "tags": [
-        "pixel",
-        "cozy",
-        "night"
-      ],
-      "accent": "#090811",
-      "surface": "#090811",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "10ac931fe1f74386399c80f94048b835974372fadc81194f97aed3919caef16a"
-    },
-    {
-      "id": "pixel-cyberpunk",
-      "name": "Pixel Cyberpunk",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-cyberpunk",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A neon pixel-art cityscape humming with rain and signage.",
-      "description": "An animated pixel-art cyberpunk street, all neon reflections and drizzle, with a crisp login.",
-      "tags": [
-        "pixel",
-        "cyberpunk",
-        "neon"
-      ],
-      "accent": "#070e18",
-      "surface": "#070e18",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "eff36e820cb59fa9c40bb55b77760c66c5c8c688f0ec652997405510e1760c42"
-    },
-    {
-      "id": "pixel-dusk-city",
-      "name": "Pixel Dusk City",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-dusk-city",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A red-lit pixel skyline smouldering at dusk.",
-      "description": "A pixel-art lock: a silhouetted city under a burning dusk sky, framed by dark leaves and tangled wires, with a minimal login.",
-      "tags": [
-        "pixel",
-        "city",
-        "dusk"
-      ],
-      "accent": "#894a45",
-      "surface": "#0c0e0f",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "cc9aec4398157c0f6dcce6f4daa97e8affe424167c8072505794cde7e92e8f8e"
-    },
-    {
-      "id": "pixel-emerald",
-      "name": "Pixel Emerald",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-emerald",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A seaside cycling route in bright pixel green.",
-      "description": "A Pokemon inspired pixel lock: a cyclist on a fenced coastal path amid lush fields and creatures, with a cheerful login.",
-      "tags": [
-        "pixel",
-        "game",
-        "nostalgic"
-      ],
-      "accent": "#78a13c",
-      "surface": "#3b5649",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "b3c2d5c919994db4d111aa05e76ea715f65f081ba3f7390ad9ac634af2d978c6"
-    },
-    {
-      "id": "pixel-hollowknight",
-      "name": "Pixel Hollow Knight",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-hollowknight",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A horned knight silhouetted against embered dark.",
-      "description": "A Hollow Knight inspired pixel lock: a pale-horned figure above drifting orange embers in the deep, with a stark login.",
-      "tags": [
-        "game",
-        "pixel",
-        "dark"
-      ],
-      "accent": "#070604",
-      "surface": "#070604",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "c6efbe7d6137eba34d0ee9e0ae53829ee7d6200088add32ea5d2bcac9b827af6"
-    },
-    {
-      "id": "pixel-munchlax",
-      "name": "Pixel Munchlax",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-munchlax",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A little companion on a grassy hill under summer clouds.",
-      "description": "A bright pixel-art lock: a small creature resting on green grass beneath towering white clouds, with a clean login.",
-      "tags": [
-        "pixel",
-        "cute",
-        "calm"
-      ],
-      "accent": "#5cacf0",
-      "surface": "#0e1213",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "805c22b85dd622b8d040e820274d75bdb4b3bdd892813f5663f4e7736ec201fc"
-    },
-    {
-      "id": "pixel-night-city",
-      "name": "Pixel Night City",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-night-city",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A glittering pixel skyline humming after dark.",
-      "description": "A pixel-art lock: dense neon-lit towers over shadowed rooftops, cool and electric, with a crisp login.",
-      "tags": [
-        "pixel",
-        "city",
-        "night"
-      ],
-      "accent": "#0e0e19",
-      "surface": "#0e0e19",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "fb0c0c9fcf0e541ca7bdc8f3231fe041113cbcf0b853ff563f7b4d8cccda728a"
-    },
-    {
-      "id": "pixel-rainyroom",
-      "name": "Pixel Rainy Room",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-rainyroom",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A rainy night at the desk, monitor aglow.",
-      "description": "A lo-fi pixel lock: rain on the window and a blue monitor glow across a dim bedroom, with a quiet login.",
-      "tags": [
-        "pixel",
-        "cozy",
-        "rain"
-      ],
-      "accent": "#02050c",
-      "surface": "#02050c",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "796f5b8abf82a53166cac4f89162d356938ceea20b64b5db3aaf6dd32fcab268"
-    },
-    {
-      "id": "pixel-sakura",
-      "name": "Pixel Sakura",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-sakura",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A pixel-art courtyard under drifting cherry blossom.",
-      "description": "An animated pixel-art scene of falling sakura petals, warm and unhurried, with a tidy login.",
-      "tags": [
-        "pixel",
-        "anime",
-        "calm"
-      ],
-      "accent": "#2e3949",
-      "surface": "#2e3949",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "efcb1260e4e98ef97fddd97024de504e66da6c27401932476276afc1da36e1c7"
-    },
-    {
-      "id": "pixel-skyscrapers",
-      "name": "Pixel Skyscrapers",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-skyscrapers",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A pastel dawn washing over a layered skyline.",
-      "description": "A pixel-art lock: peach-and-mauve skies and a soft sun behind stacked skyscrapers, with a calm login.",
-      "tags": [
-        "pixel",
-        "city",
-        "pastel"
-      ],
-      "accent": "#020e11",
-      "surface": "#020e11",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "4e0b5bc1eafb4c62ff0bcc002d8271ad2248d819a308c3a5815652b759bf3985"
-    },
-    {
-      "id": "pixel-waterfall",
-      "name": "Pixel Waterfall",
-      "version": "1.0.1",
-      "path": "lockscreens/pixel-waterfall",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A tranquil pixel-art waterfall in a mossy glen.",
-      "description": "An animated pixel-art waterfall scene, cool and green, with a calm minimal login.",
-      "tags": [
-        "pixel",
-        "nature",
-        "calm"
-      ],
-      "accent": "#106e97",
-      "surface": "#040e15",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "56892aed6ec940d42f650fa922cf03e791b1dde6a329c898373dbc1e0022d72f"
-    },
-    {
-      "id": "r1999-1",
-      "name": "Reverse: 1999",
-      "version": "1.0.1",
-      "path": "lockscreens/r1999-1",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A pensive period portrait bathed in soft sepia light.",
-      "description": "A Reverse: 1999 inspired lock centred on a wistful character portrait in warm vintage tones, with an understated login.",
-      "tags": [
-        "game",
-        "anime",
-        "vintage"
-      ],
-      "accent": "#422a1f",
-      "surface": "#121011",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "4475b01a6aff68d111a37facbff83e78410c36fcb666b37712f46ba5df916620"
-    },
-    {
-      "id": "r1999-2",
-      "name": "Reverse: 1999",
-      "version": "1.0.1",
-      "path": "lockscreens/r1999-2",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "Vintage flourish with an animated period backdrop.",
-      "description": "A Reverse: 1999 inspired lock with an animated vintage backdrop, a period logo, and an elegant login.",
-      "tags": [
-        "game",
-        "anime",
-        "vintage"
-      ],
-      "accent": "#88725b",
-      "surface": "#101011",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "c14cf827cae63e5a7d6aa6ad69bcdadefe14ddd3b63ceba0e2e0a36e0c59b7a8"
-    },
-    {
-      "id": "star-rail",
-      "name": "Star Rail",
-      "version": "1.0.0",
-      "path": "lockscreens/star-rail",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "An astral, animated backdrop for the trailblazers.",
-      "description": "A Honkai: Star Rail inspired lock with an animated cosmic backdrop and a clean, modern login.",
-      "tags": [
-        "game",
-        "anime",
-        "space"
-      ],
-      "accent": "#060b15",
-      "surface": "#060b15",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "b11248876dbbfca5cf598955185340430f50b8d49bf904420233d2d752cd1311"
-    },
-    {
-      "id": "sword",
-      "name": "Sword",
-      "version": "1.0.1",
-      "path": "lockscreens/sword",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A lone blade planted in a misty grove.",
-      "description": "A moody, near-monochrome lock: a katana standing point-down among blurred dark trees, with a spare login.",
-      "tags": [
-        "dark",
-        "minimal",
-        "cinematic"
-      ],
-      "accent": "#08090f",
-      "surface": "#08090f",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "2df8248c4f52e49ed6e1ee4b4084771963d0777f03ee364d5acf65c56239eae5"
-    },
-    {
-      "id": "terraria",
-      "name": "Terraria",
-      "version": "1.0.0",
-      "path": "lockscreens/terraria",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "The Terraria main menu, pixel logo and all.",
-      "description": "A Terraria title-screen lock with the pixel logo, a tree-lined horizon, and wood-panel buttons.",
-      "tags": [
-        "game",
-        "pixel",
-        "retro"
-      ],
-      "accent": "#4e66c5",
-      "surface": "#1a2530",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "6105ce4c65eb446a0206d9ba3f9c9d08fe0b63276be120b44879800ba14b9237"
-    },
-    {
-      "id": "windows-7",
-      "name": "Windows 7",
-      "version": "1.0.0",
-      "path": "lockscreens/windows-7",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "The nostalgic Windows 7 welcome screen.",
-      "description": "A throwback Windows 7 lock: a round avatar, a glassy credential field, and the familiar blue welcome mood.",
-      "tags": [
-        "os",
-        "retro",
-        "nostalgic"
-      ],
-      "accent": "#0755ad",
-      "surface": "#043979",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "377240f577be55559d6328ffd5952a0053c0fcc3bcf5e87bc327967f66f5f77d"
-    },
-    {
-      "id": "winter",
-      "name": "Winter",
-      "version": "1.0.1",
-      "path": "lockscreens/winter",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A quiet, animated snowfall in cold blue.",
-      "description": "A calm winter lock: soft, drifting snow over a cold-blue scene with an understated login.",
-      "tags": [
-        "scenic",
-        "winter",
-        "calm"
-      ],
-      "accent": "#0c1418",
-      "surface": "#0c1418",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "81814180afe714ef766c1f83b377fb50990b424ff5006afc49f09fc7148b53b7"
-    },
-    {
-      "id": "women-umbrella",
-      "name": "Rainy Walk",
-      "version": "1.0.1",
-      "path": "lockscreens/women-umbrella",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "An illustrated figure under an umbrella in gentle rain.",
-      "description": "A moody lo-fi illustration of a walk in the rain, with a calm, understated login.",
-      "tags": [
-        "illustrated",
-        "rain",
-        "calm"
-      ],
-      "accent": "#a07f80",
-      "surface": "#3f3c38",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif",
-        "assets/shot-1.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "65e313d43f563d9adefd93a35270527e1ef63bc041885680d8482a464a83e43d"
-    },
-    {
-      "id": "world-machine",
-      "name": "World Machine",
-      "version": "1.0.2",
-      "path": "lockscreens/world-machine",
-      "author": "CratusGod",
-      "upstream": "https://github.com/CratusGod/Oneshot-themed-Ryoku",
-      "summary": "Niko's lightbulb over a OneShot sunset, with music.",
-      "description": "A OneShot lock: Avolicis' pixel-art sunset animation (used with permission) with its soundtrack, Niko's lightbulb as your avatar, THE WORLD MACHINE wordmark, Terminus type and a Num Lock indicator. The matching shell reload cover and boot screen live at https://github.com/CratusGod/Oneshot-themed-Ryoku.",
-      "tags": [
-        "game",
-        "pixel",
-        "animated",
-        "music"
-      ],
-      "accent": "#FFD34A",
-      "surface": "#0B0A12",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "9b8f74183de4546b61c8b3dcf0726757494ba39bc00bb42b49a197cbfc0f7fb9",
-      "official": false,
-      "lastUpdated": "2026-10-21"
-    },
-    {
-      "id": "wuwa",
-      "name": "Wuthering Waves",
-      "version": "1.0.0",
-      "path": "lockscreens/wuwa",
-      "author": "Darkkal44",
-      "upstream": "https://github.com/Darkkal44/qylock",
-      "summary": "A lone figure amid drifting ruins under pale light.",
-      "description": "A Wuthering Waves inspired lock: a desolate greyscale expanse of floating debris cut by a single beam of light, with a modern login.",
-      "tags": [
-        "game",
-        "anime",
-        "monochrome"
-      ],
-      "accent": "#0e1018",
-      "surface": "#0e1018",
-      "preview": "assets/preview.gif",
-      "screenshots": [
-        "assets/preview.gif"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "cc3b45853c1f123626adf24d89beb60e3d332ec59e45b82f25ad6f93dbbb8cfe"
-    },
-    {
-      "id": "nothing-interface",
-      "name": "Nothing Interface",
-      "version": "0.1.0",
-      "path": "lockscreens/nothing-interface",
-      "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
-      "upstream": "https://github.com/venchik111/ryoku-nothing-interface",
-      "summary": "Dot clock and live Ryoku status over your current wallpaper.",
-      "description": "A Nothing OS-inspired lockscreen with a dot clock, battery, daily screen time and MPRIS media controls. Uses the current Ryogami wallpaper during a locked session; no wallpaper is bundled.",
-      "tags": [
-        "nothing",
-        "monochrome",
-        "live",
-        "wallpaper"
-      ],
-      "accent": "#C2C4CB",
-      "surface": "#1C1D21",
-      "preview": "assets/preview.png",
-      "screenshots": [
-        "assets/preview.png"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "158f1f5ad37b51c589f511366eb23724bf10261c9c0d96f9782ae8640ca772d4",
-      "official": false,
-      "license": "MIT",
-      "lastUpdated": "2026-10-01"
-    }
-  ]
+ "schema": 1,
+ "lockscreens": [
+  {
+   "id": "clockwork-tape",
+   "name": "Tape",
+   "version": "1.0.1",
+   "path": "lockscreens/clockwork-tape",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "Clockwork mechanics drift across warm magnetic tape.",
+   "description": "A complete qylock scene with a tactile clock face, deep shadow, and an amber tape-era palette.",
+   "tags": [
+    "clockwork",
+    "retro",
+    "warm"
+   ],
+   "accent": "#d7a45f",
+   "surface": "#101010",
+   "preview": "assets/preview.webp",
+   "screenshots": [],
+   "manifest": "manifest.json",
+   "manifestSha256": "11a60cd3d278410f5190ccb0f2c32aea4c8a25e52a0b734b87f4434dd0bcdec8"
+  },
+  {
+   "id": "dog-samurai",
+   "name": "Dog Samurai",
+   "version": "1.0.1",
+   "path": "lockscreens/dog-samurai",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A painterly samurai hound under drifting red petals.",
+   "description": "A cinematic video lock: a straw-hatted samurai dog with a sheathed katana as crimson petals fall, paired with a bold clock and a minimal login.",
+   "tags": [
+    "samurai",
+    "painterly",
+    "cinematic"
+   ],
+   "accent": "#945a46",
+   "surface": "#141612",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "ba957bc1ae884d5df67ab39ba9ab21850af5bfc9faec50014c06a4aefe571470"
+  },
+  {
+   "id": "enfield",
+   "name": "Enfield",
+   "version": "1.0.1",
+   "path": "lockscreens/enfield",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "Golden hour spilling through a plant-framed window.",
+   "description": "A warm, atmospheric lock: late sun pours past ivy and a weathered window frame, with a quiet login.",
+   "tags": [
+    "cozy",
+    "warm",
+    "scenic"
+   ],
+   "accent": "#111418",
+   "surface": "#111418",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "42d2cd29b6cdd2d356ff2c25217be87268b68958a260a7e3d5a670fc717d1287"
+  },
+  {
+   "id": "field",
+   "name": "Field",
+   "version": "1.0.1",
+   "path": "lockscreens/field",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "An open pasture under soft light with a feather-light clock.",
+   "description": "A serene qylock scene: a wide field, a thin Orbitron clock, and a quiet amber login tucked into the corner.",
+   "tags": [
+    "scenic",
+    "minimal",
+    "calm"
+   ],
+   "accent": "#3c6678",
+   "surface": "#19180f",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "05b8731d4e438f9ba1246ecada52d87f01bb3efca5ff24063db2bba91a1e1bad"
+  },
+  {
+   "id": "forest",
+   "name": "Forest",
+   "version": "1.0.1",
+   "path": "lockscreens/forest",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "Sunbeams pouring through a misty autumn canopy.",
+   "description": "A tranquil video lock: light rays drift over an aerial autumn forest wrapped in fog, with a soft clock and an unobtrusive login.",
+   "tags": [
+    "scenic",
+    "nature",
+    "calm"
+   ],
+   "accent": "#051612",
+   "surface": "#051612",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "d57a82bfb8b3b27df93e93e9ae0b90bcffebb1eebb5be83705dbe7a14ddc8b03"
+  },
+  {
+   "id": "genshin",
+   "name": "Genshin Impact",
+   "version": "1.0.0",
+   "path": "lockscreens/genshin",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A moonlit abyss of drifting pillars in deep blue.",
+   "description": "A Genshin Impact inspired lock: towering ruins beneath a pale moon, slow-drifting clouds, and a clean login on the descending path.",
+   "tags": [
+    "game",
+    "anime",
+    "night"
+   ],
+   "accent": "#192e6d",
+   "surface": "#07101f",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "370fd6d19c8b0b8c111c5fb77b3e1f7533644a3272c9415d176438b004c41caf"
+  },
+  {
+   "id": "girl-coffee",
+   "name": "Coffee Break",
+   "version": "1.0.1",
+   "path": "lockscreens/girl-coffee",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A cosy hand-drawn morning with a warm mug in hand.",
+   "description": "A lo-fi illustrated character taking a coffee break, paired with the rounded Itim typeface and a soft, unobtrusive login.",
+   "tags": [
+    "anime",
+    "cozy",
+    "illustrated"
+   ],
+   "accent": "#8eb9b6",
+   "surface": "#695b76",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "f55205b272b11cccf29bc9840f18bfdd81268d72ea1bcfca6d78e2ed6b925660"
+  },
+  {
+   "id": "girl-pillow",
+   "name": "Lazy Sunday",
+   "version": "1.0.1",
+   "path": "lockscreens/girl-pillow",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A soft illustrated scene, curled up and half awake.",
+   "description": "A relaxed lo-fi illustration with the rounded Itim font and a gentle right-aligned login - quiet, warm, and unhurried.",
+   "tags": [
+    "anime",
+    "cozy",
+    "illustrated"
+   ],
+   "accent": "#737588",
+   "surface": "#625f6c",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "1b0a2f1f99ad1bf0f0a0135b2e5363212017f27543ba30a3cbce83956abfc402"
+  },
+  {
+   "id": "last-of-us",
+   "name": "The Last of Us",
+   "version": "1.0.1",
+   "path": "lockscreens/last-of-us",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A lone blossom tree adrift in cold grey mist.",
+   "description": "A The Last of Us inspired lock: a solitary cherry tree on a rocky outcrop among fog-veiled cliffs, with a spare, moody login.",
+   "tags": [
+    "game",
+    "scenic",
+    "moody"
+   ],
+   "accent": "#88683b",
+   "surface": "#131210",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "cb8e5fd420c113f5407144f3d2304b5541978105da25fd05ae91c484651ad242"
+  },
+  {
+   "id": "man-bicycle",
+   "name": "Evening Ride",
+   "version": "1.0.1",
+   "path": "lockscreens/man-bicycle",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A lone cyclist against a wide illustrated sky.",
+   "description": "A cinematic lo-fi ride with the Itim typeface and a minimal login tucked into the frame.",
+   "tags": [
+    "scenic",
+    "illustrated",
+    "calm"
+   ],
+   "accent": "#2e8692",
+   "surface": "#395551",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "08fe1c4fc9c646904ea57778974025266f3b7d5eccd5e723953956b727549ed8"
+  },
+  {
+   "id": "material-you",
+   "name": "Material You",
+   "version": "1.0.1",
+   "path": "lockscreens/material-you",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "Google's Material You language, clean and adaptive.",
+   "description": "A crisp Material You lock with the Google Sans typeface, rounded surfaces, and a tidy centred login.",
+   "tags": [
+    "material",
+    "clean",
+    "modern"
+   ],
+   "accent": "#1a3c32",
+   "surface": "#1a3c32",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "c0356b4a2419a42a9f7752551ed97991aca578576486598ba798dc219d0c09fc"
+  },
+  {
+   "id": "material-you-dark",
+   "name": "Material You Dark",
+   "version": "1.0.1",
+   "path": "lockscreens/material-you-dark",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "The Material You language in a deep, quiet dark palette.",
+   "description": "The dark sibling of the Material You lock: the Google Sans typeface and rounded surfaces over a low-light palette, with a tidy centred login.",
+   "tags": [
+    "material",
+    "dark",
+    "clean"
+   ],
+   "accent": "#291f48",
+   "surface": "#141316",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "d881d8b36b6c7a2236a61d4eec4f5928fa1771bba623e3500c119525b017f710"
+  },
+  {
+   "id": "minecraft",
+   "name": "Minecraft Menu",
+   "version": "1.0.1",
+   "path": "lockscreens/minecraft",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "The blocky main-menu look, splash text and all.",
+   "description": "A nostalgic Minecraft title-screen lock: stone-button widgets, a random yellow splash line, and the classic logo.",
+   "tags": [
+    "game",
+    "retro",
+    "playful"
+   ],
+   "accent": "#251b12",
+   "surface": "#0f0b08",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "7e2e756ca2b48688892e93b41b9e51678a0013e0d55caff909a9eff5e6993472"
+  },
+  {
+   "id": "nier-automata",
+   "name": "NieR: Automata",
+   "version": "1.0.1",
+   "path": "lockscreens/nier-automata",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "The stark beige-and-black UI of YoRHa.",
+   "description": "A faithful NieR: Automata lock with bordered YoRHa buttons, the signature muted palette, and a precise login.",
+   "tags": [
+    "game",
+    "minimal",
+    "monochrome"
+   ],
+   "accent": "#1a1713",
+   "surface": "#1a1713",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "08045d52f8dad638f1e6fe16264d0b7d6777345bab42b03086e88450d9dfb56e"
+  },
+  {
+   "id": "ninja-gaiden",
+   "name": "Ninja Gaiden",
+   "version": "1.0.1",
+   "path": "lockscreens/ninja-gaiden",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "High-contrast action styling with the Tektur face.",
+   "description": "A sharp Ninja Gaiden lock: bold Tektur type, a dark cinematic background, and a decisive login.",
+   "tags": [
+    "game",
+    "bold",
+    "dark"
+   ],
+   "accent": "#040201",
+   "surface": "#020101",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "ffd96cc2705ca8f549d6ab5a39a9b0e688f5e7ce431babd3cbe3a2b17177c7e7"
+  },
+  {
+   "id": "nothing",
+   "name": "Nothing OS",
+   "version": "1.0.1",
+   "path": "lockscreens/nothing",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "Dot-matrix minimalism in red and black.",
+   "description": "A Nothing-inspired lock: NDot dot-matrix numerals, twin rounded widgets, and a bright, airy backdrop.",
+   "tags": [
+    "minimal",
+    "monochrome",
+    "modern"
+   ],
+   "accent": "#b71c23",
+   "surface": "#0e0e0e",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "c59741f9666945fa068283813b76705b21280d2f5d74c302f79731653fcfb7c0"
+  },
+  {
+   "id": "osu",
+   "name": "osu!",
+   "version": "1.0.0",
+   "path": "lockscreens/osu",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "The osu! rhythm game, tap-circles and all.",
+   "description": "An osu! inspired lock with difficulty menus, neon tap-circles, and a playful, score-driven login.",
+   "tags": [
+    "game",
+    "rhythm",
+    "playful"
+   ],
+   "accent": "#84fa04",
+   "surface": "#060504",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "02d6a89c8240e86c0f7966fc08e125e98d52201db7e015374271054ce017bbc6"
+  },
+  {
+   "id": "osumania",
+   "name": "osu!mania",
+   "version": "1.0.1",
+   "path": "lockscreens/osumania",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A four-key note highway glowing in neon green.",
+   "description": "An osu!mania inspired lock: vertical scrolling notes, key-binding widgets, and PERFECT combos over a dark stage.",
+   "tags": [
+    "game",
+    "rhythm",
+    "neon"
+   ],
+   "accent": "#050902",
+   "surface": "#050902",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "58e08d256426ff0722cf5f3a565c3e6ab5544accf46c11635b1e50b599312807"
+  },
+  {
+   "id": "pixel-coffee",
+   "name": "Pixel Coffee",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-coffee",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A warm pixel cafe glowing after dark.",
+   "description": "A cosy pixel-art lock: amber lamps over a late-night cafe, city lights through the window, and a tidy login.",
+   "tags": [
+    "pixel",
+    "cozy",
+    "night"
+   ],
+   "accent": "#090811",
+   "surface": "#090811",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "10ac931fe1f74386399c80f94048b835974372fadc81194f97aed3919caef16a"
+  },
+  {
+   "id": "pixel-cyberpunk",
+   "name": "Pixel Cyberpunk",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-cyberpunk",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A neon pixel-art cityscape humming with rain and signage.",
+   "description": "An animated pixel-art cyberpunk street, all neon reflections and drizzle, with a crisp login.",
+   "tags": [
+    "pixel",
+    "cyberpunk",
+    "neon"
+   ],
+   "accent": "#070e18",
+   "surface": "#070e18",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "eff36e820cb59fa9c40bb55b77760c66c5c8c688f0ec652997405510e1760c42"
+  },
+  {
+   "id": "pixel-dusk-city",
+   "name": "Pixel Dusk City",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-dusk-city",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A red-lit pixel skyline smouldering at dusk.",
+   "description": "A pixel-art lock: a silhouetted city under a burning dusk sky, framed by dark leaves and tangled wires, with a minimal login.",
+   "tags": [
+    "pixel",
+    "city",
+    "dusk"
+   ],
+   "accent": "#894a45",
+   "surface": "#0c0e0f",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "cc9aec4398157c0f6dcce6f4daa97e8affe424167c8072505794cde7e92e8f8e"
+  },
+  {
+   "id": "pixel-emerald",
+   "name": "Pixel Emerald",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-emerald",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A seaside cycling route in bright pixel green.",
+   "description": "A Pokemon inspired pixel lock: a cyclist on a fenced coastal path amid lush fields and creatures, with a cheerful login.",
+   "tags": [
+    "pixel",
+    "game",
+    "nostalgic"
+   ],
+   "accent": "#78a13c",
+   "surface": "#3b5649",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "b3c2d5c919994db4d111aa05e76ea715f65f081ba3f7390ad9ac634af2d978c6"
+  },
+  {
+   "id": "pixel-hollowknight",
+   "name": "Pixel Hollow Knight",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-hollowknight",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A horned knight silhouetted against embered dark.",
+   "description": "A Hollow Knight inspired pixel lock: a pale-horned figure above drifting orange embers in the deep, with a stark login.",
+   "tags": [
+    "game",
+    "pixel",
+    "dark"
+   ],
+   "accent": "#070604",
+   "surface": "#070604",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "c6efbe7d6137eba34d0ee9e0ae53829ee7d6200088add32ea5d2bcac9b827af6"
+  },
+  {
+   "id": "pixel-munchlax",
+   "name": "Pixel Munchlax",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-munchlax",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A little companion on a grassy hill under summer clouds.",
+   "description": "A bright pixel-art lock: a small creature resting on green grass beneath towering white clouds, with a clean login.",
+   "tags": [
+    "pixel",
+    "cute",
+    "calm"
+   ],
+   "accent": "#5cacf0",
+   "surface": "#0e1213",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "805c22b85dd622b8d040e820274d75bdb4b3bdd892813f5663f4e7736ec201fc"
+  },
+  {
+   "id": "pixel-night-city",
+   "name": "Pixel Night City",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-night-city",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A glittering pixel skyline humming after dark.",
+   "description": "A pixel-art lock: dense neon-lit towers over shadowed rooftops, cool and electric, with a crisp login.",
+   "tags": [
+    "pixel",
+    "city",
+    "night"
+   ],
+   "accent": "#0e0e19",
+   "surface": "#0e0e19",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "fb0c0c9fcf0e541ca7bdc8f3231fe041113cbcf0b853ff563f7b4d8cccda728a"
+  },
+  {
+   "id": "pixel-rainyroom",
+   "name": "Pixel Rainy Room",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-rainyroom",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A rainy night at the desk, monitor aglow.",
+   "description": "A lo-fi pixel lock: rain on the window and a blue monitor glow across a dim bedroom, with a quiet login.",
+   "tags": [
+    "pixel",
+    "cozy",
+    "rain"
+   ],
+   "accent": "#02050c",
+   "surface": "#02050c",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "796f5b8abf82a53166cac4f89162d356938ceea20b64b5db3aaf6dd32fcab268"
+  },
+  {
+   "id": "pixel-sakura",
+   "name": "Pixel Sakura",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-sakura",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A pixel-art courtyard under drifting cherry blossom.",
+   "description": "An animated pixel-art scene of falling sakura petals, warm and unhurried, with a tidy login.",
+   "tags": [
+    "pixel",
+    "anime",
+    "calm"
+   ],
+   "accent": "#2e3949",
+   "surface": "#2e3949",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "efcb1260e4e98ef97fddd97024de504e66da6c27401932476276afc1da36e1c7"
+  },
+  {
+   "id": "pixel-skyscrapers",
+   "name": "Pixel Skyscrapers",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-skyscrapers",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A pastel dawn washing over a layered skyline.",
+   "description": "A pixel-art lock: peach-and-mauve skies and a soft sun behind stacked skyscrapers, with a calm login.",
+   "tags": [
+    "pixel",
+    "city",
+    "pastel"
+   ],
+   "accent": "#020e11",
+   "surface": "#020e11",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "4e0b5bc1eafb4c62ff0bcc002d8271ad2248d819a308c3a5815652b759bf3985"
+  },
+  {
+   "id": "pixel-waterfall",
+   "name": "Pixel Waterfall",
+   "version": "1.0.1",
+   "path": "lockscreens/pixel-waterfall",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A tranquil pixel-art waterfall in a mossy glen.",
+   "description": "An animated pixel-art waterfall scene, cool and green, with a calm minimal login.",
+   "tags": [
+    "pixel",
+    "nature",
+    "calm"
+   ],
+   "accent": "#106e97",
+   "surface": "#040e15",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "56892aed6ec940d42f650fa922cf03e791b1dde6a329c898373dbc1e0022d72f"
+  },
+  {
+   "id": "r1999-1",
+   "name": "Reverse: 1999",
+   "version": "1.0.1",
+   "path": "lockscreens/r1999-1",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A pensive period portrait bathed in soft sepia light.",
+   "description": "A Reverse: 1999 inspired lock centred on a wistful character portrait in warm vintage tones, with an understated login.",
+   "tags": [
+    "game",
+    "anime",
+    "vintage"
+   ],
+   "accent": "#422a1f",
+   "surface": "#121011",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "4475b01a6aff68d111a37facbff83e78410c36fcb666b37712f46ba5df916620"
+  },
+  {
+   "id": "r1999-2",
+   "name": "Reverse: 1999",
+   "version": "1.0.1",
+   "path": "lockscreens/r1999-2",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "Vintage flourish with an animated period backdrop.",
+   "description": "A Reverse: 1999 inspired lock with an animated vintage backdrop, a period logo, and an elegant login.",
+   "tags": [
+    "game",
+    "anime",
+    "vintage"
+   ],
+   "accent": "#88725b",
+   "surface": "#101011",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "c14cf827cae63e5a7d6aa6ad69bcdadefe14ddd3b63ceba0e2e0a36e0c59b7a8"
+  },
+  {
+   "id": "star-rail",
+   "name": "Star Rail",
+   "version": "1.0.0",
+   "path": "lockscreens/star-rail",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "An astral, animated backdrop for the trailblazers.",
+   "description": "A Honkai: Star Rail inspired lock with an animated cosmic backdrop and a clean, modern login.",
+   "tags": [
+    "game",
+    "anime",
+    "space"
+   ],
+   "accent": "#060b15",
+   "surface": "#060b15",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "b11248876dbbfca5cf598955185340430f50b8d49bf904420233d2d752cd1311"
+  },
+  {
+   "id": "sword",
+   "name": "Sword",
+   "version": "1.0.1",
+   "path": "lockscreens/sword",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A lone blade planted in a misty grove.",
+   "description": "A moody, near-monochrome lock: a katana standing point-down among blurred dark trees, with a spare login.",
+   "tags": [
+    "dark",
+    "minimal",
+    "cinematic"
+   ],
+   "accent": "#08090f",
+   "surface": "#08090f",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "2df8248c4f52e49ed6e1ee4b4084771963d0777f03ee364d5acf65c56239eae5"
+  },
+  {
+   "id": "terraria",
+   "name": "Terraria",
+   "version": "1.0.0",
+   "path": "lockscreens/terraria",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "The Terraria main menu, pixel logo and all.",
+   "description": "A Terraria title-screen lock with the pixel logo, a tree-lined horizon, and wood-panel buttons.",
+   "tags": [
+    "game",
+    "pixel",
+    "retro"
+   ],
+   "accent": "#4e66c5",
+   "surface": "#1a2530",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "6105ce4c65eb446a0206d9ba3f9c9d08fe0b63276be120b44879800ba14b9237"
+  },
+  {
+   "id": "windows-7",
+   "name": "Windows 7",
+   "version": "1.0.0",
+   "path": "lockscreens/windows-7",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "The nostalgic Windows 7 welcome screen.",
+   "description": "A throwback Windows 7 lock: a round avatar, a glassy credential field, and the familiar blue welcome mood.",
+   "tags": [
+    "os",
+    "retro",
+    "nostalgic"
+   ],
+   "accent": "#0755ad",
+   "surface": "#043979",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "377240f577be55559d6328ffd5952a0053c0fcc3bcf5e87bc327967f66f5f77d"
+  },
+  {
+   "id": "winter",
+   "name": "Winter",
+   "version": "1.0.1",
+   "path": "lockscreens/winter",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A quiet, animated snowfall in cold blue.",
+   "description": "A calm winter lock: soft, drifting snow over a cold-blue scene with an understated login.",
+   "tags": [
+    "scenic",
+    "winter",
+    "calm"
+   ],
+   "accent": "#0c1418",
+   "surface": "#0c1418",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "81814180afe714ef766c1f83b377fb50990b424ff5006afc49f09fc7148b53b7"
+  },
+  {
+   "id": "women-umbrella",
+   "name": "Rainy Walk",
+   "version": "1.0.1",
+   "path": "lockscreens/women-umbrella",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "An illustrated figure under an umbrella in gentle rain.",
+   "description": "A moody lo-fi illustration of a walk in the rain, with a calm, understated login.",
+   "tags": [
+    "illustrated",
+    "rain",
+    "calm"
+   ],
+   "accent": "#a07f80",
+   "surface": "#3f3c38",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif",
+    "assets/shot-1.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "65e313d43f563d9adefd93a35270527e1ef63bc041885680d8482a464a83e43d"
+  },
+  {
+   "id": "world-machine",
+   "name": "World Machine",
+   "version": "1.0.2",
+   "path": "lockscreens/world-machine",
+   "author": "CratusGod",
+   "upstream": "https://github.com/CratusGod/Oneshot-themed-Ryoku",
+   "summary": "Niko's lightbulb over a OneShot sunset, with music.",
+   "description": "A OneShot lock: Avolicis' pixel-art sunset animation (used with permission) with its soundtrack, Niko's lightbulb as your avatar, THE WORLD MACHINE wordmark, Terminus type and a Num Lock indicator. The matching shell reload cover and boot screen live at https://github.com/CratusGod/Oneshot-themed-Ryoku.",
+   "tags": [
+    "game",
+    "pixel",
+    "animated",
+    "music"
+   ],
+   "accent": "#FFD34A",
+   "surface": "#0B0A12",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "9b8f74183de4546b61c8b3dcf0726757494ba39bc00bb42b49a197cbfc0f7fb9",
+   "official": false,
+   "lastUpdated": "2026-10-21"
+  },
+  {
+   "id": "wuwa",
+   "name": "Wuthering Waves",
+   "version": "1.0.0",
+   "path": "lockscreens/wuwa",
+   "author": "Darkkal44",
+   "upstream": "https://github.com/Darkkal44/qylock",
+   "summary": "A lone figure amid drifting ruins under pale light.",
+   "description": "A Wuthering Waves inspired lock: a desolate greyscale expanse of floating debris cut by a single beam of light, with a modern login.",
+   "tags": [
+    "game",
+    "anime",
+    "monochrome"
+   ],
+   "accent": "#0e1018",
+   "surface": "#0e1018",
+   "preview": "assets/preview.gif",
+   "screenshots": [
+    "assets/preview.gif"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "cc3b45853c1f123626adf24d89beb60e3d332ec59e45b82f25ad6f93dbbb8cfe"
+  },
+  {
+   "id": "nothing-interface",
+   "name": "Nothing Interface",
+   "version": "0.1.0",
+   "path": "lockscreens/nothing-interface",
+   "author": "Ivan <254410104+venchik111@users.noreply.github.com>",
+   "upstream": "https://github.com/venchik111/ryoku-nothing-interface",
+   "summary": "Dot clock and live Ryoku status over your current wallpaper.",
+   "description": "A Nothing OS-inspired lockscreen with a dot clock, battery, daily screen time and MPRIS media controls. Uses the current Ryogami wallpaper during a locked session; no wallpaper is bundled.",
+   "tags": [
+    "nothing",
+    "monochrome",
+    "live",
+    "wallpaper"
+   ],
+   "accent": "#C2C4CB",
+   "surface": "#1C1D21",
+   "preview": "assets/preview.png",
+   "screenshots": [
+    "assets/preview.png"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "158f1f5ad37b51c589f511366eb23724bf10261c9c0d96f9782ae8640ca772d4",
+   "official": false,
+   "license": "MIT",
+   "lastUpdated": "2026-10-01"
+  },
+  {
+   "id": "kitsune",
+   "name": "Kitsune",
+   "version": "1.0.1",
+   "path": "lockscreens/kitsune",
+   "author": "0xSrcAura",
+   "upstream": "https://github.com/SourceAura/kitsune",
+   "summary": "Ase, the seven-tailed kitsune, and her seven tarot folds at the door.",
+   "description": "The Jurai lock, carried to the store whole: Ase, the seven-tailed kitsune, drawn in shaders and light, and her seven tarot folds. Typing binds the folds one by one, each whispered as it lands — THE EYE · TRUTH, THE PHANTOM · POWER, THE BLADE · WISDOM, THE SAGE · JUDGMENT, THE SHROUD · LIFE, THE FORGE · LOVE, THE MIRROR · DISCIPLINE. At seven the Cast rises: INVOKE THE SEAL. A wrong key hurts her and scatters the cards; the true key transforms her and opens the seal. Built in 2026 for Jurai shell; her scene, her shaders and her words are unmodified.",
+   "tags": [
+    "kitsune",
+    "jurai",
+    "tarot",
+    "dark"
+   ],
+   "accent": "#818CF8",
+   "surface": "#12131C",
+   "preview": "assets/preview.webp",
+   "screenshots": [
+    "assets/preview.webp"
+   ],
+   "manifest": "manifest.json",
+   "manifestSha256": "148828d09520e9f67963b769f67f06448373c9b623f28c4a71b6f729ecfe32bf"
+  }
+ ]
 }

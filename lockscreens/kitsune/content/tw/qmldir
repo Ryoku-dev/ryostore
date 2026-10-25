@@ -1,0 +1,4 @@
+module tw
+
+singleton TransparentWorld 1.0 TransparentWorld.qml
+singleton ArOrchestrator 1.0 ArOrchestrator.qml

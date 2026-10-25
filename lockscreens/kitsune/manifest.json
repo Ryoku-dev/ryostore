@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "id": "kitsune",
+  "category": "lockscreens",
+  "version": "1.0.1",
+  "destination": "qylock/themes/kitsune",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 2726,
+      "sha256": "d1d63023b712829402c1e8f9a575dfa7d8f673e1ffa2c846f44baa61b68c3c61",
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "preview.webp",
+      "mode": "0644",
+      "size": 18666,
+      "sha256": "e37eb300f43d44a2728dde3dd82de0906dd34d83dbc07c6b9888ba64703ec53a",
+      "install": false
+    },
+    {
+      "source": "content/Main.qml",
+      "destination": "Main.qml",
+      "mode": "0644",
+      "size": 17023,
+      "sha256": "5b10cbd1e9c4ba9fb34418228904cd9210a4f34ea034cd529c599b4fbbd01c48",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/InseiCompanion.qml",
+      "destination": "gotchi/InseiCompanion.qml",
+      "mode": "0644",
+      "size": 5882,
+      "sha256": "8f7f9ff416fa9cd76d63076dc38ae1d50b913830721747cf0b3a4590e8d19614",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/InseiGotchi.qml",
+      "destination": "gotchi/InseiGotchi.qml",
+      "mode": "0644",
+      "size": 26998,
+      "sha256": "98855df11e2a479aa1345cc888fc1ba2bce24f0d570e13bc32d70453d12cc22a",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/InseiHub.qml",
+      "destination": "gotchi/InseiHub.qml",
+      "mode": "0644",
+      "size": 9221,
+      "sha256": "811586479299669437d2999d1a605fc78fc5dac12c601452e381ca87fecd91f7",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/InseiHud.qml",
+      "destination": "gotchi/InseiHud.qml",
+      "mode": "0644",
+      "size": 5746,
+      "sha256": "67b98c9f1b5f0b154df0c7df9f786d1aa44a1f5ced2f952a331361b02fa23038",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/InseiLiveHash.qml",
+      "destination": "gotchi/InseiLiveHash.qml",
+      "mode": "0644",
+      "size": 9014,
+      "sha256": "962bf0ddaf8880e11cbce3982dfbf55866063dfc75a88f6953be51c803d1c364",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/InseiScene.qml",
+      "destination": "gotchi/InseiScene.qml",
+      "mode": "0644",
+      "size": 14032,
+      "sha256": "cc72e01e3b219ca07521c4c8da6b506d5d0f06575c2da8e8758fc55845963f50",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/InseiTarot.qml",
+      "destination": "gotchi/InseiTarot.qml",
+      "mode": "0644",
+      "size": 14520,
+      "sha256": "55f5f4a19e0c382648c90e08286f963156df6215a7a3b43362b59c9f4779bc05",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/README.md",
+      "destination": "gotchi/README.md",
+      "mode": "0644",
+      "size": 5456,
+      "sha256": "0bafb4b4cdb957d55ff476416b082509d23f6e72f41a22bd54b2ec3159d4e7c3",
+      "install": true
+    },
+    {
+      "source": "content/gotchi/qmldir",
+      "destination": "gotchi/qmldir",
+      "mode": "0644",
+      "size": 251,
+      "sha256": "5af186846a5b0ddbf828ea980b48b2c656488cb298bed6f1d836e1bb16776052",
+      "install": true
+    },
+    {
+      "source": "content/metadata.desktop",
+      "destination": "metadata.desktop",
+      "mode": "0644",
+      "size": 209,
+      "sha256": "06afcc0e6368068f6e8a2cd246b374552be680f0468080c0e72b67335f6f4fde",
+      "install": true
+    },
+    {
+      "source": "content/shaders/InseiKitsune.frag",
+      "destination": "shaders/InseiKitsune.frag",
+      "mode": "0644",
+      "size": 8253,
+      "sha256": "ffae335bd97115a8b96794a65ccc2913833b4313f10cd6e912a8d8f0c3905c76",
+      "install": true
+    },
+    {
+      "source": "content/shaders/InseiKitsune.frag.qsb",
+      "destination": "shaders/InseiKitsune.frag.qsb",
+      "mode": "0644",
+      "size": 12381,
+      "sha256": "d43bd280aad1f0a2ea97f80162d393bfc2d5708303927b02ab8ede35529115e4",
+      "install": true
+    },
+    {
+      "source": "content/shaders/InseiSoul.frag",
+      "destination": "shaders/InseiSoul.frag",
+      "mode": "0644",
+      "size": 13158,
+      "sha256": "d37476af799b22efb6abf19fee92dcae61fa4bb8f9a779ac0e108f10df79888e",
+      "install": true
+    },
+    {
+      "source": "content/shaders/InseiSoul.frag.qsb",
+      "destination": "shaders/InseiSoul.frag.qsb",
+      "mode": "0644",
+      "size": 17847,
+      "sha256": "065c28ac92e359368d1fc49a9daff5190a6ed486189f38f0a52f26eae8ad2ca6",
+      "install": true
+    },
+    {
+      "source": "content/shaders/crystallize.frag",
+      "destination": "shaders/crystallize.frag",
+      "mode": "0644",
+      "size": 13837,
+      "sha256": "dfcabc64b4f45b5e11065acd8a87a3eaae6557c056c139b4ada50e110c949c9b",
+      "install": true
+    },
+    {
+      "source": "content/shaders/crystallize.frag.qsb",
+      "destination": "shaders/crystallize.frag.qsb",
+      "mode": "0644",
+      "size": 13658,
+      "sha256": "7ead89666598790c2220a0394fc278a174f10356cb5d6baff7e781d71ee97f39",
+      "install": true
+    },
+    {
+      "source": "content/theme.conf",
+      "destination": "theme.conf",
+      "mode": "0644",
+      "size": 343,
+      "sha256": "e35fc5c9904b1a44552f20eeb0d0750eea3c2369eb39f8fbfc69df23a95069c0",
+      "install": true
+    },
+    {
+      "source": "content/tw/ArOrchestrator.qml",
+      "destination": "tw/ArOrchestrator.qml",
+      "mode": "0644",
+      "size": 1159,
+      "sha256": "64c527c73d40b7f8a9c8e9cda482b37d704bad0b96022dba80caf219d233ee56",
+      "install": true
+    },
+    {
+      "source": "content/tw/TransparentWorld.qml",
+      "destination": "tw/TransparentWorld.qml",
+      "mode": "0644",
+      "size": 31709,
+      "sha256": "f7cb77f4755bb7d0897deef5ff4dee72e93780cfdec0e76fc49f5213292ca259",
+      "install": true
+    },
+    {
+      "source": "content/tw/qmldir",
+      "destination": "tw/qmldir",
+      "mode": "0644",
+      "size": 111,
+      "sha256": "74454dbad4d61adf208f321fa8a32e9e2e7d06b9b6e80c7769b347c780c1a8f1",
+      "install": true
+    }
+  ]
+}

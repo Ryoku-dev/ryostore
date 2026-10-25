@@ -1,0 +1,8 @@
+module aseGotchi
+InseiGotchi    1.0 InseiGotchi.qml
+InseiScene     1.0 InseiScene.qml
+InseiCompanion 1.0 InseiCompanion.qml
+InseiHud       1.0 InseiHud.qml
+InseiLiveHash  1.0 InseiLiveHash.qml
+InseiTarot   1.0 InseiTarot.qml
+InseiHub 1.0 InseiHub.qml
