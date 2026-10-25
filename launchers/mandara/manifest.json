@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "mandara",
   "category": "launchers",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "destination": "ryoku/launchers/mandara",
   "files": [
     {
@@ -48,9 +48,9 @@
     {
       "source": "assets/preview.webp",
       "destination": "assets/preview.webp",
-      "sha256": "62ae515a02f39c35921d0541d845e39265c786125654d568ff6c14b873901a0e",
+      "sha256": "026a8d6a5dc479a81c3d903fd4505f364524c0689946c08a4ca085fda3b05707",
       "mode": "0644",
-      "size": 20414,
+      "size": 60830,
       "install": false
     },
     {
