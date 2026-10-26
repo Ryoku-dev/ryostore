@@ -1,4 +1,0 @@
-module tw
-
-singleton TransparentWorld 1.0 TransparentWorld.qml
-singleton SiMOrchestrator 1.0 SiMOrchestrator.qml

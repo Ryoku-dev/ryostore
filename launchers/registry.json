@@ -54,34 +54,6 @@
       "lastUpdated": "2026-10-20",
       "official": false,
       "license": "GPL-3.0-only"
-    },
-    {
-      "id": "mandara",
-      "name": "Mandara",
-      "version": "2.4.0",
-      "path": "launchers/mandara",
-      "author": "0xSrcAura",
-      "upstream": "https://github.com/SourceAura/mandara",
-      "summary": "The Obelisk as Ryoku's launcher — three breaths (Sun · Moon · Celestial), daily segments, and Rashin, her compass window",
-      "description": "Mandara as she stands: a centred smoked-glass plate wearing her author's name and the Jurai emblem, one lens that resolves applications, files and commands locally and now drives in three breaths. Sun for doing, Moon for the daily round, Celestial for play: each breath tints her water, biases what she surfaces first, and is spoken or locked as a word. Her segments speak the daily tongue: open, find, note, ask, timer, play, lock, composable as crystallized chips and ranked by his own usage. Natural language rides to Ryoku's real Rashin Ask service through her compass window.",
-      "tags": [
-        "jurai",
-        "launcher",
-        "omnibar",
-        "keyboard",
-        "dark"
-      ],
-      "accent": "#A78BFA",
-      "surface": "#050A12",
-      "preview": "assets/preview.webp",
-      "screenshots": [
-        "assets/preview.webp"
-      ],
-      "manifest": "manifest.json",
-      "manifestSha256": "62035aff3c339a6d324da675a851547cbc522f649446f4a985acbf60e5a30402",
-      "lastUpdated": "2026-10-25",
-      "official": false,
-      "license": "GPL-3.0-or-later"
     }
   ]
 }
