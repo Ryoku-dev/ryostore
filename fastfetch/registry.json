@@ -1068,6 +1068,32 @@
    "preview": "preview.webp",
    "screenshots": [],
    "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/fastfetch/jurai-fastfetch"
+  },
+  {
+   "id": "43pr",
+   "name": "43PR Readout",
+   "version": "1.0.0",
+   "path": "fastfetch/43pr",
+   "author": "43PR (Ryoku adaptation by Sipper1236)",
+   "summary": "Boxed hardware and software readout",
+   "description": "43PR hardware/software sections and Nerd Font keys, with the system built-in logo and terminal-palette colors. CPU, GPU, memory, OS, kernel, WM, theme, icons, font, terminal and shell. No commands or personal image files.",
+   "tags": [
+    "terminal",
+    "43pr",
+    "fastfetch",
+    "minimal"
+   ],
+   "accent": "#ffffff",
+   "surface": "#050505",
+   "preview": "preview.webp",
+   "screenshots": [],
+   "manifest": "manifest.json",
+   "manifestSha256": "4464796aa8878d8999a8ca44b50607f578d5a9848c97cd7c33f28eeb1d0dac54",
+   "official": false,
+   "lastUpdated": "2026-10-26",
+   "license": "MIT",
+   "source": "https://github.com/43PR/dotfiles/tree/39f0bc1cd743440ec030d492759d6a11e0360467",
+   "upstream": "https://github.com/43PR/dotfiles"
   }
  ]
 }

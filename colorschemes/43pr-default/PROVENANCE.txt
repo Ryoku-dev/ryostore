@@ -1,0 +1,7 @@
+Upstream: https://github.com/43PR/dotfiles/tree/39f0bc1cd743440ec030d492759d6a11e0360467
+Author: 43PR
+License: MIT (see LICENSE)
+Sources: .config/43pr/themes/default.toml
+Adaptation: Mapped semantic colors to Ryoku Material roles; retained all 16 terminal colors. Contrasting ink on accent fills. No wallpaper or theme daemon bundled.
+Maintenance contact: https://github.com/Sipper1236/ryostore/issues
+Community adaptation; not an official 43PR or Ryoku product.

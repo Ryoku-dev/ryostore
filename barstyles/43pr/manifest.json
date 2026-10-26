@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "id": "43pr",
+  "category": "barstyles",
+  "version": "1.0.0",
+  "destination": "ryoku/barstyles/43pr",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1061,
+      "sha256": "b530897271673091abf0e221baca6dd6d32e1b54bb861b4657fd6b515cb49cf7",
+      "install": true
+    },
+    {
+      "source": "Marquee.qml",
+      "destination": "Marquee.qml",
+      "mode": "0644",
+      "size": 2155,
+      "sha256": "4527685330b1ebc4cdfe7e025e66098a209733e23c4a0b28474e759e77298419",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 524,
+      "sha256": "87fb66754cb489d426948957ab832754b5951121ba3c0c0da6708c07e476a1c4",
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 1597,
+      "sha256": "31cf45ead6f0acd4eef2bd40ec08387da176838a2caba190bd8d66cf0c265cb9",
+      "install": true
+    },
+    {
+      "source": "Scene.qml",
+      "destination": "Scene.qml",
+      "mode": "0644",
+      "size": 61205,
+      "sha256": "f6d91787e5bf0cb9ed925bedda166f6fe72ce4902f7c4551275befa4fc6e0669",
+      "install": true
+    },
+    {
+      "source": "Theme.qml",
+      "destination": "Theme.qml",
+      "mode": "0644",
+      "size": 627,
+      "sha256": "914b0397731a65bfaacecddaf6524bd97e0e9d5171f928c5f0015babf7fe80a8",
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "mode": "0644",
+      "size": 4488,
+      "sha256": "8158d6e86ca4a78819608d8b53ed6152bd4b005ba1b9794fd4f8511eec921014",
+      "install": false
+    },
+    {
+      "source": "qmldir",
+      "destination": "qmldir",
+      "mode": "0644",
+      "size": 64,
+      "sha256": "9e7d0055861bea3f0898dda3debad1967ff50996a33c310b6ff177395a248298",
+      "install": true
+    }
+  ]
+}

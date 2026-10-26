@@ -987,6 +987,32 @@
       ],
       "manifest": "manifest.json",
       "manifestSha256": "528a5cdd31744b258a309c52427e11498833ec5239cce1f17d7955f01693e67e"
+    },
+    {
+      "id": "43pr",
+      "name": "43PR Monochrome",
+      "version": "1.0.0",
+      "path": "lockscreens/43pr",
+      "author": "43PR (Ryoku adaptation by Sipper1236)",
+      "summary": "Centered clock and outlined password capsule",
+      "description": "A visual adaptation of the 43PR Hyprlock layout for qylock: monochrome clock, date and outlined password input. Authentication stays in the native host. Solid dark backdrop; no desktop capture, external artwork or media polling.",
+      "tags": [
+        "lockscreen",
+        "43pr",
+        "monochrome",
+        "minimal"
+      ],
+      "accent": "#ffffff",
+      "surface": "#050505",
+      "preview": "assets/preview.webp",
+      "screenshots": [],
+      "manifest": "manifest.json",
+      "manifestSha256": "ab8ad6ae14647b08b3468af3004c97240bc907d9fc8086b6f7397b7f4c07431a",
+      "official": false,
+      "lastUpdated": "2026-10-26",
+      "license": "MIT",
+      "source": "https://github.com/43PR/dotfiles/tree/39f0bc1cd743440ec030d492759d6a11e0360467",
+      "upstream": "https://github.com/43PR/dotfiles"
     }
   ]
 }

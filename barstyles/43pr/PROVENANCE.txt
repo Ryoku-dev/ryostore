@@ -1,0 +1,7 @@
+Upstream: https://github.com/43PR/dotfiles/tree/39f0bc1cd743440ec030d492759d6a11e0360467
+Author: 43PR
+License: MIT (see LICENSE)
+Sources: .config/quickshell/Bar.qml; Marquee.qml
+Adaptation: Per-monitor Ryoku Scene contract; native Hub/picker actions, product-scoped state and IPC, no upstream installer or settings daemon. Original layout, calendar, tooltips, modules and media marquee retained.
+Maintenance contact: https://github.com/Sipper1236/ryostore/issues
+Community adaptation; not an official 43PR or Ryoku product.

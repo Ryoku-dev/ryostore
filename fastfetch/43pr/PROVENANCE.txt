@@ -1,0 +1,7 @@
+Upstream: https://github.com/43PR/dotfiles/tree/39f0bc1cd743440ec030d492759d6a11e0360467
+Author: 43PR
+License: MIT (see LICENSE)
+Sources: .config/fastfetch/config.jsonc
+Adaptation: Preserved hardware/software sections and Nerd Font keys. Replaced personal image logo with the system's built-in logo; fixed box widths and module color slots; removed JSONC trailing comma.
+Maintenance contact: https://github.com/Sipper1236/ryostore/issues
+Community adaptation; not an official 43PR or Ryoku product.

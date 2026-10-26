@@ -1,0 +1,10 @@
+[SddmGreeterTheme]
+Name=43PR
+Description=43PR monochrome clock and outlined password capsule, adapted for qylock
+Author=43PR (Ryoku adaptation by Sipper1236)
+License=MIT
+Type=sddm-theme
+Version=1.0
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6

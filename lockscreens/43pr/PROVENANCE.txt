@@ -1,0 +1,7 @@
+Upstream: https://github.com/43PR/dotfiles/tree/39f0bc1cd743440ec030d492759d6a11e0360467
+Author: 43PR
+License: MIT (see LICENSE)
+Sources: .config/hypr/hyprlock.conf
+Adaptation: Visual adaptation to the existing qylock theme contract: centered time/date and outlined password capsule. Authentication stays in qylock; omitted upstream shell polling and personal media scripts. Solid monochrome backdrop, no screenshot capture.
+Maintenance contact: https://github.com/Sipper1236/ryostore/issues
+Community adaptation; not an official 43PR or Ryoku product.

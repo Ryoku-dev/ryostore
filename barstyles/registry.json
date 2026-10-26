@@ -269,6 +269,33 @@
       "lastUpdated": "2026-10-26",
       "official": false,
       "license": "GPL-3.0-only"
+    },
+    {
+      "id": "43pr",
+      "name": "43PR Bar",
+      "version": "1.0.0",
+      "path": "barstyles/43pr",
+      "author": "43PR (Ryoku adaptation by Sipper1236)",
+      "summary": "43PR joined bar, calendar and media",
+      "description": "The 43PR bar adapted for Ryoku: four edges, joined/floating/strip layouts, workspace dots, CPU/RAM, calendar, MPRIS media, volume, battery and connectivity. Theme follows Ryoku. Workspace actions require Hyprland. Scoped IPC layout controls; native Ryoku settings actions, no upstream settings or notification daemon.",
+      "tags": [
+        "bar",
+        "43pr",
+        "monochrome",
+        "calendar",
+        "media"
+      ],
+      "accent": "#ffffff",
+      "surface": "#050505",
+      "preview": "assets/preview.webp",
+      "screenshots": [],
+      "manifest": "manifest.json",
+      "manifestSha256": "6c90f2602e1524cd6462b20c64179ce26df1410aeca5b987d48d1231ef50cbc7",
+      "official": false,
+      "lastUpdated": "2026-10-26",
+      "license": "MIT",
+      "source": "https://github.com/43PR/dotfiles/tree/39f0bc1cd743440ec030d492759d6a11e0360467",
+      "upstream": "https://github.com/43PR/dotfiles"
     }
   ]
 }
