@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "smart-brightness",
   "category": "plugins",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "destination": "ryoku/plugins/smart-brightness",
   "files": [
     {
@@ -40,9 +40,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "3bf20a3fda7e9ecbccf66e947697381b72c6104b004867fd44459de99ee9f62c",
+      "sha256": "79dd6866ea23dd21013384fa62549b150e7041fd27d1e52e64e7c4996e8872d5",
       "mode": "0644",
-      "size": 2381,
+      "size": 2724,
       "install": false
     },
     {
@@ -56,9 +56,25 @@
     {
       "source": "bin/brightness",
       "destination": "bin/brightness",
-      "sha256": "15d88954c8c1ea26b77f42d4aa71408fca49316203b37adede5c98983e31c501",
+      "sha256": "b560d2fcb771548fc2d7a8835974533c0f8eac5eb35502fac21ee5db9d1f812b",
       "mode": "0755",
-      "size": 1258,
+      "size": 1403,
+      "install": true
+    },
+    {
+      "source": "content/Card.qml",
+      "destination": "content/Card.qml",
+      "sha256": "6cfff9713228639789978c5ea10bc82b9d9269f7e5d969f8c33525eb052f7ff0",
+      "mode": "0644",
+      "size": 5154,
+      "install": true
+    },
+    {
+      "source": "content/Glyph.qml",
+      "destination": "content/Glyph.qml",
+      "sha256": "9c513c858546ac3342d8617be088d50eb8cd6409890f9d65084dfd6761578edf",
+      "mode": "0644",
+      "size": 2547,
       "install": true
     },
     {
@@ -80,25 +96,25 @@
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "17da4a0402134fc36f0394d4c1d73fd5e2a148154a7e7bb5d918df2cdf2f2569",
+      "sha256": "af22bb31b892f364bc12dbfcc98137da2068e5d33d8d62ebd03f525db5068bb4",
       "mode": "0644",
-      "size": 2816,
+      "size": 1379,
       "install": true
     },
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "6ff4987277b44496b293109e46ff8f038dff36e0726dc72b0219216aa31a45f8",
+      "sha256": "e41ecb5fad362f26995d8bcd8599489090e62c5d18333e879a3fe74473d1228d",
       "mode": "0644",
-      "size": 1512,
+      "size": 1672,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "ce6be537ad4f2258503a86686e43044548eda5521a7296aec667dbff29bf27b8",
+      "sha256": "dbffeee8412f68117f7d43ad319cdb6ead67ba9ec029404f446b56c5c52e3dbd",
       "mode": "0644",
-      "size": 6201,
+      "size": 8267,
       "install": true
     }
   ]
