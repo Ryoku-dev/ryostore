@@ -1,0 +1,70 @@
+{
+  "id": "smart-brightness",
+  "name": "Smart Brightness",
+  "version": "0.1.0",
+  "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
+  "description": "Max the backlight for fullscreen media, then restore — the SweetPotato / fullscreen-maxbright idea as a Ryoku bar plugin.",
+  "license": "MIT",
+  "official": false,
+  "tags": [
+    "brightness",
+    "media",
+    "fullscreen",
+    "bar-widget"
+  ],
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 320
+  },
+  "files": [
+    "content/Logic.js",
+    "assets/preview-widget.png"
+  ],
+  "commands": [
+    "bin/brightness"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "icon": "brightness_auto",
+    "label": "Smart Brightness"
+  },
+  "dependencies": {
+    "commands": [
+      "brightnessctl"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "enabled",
+        "type": "toggle",
+        "label": "Watch for fullscreen media",
+        "group": "Smart Brightness",
+        "default": true
+      },
+      {
+        "key": "barLabel",
+        "type": "choice",
+        "label": "Beside the mark",
+        "group": "Smart Brightness",
+        "default": "state",
+        "options": [
+          { "value": "none", "label": "Nothing" },
+          { "value": "state", "label": "ON / VIDEO / OFF" }
+        ]
+      }
+    ]
+  }
+}

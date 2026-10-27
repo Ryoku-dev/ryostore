@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "id": "smart-brightness",
+  "category": "plugins",
+  "version": "0.1.0",
+  "destination": "ryoku/plugins/smart-brightness",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "8fe016145f569aa11f1aac1048f8f9f6f760e8aa1922557a7fcec83a35568d53",
+      "mode": "0644",
+      "size": 4635,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "a821d90f67cb96c776f78a81c60c46bc4a27549f948f1cc4949d22417e9b67d3",
+      "mode": "0644",
+      "size": 1062,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "3bf20a3fda7e9ecbccf66e947697381b72c6104b004867fd44459de99ee9f62c",
+      "mode": "0644",
+      "size": 2381,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "3df7d35a11621a551745220aad1a6f593773f90af6822e650c06a85418fcf15c",
+      "mode": "0644",
+      "size": 3627,
+      "install": false
+    },
+    {
+      "source": "bin/brightness",
+      "destination": "bin/brightness",
+      "sha256": "15d88954c8c1ea26b77f42d4aa71408fca49316203b37adede5c98983e31c501",
+      "mode": "0755",
+      "size": 1258,
+      "install": true
+    },
+    {
+      "source": "content/Logic.js",
+      "destination": "content/Logic.js",
+      "sha256": "00de0c1993bec07024544e17dde22f8769ca35d1ef35c6348b816108f944f228",
+      "mode": "0644",
+      "size": 1698,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "baa480678d21e37ed0276bbc2187a2505e73178282d3d9273871c7050cc8337b",
+      "mode": "0644",
+      "size": 6831,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "17da4a0402134fc36f0394d4c1d73fd5e2a148154a7e7bb5d918df2cdf2f2569",
+      "mode": "0644",
+      "size": 2816,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "6ff4987277b44496b293109e46ff8f038dff36e0726dc72b0219216aa31a45f8",
+      "mode": "0644",
+      "size": 1512,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "ce6be537ad4f2258503a86686e43044548eda5521a7296aec667dbff29bf27b8",
+      "mode": "0644",
+      "size": 6201,
+      "install": true
+    }
+  ]
+}

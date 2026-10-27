@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Backlight helper for the smart-brightness plugin. Argv only (R9): never
+# interpolates settings into a shell string. Writes only under the state dir
+# the service passes (R8).
+#
+#   brightness get
+#   brightness set <percent>
+#   brightness save <state-dir>
+#   brightness restore <state-dir>
+set -euo pipefail
+
+cmd="${1:-}"
+
+get_pct() {
+  brightnessctl --class=backlight -m 2>/dev/null \
+    | awk -F, 'NR == 1 { gsub(/%/, "", $4); print $4 }'
+}
+
+case "${cmd}" in
+  get)
+    get_pct
+    ;;
+  set)
+    pct="${2:?percent required}"
+    brightnessctl --class=backlight set "${pct}%" >/dev/null 2>&1 || true
+    ;;
+  save)
+    dir="${2:?state dir required}"
+    mkdir -p "${dir}"
+    pct="$(get_pct || true)"
+    # Match SPO / fullscreen-maxbright: only remember a real pre-max level.
+    if [[ -n "${pct}" ]] && (( pct < 99 )); then
+      printf '%s\n' "${pct}" > "${dir}/saved"
+    fi
+    ;;
+  restore)
+    dir="${2:?state dir required}"
+    [[ -f "${dir}/saved" ]] || exit 0
+    pct="$(tr -d '[:space:]' < "${dir}/saved" || true)"
+    [[ -n "${pct}" ]] || exit 0
+    brightnessctl --class=backlight set "${pct}%" >/dev/null 2>&1 || true
+    ;;
+  *)
+    echo "Usage: $0 get|set <pct>|save <dir>|restore <dir>" >&2
+    exit 2
+    ;;
+esac

@@ -2121,6 +2121,36 @@
       ],
       "lastUpdated": "2026-10-26",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/radio-atlas"
+    },
+    {
+      "id": "smart-brightness",
+      "name": "Smart Brightness",
+      "version": "0.1.0",
+      "path": "plugins/smart-brightness",
+      "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
+      "summary": "Max the backlight for fullscreen media, then restore — the SweetPotato / fullscreen-maxbright idea as a Ryoku bar plugin.",
+      "description": "Max the backlight for fullscreen media, then restore — the SweetPotato / fullscreen-maxbright idea as a Ryoku bar plugin.",
+      "tags": [
+        "brightness",
+        "media",
+        "fullscreen",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c3adc50d9ba5142994bcbceb812dbc9303d79f354aa8131359f209c376849ec2",
+      "official": false,
+      "tagline": "Max the backlight for fullscreen media, then restore — the SweetPotato / fullscreen-maxbright idea as a Ryoku bar plugin.",
+      "icon": "brightness_auto",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-27"
     }
   ]
 }
