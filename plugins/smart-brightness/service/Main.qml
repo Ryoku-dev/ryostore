@@ -11,6 +11,9 @@ import "../content/Logic.js" as Logic
 // restore the saved level on exit. Detection uses ToplevelManager only — never
 // hyprctl / niri / swaymsg — so it works on every Ryoku compositor. Brightness
 // keys still work during a film: we do not re-clamp while video mode is active.
+//
+// Enter is sequenced (get → remember → set 100) so a raced save cannot capture
+// the already-maxed level and leave restore with nothing useful.
 Item {
     id: svc
 
@@ -29,11 +32,9 @@ Item {
         return _has(k) ? String(settings[k]) : d;
     }
 
-    // Settings (R5): enabled is the master switch; barLabel is glyph chrome.
     readonly property bool enabled: _bool("enabled", true)
     readonly property string barLabel: _str("barLabel", "state")
 
-    // Live focus snapshot from foreign-toplevel.
     property bool focusedFullscreen: false
     property string focusedAppId: ""
     property string focusedTitle: ""
@@ -41,11 +42,16 @@ Item {
     readonly property bool wantVideo: Logic.shouldActivate(
         focusedFullscreen, focusedAppId, focusedTitle)
 
-    // True while we have raised the backlight for a media fullscreen window.
     property bool videoActive: false
-    // Last brightness percent we observed (informational).
+    // True while we are mid get→save→set enter sequence.
+    property bool entering: false
+    // In-memory restore target; file under stateDir is the durable twin.
+    property int savedPercent: -1
     property int brightnessPercent: -1
     property string lastAction: ""
+    // After an exit, ignore re-enter for a beat so a flaky fullscreen signal
+    // cannot immediately re-max and race the restore.
+    property bool exitLatch: false
 
     readonly property string statusText: Logic.statusLabel(enabled, videoActive)
     readonly property string barText: {
@@ -74,8 +80,6 @@ Item {
         if (!pluginApi || !pluginApi.saveSetting)
             return;
         pluginApi.saveSetting("enabled", !!on);
-        // Setting change rebinds `enabled`; tick after a beat so video mode
-        // exits (or re-enters) against the new value.
         Qt.callLater(svc.tick);
     }
 
@@ -85,30 +89,67 @@ Item {
 
     function _run(proc, args) {
         if (!_bin || proc.running)
-            return;
+            return false;
         proc.command = [_bin].concat(args);
         proc.running = true;
+        return true;
     }
 
     function enterVideoMode() {
-        if (videoActive)
+        if (videoActive || entering || exitLatch)
             return;
-        if (_stateDir.length > 0)
-            _run(saveProc, ["save", _stateDir]);
+        if (!_bin) {
+            videoActive = true;
+            lastAction = "video: no brightness helper";
+            return;
+        }
+        entering = true;
+        lastAction = "video: reading backlight";
+        // Always re-read: brightnessPercent may be stale or already 100.
+        if (getProc.running) {
+            // Busy; try again on the next tick.
+            entering = false;
+            return;
+        }
+        getProc._purpose = "enter";
+        getProc.command = [_bin, "get"];
+        getProc.running = true;
+    }
+
+    function _finishEnter(pct) {
+        if (pct >= 0 && pct < 99)
+            savedPercent = pct;
+        if (_stateDir.length > 0 && savedPercent >= 0 && savedPercent < 99)
+            _run(saveProc, ["save", _stateDir, String(savedPercent)]);
         videoActive = true;
+        entering = false;
         _run(setProc, ["set", "100"]);
-        lastAction = "video: max backlight";
-        refreshBrightness();
+        lastAction = savedPercent >= 0
+            ? ("video: max (was " + savedPercent + "%)")
+            : "video: max backlight";
+        brightnessPercent = 100;
     }
 
     function exitVideoMode() {
-        if (!videoActive)
+        if (!videoActive && !entering)
             return;
+        entering = false;
         videoActive = false;
-        if (_stateDir.length > 0)
+        exitLatch = true;
+        exitLatchTimer.restart();
+
+        var pct = savedPercent;
+        if (pct >= 0 && pct < 99) {
+            _run(setProc, ["set", String(pct)]);
+            lastAction = "restore " + pct + "%";
+            brightnessPercent = pct;
+        } else if (_stateDir.length > 0) {
             _run(restoreProc, ["restore", _stateDir]);
-        lastAction = "restore backlight";
-        refreshBrightness();
+            lastAction = "restore backlight";
+            refreshBrightness();
+        } else {
+            lastAction = "restore skipped (no saved level)";
+        }
     }
 
     function tick() {
@@ -142,22 +183,35 @@ Item {
     }
 
     function refreshBrightness() {
-        if (!_bin || getProc.running)
+        if (!_bin || getProc.running || entering)
             return;
+        getProc._purpose = "poll";
         getProc.command = [_bin, "get"];
         getProc.running = true;
     }
 
     Process {
         id: getProc
+        property string _purpose: "poll"
         stdout: StdioCollector {
             id: getOut
             waitForEnd: true
-            onStreamFinished: {
-                var n = parseInt(String(text).trim(), 10);
-                if (!isNaN(n))
-                    svc.brightnessPercent = n;
+        }
+        onExited: function(code) {
+            var n = parseInt(String(getOut.text).trim(), 10);
+            if (isNaN(n))
+                n = -1;
+            if (getProc._purpose === "enter") {
+                if (!svc.wantVideo || !svc.enabled) {
+                    // Left fullscreen while we were reading — abort enter.
+                    svc.entering = false;
+                    return;
+                }
+                svc._finishEnter(n);
+                return;
             }
+            if (n >= 0)
+                svc.brightnessPercent = n;
         }
     }
 
@@ -165,7 +219,17 @@ Item {
     Process { id: saveProc }
     Process { id: restoreProc }
 
-    // Follow the focused toplevel and its identity / fullscreen changes.
+    Timer {
+        id: exitLatchTimer
+        interval: 400
+        repeat: false
+        onTriggered: {
+            svc.exitLatch = false;
+            // Re-evaluate in case fullscreen media is still focused.
+            svc.tick();
+        }
+    }
+
     Connections {
         target: typeof ToplevelManager !== "undefined" ? ToplevelManager : null
         function onActiveToplevelChanged() { svc.tick(); }
@@ -186,7 +250,6 @@ Item {
         function onTitleChanged() { svc.tick(); }
     }
 
-    // Backup poll: subscribe can miss a frame across compositor reloads.
     Timer {
         interval: 1000
         running: true
@@ -204,8 +267,9 @@ Item {
     onEnabledChanged: Qt.callLater(svc.tick)
 
     Component.onCompleted: {
-        tick();
+        // Warm brightnessPercent so a fast first enter still has a fallback.
         refreshBrightness();
+        tick();
     }
 
     Component.onDestruction: exitVideoMode()
