@@ -2,9 +2,9 @@
 
 Max the backlight for compositor-fullscreen media, then restore the previous
 level when you leave — the SweetPotato / [fullscreen-maxbright](https://github.com/visnudeva/fullscreen-maxbright)
-idea as a Ryoku bar plugin.
+idea as a Ryoku plugin.
 
-![Smart Brightness on the QS Bar](assets/preview-widget.png)
+![Smart Brightness](assets/preview-widget.png)
 
 ## What it does
 
@@ -13,6 +13,11 @@ player or a video page (mpv, VLC, YouTube in Firefox/Chrome, Netflix, etc.), the
 plugin raises the backlight to 100%. Leaving fullscreen restores the saved
 level. It does **not** re-clamp while active, so the brightness keys still work
 during a film. Strip-maximize alone never triggers it.
+
+The watcher lives in `service/Main.qml` and stays alive while the plugin is
+**enabled**. Default host is a **desktop widget** on the wallpaper (drag to
+move, right-click for settings) — you do not need the QS Bar. An optional bar
+glyph + panel is still available if you want it there too.
 
 Detection uses Quickshell's `ToplevelManager` (foreign-toplevel), so it works on
 Hyprland and niri without shelling out to a compositor CLI.
@@ -38,11 +43,12 @@ Hyprland and niri without shelling out to a compositor CLI.
 
 ```
 ryoku plugin validate ~/Documents/ryoku-plugins/smart-brightness
-ryoku plugin add ~/Documents/ryoku-plugins/smart-brightness --bar --yes
+ryoku plugin add ~/Documents/ryoku-plugins/smart-brightness --yes
 ```
 
-Then find it on the QS Bar and under **QS Bar Settings > Community**. Toggle and
-status live in the glyph's panel.
+It lands as a **desktop widget** (Settings → Add-ons → Plugins, or on the
+wallpaper). Optional bar placement: `ryoku plugin add … --bar --yes`, then
+**QS Bar Settings → Community**.
 
 ### Live edit (DEVELOP.md)
 
