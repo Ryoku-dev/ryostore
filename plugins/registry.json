@@ -2001,37 +2001,6 @@
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/docker-ctl"
     },
     {
-      "id": "yatagarasu-roost",
-      "name": "Yatagarasu Roost",
-      "path": "plugins/yatagarasu-roost",
-      "author": "0xSrcAura",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/yatagarasu-roost",
-      "summary": "The Kasugai crow on your desktop — her eye wears the last notification's colour.",
-      "description": "The other half of Yatagarasu: the crow herself, roosting on the desktop on her prism wire. Her own listener watches the session's notification bus and her eye wears the freshest word — LOW cyan, MEDIUM emerald, HIGH amber, CRITICAL rose, the calm prism when the wire is clear. Companion to the Yatagarasu notification design, whose scrolls are her voice.",
-      "tagline": "The Kasugai crow on your desktop — her eye wears the last notification's colour.",
-      "tags": [
-        "desktop-widget",
-        "crow",
-        "notifications"
-      ],
-      "accent": "#10D9A3",
-      "surface": "#050A12",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "cf3bdc83321afc6188f8d51b0aca609b1570eb6c55c68b443416c265262688f6",
-      "lastUpdated": "2026-10-25",
-      "official": false,
-      "license": "GPL-3.0-or-later",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "icon": "",
-      "version": "1.0.0"
-    },
-    {
       "id": "power-menu-v2",
       "name": "Power Menu V2",
       "version": "0.2.0",
