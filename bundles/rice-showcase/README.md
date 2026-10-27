@@ -3,14 +3,14 @@
 A small kit of terminal toys and visual tools that make a desktop rice easier to
 show off: Matrix rain, bonsai, audio visualizers, system readouts, ASCII banners,
 and a few classic terminal animations. Install it from **Settings, Extras, Rice
-Showcase, Install all**, or pick individual tools from the card.
+Showcase, Install all**.
 
-## Core tools
+## Tools
 
 | Tool | What it is | Arch / CachyOS |
 | --- | --- | --- |
 | cmatrix | Matrix-style terminal rain. | pacman |
-| cbonsai | Animated terminal bonsai tree. | pacman |
+| cbonsai | Animated terminal bonsai tree. | AUR |
 | cava | Terminal audio visualizer. | pacman |
 | fastfetch | System info readout for screenshots. | pacman |
 | btop | Polished terminal resource monitor. | pacman |
@@ -18,14 +18,9 @@ Showcase, Install all**, or pick individual tools from the card.
 | lolcat | Rainbow text coloring for terminal pipes. | pacman |
 | cowsay | Classic speech-bubble terminal toy. | pacman |
 | sl | Steam locomotive terminal animation. | pacman |
-
-## Optional extras
-
-| Tool | What it is | Arch / CachyOS |
-| --- | --- | --- |
 | pipes.sh | Animated terminal pipes screensaver. | AUR |
 | tty-clock | Large terminal clock. | AUR |
-| asciiquarium | Animated ASCII aquarium. | AUR |
+| asciiquarium | Animated ASCII aquarium. | pacman |
 
 ## On Fedora and Void
 
@@ -38,6 +33,7 @@ tty-clock is not packaged for Fedora.
 
 ## Notes
 
-- Core items are included in **Install all**. Optional extras can be installed
-  one by one if someone wants more terminal flair.
+- Every tool above is part of **Install all**, so **Install all** and **Repair**
+  bring the whole kit in one go. Tools an edition does not package are skipped
+  with their reason instead of blocking the rest.
 - This is meant as a showcase/helper bundle, not a required part of any rice.

@@ -1253,7 +1253,7 @@
     {
       "id": "rice-showcase",
       "name": "Rice Showcase",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "path": "bundles/rice-showcase",
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/bundles/rice-showcase",
@@ -1272,7 +1272,7 @@
         "assets/hero.png"
       ],
       "manifest": "bundle.json",
-      "manifestSha256": "a900c62a6128f1060c881cc46fd78056661d6ca0ec7e58af9bfb1f060d1a7f2c",
+      "manifestSha256": "97fb562a772689280e510befe866a1a0cc16f6d1023522b1cf03edbf78ef8e95",
       "components": [
         {
           "type": "package",
@@ -1368,7 +1368,7 @@
           "type": "package",
           "name": "pipes.sh",
           "detect": "pipes.sh",
-          "tier": "optional",
+          "tier": "core",
           "group": "Terminal demos",
           "interactive": false,
           "summary": "Animated terminal pipes screensaver for showcase loops."
@@ -1377,7 +1377,7 @@
           "type": "package",
           "name": "tty-clock",
           "detect": "tty-clock",
-          "tier": "optional",
+          "tier": "core",
           "group": "Terminal demos",
           "interactive": false,
           "summary": "Large terminal clock for clean desktop screenshots."
@@ -1386,7 +1386,7 @@
           "type": "package",
           "name": "asciiquarium",
           "detect": "asciiquarium",
-          "tier": "optional",
+          "tier": "core",
           "group": "Terminal demos",
           "interactive": false,
           "summary": "Animated ASCII aquarium for whimsical terminal showcases."
