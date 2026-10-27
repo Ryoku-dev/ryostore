@@ -1,10 +1,10 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Ryoku.PluginKit.Singletons
 
-// Bar glyph: Material mark that flips with watching / video / off. A left click
-// opens the panel; the mark never mutates brightness itself.
+// One adaptive view: bar glyph at "glyph", desktop tile at "compact". The
+// service (pluginApi.mainInstance) does the watching either way — enabling the
+// plugin is what keeps Smart Brightness alive, not which host shows the UI.
 Item {
     id: root
 
@@ -19,72 +19,32 @@ Item {
     property bool tabActive: false
     signal requestClose()
 
-    readonly property var service: pluginApi ? pluginApi.mainInstance : null
-    readonly property bool enabled: service ? service.enabled : false
-    readonly property bool videoActive: service ? service.videoActive : false
-    readonly property string barText: service ? service.barText : ""
-    readonly property bool textShown: barText.length > 0
+    readonly property bool isGlyph: density === "glyph"
+    readonly property var view: isGlyph ? glyphLoader.item : cardLoader.item
 
-    readonly property real mark: 19
-    readonly property real gap: 6
-    readonly property real textMax: Math.max(40, (widthBudget > 0 ? widthBudget : 220) - mark - gap)
+    implicitWidth: view ? view.implicitWidth : 18 * s
+    implicitHeight: view ? view.implicitHeight : 18 * s
 
-    readonly property string glyphName: {
-        if (videoActive)
-            return "movie";
-        if (enabled)
-            return "brightness_auto";
-        return "brightness_6";
-    }
-    readonly property color glyphColor: {
-        if (videoActive)
-            return Theme.accent;
-        if (enabled)
-            return Theme.cream;
-        return Theme.dim;
+    Loader {
+        id: glyphLoader
+        active: root.isGlyph
+        sourceComponent: Glyph {
+            pluginApi: root.pluginApi
+            active: root.active
+            s: root.s
+            widthBudget: root.widthBudget
+        }
     }
 
-    implicitWidth: glyph.implicitWidth + (textShown ? gap + barLabel.width : 0)
-    implicitHeight: Math.max(mark + 3, glyph.implicitHeight)
-
-    Text {
-        id: glyph
-        x: 0
-        anchors.verticalCenter: parent.verticalCenter
-        text: root.glyphName
-        font.family: "Material Symbols Rounded"
-        font.pixelSize: root.mark
-        font.weight: 500
-        font.variableAxes: ({ "FILL": root.videoActive ? 1 : 0, "opsz": 20 })
-        renderType: Text.QtRendering
-        color: root.glyphColor
-        Behavior on color { ColorAnimation { duration: 140 } }
-    }
-
-    Text {
-        id: barLabel
-        anchors.verticalCenter: parent.verticalCenter
-        x: glyph.x + glyph.implicitWidth + root.gap
-        visible: root.textShown
-        text: root.barText
-        color: root.videoActive ? Theme.cream : Theme.faint
-        font.family: Theme.mono
-        font.pixelSize: 11
-        font.letterSpacing: 1.2
-        elide: Text.ElideRight
-        width: Math.min(implicitWidth, root.textMax)
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            if (!root.pluginApi)
-                return;
-            if (root.open)
-                root.requestClose();
-            else if (root.pluginApi.togglePanel)
-                root.pluginApi.togglePanel();
+    Loader {
+        id: cardLoader
+        active: !root.isGlyph
+        sourceComponent: Card {
+            pluginApi: root.pluginApi
+            active: root.active
+            density: root.density
+            s: root.s
+            widthBudget: root.widthBudget
         }
     }
 }
