@@ -35,7 +35,7 @@
       "format": "{#1;title}{user-name}{#}{#separator} @ {#}{#1;title}{host-name}{#}"
     },
     {
-      "format": "\u001b[38;2;34;211;238m■\u001b[0m \u001b[38;2;167;139;250m■\u001b[0m {#separator}JURAI · 樹 · modular apps & applets for Ryoku{#}",
+      "format": "\u001b[38;2;34;211;238m■\u001b[0m \u001b[38;2;167;139;250m■\u001b[0m {#separator}Jurai Suite · 樹{#}",
       "type": "custom"
     },
     "break",
@@ -45,12 +45,14 @@
     },
     {
       "key": "CPU",
-      "type": "cpu"
+      "type": "cpu",
+      "format": "{name} @ {freq-max}"
     },
     {
       "detectionMethod": "pci",
       "key": "GPU",
-      "type": "gpu"
+      "type": "gpu",
+      "format": "{vendor} {name} @ {frequency}"
     },
     {
       "key": "MEMORY",
