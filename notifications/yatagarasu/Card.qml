@@ -1,15 +1,16 @@
-/* Yatagarasu — Card.qml (v1.3.0)
+/* Yatagarasu — Card.qml (v1.4.0)
  *
  * The Kasugai scroll, seated as a Ryoku notification card.
  *
- * One scroll per message, as she always carried them: a dark
- * glass plate, a lit priority edge, the sender's seal, the
- * message in mono, and the burn along the foot — the scroll's
- * remaining life, spent while it waits. A CRITICAL scroll
- * does not burn; it waits, ember-lit, for the captain's hand.
- * The ✕ is the acknowledgment. No bird stands on the card —
- * she roosts at the corner of the desktop, and the scrolls
- * rise above her head; her eye wears the last word.
+ * One scroll per message: a dark glass plate, the sender's
+ * seal, the message in mono, a prism ribbon framing the foot
+ * and the right edge, and the burn along the foot — the
+ * scroll's remaining life, spent while it waits. The scroll
+ * unrolls as it lands. A CRITICAL scroll does not burn; it waits,
+ * ember-lit, for the captain's hand. The ✕ is the
+ * acknowledgment. The crow perches at the card's foot, on
+ * the burn wire; the scroll rides above her head and her
+ * eye wears this scroll's priority.
  *
  * Priorities are hers, from the Form Eighty: LOW cyan,
  * MEDIUM emerald, HIGH amber, CRITICAL rose. The freedesktop
@@ -115,7 +116,59 @@ Item {
 
     property bool _expanded: false
 
-    Component.onCompleted: root._bornAt = Date.now()
+    // The perch zone at the card's foot, where the crow sits.
+    readonly property real _crowScale: 0.54
+
+    // The unroll: 0 as the scroll lands, 1 once it hangs
+    // open. Instant when the user asks for calm.
+    property real _open: 0
+    NumberAnimation {
+        id: _openAnim
+        target: root; property: "_open"
+        from: 0; to: 1; duration: 620
+        easing.type: Easing.OutQuint
+    }
+
+    // The prism drift — the frame's slow colour travel,
+    // stilled when the user asks for calm.
+    property real _prism: 0
+    NumberAnimation on _prism {
+        running: !Motion.reduce
+        loops: Animation.Infinite
+        from: 0; to: 1; duration: 7000
+    }
+
+    // The frame's ribbon: one band hugging the foot and
+    // the right edge, bending with the corners.
+    readonly property string _framePath: {
+        const u = root.us, r = 12 * u, ri = r - 2 * u, T = 34 * u;
+        const W = _plate.width, H = _plate.height;
+        if (W < 3 * r + T || H < r + T + 12 * u)
+            return "";
+        return "M 0 " + (H - r - T) +
+               " L 0 " + (H - r) +
+               " A " + r + " " + r + " 0 0 0 " + r + " " + H +
+               " L " + (W - r) + " " + H +
+               " A " + r + " " + r + " 0 0 0 " + W + " " + (H - r) +
+               " L " + W + " " + r +
+               " A " + r + " " + r + " 0 0 0 " + (W - r) + " 0" +
+               " L " + (W - r - T) + " 0" +
+               " L " + (W - r) + " " + (2 * u) +
+               " A " + ri + " " + ri + " 0 0 1 " + (W - 2 * u) + " " + r +
+               " L " + (W - 2 * u) + " " + (H - r) +
+               " A " + ri + " " + ri + " 0 0 1 " + (W - r) + " " + (H - 2 * u) +
+               " L " + r + " " + (H - 2 * u) +
+               " A " + ri + " " + ri + " 0 0 1 " + (2 * u) + " " + (H - r) +
+               " Z";
+    }
+
+    Component.onCompleted: {
+        root._bornAt = Date.now();
+        if (Motion.reduce)
+            root._open = 1;
+        else
+            _openAnim.start();
+    }
     Component.onDestruction: _burnTimer.stop()
 
     Timer {
@@ -170,12 +223,10 @@ Item {
         id: _plate
         x: root._glitchX
         width: parent.width
-        height: _col.implicitHeight + Tokens.s3 * 2 * root.us
-        radius: Tokens.radius * root.us
+        height: (_col.implicitHeight + Tokens.s3 * root.us) * (0.10 + 0.90 * root._open)
+        clip: true
+        radius: 12 * root.us
         color: Qt.rgba(0.02, 0.04, 0.07, 0.88)
-        border.color: _plateHover.hovered ? Qt.alpha(root._theme, 0.85)
-                                          : Qt.alpha(root._theme, 0.55)
-        border.width: Math.max(1, Tokens.border * root.us)
 
         LayoutMirroring.enabled: root._mirrored
         LayoutMirroring.childrenInherit: true
@@ -188,28 +239,29 @@ Item {
             onClicked: root.invokeAndDismiss(root.defaultAction)
         }
 
-        // Priority edge — a lit spine of her own. Left by
-        // default, right on a left seat (mirrored above),
-        // a crown across the top for the centre column.
-        Rectangle {
-            visible: !root._centered
-            anchors { left: parent.left; top: parent.top; bottom: parent.bottom }
-            width: 2
-            radius: 1
-            color: root._theme
-            opacity: 0.85
-        }
-        Rectangle {
-            visible: root._centered
-            anchors { left: parent.left; right: parent.right; top: parent.top }
-            height: 2
-            radius: 1
-            color: root._theme
-            opacity: 0.85
+        // The frame — one prism ribbon along the foot and
+        // the right edge, bending with the corners.
+        Shape {
+            anchors.fill: parent
+            preferredRendererType: Shape.CurveRenderer
+            opacity: _plateHover.hovered ? 1.0 : 0.9
+            ShapePath {
+                fillGradient: LinearGradient {
+                    x1: 0; y1: _plate.height
+                    x2: _plate.width; y2: 0
+                    GradientStop { position: 0.0; color: Qt.hsla(0.78, 0.85, 0.62, 0.35) }
+                    GradientStop { position: 0.3; color: Qt.hsla((root._prism + 0.15) % 1, 0.85, 0.62, 0.9) }
+                    GradientStop { position: 0.55; color: Qt.hsla((root._prism + 0.45) % 1, 0.85, 0.62, 0.9) }
+                    GradientStop { position: 0.8; color: Qt.hsla((root._prism + 0.75) % 1, 0.85, 0.62, 0.9) }
+                    GradientStop { position: 1.0; color: Qt.hsla(0.52, 0.85, 0.62, 0.35) }
+                }
+                PathSvg { path: root._framePath }
+            }
         }
 
         Column {
             id: _col
+            opacity: 0.3 + 0.7 * root._open
             anchors { left: parent.left; right: parent.right; top: parent.top }
             anchors.leftMargin: Tokens.s3 * root.us
             anchors.rightMargin: Tokens.s3 * root.us
@@ -349,31 +401,6 @@ Item {
 
             Row {
                 spacing: Tokens.s2 * root.us
-                Text {
-                    text: root._stamp
-                    color: Qt.rgba(1, 1, 1, 0.35)
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro * root.us
-                }
-                Text {
-                    text: root.notification ? String(root.notification.appName || "").toUpperCase() : ""
-                    color: Qt.alpha(root._theme, 0.75)
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro * root.us
-                    font.letterSpacing: 1
-                }
-                Text {
-                    visible: root._prio === "CRITICAL"
-                    text: "ACK REQUIRED"
-                    color: "#F43F5E"
-                    font.family: Tokens.mono
-                    font.pixelSize: Tokens.fMicro * root.us
-                    font.letterSpacing: 1
-                }
-            }
-
-            Row {
-                spacing: Tokens.s2 * root.us
                 visible: root.visibleActions.length > 0
                 Repeater {
                     model: root.visibleActions
@@ -401,6 +428,64 @@ Item {
                     }
                 }
             }
+            // The foot — one shared line: the stamp at the
+            // left, the crow at the right with her feet on
+            // the burn wire, the stamp riding her eye-line.
+            Row {
+                width: parent.width
+                spacing: Tokens.s2 * root.us
+
+                Row {
+                    id: _footStamp
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: Tokens.s2 * root.us
+                    Text {
+                        text: root._stamp
+                        color: Qt.rgba(1, 1, 1, 0.35)
+                        font.family: Tokens.mono
+                        font.pixelSize: Tokens.fMicro * root.us
+                    }
+                    Text {
+                        text: root.notification ? String(root.notification.appName || "").toUpperCase() : ""
+                        color: Qt.alpha(root._theme, 0.75)
+                        font.family: Tokens.mono
+                        font.pixelSize: Tokens.fMicro * root.us
+                        font.letterSpacing: 1
+                    }
+                    Text {
+                        visible: root._prio === "CRITICAL"
+                        text: "ACK REQUIRED"
+                        color: "#F43F5E"
+                        font.family: Tokens.mono
+                        font.pixelSize: Tokens.fMicro * root.us
+                        font.letterSpacing: 1
+                    }
+                }
+
+                Item {
+                    width: parent.width - _footStamp.implicitWidth - _perch.width - 2 * Tokens.s2 * root.us
+                    height: 1
+                }
+
+                // Her perch slot — exactly her footprint:
+                // feet at its bottom edge, on the wire.
+                Item {
+                    id: _perch
+                    opacity: root._open < 0.72 ? 0 : (root._open - 0.72) * 3.6
+                    width: 128 * root._crowScale * root.us
+                    height: 100 * root._crowScale * root.us
+
+                    KasugaiCrow {
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: -16 * root._crowScale * root.us
+                        scale: root._crowScale * root.us
+                        transformOrigin: Item.BottomRight
+                        mood: root._prio
+                        calm: Motion.reduce
+                    }
+                }
+            }
         }
 
         // Her wire — the card's bottom border, prism-lit in
@@ -408,17 +493,11 @@ Item {
         // scroll does not burn; while it burns, the spend
         // point glows and flares once near the end.
         Rectangle {
-            anchors { left: parent.left; bottom: parent.bottom }
-            height: 1
-            width: parent.width
-            color: root._theme
-            opacity: 0.35
-        }
-        Rectangle {
             id: _burnWire
             anchors { left: parent.left; bottom: parent.bottom }
+            anchors.leftMargin: 6 * root.us
             height: 2
-            width: parent.width * root._life
+            width: (parent.width - 12 * root.us) * root._life
             color: root._theme
             opacity: root._prio === "CRITICAL" ? 0.8 : 0.55
 
@@ -435,7 +514,7 @@ Item {
         Rectangle {
             visible: root._burns && root._life > 0
             anchors.bottom: parent.bottom
-            x: Math.max(0, _plate.width * root._life - width)
+            x: 6 * root.us + Math.max(0, (_plate.width - 12 * root.us) * root._life - width)
             width: 7 * root.us
             height: 2
             color: root._theme

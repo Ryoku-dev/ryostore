@@ -1,17 +1,12 @@
 /* KasugaiCrow.qml — the crow herself.
  *
- * One crow per slayer. She is drawn faceted — dark
- * chrome plates with lit edges, a cybernetic bird —
- * because she is a machine that carries words, perched
- * on the prism wire at the overlay's bottom-right. Her
- * eye is the prism; when a critical scroll waits, the
- * eye burns rose and she will not settle.
- *
- * She arrives when there is something to carry and
- * takes off when the last scroll has burned — the
- * flight is the dispatch's business (it moves her x);
- * the breathing, the blink, and the restless critical
- * shiver are hers.
+ * Drawn faceted: dark chrome plates with lit edges.
+ * She perches at the foot of each scroll, on the burn
+ * wire, and her eye wears the scroll's priority. When a
+ * critical scroll waits, the eye burns rose and she
+ * will not settle. The breathing, the blink, and the
+ * restless critical shiver are hers; all of it stills
+ * when the user asks for calm.
  */
 import QtQuick
 import QtQuick.Shapes
@@ -19,9 +14,13 @@ import QtQuick.Shapes
 Item {
     id: root
 
-    // The highest priority on the wire, for the eye:
-    // "" (calm) or "CRITICAL".
+    // The priority of the scroll she perches on, for the
+    // eye: "" (calm), "LOW", "MEDIUM", "HIGH" or "CRITICAL".
     property string mood: ""
+
+    // True when the user asks for calm: breath, blink and
+    // shiver all still.
+    property bool calm: false
 
     width: 128
     height: 116
@@ -29,6 +28,7 @@ Item {
     // The breath — a slow ±2px settle, always while she
     // is on the wire.
     SequentialAnimation on y {
+        running: !root.calm
         loops: Animation.Infinite
         NumberAnimation { to: 2; duration: 2100; easing.type: Easing.InOutSine }
         NumberAnimation { to: 0; duration: 2100; easing.type: Easing.InOutSine }
@@ -38,7 +38,7 @@ Item {
     // an unacknowledged critical.
     property real _shiver: 0
     SequentialAnimation on _shiver {
-        running: root.mood === "CRITICAL"
+        running: root.mood === "CRITICAL" && !root.calm
         loops: Animation.Infinite
         NumberAnimation { to: -1.2; duration: 80 }
         NumberAnimation { to: 1.2; duration: 80 }
@@ -128,7 +128,7 @@ Item {
                 yScale: 1
             }
             SequentialAnimation {
-                running: true
+                running: !root.calm
                 loops: Animation.Infinite
                 PauseAnimation { duration: 3400 }
                 NumberAnimation { target: _lid; property: "yScale"; to: 0.08; duration: 70 }
