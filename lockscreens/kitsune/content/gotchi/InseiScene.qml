@@ -34,7 +34,7 @@ Item {
     property bool   setupPhase2:     false
     property int    resetKey:        0    // incremented on reset to force delegate re-eval
 
-    signal cardTapped(string foldId, int position)
+    signal cardTapped(string foldId, int position, real px, real py)
 
     // ── Fold data — canonical, matches backend ────────────────────────
     readonly property var _foldIds: [
@@ -148,7 +148,8 @@ Item {
 
                 rotation: _angleDeg - 270.0
 
-                onTapped: root.cardTapped(_card._fold.id || "", _card._fold.position || (_card.index + 1))
+                onTapped: root.cardTapped(_card._fold.id || "", _card._fold.position || (_card.index + 1),
+                                           _card.x + _card.width / 2, _card.y + _card.height / 2)
             }
         }
     }

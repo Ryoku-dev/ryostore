@@ -967,12 +967,12 @@
     {
       "id": "kitsune",
       "name": "Kitsune",
-      "version": "1.0.2",
+      "version": "2.0.0",
       "path": "lockscreens/kitsune",
       "author": "0xSrcAura",
       "upstream": "https://github.com/SourceAura/kitsune",
-      "summary": "Ase, the seven-tailed kitsune, and her seven tarot folds at the door.",
-      "description": "The Jurai lock, carried to the store whole: Ase, the seven-tailed kitsune, drawn in shaders and light, and her seven tarot folds. Typing binds the folds one by one, each whispered as it lands — THE EYE · TRUTH, THE PHANTOM · POWER, THE BLADE · WISDOM, THE SAGE · JUDGMENT, THE SHROUD · LIFE, THE FORGE · LOVE, THE MIRROR · DISCIPLINE. At seven the Cast rises: INVOKE THE SEAL. A wrong key hurts her and scatters the cards; the true key transforms her and opens the seal. Built in 2026 for Jurai shell; the store port preserves her scene and shaders while welcoming the selected account.",
+      "summary": "Ase, the seven-tailed kitsune, guards the lock: a veiled desktop ground, energy in the glass, prismatic water at a touch, and an optional mantra gate \u2014 set up from your session with kitsune-mantra, the companion in the package.",
+      "description": "The Jurai lock, carried to the store whole: Ase, the seven-tailed kitsune, drawn in shaders and light, and her seven tarot folds. Typing binds the folds one by one, each whispered as it lands \u2014 THE EYE \u00b7 TRUTH, THE PHANTOM \u00b7 POWER, THE BLADE \u00b7 WISDOM, THE SAGE \u00b7 JUDGMENT, THE SHROUD \u00b7 LIFE, THE FORGE \u00b7 LOVE, THE MIRROR \u00b7 DISCIPLINE. At seven the Cast rises: INVOKE THE SEAL. A wrong key hurts her and scatters the cards; the true key transforms her and opens the seal. Built in 2026 for Jurai shell; the store port preserves her scene and shaders while welcoming the selected account.",
       "tags": [
         "kitsune",
         "jurai",
@@ -983,10 +983,12 @@
       "surface": "#12131C",
       "preview": "assets/preview.webp",
       "screenshots": [
-        "assets/preview.webp"
+        "assets/preview.webp",
+        "assets/companion.webp"
       ],
       "manifest": "manifest.json",
-      "manifestSha256": "528a5cdd31744b258a309c52427e11498833ec5239cce1f17d7955f01693e67e"
+      "manifestSha256": "d69b4c5851d21fd730f3955bce5f7adc821a45b4e08525a076b5691fcb6765fc",
+      "lastUpdated": "2026-10-27"
     }
   ]
 }

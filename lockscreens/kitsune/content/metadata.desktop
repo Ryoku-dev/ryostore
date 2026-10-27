@@ -1,6 +1,6 @@
 [SddmGreeterTheme]
 Name=Kitsune
-Description=Ase, the seven-tailed kitsune, and her seven tarot folds — the Jurai lock, at the outer door
+Description=Ase, the seven-tailed kitsune, and her seven tarot folds — the Jurai lock, with a mantra gate, at the outer door. Kitsune-mantra, the companion in this package, sets the gate from your session.
 Type=sddm-theme
 MainScript=Main.qml
 ConfigFile=theme.conf

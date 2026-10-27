@@ -60,3 +60,84 @@ The port's own hand, kept as small as the Fūin port's:
     instead of naming the theme's author for every user.
   * The sign-in column sits at the foot of the screen so the
     invocation whisper stays clear at the supported 720p size.
+  * 2026-10-27 — the ground becomes the desktop itself: a third
+    layer reads /run/user/<uid>/fuin-desktop.png (cache off), the
+    screenshot tools/fuin-lock takes on the way into the lock,
+    held to the same blur and dimming; the two wallpaper layers
+    were lifted to match (blur 0.8, brightness −0.10, scrim
+    0.30), so capture-less showings — the greeter, an idle lock —
+    stand on the same veil. The capture lives only in the tmpfs.
+  * 2026-10-27 — the pulse: content/shaders/pulse.frag, a filament
+    field over the ground at a whisper, with a sporadic surge
+    front and a rare crackle flare, driven from Main.qml. Baked
+    with the qt6 shader set, like the rest of her shaders.
+  * 2026-10-27 — the name plate at the foot of the face
+    ("0XSRCAURA") is removed. The face carries no signature now.
+  * 2026-10-27 — the mantra gate, restored to the design she was
+    built for: theme.conf keys MantraGate / MantraOrder deal the
+    folds shuffled at every showing; digit keys or card taps
+    answer slot numbers in the reader's own order; a wrong
+    sequence redeals; a right one opens the password field — or,
+    when MantraPass is set on a private seat, submits the login
+    itself. The switch at the bottom right lifts the gate for one
+    showing. Shipped off; the public theme.conf carries no one's
+    order and no key.
+  * 2026-10-27 — the invoke beat and the answering glass: a spoken
+    sequence no longer fires its own verdict — at seven the Cast
+    rises in mantra mode too, and Enter (or the Cast) submits, so
+    a mis-spoken digit can still be unspoken first. And the pulse
+    shader learned touch: a click or tap lands in the ground as a
+    bloom and an outward ring at that point, card taps included
+    (the scene's cardTapped now carries the point).
+  * 2026-10-27 — the touch learned water: the ripple is now a
+    decelerating front with two trailing crests, a spectral
+    split at each rim, and a bright core line — prismatic water,
+    still threaded through the filament field.
+  * 2026-10-27 — the water made true: the pulse now samples the
+    ground (a ShaderEffectSource over the ground stack, the
+    original still standing beneath as the fallback) and bends
+    it along the wavefront — refraction, not just light. Crests
+    went fine (a bright core at a third the old width), each
+    ring carries a lit side and a shaded side, and a capillary
+    shimmer rides inside the train.
+  * 2026-10-27 — the gate's discipline, and a face that explains
+    itself: wrong sequences now count — at the limit (MantraAttempts,
+    3 standing) the gate stands down to the password field for the
+    rest of the showing, and nothing stands it again but the manual
+    switch. A refused stored key stands it down too; the old
+    auto-rearm is gone. A settings button (bottom left) opens a
+    panel: the gate switch, the attempt limit for the showing,
+    whether a key is set, and a plain account of what the gate
+    does and where its standing choices live.
+  * 2026-10-27 — the panel is a hint now: the bottom-left word
+    reads "hint", the panel is titled "MANTRA GATE — THE HINT",
+    and the four corner words (hint, mantra, reboot, power off)
+    bloom on hover — a soft shadow off the word itself, easing
+    in and out. The mantra word is part of its switch now:
+    hovering or clicking the word works the toggle.
+
+## 2026-10-27 — 2.0.0: the companion
+
+kitsune-mantra joins the package (content/companion/): a
+session-side window reusing Ase's own scene, where the order is
+spoken by tapping the cards or typing their numbers, with a
+practice mode that deals shuffled fans like the door. Its
+writer (mantraconf.py) is the only thing that writes
+theme.conf — one JSON line in on stdin, an atomic write out at
+mode 600, public state back, never the key. The shipped
+theme.conf now documents MantraAttempts, and the hint panel
+names the companion; its keys (h, g, −/+, esc) work the panel
+from the keyboard. The gate's rules did not change.
+
+2026-10-27 — 2.0.0 audit pass. The companion is hardened:
+the writer refuses malformed input and leaves theme.conf
+untouched; a seal that goes unanswered is reported; the
+writer is found without environment help. The shell moved
+to companion/run/: quickshell registers its config
+directory as an import context, under which MantraSetup's
+relative scene import does not resolve, and Qt.resolvedUrl
+returns the blackhole scheme there — the shell now stands
+alone and loads MantraSetup by absolute URL from
+Quickshell.configDir. Launch: qs -p <theme>/companion/run.
+Proven from a copy of the installed layout: the window
+renders whole and reads the standing settings.

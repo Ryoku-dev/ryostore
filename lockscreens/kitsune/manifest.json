@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "kitsune",
   "category": "lockscreens",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "destination": "qylock/themes/kitsune",
   "files": [
     {
@@ -17,24 +17,72 @@
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
       "mode": "0644",
-      "size": 3315,
-      "sha256": "39a224f479a10cb5023dfe8092c638c5fff03c4212162e4d46af70ccdaba3246",
+      "size": 8029,
+      "sha256": "887f43f82422dece854b96a07d6b6dbf970c4863845279da10896fd326dafdbd",
       "install": true
+    },
+    {
+      "source": "assets/companion.webp",
+      "destination": "assets/companion.webp",
+      "mode": "0644",
+      "size": 33060,
+      "sha256": "3c8ef771c6ef54a56f020c4ca2bf0d93d9ac22642c64c08ae185d90821e18ed9",
+      "install": false
     },
     {
       "source": "assets/preview.webp",
       "destination": "preview.webp",
       "mode": "0644",
-      "size": 18666,
-      "sha256": "e37eb300f43d44a2728dde3dd82de0906dd34d83dbc07c6b9888ba64703ec53a",
+      "size": 16428,
+      "sha256": "f7bba81239237a15ab2130b7ad0c8dda8cf084992097e1f6d4fda501c0caf009",
       "install": false
     },
     {
       "source": "content/Main.qml",
       "destination": "Main.qml",
       "mode": "0644",
-      "size": 17034,
-      "sha256": "924a1a0cdf3df3259588dbb186c0990e27ffed0b9de269ece37940e54aa5024a",
+      "size": 41595,
+      "sha256": "230898dc687fbe58c2a6f7221d0228596be01db424a9602881407a753fb404d8",
+      "install": true
+    },
+    {
+      "source": "content/companion/MantraSetup.qml",
+      "destination": "companion/MantraSetup.qml",
+      "mode": "0644",
+      "size": 19277,
+      "sha256": "2e5ae12fe692b9aa644890bcb35b643d2ef9a22a680bee19a01c3d2d8c51e406",
+      "install": true
+    },
+    {
+      "source": "content/companion/README.md",
+      "destination": "companion/README.md",
+      "mode": "0644",
+      "size": 1090,
+      "sha256": "7097db290619da21b3d04235efb53c7cc6232ce69e6914f6ee108f6f2e238c9d",
+      "install": true
+    },
+    {
+      "source": "content/companion/kitsune-mantra",
+      "destination": "companion/kitsune-mantra",
+      "mode": "0644",
+      "size": 200,
+      "sha256": "f08ba59dd12d357bee08ac40f4f55b86aa0a018fee36be72e9ba3bdfaec0ae70",
+      "install": true
+    },
+    {
+      "source": "content/companion/mantraconf.py",
+      "destination": "companion/mantraconf.py",
+      "mode": "0644",
+      "size": 4233,
+      "sha256": "3a34b3c5c0de8ce2011258f084935dd5b121c1413a1ad6f9d2eefc555e0f9423",
+      "install": true
+    },
+    {
+      "source": "content/companion/run/shell.qml",
+      "destination": "companion/run/shell.qml",
+      "mode": "0644",
+      "size": 708,
+      "sha256": "51adaac509a19b2bb769be9bdd6025a0b1ea83e3693b243ccbe094baa1a08b32",
       "install": true
     },
     {
@@ -81,8 +129,8 @@
       "source": "content/gotchi/InseiScene.qml",
       "destination": "gotchi/InseiScene.qml",
       "mode": "0644",
-      "size": 14303,
-      "sha256": "ff12112f09d7bd8fa84f96359a9c91892c3742258f0a63ec15128b69678f1b5c",
+      "size": 14419,
+      "sha256": "07f0facf788f1fcd4a9b37d7413d02aef13ddcd074d38c22186e54a5be052a1b",
       "install": true
     },
     {
@@ -113,8 +161,8 @@
       "source": "content/metadata.desktop",
       "destination": "metadata.desktop",
       "mode": "0644",
-      "size": 209,
-      "sha256": "06afcc0e6368068f6e8a2cd246b374552be680f0468080c0e72b67335f6f4fde",
+      "size": 310,
+      "sha256": "e632427faae11aa6e5c77ebc9de409cb141ec8ea62a472ae3f20ff626894c6db",
       "install": true
     },
     {
@@ -166,11 +214,27 @@
       "install": true
     },
     {
+      "source": "content/shaders/pulse.frag",
+      "destination": "shaders/pulse.frag",
+      "mode": "0644",
+      "size": 3713,
+      "sha256": "87da6a79d62586843641cb9fbbecd38bdebbdd84176016d4d5cd31a2c32822e4",
+      "install": true
+    },
+    {
+      "source": "content/shaders/pulse.frag.qsb",
+      "destination": "shaders/pulse.frag.qsb",
+      "mode": "0644",
+      "size": 7608,
+      "sha256": "82dd00e54956455d5e7ee4f957c31a8d06035821c711ba4dff4b976e96a3982b",
+      "install": true
+    },
+    {
       "source": "content/theme.conf",
       "destination": "theme.conf",
       "mode": "0644",
-      "size": 343,
-      "sha256": "e35fc5c9904b1a44552f20eeb0d0750eea3c2369eb39f8fbfc69df23a95069c0",
+      "size": 1259,
+      "sha256": "6808dbeacd09c732229d1fbebf139b0d7b1e502387c430cfc4b488b4f92f7b44",
       "install": true
     },
     {
@@ -195,6 +259,14 @@
       "mode": "0644",
       "size": 111,
       "sha256": "74454dbad4d61adf208f321fa8a32e9e2e7d06b9b6e80c7769b347c780c1a8f1",
+      "install": true
+    },
+    {
+      "source": "preview-new.webp",
+      "destination": "preview-new.webp",
+      "mode": "0644",
+      "size": 16428,
+      "sha256": "f7bba81239237a15ab2130b7ad0c8dda8cf084992097e1f6d4fda501c0caf009",
       "install": true
     }
   ]
