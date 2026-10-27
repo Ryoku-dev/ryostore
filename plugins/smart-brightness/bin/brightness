@@ -5,7 +5,7 @@
 #
 #   brightness get
 #   brightness set <percent>
-#   brightness save <state-dir>
+#   brightness save <state-dir> [percent]   # optional explicit % avoids a get/set race
 #   brightness restore <state-dir>
 set -euo pipefail
 
@@ -27,8 +27,12 @@ case "${cmd}" in
   save)
     dir="${2:?state dir required}"
     mkdir -p "${dir}"
-    pct="$(get_pct || true)"
-    # Match SPO / fullscreen-maxbright: only remember a real pre-max level.
+    if [[ "${3:-}" =~ ^[0-9]+$ ]]; then
+      pct="${3}"
+    else
+      pct="$(get_pct || true)"
+    fi
+    # Only remember a real pre-max level (same idea as SPO / fullscreen-maxbright).
     if [[ -n "${pct}" ]] && (( pct < 99 )); then
       printf '%s\n' "${pct}" > "${dir}/saved"
     fi
@@ -41,7 +45,7 @@ case "${cmd}" in
     brightnessctl --class=backlight set "${pct}%" >/dev/null 2>&1 || true
     ;;
   *)
-    echo "Usage: $0 get|set <pct>|save <dir>|restore <dir>" >&2
+    echo "Usage: $0 get|set <pct>|save <dir> [pct]|restore <dir>" >&2
     exit 2
     ;;
 esac
