@@ -2090,6 +2090,32 @@
       ],
       "lastUpdated": "2026-10-26",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/radio-atlas"
+    },
+    {
+      "id": "sugar-tracker",
+      "name": "Sugar Tracker",
+      "version": "1.0.1",
+      "path": "plugins/sugar-tracker",
+      "author": "Hatem <hatem@users.noreply.github.com>",
+      "summary": "Track daily sugar intake in grams from the QS Bar.",
+      "description": "Track daily sugar intake in grams from the QS Bar.",
+      "tags": [
+        "bar-widget",
+        "health"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "",
+      "screenshots": [],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "e621844bd23160455970637b37e75daaf75cb8c0654c53bfadfd25050542dd2e",
+      "official": false,
+      "tagline": "Track daily sugar intake in grams from the QS Bar.",
+      "icon": "fork_spoon",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-29"
     }
   ]
 }
