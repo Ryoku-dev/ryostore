@@ -1,14 +1,15 @@
 # Sugar Tracker
 
-A Ryoku QS Bar plugin for recording daily sugar intake in grams. Use its panel
-to add common or custom amounts, review today's entries, and compare the total
-with your configurable daily goal.
+A Ryoku QS Bar plugin for recording daily sweetener intake in grams. Use its
+panel to log ordinary white sugar, brown sugar, or stevia, add a custom
+amount, review
+today's entries, and compare the total with your configurable daily goal.
 
 ## What it does
 
-- Shows a sugar mark on the QS Bar; the current total appears next to it after
-  you have logged an entry.
-- Adds 4 g, 8 g, or 12 g with one tap, or lets you enter a custom amount.
+- Shows a small spoon-only mark on the QS Bar, shifting from white through green to orange as you approach and pass your daily target.
+- Expand Quick add to tap Sugar (white), Brown sugar, or Stevia. Set each
+  amount in Ryoku Settings, or enter a custom amount.
 - Displays today's total, progress toward your goal, and the latest entries.
 - Supports undoing the latest entry and clearing today's log.
 
@@ -42,15 +43,17 @@ Ryoku owns the bar placement, panel surface, and settings UI.
 
 | Setting | Default | Meaning |
 | --- | ---: | --- |
-| Daily sugar goal (g) | 25 | Goal shown in the bar panel; change it in Ryoku Settings > Plugins > Sugar Tracker. |
+| Daily sweetener goal (g) | 25 | Goal shown in the bar panel; change it in Ryoku Settings > Plugins > Sugar Tracker. || White sugar per tap (g) | 4 | Amount logged by the Sugar (white) quick-add button, the standard tap shown first. |
+| Brown sugar per tap (g) | 4 | Amount logged by the Brown sugar quick-add button. | Stevia per tap (g) | 1 | Amount logged by the Stevia quick-add button. |
 
 ## Data and permissions
 
 The plugin runs as part of Ryoku Shell with the user's permissions. It does not
 run external programs or access the network. It reads and writes its own log at
 `pluginApi.stateDir/sugar-log.json` (under Ryoku's per-plugin state directory).
-Entries older than 14 days are discarded when the log loads. No other plugin or
-shell configuration files are modified.
+Entries older than 14 days are discarded when the log loads. Quick-add amounts
+are plugin settings managed by Ryoku. No other plugin or shell configuration
+files are modified.
 
 ## Develop
 

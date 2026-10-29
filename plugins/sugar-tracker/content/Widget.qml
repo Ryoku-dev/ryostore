@@ -14,18 +14,48 @@ Item {
 
   readonly property var service: pluginApi ? pluginApi.mainInstance : null
   readonly property real contentW: density === "glyph" ? 32 * s : Math.min(widthBudget > 0 ? widthBudget : 320 * s, 320 * s)
+  readonly property color spoonColor: {
+    var progress = service ? Math.max(0, service.todayGrams / service.dailyGoal) : 0
+    var start = progress < 0.5 ? Qt.rgba(1, 1, 1, 1) : Qt.rgba(0.20, 0.76, 0.39, 1)
+    var end = progress < 0.5 ? Qt.rgba(0.20, 0.76, 0.39, 1) : Qt.rgba(1, 0.56, 0.18, 1)
+    var amount = progress < 0.5 ? progress * 2 : Math.min(1, (progress - 0.5) * 2)
+    return Qt.rgba(
+      start.r + (end.r - start.r) * amount,
+      start.g + (end.g - start.g) * amount,
+      start.b + (end.b - start.b) * amount,
+      1)
+  }
   implicitWidth: contentW
   implicitHeight: density === "glyph" ? 32 * s : body.implicitHeight
 
-  Text {
+  Canvas {
+    id: spoonMark
     anchors.centerIn: parent
     visible: root.density === "glyph"
-    text: "fork_spoon"
-    color: root.service?.overGoal ? Theme.brand : Theme.cream
-    font.family: "Material Symbols Rounded"
-    font.pixelSize: 20 * root.s
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
+    width: 22 * root.s
+    height: 32 * root.s
+    onPaint: {
+      var ctx = getContext("2d")
+      var scale = root.s
+      var color = root.spoonColor
+      ctx.clearRect(0, 0, width, height)
+      ctx.fillStyle = color
+      ctx.strokeStyle = color
+      ctx.lineCap = "round"
+      ctx.beginPath()
+      ctx.ellipse(11 * scale, 8 * scale, 7 * scale, 9 * scale, 0, 0, 2 * Math.PI)
+      ctx.fill()
+      ctx.lineWidth = 3 * scale
+      ctx.beginPath()
+      ctx.moveTo(11 * scale, 16 * scale)
+      ctx.bezierCurveTo(11 * scale, 20 * scale, 12 * scale, 25 * scale, 12 * scale, 30 * scale)
+      ctx.stroke()
+    }
+    Connections {
+      target: root.service
+      function onTodayGramsChanged() { spoonMark.requestPaint() }
+      function onDailyGoalChanged() { spoonMark.requestPaint() }
+    }
   }
 
   MouseArea {

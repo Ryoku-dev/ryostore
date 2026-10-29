@@ -58,6 +58,70 @@
       "lastUpdated": "2026-10-19"
     },
     {
+      "id": "caffeinated",
+      "name": "Caffeinated",
+      "version": "0.1.1",
+      "path": "plugins/caffeinated",
+      "author": "Madhav Khosla <madhav.khoslaa@gmail.com>",
+      "summary": "One switch: the whole machine stays awake, even with the lid closed.",
+      "description": "System-wide caffeine: one switch keeps the whole machine awake (no sleep, even with the lid closed), screen on and unlocked or locking as usual.",
+      "tags": [
+        "caffeine",
+        "power",
+        "idle",
+        "lid",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/screenshot-bar-panel.png",
+        "assets/screenshot-bar.png",
+        "assets/screenshot-settings.png",
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "027257aec1d943b3c6bb92683b33ec505275f72097995c4359e9541a65392a18",
+      "official": false,
+      "tagline": "One switch: the whole machine stays awake, even with the lid closed.",
+      "icon": "coffee",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-20",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/caffeinated"
+    },
+    {
+      "id": "claude-companion",
+      "name": "Claude Companion",
+      "version": "0.1.1",
+      "path": "plugins/claude-companion",
+      "author": "AdriLabTech <labs.lownoise@gmail.com>",
+      "upstream": "https://github.com/AdriLabTech/claude-companion",
+      "summary": "A pixel-art spark on your desktop that mirrors what Claude Code is doing, opens a mini chat, guides first-time sign-in and wears seasonal outfits.",
+      "description": "A pixel-art spark that sits on your desktop, mirrors what Claude Code is doing, and opens a small chat when clicked. Guides first-time users through installing and signing in, and dresses for Christmas, Halloween, summer, spring and autumn.",
+      "tags": [
+        "desktop-widget"
+      ],
+      "accent": "#d97757",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "3aee23d2996e84b1137d4e7889fe66e4b61d879221815a1d1ae6458fcba73fc7",
+      "official": false,
+      "tagline": "A pixel-art spark that mirrors what Claude Code is doing and opens a mini chat.",
+      "icon": "smart_toy",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-20"
+    },
+    {
       "id": "coffee",
       "name": "Coffee",
       "version": "0.1.0",
@@ -89,6 +153,73 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "docker-ctl",
+      "name": "Docker",
+      "version": "0.2.1",
+      "path": "plugins/docker-ctl",
+      "author": "Madhav Khosla <madhav.khoslaa@gmail.com>",
+      "summary": "Docker on the bar: see every local container, start, stop or restart it, and edit its published ports and mounts.",
+      "description": "Docker on the bar: see every local container, start, stop or restart it, and edit its published ports and mounts by recreating it.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "00f10784f3abace06d6bec0c5e1aa78401b2d019def5f6019c248c0f6a1ea53c",
+      "official": false,
+      "tagline": "Docker on the bar: see every local container, start, stop or restart it, and edit its published ports and mounts.",
+      "icon": "docker",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-25",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/docker-ctl"
+    },
+    {
+      "id": "dragshift",
+      "name": "DragShift",
+      "version": "0.4.0",
+      "path": "plugins/dragshift",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/dragshift",
+      "author": "CratusGod <nghiabigg652@gmail.com>",
+      "summary": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
+      "description": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Results land next to the originals, which are never changed.",
+      "tags": [
+        "files",
+        "convert",
+        "images",
+        "pdf",
+        "compress",
+        "dragshift",
+        "folders",
+        "zip",
+        "video",
+        "ocr",
+        "pdf-tools",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "d8f46ef6e1be18fd6ba7b2d58c5091143e48423bc8e0b19b84dc721cb176bb97",
+      "official": false,
+      "tagline": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
+      "icon": "swap_horiz",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-22"
     },
     {
       "id": "emoji",
@@ -123,6 +254,102 @@
       "lastUpdated": "2026-08-20"
     },
     {
+      "id": "game-memory-mode",
+      "name": "Game Mode Optimizer",
+      "path": "plugins/game-memory-mode",
+      "version": "0.2.1",
+      "author": "Sannidhya Sandheer",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/game-memory-mode",
+      "official": false,
+      "tagline": "A quieter desktop while you game.",
+      "description": "Temporarily stop voice typing and replace animated wallpapers while gaming; restore the desktop afterwards.",
+      "icon": "sports_esports",
+      "tags": [
+        "bar-widget",
+        "gaming"
+      ],
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "lastUpdated": "2026-10-20",
+      "manifestSha256": "b5ae2fbec1a7f267cca0ce27154ea37d5860dd3580bbbff1fb6274891e1e73f5",
+      "summary": "Temporarily stop voice typing and replace animated wallpapers while gaming; restore the desktop afterwards.",
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "manifest": "product-manifest.json"
+    },
+    {
+      "id": "github-heatmap",
+      "name": "GitHub Heatmap",
+      "version": "0.8.0",
+      "path": "plugins/github-heatmap",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/github-heatmap",
+      "author": "Samuel Flores <mail@safloresmo.com>",
+      "summary": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
+      "description": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
+      "tags": [
+        "github",
+        "contributions",
+        "heatmap",
+        "calendar",
+        "desktop-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-github.png",
+        "assets/preview-minimal.png",
+        "assets/preview-settings.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "55c3fb749bfbcc7f444980dc25ccd94852b488f733a4fb4665815fed545e6293",
+      "official": false,
+      "tagline": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
+      "icon": "calendar_month",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-24"
+    },
+    {
+      "id": "gitlab-heatmap",
+      "name": "GitLab Heatmap",
+      "version": "0.1.0",
+      "path": "plugins/gitlab-heatmap",
+      "upstream": "https://github.com/Matcraft94/ryostore",
+      "author": "Lucy E. Arias <matcraft94@pm.me>",
+      "summary": "Your GitLab contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+      "description": "Your GitLab contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+      "tags": [
+        "gitlab",
+        "contributions",
+        "heatmap",
+        "calendar",
+        "desktop-widget"
+      ],
+      "accent": "#e24329",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7d14efd87f26c03b811b40e10ba9bb5560bc2f0e09060557d4d72d2cf37fd67b",
+      "official": false,
+      "tagline": "Your GitLab contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
+      "icon": "calendar_month",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-10-13"
+    },
+    {
       "id": "gmail",
       "name": "Gmail",
       "version": "1.0.0",
@@ -153,6 +380,130 @@
         "framePopout"
       ],
       "lastUpdated": "2026-09-07"
+    },
+    {
+      "id": "goxlr",
+      "name": "GoXLR",
+      "version": "1.0.0",
+      "path": "plugins/goxlr",
+      "author": "dajax",
+      "upstream": "https://github.com/millerjryan/ryoku-goxlr",
+      "summary": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel.",
+      "description": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel. Backed by the goxlr-utility daemon over its local HTTP API; routing, effects, sampler, lighting, and profiles stay in the GoXLR app.",
+      "tags": [
+        "bar-widget",
+        "audio"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-panel.png",
+      "screenshots": [
+        "assets/preview-panel.png",
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c50fb4fd2ac01fb6d8db7edefe28d29c2392623a73181c66863b2614be81c114",
+      "official": false,
+      "tagline": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-07"
+    },
+    {
+      "id": "gpu-monitor",
+      "name": "GPU Monitor",
+      "version": "0.2.0",
+      "path": "plugins/gpu-monitor",
+      "author": "hectorbaez81 <hector.baez@gmail.com>",
+      "upstream": "https://github.com/hectorbaez81/gpu-monitor",
+      "summary": "Rootless GPU monitor for Intel (i915, xe), AMD (amdgpu) and NVIDIA: usage, clocks, VRAM, temperature, throttling and top GPU processes.",
+      "description": "Rootless GPU monitor for Intel (i915, xe), AMD (amdgpu) and NVIDIA: usage, clocks, VRAM, temperature, throttling and top GPU processes.",
+      "tags": [
+        "gpu",
+        "monitor",
+        "bar-widget"
+      ],
+      "accent": "#a8c4f5",
+      "surface": "#15171c",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "8d4d7f8e8f37383199c36949047bea806cdf414cf3fcf73926cf9f21ede099ff",
+      "official": false,
+      "tagline": "GPU usage, clocks, temperature and top processes on the bar, without root.",
+      "icon": "developer_board",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-25"
+    },
+    {
+      "id": "kbd-layouts",
+      "name": "Keyboard Layouts",
+      "version": "0.1.0",
+      "path": "plugins/kbd-layouts",
+      "author": "Madhav Khosla <madhav.khoslaa@gmail.com>",
+      "summary": "A layout per keyboard: pick each USB keyboard's layout, and the laptop's, from the bar.",
+      "description": "A layout per keyboard: lists your USB keyboards and the laptop keyboard on the bar and lets you pick each one's layout (US on the external board, UK on the laptop), remembered across replugs and reloads.",
+      "tags": [
+        "keyboard",
+        "layout",
+        "input",
+        "xkb",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-panel.png",
+        "assets/preview-panel-layouts.png",
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "93fcd959f8bf034efbbe552940b52ea356c51212c5a8d8c93817934ad37b30a3",
+      "official": false,
+      "tagline": "A layout per keyboard: pick each USB keyboard's layout, and the laptop's, from the bar.",
+      "icon": "keyboard",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-21",
+      "windowManager": "hyprland",
+      "windowManagerReason": "Uses Hyprland's device API to assign layouts per keyboard.",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/kbd-layouts"
+    },
+    {
+      "id": "kdeconnect-status",
+      "name": "KDE Connect",
+      "version": "0.1.0",
+      "path": "plugins/kdeconnect-status",
+      "author": "vampirejsv <vampirejsv@local>",
+      "summary": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
+      "description": "Live KDE Connect device status on the bar: connection, battery, unread notification count. Read-only, no actions.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "9f91989b658352164823b47066af5a40d76c2132e8330612ee09f0ffeea90fd9",
+      "official": false,
+      "tagline": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
+      "icon": "phone_android",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-09-29",
+      "upstream": "https://github.com/vampireJSV/ryoku-plugin-kdeconnect-status"
     },
     {
       "id": "key-visualizer",
@@ -218,6 +569,36 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-09-20"
+    },
+    {
+      "id": "launchpad",
+      "name": "Launchpad",
+      "version": "0.1.0",
+      "path": "plugins/launchpad",
+      "author": "guyb <blumguy111@gmail.com>",
+      "summary": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any...",
+      "description": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any installed desktop-widget plugin), favourite apps and one-click commands. Reorder or hide anything.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-panel.png",
+      "screenshots": [
+        "assets/preview-panel.png",
+        "assets/preview-edit.png",
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "86e25f0e399e09a7ec66630cef456378845207fd48d80ed7368f8b1df15245f6",
+      "official": false,
+      "tagline": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any...",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-06",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/launchpad"
     },
     {
       "id": "market",
@@ -1158,323 +1539,6 @@
       "lastUpdated": "2026-09-24"
     },
     {
-      "id": "obsidian",
-      "name": "Obsidian",
-      "version": "1.3.1",
-      "path": "plugins/obsidian",
-      "author": "Ryoku Team",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/obsidian",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Quick-capture into your Obsidian vault, right from the desktop.",
-      "description": "A desktop-widget plugin that adopts your existing Obsidian vault and settings, then turns the everyday moves into two views: a Board of tappable workflow blocks and a Graph of your vault. Create or open today's daily note (with your folder, filename format, and template), open any note, and append text, tasks, links, pasted images, or voice memos - with a live elapsed timer, a discard, and attachments filed next to the target note. Capture retargets are one-off (the default inbox stays a setting), delete asks with a second tap, Enter drives the pickers, and the Graph runs its layout only when the vault changes - tap a node to spotlight it, tap again to open. Local-first and opt-in - nothing runs until you pick a vault, and notes are written straight to disk.",
-      "tags": [
-        "obsidian",
-        "notes",
-        "graph",
-        "productivity",
-        "desktop-widget"
-      ],
-      "accent": "#7c3aed",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png",
-        "assets/preview-graph.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "e06629eb9b8dc98f5d0946ddcdcb19b03dde6c0f37ebe45e87353c77b29888ef",
-      "official": true,
-      "tagline": "Quick-capture into your Obsidian vault, right from the desktop.",
-      "icon": "file",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-08-12"
-    },
-    {
-      "id": "photo-frame",
-      "name": "Photo Frame",
-      "version": "1.4.0",
-      "path": "plugins/photo-frame",
-      "author": "Ryoku Team",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/photo-frame",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Pin a photo to your desktop, framed the way you like it.",
-      "description": "A desktop-widget plugin that pins any photo to your wallpaper in a chosen frame style - rounded, square, polaroid, framed, or film - with a tunable drop shadow and live colour filters (mono, noir, sepia, warm, cool, vivid, fade). Drag, resize, and place it alongside your clock and weather; it ships with a sample photo so it looks right the moment you enable it.",
-      "tags": [
-        "photo",
-        "desktop-widget"
-      ],
-      "accent": "#f59e0b",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "3b28f90afa928baed4c46e9334eee815953d571c39d55829181124aaf2cedacf",
-      "official": true,
-      "tagline": "Pin a photo to your desktop, framed the way you like it.",
-      "icon": "image",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-06-27"
-    },
-    {
-      "id": "stargate",
-      "name": "Stargate",
-      "version": "1.1.2",
-      "path": "plugins/stargate",
-      "author": "Ryoku Team",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/stargate",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "A living Stargate that dials the time on your desktop.",
-      "description": "A desktop-widget plugin that turns the clock into a dialing Stargate: it encodes the time as a seven-glyph gate address and dials it live - the ring turns, the chevrons lock in sequence, the event horizon opens, and it re-dials each minute. Four faces: Naquadah, a cinematic Milky Way ring with engraved glyphs, red chevrons and a liquid event horizon; Hologram, an Ancient cyan projection with a scan beam and amber-energised locks; Dossier, a declassified SGC dialing log with a rotated ink stamp and a printed address block; and Inscription, which drops the clock and carves any sentence you type into gate glyphs on a stone tablet. Built-in procedural glyphs need no font; add a cap_resources Stargate font for the authentic symbols.",
-      "tags": [
-        "clock",
-        "stargate",
-        "sci-fi",
-        "desktop-widget"
-      ],
-      "accent": "#38bdf8",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png",
-        "assets/preview-naquadah.png",
-        "assets/preview-hologram.png",
-        "assets/preview-dossier.png",
-        "assets/preview-inscription.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "bdc1d21b5569534ae9c9b0ae321b645150a40498c6e3b64755d55fb777a8aaa9",
-      "official": true,
-      "tagline": "A living Stargate that dials the time on your desktop.",
-      "icon": "hotspot",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-08-12"
-    },
-    {
-      "id": "vpn",
-      "name": "VPN",
-      "version": "2.0.0",
-      "path": "plugins/vpn",
-      "author": "neur0map <hello@ryoku.dev>",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/vpn",
-      "discord": "https://discord.gg/8KjBmUEyKA",
-      "summary": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles,...",
-      "description": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles, in a bar panel or a desktop card.",
-      "tags": [
-        "vpn",
-        "network",
-        "tailscale",
-        "bar-widget",
-        "desktop-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png",
-        "assets/preview-desktop.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "5493894e33ace5e10fd4dd4db0007e9b1a666178cee5927d106d8011e758b80c",
-      "official": false,
-      "tagline": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles,...",
-      "icon": "vpn_lock",
-      "hosts": [
-        "topbarGlyph",
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-09-02"
-    },
-    {
-      "id": "public-ip",
-      "name": "IP Pública",
-      "version": "0.1.0",
-      "path": "plugins/public-ip",
-      "author": "vampirejsv <vampirejsv@local>",
-      "summary": "Muestra la IP pública actual (consultando https://checkip.",
-      "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
-      "tags": [
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "eced7c39a65f038744a15ea4577d65648243e948521fa46d80b1f107eb9b2cc0",
-      "official": false,
-      "tagline": "Muestra la IP pública actual (consultando https://checkip.",
-      "icon": "public",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-09-29",
-      "upstream": "https://github.com/vampireJSV/ryoku-plugin-public-ip"
-    },
-    {
-      "id": "github-heatmap",
-      "name": "GitHub Heatmap",
-      "version": "0.8.0",
-      "path": "plugins/github-heatmap",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/github-heatmap",
-      "author": "Samuel Flores <mail@safloresmo.com>",
-      "summary": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
-      "description": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
-      "tags": [
-        "github",
-        "contributions",
-        "heatmap",
-        "calendar",
-        "desktop-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png",
-        "assets/preview-github.png",
-        "assets/preview-minimal.png",
-        "assets/preview-settings.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "55c3fb749bfbcc7f444980dc25ccd94852b488f733a4fb4665815fed545e6293",
-      "official": false,
-      "tagline": "Your GitHub contribution calendar on the wallpaper: four designs, palettes that follow your theme, streaks and a glass card.",
-      "icon": "calendar_month",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-10-24"
-    },
-    {
-      "id": "gitlab-heatmap",
-      "name": "GitLab Heatmap",
-      "version": "0.1.0",
-      "path": "plugins/gitlab-heatmap",
-      "upstream": "https://github.com/Matcraft94/ryostore",
-      "author": "Lucy E. Arias <matcraft94@pm.me>",
-      "summary": "Your GitLab contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
-      "description": "Your GitLab contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
-      "tags": [
-        "gitlab",
-        "contributions",
-        "heatmap",
-        "calendar",
-        "desktop-widget"
-      ],
-      "accent": "#e24329",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "7d14efd87f26c03b811b40e10ba9bb5560bc2f0e09060557d4d72d2cf37fd67b",
-      "official": false,
-      "tagline": "Your GitLab contribution calendar on the wallpaper, with quick styles, eight palettes, streaks and frosted glass.",
-      "icon": "calendar_month",
-      "hosts": [
-        "desktopWidget"
-      ],
-      "lastUpdated": "2026-10-13"
-    },
-    {
-      "id": "kdeconnect-status",
-      "name": "KDE Connect",
-      "version": "0.1.0",
-      "path": "plugins/kdeconnect-status",
-      "author": "vampirejsv <vampirejsv@local>",
-      "summary": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
-      "description": "Live KDE Connect device status on the bar: connection, battery, unread notification count. Read-only, no actions.",
-      "tags": [
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "9f91989b658352164823b47066af5a40d76c2132e8330612ee09f0ffeea90fd9",
-      "official": false,
-      "tagline": "Live KDE Connect device status on the bar: connection, battery, unread notification count.",
-      "icon": "phone_android",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-09-29",
-      "upstream": "https://github.com/vampireJSV/ryoku-plugin-kdeconnect-status"
-    },
-    {
-      "id": "strata",
-      "name": "Local LLM Manager",
-      "version": "0.4.1",
-      "path": "plugins/strata",
-      "author": "guyb <blumguy111@gmail.com>",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/strata",
-      "summary": "Pick a local model and start or stop it from the bar.",
-      "description": "Pick a local model and start or stop it from the bar. Finds Strata, TabbyAPI and llama.cpp engines and their models, one port per model.",
-      "tags": [
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png",
-        "assets/preview-panel.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "c91c48db99aae8ffc6eeb2681388b62a0de70133499087ed174ed79b1b7d5494",
-      "official": false,
-      "tagline": "Pick a local model and start or stop it from the bar.",
-      "icon": "",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-20"
-    },
-    {
-      "id": "launchpad",
-      "name": "Launchpad",
-      "version": "0.1.0",
-      "path": "plugins/launchpad",
-      "author": "guyb <blumguy111@gmail.com>",
-      "summary": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any...",
-      "description": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any installed desktop-widget plugin), favourite apps and one-click commands. Reorder or hide anything.",
-      "tags": [
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-panel.png",
-      "screenshots": [
-        "assets/preview-panel.png",
-        "assets/preview-edit.png",
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "86e25f0e399e09a7ec66630cef456378845207fd48d80ed7368f8b1df15245f6",
-      "official": false,
-      "tagline": "A pinboard under one bar mark: your pick of widgets (clock, calendar, music, all-in-one, system stats, weather, notes, visualizer, or any...",
-      "icon": "",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-06",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/launchpad"
-    },
-    {
       "id": "nothing-analog-clock",
       "name": "Nothing Analog Clock",
       "version": "0.2.0",
@@ -1655,91 +1719,128 @@
       "lastUpdated": "2026-10-01"
     },
     {
-      "id": "goxlr",
-      "name": "GoXLR",
-      "version": "1.0.0",
-      "path": "plugins/goxlr",
-      "author": "dajax",
-      "upstream": "https://github.com/millerjryan/ryoku-goxlr",
-      "summary": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel.",
-      "description": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel. Backed by the goxlr-utility daemon over its local HTTP API; routing, effects, sampler, lighting, and profiles stay in the GoXLR app.",
+      "id": "obsidian",
+      "name": "Obsidian",
+      "version": "1.3.1",
+      "path": "plugins/obsidian",
+      "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/obsidian",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Quick-capture into your Obsidian vault, right from the desktop.",
+      "description": "A desktop-widget plugin that adopts your existing Obsidian vault and settings, then turns the everyday moves into two views: a Board of tappable workflow blocks and a Graph of your vault. Create or open today's daily note (with your folder, filename format, and template), open any note, and append text, tasks, links, pasted images, or voice memos - with a live elapsed timer, a discard, and attachments filed next to the target note. Capture retargets are one-off (the default inbox stays a setting), delete asks with a second tap, Enter drives the pickers, and the Graph runs its layout only when the vault changes - tap a node to spotlight it, tap again to open. Local-first and opt-in - nothing runs until you pick a vault, and notes are written straight to disk.",
       "tags": [
-        "bar-widget",
-        "audio"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-panel.png",
-      "screenshots": [
-        "assets/preview-panel.png",
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "c50fb4fd2ac01fb6d8db7edefe28d29c2392623a73181c66863b2614be81c114",
-      "official": false,
-      "tagline": "Core GoXLR / GoXLR Mini control from the bar: a volume capsule with a quick flash on change, mic mute, and per-channel volumes in the panel.",
-      "icon": "",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-07"
-    },
-    {
-      "id": "game-memory-mode",
-      "name": "Game Mode Optimizer",
-      "path": "plugins/game-memory-mode",
-      "version": "0.2.1",
-      "author": "Sannidhya Sandheer",
-      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/game-memory-mode",
-      "official": false,
-      "tagline": "A quieter desktop while you game.",
-      "description": "Temporarily stop voice typing and replace animated wallpapers while gaming; restore the desktop afterwards.",
-      "icon": "sports_esports",
-      "tags": [
-        "bar-widget",
-        "gaming"
-      ],
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "lastUpdated": "2026-10-20",
-      "manifestSha256": "b5ae2fbec1a7f267cca0ce27154ea37d5860dd3580bbbff1fb6274891e1e73f5",
-      "summary": "Temporarily stop voice typing and replace animated wallpapers while gaming; restore the desktop afterwards.",
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "manifest": "product-manifest.json"
-    },
-    {
-      "id": "claude-companion",
-      "name": "Claude Companion",
-      "version": "0.1.1",
-      "path": "plugins/claude-companion",
-      "author": "AdriLabTech <labs.lownoise@gmail.com>",
-      "upstream": "https://github.com/AdriLabTech/claude-companion",
-      "summary": "A pixel-art spark on your desktop that mirrors what Claude Code is doing, opens a mini chat, guides first-time sign-in and wears seasonal outfits.",
-      "description": "A pixel-art spark that sits on your desktop, mirrors what Claude Code is doing, and opens a small chat when clicked. Guides first-time users through installing and signing in, and dresses for Christmas, Halloween, summer, spring and autumn.",
-      "tags": [
+        "obsidian",
+        "notes",
+        "graph",
+        "productivity",
         "desktop-widget"
       ],
-      "accent": "#d97757",
+      "accent": "#7c3aed",
       "surface": "#101010",
       "preview": "assets/preview-widget.png",
       "screenshots": [
-        "assets/preview-widget.png"
+        "assets/preview-widget.png",
+        "assets/preview-graph.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "3aee23d2996e84b1137d4e7889fe66e4b61d879221815a1d1ae6458fcba73fc7",
-      "official": false,
-      "tagline": "A pixel-art spark that mirrors what Claude Code is doing and opens a mini chat.",
-      "icon": "smart_toy",
+      "manifestSha256": "e06629eb9b8dc98f5d0946ddcdcb19b03dde6c0f37ebe45e87353c77b29888ef",
+      "official": true,
+      "tagline": "Quick-capture into your Obsidian vault, right from the desktop.",
+      "icon": "file",
       "hosts": [
         "desktopWidget"
       ],
-      "lastUpdated": "2026-10-20"
+      "lastUpdated": "2026-08-12"
+    },
+    {
+      "id": "photo-frame",
+      "name": "Photo Frame",
+      "version": "1.4.0",
+      "path": "plugins/photo-frame",
+      "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/photo-frame",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Pin a photo to your desktop, framed the way you like it.",
+      "description": "A desktop-widget plugin that pins any photo to your wallpaper in a chosen frame style - rounded, square, polaroid, framed, or film - with a tunable drop shadow and live colour filters (mono, noir, sepia, warm, cool, vivid, fade). Drag, resize, and place it alongside your clock and weather; it ships with a sample photo so it looks right the moment you enable it.",
+      "tags": [
+        "photo",
+        "desktop-widget"
+      ],
+      "accent": "#f59e0b",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "3b28f90afa928baed4c46e9334eee815953d571c39d55829181124aaf2cedacf",
+      "official": true,
+      "tagline": "Pin a photo to your desktop, framed the way you like it.",
+      "icon": "image",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-06-27"
+    },
+    {
+      "id": "power-button",
+      "name": "Session",
+      "version": "0.2.2",
+      "path": "plugins/power-button",
+      "author": "Felix <eu@leandrofelix.dev.br>",
+      "upstream": "https://github.com/leandrofelix-dev/power-button",
+      "summary": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock through Ryoku's session commands.",
+      "description": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock through Ryoku's session commands.",
+      "tags": [
+        "session",
+        "power",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "124c6d33e2f1b8f8eb362b6b87409e6896c86c424f54a104c6b2cf8c6a82778d",
+      "official": false,
+      "tagline": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock through Ryoku's session commands.",
+      "icon": "power_settings_new",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-08"
+    },
+    {
+      "id": "power-menu-v2",
+      "name": "Power Menu V2",
+      "version": "0.2.0",
+      "path": "plugins/power-menu-v2",
+      "author": "hectorbaez81 <hector.baez@gmail.com>",
+      "upstream": "https://github.com/hectorbaez81/power-menu-v2",
+      "summary": "Profile-style session menu on the QS Bar: avatar, Ryoku version and uptime, plus lock, log out, suspend, hibernate, reboot and power off through Ryoku's session commands.",
+      "description": "Profile-style session menu on the QS Bar: avatar, Ryoku version and uptime, plus lock, log out, suspend, hibernate, reboot and power off through Ryoku's session commands.",
+      "tags": [
+        "session",
+        "power",
+        "bar-widget"
+      ],
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7d06c8fd7229ae143ab1946dec2fed8a6f72a8e542d0916ce79298b7f07c47ca",
+      "official": false,
+      "tagline": "Profile-style session menu: avatar, version, uptime and the six session actions.",
+      "icon": "power_settings_new",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-25",
+      "accent": "#c8c4f4",
+      "surface": "#141418"
     },
     {
       "id": "prayer-times",
@@ -1773,213 +1874,13 @@
       "lastUpdated": "2026-10-17"
     },
     {
-      "id": "sayalarm",
-      "name": "SayAlarm",
-      "path": "plugins/sayalarm",
-      "version": "1.0.0",
-      "author": "KingsMill8",
-      "upstream": "https://github.com/KingsMill8/sayAlarm/tree/main/ryoku-bar-widget",
-      "official": false,
-      "tagline": "Your next SayAlarm on the bar.",
-      "description": "Shows the next SayAlarm time, note and live countdown on the bar, with a quick-open details panel.",
-      "icon": "alarm",
-      "tags": [
-        "bar-widget"
-      ],
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "lastUpdated": "2026-10-17",
-      "manifestSha256": "ad6b0484f22248ef9a48583a218dc8f55abc80c5fcf550951e19b2c5927fe2ee",
-      "summary": "Shows the next SayAlarm time, note and live countdown on the bar, with a quick-open details panel.",
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "license": "MIT",
-      "manifest": "product-manifest.json"
-    },
-    {
-      "id": "caffeinated",
-      "name": "Caffeinated",
-      "version": "0.1.1",
-      "path": "plugins/caffeinated",
-      "author": "Madhav Khosla <madhav.khoslaa@gmail.com>",
-      "summary": "One switch: the whole machine stays awake, even with the lid closed.",
-      "description": "System-wide caffeine: one switch keeps the whole machine awake (no sleep, even with the lid closed), screen on and unlocked or locking as usual.",
-      "tags": [
-        "caffeine",
-        "power",
-        "idle",
-        "lid",
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/screenshot-bar-panel.png",
-        "assets/screenshot-bar.png",
-        "assets/screenshot-settings.png",
-        "assets/preview-widget.png",
-        "assets/preview-panel.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "027257aec1d943b3c6bb92683b33ec505275f72097995c4359e9541a65392a18",
-      "official": false,
-      "tagline": "One switch: the whole machine stays awake, even with the lid closed.",
-      "icon": "coffee",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-20",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/caffeinated"
-    },
-    {
-      "id": "power-button",
-      "name": "Session",
-      "version": "0.2.2",
-      "path": "plugins/power-button",
-      "author": "Felix <eu@leandrofelix.dev.br>",
-      "upstream": "https://github.com/leandrofelix-dev/power-button",
-      "summary": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock through Ryoku's session commands.",
-      "description": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock through Ryoku's session commands.",
-      "tags": [
-        "session",
-        "power",
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "124c6d33e2f1b8f8eb362b6b87409e6896c86c424f54a104c6b2cf8c6a82778d",
-      "official": false,
-      "tagline": "Session menu on the QS Bar: shut down, reboot, hibernate, or lock through Ryoku's session commands.",
-      "icon": "power_settings_new",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-08"
-    },
-    {
-      "id": "dragshift",
-      "name": "DragShift",
-      "version": "0.4.0",
-      "path": "plugins/dragshift",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/dragshift",
-      "author": "CratusGod <nghiabigg652@gmail.com>",
-      "summary": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
-      "description": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Results land next to the originals, which are never changed.",
-      "tags": [
-        "files",
-        "convert",
-        "images",
-        "pdf",
-        "compress",
-        "dragshift",
-        "folders",
-        "zip",
-        "video",
-        "ocr",
-        "pdf-tools",
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "d8f46ef6e1be18fd6ba7b2d58c5091143e48423bc8e0b19b84dc721cb176bb97",
-      "official": false,
-      "tagline": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
-      "icon": "swap_horiz",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-22"
-    },
-    {
-      "id": "kbd-layouts",
-      "name": "Keyboard Layouts",
+      "id": "public-ip",
+      "name": "IP Pública",
       "version": "0.1.0",
-      "path": "plugins/kbd-layouts",
-      "author": "Madhav Khosla <madhav.khoslaa@gmail.com>",
-      "summary": "A layout per keyboard: pick each USB keyboard's layout, and the laptop's, from the bar.",
-      "description": "A layout per keyboard: lists your USB keyboards and the laptop keyboard on the bar and lets you pick each one's layout (US on the external board, UK on the laptop), remembered across replugs and reloads.",
-      "tags": [
-        "keyboard",
-        "layout",
-        "input",
-        "xkb",
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-panel.png",
-        "assets/preview-panel-layouts.png",
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "93fcd959f8bf034efbbe552940b52ea356c51212c5a8d8c93817934ad37b30a3",
-      "official": false,
-      "tagline": "A layout per keyboard: pick each USB keyboard's layout, and the laptop's, from the bar.",
-      "icon": "keyboard",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-21",
-      "windowManager": "hyprland",
-      "windowManagerReason": "Uses Hyprland's device API to assign layouts per keyboard.",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/kbd-layouts"
-    },
-    {
-      "id": "window-stash",
-      "name": "Windows",
-      "version": "1.1.0",
-      "path": "plugins/window-stash",
-      "author": "root-sec <root-secyrity@users.noreply.github.com>",
-      "summary": "Lists the open windows and parks any of them out of sight, brings it back to its own workspace, or closes it.",
-      "description": "Lists the open windows and parks any of them out of sight, brings it back to its own workspace, or closes it.",
-      "tags": [
-        "bar-widget"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png",
-        "assets/demo.gif"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "98d2c7a2c5d616062a61b89f1f9f65a66a5e56676470345ac824512c053eab5a",
-      "official": false,
-      "tagline": "Lists the open windows and parks any of them out of sight, brings it back to its own workspace, or closes it.",
-      "icon": "",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-22",
-      "license": "MIT",
-      "upstream": "https://github.com/root-secyrity/window-stash"
-    },
-    {
-      "id": "docker-ctl",
-      "name": "Docker",
-      "version": "0.2.1",
-      "path": "plugins/docker-ctl",
-      "author": "Madhav Khosla <madhav.khoslaa@gmail.com>",
-      "summary": "Docker on the bar: see every local container, start, stop or restart it, and edit its published ports and mounts.",
-      "description": "Docker on the bar: see every local container, start, stop or restart it, and edit its published ports and mounts by recreating it.",
+      "path": "plugins/public-ip",
+      "author": "vampirejsv <vampirejsv@local>",
+      "summary": "Muestra la IP pública actual (consultando https://checkip.",
+      "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
       "tags": [
         "bar-widget"
       ],
@@ -1990,75 +1891,15 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "00f10784f3abace06d6bec0c5e1aa78401b2d019def5f6019c248c0f6a1ea53c",
+      "manifestSha256": "eced7c39a65f038744a15ea4577d65648243e948521fa46d80b1f107eb9b2cc0",
       "official": false,
-      "tagline": "Docker on the bar: see every local container, start, stop or restart it, and edit its published ports and mounts.",
-      "icon": "docker",
+      "tagline": "Muestra la IP pública actual (consultando https://checkip.",
+      "icon": "public",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-10-25",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/docker-ctl"
-    },
-    {
-      "id": "power-menu-v2",
-      "name": "Power Menu V2",
-      "version": "0.2.0",
-      "path": "plugins/power-menu-v2",
-      "author": "hectorbaez81 <hector.baez@gmail.com>",
-      "upstream": "https://github.com/hectorbaez81/power-menu-v2",
-      "summary": "Profile-style session menu on the QS Bar: avatar, Ryoku version and uptime, plus lock, log out, suspend, hibernate, reboot and power off through Ryoku's session commands.",
-      "description": "Profile-style session menu on the QS Bar: avatar, Ryoku version and uptime, plus lock, log out, suspend, hibernate, reboot and power off through Ryoku's session commands.",
-      "tags": [
-        "session",
-        "power",
-        "bar-widget"
-      ],
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "7d06c8fd7229ae143ab1946dec2fed8a6f72a8e542d0916ce79298b7f07c47ca",
-      "official": false,
-      "tagline": "Profile-style session menu: avatar, version, uptime and the six session actions.",
-      "icon": "power_settings_new",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-25",
-      "accent": "#c8c4f4",
-      "surface": "#141418"
-    },
-    {
-      "id": "gpu-monitor",
-      "name": "GPU Monitor",
-      "version": "0.2.0",
-      "path": "plugins/gpu-monitor",
-      "author": "hectorbaez81 <hector.baez@gmail.com>",
-      "upstream": "https://github.com/hectorbaez81/gpu-monitor",
-      "summary": "Rootless GPU monitor for Intel (i915, xe), AMD (amdgpu) and NVIDIA: usage, clocks, VRAM, temperature, throttling and top GPU processes.",
-      "description": "Rootless GPU monitor for Intel (i915, xe), AMD (amdgpu) and NVIDIA: usage, clocks, VRAM, temperature, throttling and top GPU processes.",
-      "tags": [
-        "gpu",
-        "monitor",
-        "bar-widget"
-      ],
-      "accent": "#a8c4f5",
-      "surface": "#15171c",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "8d4d7f8e8f37383199c36949047bea806cdf414cf3fcf73926cf9f21ede099ff",
-      "official": false,
-      "tagline": "GPU usage, clocks, temperature and top processes on the bar, without root.",
-      "icon": "developer_board",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-25"
+      "lastUpdated": "2026-09-29",
+      "upstream": "https://github.com/vampireJSV/ryoku-plugin-public-ip"
     },
     {
       "id": "radio-atlas",
@@ -2092,30 +1933,190 @@
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/radio-atlas"
     },
     {
+      "id": "sayalarm",
+      "name": "SayAlarm",
+      "path": "plugins/sayalarm",
+      "version": "1.0.0",
+      "author": "KingsMill8",
+      "upstream": "https://github.com/KingsMill8/sayAlarm/tree/main/ryoku-bar-widget",
+      "official": false,
+      "tagline": "Your next SayAlarm on the bar.",
+      "description": "Shows the next SayAlarm time, note and live countdown on the bar, with a quick-open details panel.",
+      "icon": "alarm",
+      "tags": [
+        "bar-widget"
+      ],
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "lastUpdated": "2026-10-17",
+      "manifestSha256": "ad6b0484f22248ef9a48583a218dc8f55abc80c5fcf550951e19b2c5927fe2ee",
+      "summary": "Shows the next SayAlarm time, note and live countdown on the bar, with a quick-open details panel.",
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "license": "MIT",
+      "manifest": "product-manifest.json"
+    },
+    {
+      "id": "stargate",
+      "name": "Stargate",
+      "version": "1.1.2",
+      "path": "plugins/stargate",
+      "author": "Ryoku Team",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/stargate",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "A living Stargate that dials the time on your desktop.",
+      "description": "A desktop-widget plugin that turns the clock into a dialing Stargate: it encodes the time as a seven-glyph gate address and dials it live - the ring turns, the chevrons lock in sequence, the event horizon opens, and it re-dials each minute. Four faces: Naquadah, a cinematic Milky Way ring with engraved glyphs, red chevrons and a liquid event horizon; Hologram, an Ancient cyan projection with a scan beam and amber-energised locks; Dossier, a declassified SGC dialing log with a rotated ink stamp and a printed address block; and Inscription, which drops the clock and carves any sentence you type into gate glyphs on a stone tablet. Built-in procedural glyphs need no font; add a cap_resources Stargate font for the authentic symbols.",
+      "tags": [
+        "clock",
+        "stargate",
+        "sci-fi",
+        "desktop-widget"
+      ],
+      "accent": "#38bdf8",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-naquadah.png",
+        "assets/preview-hologram.png",
+        "assets/preview-dossier.png",
+        "assets/preview-inscription.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "bdc1d21b5569534ae9c9b0ae321b645150a40498c6e3b64755d55fb777a8aaa9",
+      "official": true,
+      "tagline": "A living Stargate that dials the time on your desktop.",
+      "icon": "hotspot",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-08-12"
+    },
+    {
+      "id": "strata",
+      "name": "Local LLM Manager",
+      "version": "0.4.1",
+      "path": "plugins/strata",
+      "author": "guyb <blumguy111@gmail.com>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/strata",
+      "summary": "Pick a local model and start or stop it from the bar.",
+      "description": "Pick a local model and start or stop it from the bar. Finds Strata, TabbyAPI and llama.cpp engines and their models, one port per model.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c91c48db99aae8ffc6eeb2681388b62a0de70133499087ed174ed79b1b7d5494",
+      "official": false,
+      "tagline": "Pick a local model and start or stop it from the bar.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-20"
+    },
+    {
       "id": "sugar-tracker",
       "name": "Sugar Tracker",
-      "version": "1.0.1",
+      "version": "1.0.6",
       "path": "plugins/sugar-tracker",
       "author": "Hatem <hatem@users.noreply.github.com>",
-      "summary": "Track daily sugar intake in grams from the QS Bar.",
-      "description": "Track daily sugar intake in grams from the QS Bar.",
+      "summary": "Track daily sugar intake from the QS Bar, starting with ordinary white sugar.",
+      "description": "Track daily sugar intake from the QS Bar, starting with ordinary white sugar.",
       "tags": [
         "bar-widget",
         "health"
       ],
       "accent": "#8f8378",
       "surface": "#101010",
-      "preview": "",
+      "preview": "preview.png",
       "screenshots": [],
       "manifest": "product-manifest.json",
-      "manifestSha256": "e621844bd23160455970637b37e75daaf75cb8c0654c53bfadfd25050542dd2e",
+      "manifestSha256": "5e7ec13249831c9ecad6ec07ca550c41a994eb9cb11003d4ae3230cbca8a3fe5",
       "official": false,
-      "tagline": "Track daily sugar intake in grams from the QS Bar.",
-      "icon": "fork_spoon",
+      "tagline": "Track daily sugar intake from the QS Bar, starting with ordinary white sugar.",
+      "icon": "spoon",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-10-29"
+      "lastUpdated": "2026-10-29",
+      "upstream": "https://github.com/hshindys/ryoku-sugar-tracker"
+    },
+    {
+      "id": "vpn",
+      "name": "VPN",
+      "version": "2.0.0",
+      "path": "plugins/vpn",
+      "author": "neur0map <hello@ryoku.dev>",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/vpn",
+      "discord": "https://discord.gg/8KjBmUEyKA",
+      "summary": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles,...",
+      "description": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles, in a bar panel or a desktop card.",
+      "tags": [
+        "vpn",
+        "network",
+        "tailscale",
+        "bar-widget",
+        "desktop-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-desktop.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "5493894e33ace5e10fd4dd4db0007e9b1a666178cee5927d106d8011e758b80c",
+      "official": false,
+      "tagline": "Watch and switch your VPN from the bar: a Tailscale switch with the tunnel's dossier, and your NetworkManager VPN and WireGuard profiles,...",
+      "icon": "vpn_lock",
+      "hosts": [
+        "topbarGlyph",
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-09-02"
+    },
+    {
+      "id": "window-stash",
+      "name": "Windows",
+      "version": "1.1.0",
+      "path": "plugins/window-stash",
+      "author": "root-sec <root-secyrity@users.noreply.github.com>",
+      "summary": "Lists the open windows and parks any of them out of sight, brings it back to its own workspace, or closes it.",
+      "description": "Lists the open windows and parks any of them out of sight, brings it back to its own workspace, or closes it.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/demo.gif"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "98d2c7a2c5d616062a61b89f1f9f65a66a5e56676470345ac824512c053eab5a",
+      "official": false,
+      "tagline": "Lists the open windows and parks any of them out of sight, brings it back to its own workspace, or closes it.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-22",
+      "license": "MIT",
+      "upstream": "https://github.com/root-secyrity/window-stash"
     }
   ]
 }

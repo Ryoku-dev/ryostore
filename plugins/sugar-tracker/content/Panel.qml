@@ -15,6 +15,7 @@ Item {
   readonly property var service: pluginApi ? pluginApi.mainInstance : null
   readonly property real contentW: Math.min(widthBudget > 0 ? widthBudget : 360 * s, 496 * s)
   property real customGrams: 4
+  property bool quickAddExpanded: false
   implicitWidth: contentW
   implicitHeight: body.implicitHeight
 
@@ -29,7 +30,7 @@ Item {
       Column {
         width: root.contentW - 118 * root.s
         spacing: 3 * root.s
-        MicroLabel { label: qsTr("SUGAR TODAY"); s: root.s }
+        MicroLabel { label: qsTr("SWEETENER TODAY"); s: root.s }
         Text {
           width: parent.width
           text: root.service ? root.service.todayGrams + " g" : "—"
@@ -67,17 +68,64 @@ Item {
       }
     }
 
-    MicroLabel { label: qsTr("LOG SUGAR · GRAMS"); s: root.s }
+    Item {
+      width: root.contentW
+      height: 42 * root.s
+      Rectangle {
+        anchors.fill: parent
+        radius: Motion.rSmall * root.s
+        color: toggleTap.containsMouse ? Theme.brand : Theme.tileBg
+        border.width: 1
+        border.color: Theme.border
+        Behavior on color { ColorAnimation { duration: Motion.fast } }
+      }
+      Row {
+        anchors.fill: parent
+        anchors.leftMargin: 12 * root.s
+        anchors.rightMargin: 12 * root.s
+        spacing: 8 * root.s
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: qsTr("Quick add")
+          color: Theme.cream
+          font.family: Theme.font
+          font.pixelSize: 12 * root.s
+          font.bold: true
+        }
+        Item { width: root.contentW - 132 * root.s; height: 1 }
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: root.quickAddExpanded ? "−" : "+"
+          color: Theme.cream
+          font.family: Theme.font
+          font.pixelSize: 18 * root.s
+          font.bold: true
+        }
+      }
+      MouseArea {
+        id: toggleTap
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.quickAddExpanded = !root.quickAddExpanded
+      }
+    }
 
-    Row {
+    Column {
       width: root.contentW
       spacing: 8 * root.s
+      visible: root.quickAddExpanded
+      opacity: visible ? 1 : 0
       Repeater {
-        model: [4, 8, 12]
+        model: [
+          { label: qsTr("Sugar (white)"), grams: Number(root.pluginApi?.pluginSettings?.whiteSugarGrams ?? 4) },
+          { label: qsTr("Brown sugar"), grams: Number(root.pluginApi?.pluginSettings?.brownSugarGrams ?? 4) },
+          { label: qsTr("Stevia"), grams: Number(root.pluginApi?.pluginSettings?.steviaGrams ?? 1) },
+        ]
         delegate: Item {
-          required property int modelData
-          width: (root.contentW - 16 * root.s) / 3
-          height: 42 * root.s
+          required property var modelData
+          width: root.contentW
+          height: 38 * root.s
           Rectangle {
             anchors.fill: parent
             radius: Motion.rSmall * root.s
@@ -86,20 +134,33 @@ Item {
             border.color: Theme.border
             Behavior on color { ColorAnimation { duration: Motion.fast } }
           }
-          Text {
-            anchors.centerIn: parent
-            text: "+" + modelData + " g"
-            color: tap.containsMouse ? Theme.cream : Theme.cream
-            font.family: Theme.font
-            font.pixelSize: 13 * root.s
-            font.bold: true
+          Row {
+            anchors.fill: parent
+            anchors.leftMargin: 10 * root.s
+            anchors.rightMargin: 10 * root.s
+            Text {
+              anchors.verticalCenter: parent.verticalCenter
+              text: modelData.label
+              color: Theme.cream
+              font.family: Theme.font
+              font.pixelSize: 12 * root.s
+            }
+            Item { width: root.contentW - 116 * root.s; height: 1 }
+            Text {
+              anchors.verticalCenter: parent.verticalCenter
+              text: "+" + modelData.grams + " g"
+              color: Theme.cream
+              font.family: Theme.font
+              font.pixelSize: 12 * root.s
+              font.bold: true
+            }
           }
           MouseArea {
             id: tap
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: root.service?.addSugar(modelData, modelData + " g sugar")
+            onClicked: root.service?.addSugar(modelData.grams, modelData.label)
           }
         }
       }
@@ -240,7 +301,7 @@ Item {
     Column {
       width: root.contentW
       spacing: 4 * root.s
-      MicroLabel { label: qsTr("DAILY GOAL · GRAMS"); s: root.s }
+      MicroLabel { label: qsTr("DAILY SWEETENER GOAL · GRAMS"); s: root.s }
       Text {
         width: root.contentW
         text: root.service
@@ -254,7 +315,7 @@ Item {
       }
       Text {
         width: root.contentW
-        text: qsTr("Change the goal in Ryoku Settings → Plugins → Sugar Tracker.")
+        text: qsTr("Set your daily target and tap amounts in Ryoku Settings → Plugins → Sugar Tracker.")
         color: Theme.subtle
         font.family: Theme.font
         font.pixelSize: 10 * root.s
