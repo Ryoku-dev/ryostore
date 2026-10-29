@@ -14,17 +14,39 @@ Item {
 
   readonly property var service: pluginApi ? pluginApi.mainInstance : null
   readonly property real contentW: density === "glyph" ? 32 * s : Math.min(widthBudget > 0 ? widthBudget : 320 * s, 320 * s)
-  readonly property color spoonColor: {
-    var progress = service ? Math.max(0, service.todayGrams / service.dailyGoal) : 0
-    var start = progress < 0.5 ? Qt.rgba(1, 1, 1, 1) : Qt.rgba(0.20, 0.76, 0.39, 1)
-    var end = progress < 0.5 ? Qt.rgba(0.20, 0.76, 0.39, 1) : Qt.rgba(1, 0.56, 0.18, 1)
-    var amount = progress < 0.5 ? progress * 2 : Math.min(1, (progress - 0.5) * 2)
-    return Qt.rgba(
-      start.r + (end.r - start.r) * amount,
-      start.g + (end.g - start.g) * amount,
-      start.b + (end.b - start.b) * amount,
-      1)
+  readonly property real progress: {
+    if (!service) return 0
+    var goal = Number(service.dailyGoal)
+    if (!isFinite(goal) || goal <= 0) return service.todayGrams > 0 ? 1 : 0
+    return Math.max(0, service.todayGrams / goal)
   }
+  readonly property color spoonColor: root.rampColor(root.progress)
+
+  // White at zero, green around a third, orange approaching the goal, red at it.
+  function rampColor(progress) {
+    var stops = [
+      { at: 0.00, color: [1.00, 1.00, 1.00] },
+      { at: 0.35, color: [0.31, 0.81, 0.45] },
+      { at: 0.70, color: [1.00, 0.63, 0.20] },
+      { at: 1.00, color: [0.98, 0.23, 0.19] }
+    ]
+    var p = Math.max(0, Math.min(1, Number(progress) || 0))
+    for (var i = 1; i < stops.length; i++) {
+      if (p <= stops[i].at) {
+        var from = stops[i - 1]
+        var to = stops[i]
+        var span = to.at - from.at
+        var t = span > 0 ? (p - from.at) / span : 0
+        return Qt.rgba(
+          from.color[0] + (to.color[0] - from.color[0]) * t,
+          from.color[1] + (to.color[1] - from.color[1]) * t,
+          from.color[2] + (to.color[2] - from.color[2]) * t,
+          1)
+      }
+    }
+    return Qt.rgba(stops[stops.length - 1].color[0], stops[stops.length - 1].color[1], stops[stops.length - 1].color[2], 1)
+  }
+
   implicitWidth: contentW
   implicitHeight: density === "glyph" ? 32 * s : body.implicitHeight
 
@@ -37,19 +59,36 @@ Item {
     onPaint: {
       var ctx = getContext("2d")
       var scale = root.s
-      var color = root.spoonColor
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.clearRect(0, 0, width, height)
-      ctx.fillStyle = color
-      ctx.strokeStyle = color
-      ctx.lineCap = "round"
+      ctx.save()
+      ctx.scale(scale, scale)
+      ctx.fillStyle = root.spoonColor
+
+      // Bowl.
       ctx.beginPath()
-      ctx.ellipse(11 * scale, 8 * scale, 7 * scale, 9 * scale, 0, 0, 2 * Math.PI)
+      ctx.ellipse(11.0, 8.6, 7.2, 8.2, 0, 0, 2 * Math.PI)
       ctx.fill()
-      ctx.lineWidth = 3 * scale
+
+      // Tapered handle with a rounded tip.
       ctx.beginPath()
-      ctx.moveTo(11 * scale, 16 * scale)
-      ctx.bezierCurveTo(11 * scale, 20 * scale, 12 * scale, 25 * scale, 12 * scale, 30 * scale)
-      ctx.stroke()
+      ctx.moveTo(9.4, 16.6)
+      ctx.bezierCurveTo(9.5, 21.2, 10.2, 26.8, 10.4, 30.1)
+      ctx.quadraticCurveTo(10.5, 31.4, 11.0, 31.4)
+      ctx.quadraticCurveTo(11.5, 31.4, 11.6, 30.1)
+      ctx.bezierCurveTo(11.8, 26.8, 12.5, 21.2, 12.6, 16.6)
+      ctx.closePath()
+      ctx.fill()
+
+      // Shaded hollow of the bowl, so the spoon still reads at small sizes.
+      ctx.beginPath()
+      ctx.ellipse(11.0, 8.8, 3.8, 5.0, 0, 0, 2 * Math.PI)
+      ctx.globalAlpha = 0.16
+      ctx.fillStyle = "#000000"
+      ctx.fill()
+      ctx.globalAlpha = 1.0
+
+      ctx.restore()
     }
     Connections {
       target: root.service
@@ -73,7 +112,7 @@ Item {
     Text {
       width: root.contentW
       text: root.service ? root.service.todayGrams + " / " + root.service.dailyGoal + " g" : "—"
-      color: root.service?.overGoal ? Theme.brand : Theme.cream
+      color: root.service?.overGoal ? "#fa3b30" : Theme.cream
       font.family: Theme.font
       font.pixelSize: 24 * root.s
       font.bold: true

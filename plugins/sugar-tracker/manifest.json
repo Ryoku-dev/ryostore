@@ -1,7 +1,7 @@
 {
   "id": "sugar-tracker",
   "name": "Sugar Tracker",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "author": "Hatem <hatem@users.noreply.github.com>",
   "description": "Track daily sugar intake from the QS Bar, starting with ordinary white sugar.",
   "license": "MIT",
@@ -76,6 +76,26 @@
         "default": 1,
         "min": 1,
         "max": 100,
+        "step": 1
+      },
+      {
+        "key": "brownSugarRatio",
+        "type": "int",
+        "label": "Brown sugar grams per 100 g white sugar",
+        "group": "Equivalents",
+        "default": 100,
+        "min": 10,
+        "max": 400,
+        "step": 5
+      },
+      {
+        "key": "steviaSweetness",
+        "type": "int",
+        "label": "Stevia sweetness (× white sugar)",
+        "group": "Equivalents",
+        "default": 200,
+        "min": 1,
+        "max": 500,
         "step": 1
       }
     ]

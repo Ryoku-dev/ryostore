@@ -16,8 +16,33 @@ Item {
   readonly property real contentW: Math.min(widthBudget > 0 ? widthBudget : 360 * s, 496 * s)
   property real customGrams: 4
   property bool quickAddExpanded: false
+  property bool equivalentsExpanded: false
+  property real equivalentWhiteGrams: 4
+  readonly property real brownSugarRatio: {
+    var value = Number(root.pluginApi?.pluginSettings?.brownSugarRatio ?? 100)
+    return isFinite(value) && value > 0 ? Math.max(10, Math.min(400, value)) : 100
+  }
+  readonly property real steviaSweetness: {
+    var value = Number(root.pluginApi?.pluginSettings?.steviaSweetness ?? 200)
+    return isFinite(value) && value > 0 ? Math.max(1, Math.min(500, value)) : 200
+  }
+  readonly property real equivalentBrownGrams: Math.max(0, equivalentWhiteGrams) * brownSugarRatio / 100
+  readonly property real equivalentSteviaGrams: steviaSweetness > 0 ? Math.max(0, equivalentWhiteGrams) / steviaSweetness : 0
   implicitWidth: contentW
   implicitHeight: body.implicitHeight
+
+  function gramsText(value) {
+    var grams = Number(value)
+    if (!isFinite(grams) || grams <= 0) return "0 g"
+    if (grams >= 10) return (Math.round(grams * 10) / 10) + " g"
+    if (grams >= 1) return (Math.round(grams * 100) / 100) + " g"
+    return (Math.round(grams * 1000) / 1000) + " g"
+  }
+
+  Component.onCompleted: {
+    var white = Number(root.pluginApi?.pluginSettings?.whiteSugarGrams ?? 4)
+    root.equivalentWhiteGrams = isFinite(white) && white > 0 ? white : 4
+  }
 
   Column {
     id: body
@@ -34,7 +59,7 @@ Item {
         Text {
           width: parent.width
           text: root.service ? root.service.todayGrams + " g" : "—"
-          color: root.service?.overGoal ? Theme.brand : Theme.cream
+          color: root.service?.overGoal ? "#fa3b30" : Theme.cream
           font.family: Theme.font
           font.pixelSize: 28 * root.s
           font.bold: true
@@ -64,7 +89,7 @@ Item {
         width: parent.width * Math.min(1, root.service ? root.service.todayGrams / root.service.dailyGoal : 0)
         height: parent.height
         radius: parent.radius
-        color: root.service?.overGoal ? Theme.brand : Theme.cream
+        color: root.service?.overGoal ? "#fa3b30" : Theme.cream
       }
     }
 
@@ -219,6 +244,149 @@ Item {
           cursorShape: Qt.PointingHandCursor
           onClicked: root.service?.addSugar(root.customGrams, qsTr("Custom sugar"))
         }
+      }
+    }
+
+    Item {
+      width: root.contentW
+      height: 42 * root.s
+      Rectangle {
+        anchors.fill: parent
+        radius: Motion.rSmall * root.s
+        color: equivalentsTap.containsMouse ? Theme.brand : Theme.tileBg
+        border.width: 1
+        border.color: Theme.border
+        Behavior on color { ColorAnimation { duration: Motion.fast } }
+      }
+      Row {
+        anchors.fill: parent
+        anchors.leftMargin: 12 * root.s
+        anchors.rightMargin: 12 * root.s
+        spacing: 8 * root.s
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: qsTr("Sugar equivalents")
+          color: Theme.cream
+          font.family: Theme.font
+          font.pixelSize: 12 * root.s
+          font.bold: true
+        }
+        Item { width: root.contentW - 178 * root.s; height: 1 }
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: root.gramsText(root.equivalentWhiteGrams) + " white"
+          color: Theme.subtle
+          font.family: Theme.font
+          font.pixelSize: 11 * root.s
+        }
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: root.equivalentsExpanded ? "−" : "+"
+          color: Theme.cream
+          font.family: Theme.font
+          font.pixelSize: 18 * root.s
+          font.bold: true
+        }
+      }
+      MouseArea {
+        id: equivalentsTap
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.equivalentsExpanded = !root.equivalentsExpanded
+      }
+    }
+
+    Column {
+      width: root.contentW
+      spacing: 8 * root.s
+      visible: root.equivalentsExpanded
+
+      Row {
+        width: root.contentW
+        spacing: 8 * root.s
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          width: root.contentW - 128 * root.s
+          text: qsTr("White sugar grams")
+          color: Theme.subtle
+          font.family: Theme.font
+          font.pixelSize: 11 * root.s
+        }
+        Rectangle {
+          width: 120 * root.s
+          height: 34 * root.s
+          radius: Motion.rSmall * root.s
+          color: Theme.tileBg
+          border.width: 1
+          border.color: Theme.border
+          TextInput {
+            id: equivalentField
+            anchors.fill: parent
+            anchors.leftMargin: 10 * root.s
+            anchors.rightMargin: 10 * root.s
+            verticalAlignment: TextInput.AlignVCenter
+            text: String(root.equivalentWhiteGrams)
+            color: Theme.cream
+            font.family: Theme.font
+            font.pixelSize: 12 * root.s
+            inputMethodHints: Qt.ImhFormattedNumbersOnly
+            validator: DoubleValidator { bottom: 0; top: 500; decimals: 2 }
+            onTextChanged: {
+              var amount = Number(text)
+              if (isFinite(amount) && amount >= 0 && amount <= 500) root.equivalentWhiteGrams = amount
+            }
+          }
+        }
+      }
+
+      Repeater {
+        model: [
+          { label: qsTr("Brown sugar"), grams: root.equivalentBrownGrams },
+          { label: qsTr("Stevia"), grams: root.equivalentSteviaGrams },
+        ]
+        delegate: Item {
+          required property var modelData
+          width: root.contentW
+          height: 34 * root.s
+          Rectangle {
+            anchors.fill: parent
+            radius: Motion.rSmall * root.s
+            color: Theme.tileBg
+            border.width: 1
+            border.color: Theme.border
+          }
+          Row {
+            anchors.fill: parent
+            anchors.leftMargin: 10 * root.s
+            anchors.rightMargin: 10 * root.s
+            Text {
+              anchors.verticalCenter: parent.verticalCenter
+              text: modelData.label
+              color: Theme.cream
+              font.family: Theme.font
+              font.pixelSize: 12 * root.s
+            }
+            Item { width: root.contentW - 190 * root.s; height: 1 }
+            Text {
+              anchors.verticalCenter: parent.verticalCenter
+              text: "≈ " + root.gramsText(modelData.grams)
+              color: Theme.cream
+              font.family: Theme.font
+              font.pixelSize: 12 * root.s
+              font.bold: true
+            }
+          }
+        }
+      }
+
+      Text {
+        width: root.contentW
+        text: qsTr("Brown sugar at " + root.brownSugarRatio + "% and stevia at " + root.steviaSweetness + "× the sweetness of white sugar. Change both in Ryoku Settings.")
+        color: Theme.subtle
+        font.family: Theme.font
+        font.pixelSize: 10 * root.s
+        wrapMode: Text.WordWrap
       }
     }
 

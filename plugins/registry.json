@@ -2029,7 +2029,7 @@
     {
       "id": "sugar-tracker",
       "name": "Sugar Tracker",
-      "version": "1.0.6",
+      "version": "1.0.9",
       "path": "plugins/sugar-tracker",
       "author": "Hatem <hatem@users.noreply.github.com>",
       "summary": "Track daily sugar intake from the QS Bar, starting with ordinary white sugar.",
@@ -2043,7 +2043,7 @@
       "preview": "preview.png",
       "screenshots": [],
       "manifest": "product-manifest.json",
-      "manifestSha256": "5e7ec13249831c9ecad6ec07ca550c41a994eb9cb11003d4ae3230cbca8a3fe5",
+      "manifestSha256": "7329517195db1b24f16e80624938f53013adaf66d6ed3612c3e08d6bdc1e50de",
       "official": false,
       "tagline": "Track daily sugar intake from the QS Bar, starting with ordinary white sugar.",
       "icon": "spoon",

@@ -2,9 +2,17 @@
   "schema": 1,
   "id": "sugar-tracker",
   "category": "plugins",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "destination": "ryoku/plugins/sugar-tracker",
   "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "cf237c7aff44efbe6e502e645c3e06da03a69d7bdeb43392108ef3348143417e",
+      "mode": "0644",
+      "size": 10,
+      "install": true
+    },
     {
       "source": "LICENSE",
       "destination": "LICENSE",
@@ -16,33 +24,33 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "b8f03cccda6d3e8feeee2926ebd701f4e79f403898a0794aa762935134d6f84a",
+      "sha256": "f06a310f53db6350a5d4ba91d8295bce50c342ee07966baae2e3f12187d18031",
       "mode": "0644",
-      "size": 2677,
+      "size": 3616,
       "install": false
     },
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "579219d67d43655f342cf338a35e7b8fb61eda03fb13b41fe55c1da06e98a749",
+      "sha256": "e510e68808412a714df4b8a3234ace870c6febc886afdd3896ffa9d5e642b5bf",
       "mode": "0644",
-      "size": 10184,
+      "size": 16038,
       "install": true
     },
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "9df705b5bf88fd11fdc3ce1b019df56c1f811a95ef1a8bde06845dc4b83197a6",
+      "sha256": "cc7303ab5f040b5b9e94e79d8ce59dc19aef06a4ab6148b50c50622c3e27b71e",
       "mode": "0644",
-      "size": 2618,
+      "size": 3772,
       "install": true
     },
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "14faf31642dd552455c16bf6b12201545f9173df2e09e3bfbb993789052d9431",
+      "sha256": "4b85764be2d9ae53ac09f49530bb1904a9faf63510f1e12d82f6fd3435870ffe",
       "mode": "0644",
-      "size": 1706,
+      "size": 2193,
       "install": true
     },
     {

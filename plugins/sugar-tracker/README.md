@@ -1,15 +1,20 @@
 # Sugar Tracker
 
+![Sugar Tracker](preview.png)
+
 A Ryoku QS Bar plugin for recording daily sweetener intake in grams. Use its
-panel to log ordinary white sugar, brown sugar, or stevia, add a custom
-amount, review
-today's entries, and compare the total with your configurable daily goal.
+panel to log ordinary white sugar, brown sugar, or stevia, add a custom amount,
+convert an amount of white sugar into the brown sugar or stevia needed to match
+its sweetness, review today's entries, and compare the total with your
+configurable daily goal.
 
 ## What it does
 
-- Shows a small spoon-only mark on the QS Bar, shifting from white through green to orange as you approach and pass your daily target.
+- Shows a small spoon-only mark on the QS Bar, starting white at zero, turning green, then orange as you approach the goal, and red once you reach it.
 - Expand Quick add to tap Sugar (white), Brown sugar, or Stevia. Set each
   amount in Ryoku Settings, or enter a custom amount.
+- Expand Sugar equivalents, type an amount of white sugar, and see the brown
+  sugar and stevia amounts that match its sweetness.
 - Displays today's total, progress toward your goal, and the latest entries.
 - Supports undoing the latest entry and clearing today's log.
 
@@ -43,8 +48,16 @@ Ryoku owns the bar placement, panel surface, and settings UI.
 
 | Setting | Default | Meaning |
 | --- | ---: | --- |
-| Daily sweetener goal (g) | 25 | Goal shown in the bar panel; change it in Ryoku Settings > Plugins > Sugar Tracker. || White sugar per tap (g) | 4 | Amount logged by the Sugar (white) quick-add button, the standard tap shown first. |
-| Brown sugar per tap (g) | 4 | Amount logged by the Brown sugar quick-add button. | Stevia per tap (g) | 1 | Amount logged by the Stevia quick-add button. |
+| Daily sweetener goal (g) | 25 | Goal shown in the bar panel; change it in Ryoku Settings > Plugins > Sugar Tracker. |
+| White sugar per tap (g) | 4 | Amount logged by the Sugar (white) quick-add button, the standard tap shown first. |
+| Brown sugar per tap (g) | 4 | Amount logged by the Brown sugar quick-add button. |
+| Stevia per tap (g) | 1 | Amount logged by the Stevia quick-add button. |
+| Brown sugar grams per 100 g white sugar | 100 | Mass of brown sugar matching 100 g of white sugar. Brown sugar is sucrose with molasses, so 100 (the same mass) is the usual starting point; raise it if you find your brown sugar less sweet. |
+| Stevia sweetness (× white sugar) | 200 | How many times sweeter the stevia you use is than sugar. Pure steviol glycosides are roughly 200–300×; a bulked stevia blend is often nearer 5–10×, so set this to match your product. |
+
+The equivalents are a sweetness comparison, not a claim about calories or
+health effects, and the plugin's daily total still counts the grams you
+actually logged.
 
 ## Data and permissions
 
@@ -59,6 +72,7 @@ files are modified.
 
 ```text
 sugar-tracker/
+├── preview.png
 ├── manifest.json
 ├── service/Main.qml
 ├── content/Widget.qml
