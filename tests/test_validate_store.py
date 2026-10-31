@@ -601,6 +601,93 @@ class ValidateStoreTest(unittest.TestCase):
                     [f"fastfetch/demo: draws one system's own mark ({mark}); use Tux (U+F31A) or a neutral glyph"],
                 )
 
+    def write_fastfetch_renderer(
+        self,
+        target: str = "demo/bin/render",
+        *,
+        mode: str = "0755",
+        install: bool = True,
+        create: bool = True,
+        executable: bool = True,
+    ) -> None:
+        product, _ = self.products["fastfetch"]
+        config = product / "config.jsonc"
+        config.write_text(f"// ryoku:renderer {target}\n{FASTFETCH_CONFIG}", encoding="utf-8")
+        relative = target.partition("/")[2]
+        target_path = product / relative
+        if create:
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            target_path.write_text("#!/bin/sh\necho demo\n", encoding="utf-8")
+            target_path.chmod(0o755 if executable else 0o644)
+
+        def refresh(manifest: dict) -> None:
+            row = next(row for row in manifest["files"] if row["source"] == "config.jsonc")
+            row["size"], row["sha256"] = config.stat().st_size, digest(config)
+            manifest["files"] = [
+                item for item in manifest["files"] if item["source"] != relative
+            ]
+            if create:
+                manifest["files"].append(
+                    {
+                        "source": relative,
+                        "destination": relative,
+                        "mode": mode,
+                        "size": target_path.stat().st_size,
+                        "sha256": digest(target_path),
+                        "install": install,
+                    }
+                )
+
+        self.rewrite_manifest("fastfetch", refresh)
+
+    def test_fastfetch_renderer_inside_its_product_is_accepted(self) -> None:
+        self.write_fastfetch_renderer()
+        self.assertEqual(self.errors(), [])
+
+    def test_fastfetch_renderer_outside_its_product_is_rejected(self) -> None:
+        self.write_fastfetch_renderer("other/bin/render", create=False)
+        self.assertEqual(
+            self.errors(),
+            ["fastfetch/demo: renderer must stay inside demo/, not other/"],
+        )
+
+    def test_fastfetch_renderer_cannot_escape_its_product(self) -> None:
+        self.write_fastfetch_renderer("../escape", create=False)
+        self.assertEqual(
+            self.errors(),
+            [
+                "fastfetch/demo: renderer must be <product-id>/<executable> inside its own product: ../escape"
+            ],
+        )
+
+    def test_fastfetch_renderer_must_exist_and_be_installed(self) -> None:
+        self.write_fastfetch_renderer(create=False)
+        self.assertEqual(
+            self.errors(), ["fastfetch/demo: renderer target missing: demo/bin/render"]
+        )
+        self.write_fastfetch_renderer(install=False)
+        self.assertEqual(
+            self.errors(), ["fastfetch/demo: renderer target must be installed: demo/bin/render"]
+        )
+        self.write_fastfetch_renderer(executable=False, mode="0644")
+        self.assertEqual(
+            self.errors(), ["fastfetch/demo: renderer target must be executable: demo/bin/render"]
+        )
+
+    def test_fastfetch_renderer_line_must_be_well_formed(self) -> None:
+        self.write_fastfetch_config(f"// ryoku:renderer demo/bin/render \n{FASTFETCH_CONFIG}")
+        self.assertEqual(
+            self.errors(),
+            ["fastfetch/demo: renderer line must read `// ryoku:renderer <product-id>/<executable>`"],
+        )
+        self.write_fastfetch_config(
+            f"// ryoku:renderer demo/bin/render\n// ryoku:renderer demo/bin/render\n{FASTFETCH_CONFIG}"
+        )
+        self.assertEqual(
+            self.errors(), ["fastfetch/demo: declare one ryoku:renderer line, not 2"]
+        )
+
+
 class MigratedCatalogueTest(unittest.TestCase):
     def test_migrated_categories_satisfy_store_contract(self) -> None:
         root = MODULE_PATH.parent.parent
