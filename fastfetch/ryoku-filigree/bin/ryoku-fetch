@@ -224,7 +224,20 @@ def main():
         logo_width = math.ceil(logo_height * cell_h / cell_w * LOGO_W / LOGO_H)
         total_width = logo_width + gap + frame_width
 
-    if frame_width < 50 or height < 12 or height + 3 > rows or len(lines) > 8:
+    # The blade crosses the frame from 75% of its height down, so the readout
+    # ends a whole row above the first lit pixel: header, tagline, a gap and the
+    # module rows all have to fit above it. On a frame too short for that, the
+    # plain readout is honest and the ornament would cut the last line.
+    last_clear_row = math.floor(height * 0.75) - 1
+    block_rows = len(lines) + 2
+    blocked = (
+        frame_width < 50
+        or height < 12
+        or height + 3 > rows
+        or len(lines) > 8
+        or last_clear_row < block_rows
+    )
+    if blocked:
         plain_fallback(lines, accent, text, muted)
         return 0
 
@@ -285,11 +298,12 @@ def main():
 
     # Text stays inside the ornamental frame, not inside the Ryoku mark.
     text_x = frame_left + max(20, math.ceil(frame_width * 0.365))
-    # Keep the usual vertical centering in a tall frame, but lift the block as
-    # needed so its last module clears the sword crossing the lower fifth.
+    # Tuck the block under the top edge when the frame is short, but never let
+    # its last module row reach the blade: last_clear_row is the highest row the
+    # artwork still draws nothing over.
     preferred_text_y = max(2, round(height * 0.19))
     last_module_offset = len(lines) + 2  # header, gap, then the module rows
-    safe_text_y = max(0, math.floor(height * 0.78) - last_module_offset)
+    safe_text_y = max(0, last_clear_row - last_module_offset)
     text_y = top + min(preferred_text_y, safe_text_y)
     room = cols - text_x - 1
 

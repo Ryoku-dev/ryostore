@@ -1020,12 +1020,12 @@
   {
    "id": "ryoku-filigree",
    "name": "Ryoku Filigree",
-   "version": "1.0.3",
+   "version": "1.0.4",
    "path": "fastfetch/ryoku-filigree",
    "author": "aethctl & Sipper1236",
    "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/fastfetch/ryoku-filigree",
    "summary": "Ornamental Ryoku system readout",
-   "description": "A Ryoku-branded system readout built around a silver 力 mark and ornamental filigree frame, with live system and media information rendered inside the composition. Draws through Ryoku's kitty renderer; Ryoku's shell already runs ryoku-fastfetch, so add no second greeting line.",
+   "description": "A Ryoku-branded system readout built around a silver \u529b mark and ornamental filigree frame, with live system and media information rendered inside the composition. Draws through Ryoku's kitty renderer; Ryoku's shell already runs ryoku-fastfetch, so add no second greeting line.",
    "tags": [
     "ryoku",
     "ornamental",
@@ -1040,7 +1040,7 @@
    "preview": "preview.webp",
    "screenshots": [],
    "manifest": "manifest.json",
-   "manifestSha256": "2090dd07900cf1f72ce85fc59d058e70425bb86d02bb59c25b8d52710b55791b",
+   "manifestSha256": "77380a36def733f2c3e493eaece734c387f76958b3b409fb26c0299e09c334d7",
    "lastUpdated": "2026-10-31",
    "official": false,
    "license": "GPL-3.0-only"
