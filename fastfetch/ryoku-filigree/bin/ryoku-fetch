@@ -85,12 +85,12 @@ def palette():
     except Exception:
         data = {}
 
-    accent = hex_rgb(
-        data.get("primary") or data.get("color2"),
-        (226, 176, 150),
-    )
+    # Ryoku's Material roles, never a raw ANSI slot: color2 is xterm's green, so
+    # falling back to it turned the whole composition green on the one palette
+    # that had no primary. Without roles, keep the preset's own warm tone.
+    accent = hex_rgb(data.get("primary"), (226, 176, 150))
     text = hex_rgb(
-        data.get("onSurface") or data.get("foreground") or data.get("color7"),
+        data.get("onSurface") or data.get("foreground"),
         (224, 216, 208),
     )
     muted = hex_rgb(
@@ -123,6 +123,11 @@ def icat_binary():
     if kitty:
         return [kitty, "+kitten", "icat"]
     return None
+
+def debug(message):
+    """RYOKU_FILIGREE_DEBUG=1 explains why a session fell back to plain text."""
+    if os.environ.get("RYOKU_FILIGREE_DEBUG"):
+        print(f"ryoku-fetch: {message}", file=sys.stderr)
 
 def plain_fallback(lines, accent, text, muted):
     user, distro = distro_id()
@@ -192,6 +197,17 @@ def main():
         and not arguments
     )
     if not kitty_session:
+        debug(
+            "plain: tty=%s KITTY_WINDOW_ID=%s artwork=%s logo=%s icat=%s args=%s"
+            % (
+                sys.stdout.isatty(),
+                bool(os.environ.get("KITTY_WINDOW_ID")),
+                ARTWORK.is_file(),
+                LOGO.is_file(),
+                icat_binary() is not None,
+                bool(arguments),
+            )
+        )
         plain_fallback(lines, accent, text, muted)
         return 0
 
@@ -225,19 +241,35 @@ def main():
         total_width = logo_width + gap + frame_width
 
     # The blade crosses the frame from 75% of its height down, so the readout
-    # ends a whole row above the first lit pixel: header, tagline, a gap and the
-    # module rows all have to fit above it. On a frame too short for that, the
-    # plain readout is honest and the ornament would cut the last line.
+    # ends a whole row above the first lit pixel. Every module line has to fit
+    # above it; when the frame is short, first the tagline and then the gap row
+    # are spent, rather than dropping to plain text the moment the full block
+    # no longer fits.
     last_clear_row = math.floor(height * 0.75) - 1
-    block_rows = len(lines) + 2
+    # The block is header, tagline, a gap and the module rows, so its last row
+    # sits at text_y + 1 + decor + len(lines) - 1. last_clear_row is the last
+    # row the artwork still draws nothing over, so the block ends one above it;
+    # allowing it to land on last_clear_row put the final module line on the
+    # blade in every size, which reads as cut text.
+    decor = 2  # tagline + the gap under it
+    while decor >= 0 and last_clear_row - len(lines) - decor - 1 < 0:
+        decor -= 1
     blocked = (
         frame_width < 50
         or height < 12
         or height + 3 > rows
         or len(lines) > 8
-        or last_clear_row < block_rows
+        or decor < 0
     )
     if blocked:
+        debug(
+            "plain: terminal %dx%d cells %.1fx%.1f frame %dx%d rows %d..%d "
+            "last_clear_row=%d lines=%d decor=%d"
+            % (
+                rows, cols, cell_w, cell_h, frame_width, height,
+                0, height - 1, last_clear_row, len(lines), decor,
+            )
+        )
         plain_fallback(lines, accent, text, muted)
         return 0
 
@@ -302,23 +334,28 @@ def main():
     # its last module row reach the blade: last_clear_row is the highest row the
     # artwork still draws nothing over.
     preferred_text_y = max(2, round(height * 0.19))
-    last_module_offset = len(lines) + 2  # header, gap, then the module rows
-    safe_text_y = max(0, last_clear_row - last_module_offset)
+    block_rows = len(lines) + decor  # header, decoration, then the module rows
+    safe_text_y = max(0, last_clear_row - block_rows - 1)
     text_y = top + min(preferred_text_y, safe_text_y)
     room = cols - text_x - 1
+    debug(
+        "drawing: terminal %dx%d frame %dx%d text_row=%d decor=%d lines=%d"
+        % (rows, cols, frame_width, height, text_y - top, decor, len(lines))
+    )
 
     user, distro = distro_id()
 
     move(text_y, text_x)
     sys.stdout.write(f"{esc(text, True)}RYOKU\x1b[0m  {esc(accent)}緑\x1b[0m")
 
-    move(text_y + 1, text_x)
-    sys.stdout.write(
-        f"{esc(text)}{user}@{distro}\x1b[0m  "
-        f"{esc(muted)}利用者・環境\x1b[0m"
-    )
+    if decor >= 2:
+        move(text_y + 1, text_x)
+        sys.stdout.write(
+            f"{esc(text)}{user}@{distro}\x1b[0m  "
+            f"{esc(muted)}利用者・環境\x1b[0m"
+        )
 
-    spec_y = text_y + 3
+    spec_y = text_y + 1 + decor
     for index, line in enumerate(lines):
         move(spec_y + index, text_x)
         parts = line.split(maxsplit=1)

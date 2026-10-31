@@ -1020,7 +1020,7 @@
   {
    "id": "ryoku-filigree",
    "name": "Ryoku Filigree",
-   "version": "1.0.4",
+   "version": "1.0.5",
    "path": "fastfetch/ryoku-filigree",
    "author": "aethctl & Sipper1236",
    "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/fastfetch/ryoku-filigree",
@@ -1040,7 +1040,7 @@
    "preview": "preview.webp",
    "screenshots": [],
    "manifest": "manifest.json",
-   "manifestSha256": "77380a36def733f2c3e493eaece734c387f76958b3b409fb26c0299e09c334d7",
+   "manifestSha256": "7cd9de33c581338997d38b46b3a79884c19d837d4854d993b8bb5b90a2e95057",
    "lastUpdated": "2026-10-31",
    "official": false,
    "license": "GPL-3.0-only"
