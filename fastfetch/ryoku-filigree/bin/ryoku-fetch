@@ -236,8 +236,8 @@ def main():
     gap = 0
     total_width = logo_width + gap + frame_width
 
-    if total_width > cols - 2:
-        scale = (cols - 2) / total_width
+    if total_width > cols - 3:
+        scale = (cols - 3) / total_width
         height = max(12, math.floor(height * scale))
         frame_width = math.ceil(height * cell_h / cell_w * ART_W / ART_H)
         logo_height = max(7, round(height * 0.40))
@@ -256,11 +256,10 @@ def main():
     last_clear_row = math.floor(height * 0.75) - 1
     # The block is header, tagline, a gap and the module rows, so its last row
     # sits at text_y + 1 + decor + len(lines) - 1. last_clear_row is the last
-    # row the artwork still draws nothing over, so the block ends one above it;
-    # allowing it to land on last_clear_row put the final module line on the
-    # blade in every size, which reads as cut text.
+    # row the artwork still draws nothing over, so the block ends on it -- the
+    # extra -1 that used to sit here pulled the block up a row for no gain.
     decor = 2  # tagline + the gap under it
-    while decor >= 0 and last_clear_row - len(lines) - decor - 1 < 0:
+    while decor >= 0 and last_clear_row - len(lines) - decor < 0:
         decor -= 1
     # Text starts 36.5% into the frame; the frame must leave it somewhere to
     # write. 22 characters is the floor before the readout is not a readout.
@@ -343,9 +342,15 @@ def main():
     # Tuck the block under the top edge when the frame is short, but never let
     # its last module row reach the blade: last_clear_row is the highest row the
     # artwork still draws nothing over.
-    preferred_text_y = max(2, round(height * 0.19)) + 1
-    block_rows = len(lines) + decor  # header, decoration, then the module rows
-    safe_text_y = max(0, last_clear_row - block_rows - 1)
+    preferred_text_y = max(2, round(height * 0.19))
+    block_rows = 1 + decor + len(lines)  # header + decor + module rows
+    # text_y + block_rows - 1 <= last_clear_row  =>  text_y <= last_clear_row - block_rows + 1
+    safe_text_y = max(0, last_clear_row - block_rows + 1)
+    # The user asked to drop the block a row lower to see how it looks. Drop
+    # it whenever the clear space above the blade leaves room for the extra
+    # row, but keep it tight under the crest when the space is exact.
+    if safe_text_y >= preferred_text_y + 1:
+        preferred_text_y += 1
     text_y = top + min(preferred_text_y, safe_text_y)
     debug(
         "drawing: terminal %dx%d frame %dx%d text_row=%d decor=%d lines=%d"
