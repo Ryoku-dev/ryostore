@@ -17,6 +17,9 @@ import tty
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
+# The composition is closed: this preset owns its module list and the artwork
+# is drawn around it. Never read ~/.config/fastfetch here -- a Settings edit
+# that changed the line count would move the text into the sword.
 CONFIG = ROOT / "config.jsonc"
 ARTWORK = ASSETS / "artwork.png"
 LOGO = ASSETS / "logo-mark-v2-ornament.png"
@@ -28,8 +31,17 @@ ART_W = 1786
 ART_H = 881
 
 def cursor_position():
-    fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
-    previous = termios.tcgetattr(fd)
+    # A terminal that is not a tty, or has no /dev/tty (a pipe, a CI box, a
+    # preview spawn), must fall back to the plain readout instead of crashing.
+    try:
+        fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
+    except OSError:
+        return None
+    try:
+        previous = termios.tcgetattr(fd)
+    except (OSError, termios.error):
+        os.close(fd)
+        return None
     try:
         tty.setcbreak(fd)
         os.write(fd, b"\x1b[6n")
@@ -42,9 +54,17 @@ def cursor_position():
                 if match:
                     return int(match[1]) - 1, int(match[2]) - 1
         return None
+    except (OSError, termios.error):
+        return None
     finally:
-        termios.tcsetattr(fd, termios.TCSANOW, previous)
-        os.close(fd)
+        try:
+            termios.tcsetattr(fd, termios.TCSANOW, previous)
+        except (OSError, termios.error):
+            pass
+        try:
+            os.close(fd)
+        except OSError:
+            pass
 
 def move(row, col):
     sys.stdout.write(f"\x1b[{row + 1};{col + 1}H")
