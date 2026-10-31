@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "id": "native-switcher",
+  "category": "plugins",
+  "version": "0.2.8",
+  "destination": "ryoku/plugins/native-switcher",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "379dfa9273952c08fa44042de676ed4addc26a7c4d4c90235d6ff2c73dffb810",
+      "mode": "0644",
+      "size": 22,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "b7d3d270180d987cbc67c6a17b5584f23b49b24e343753eb32cf01f10e9f9eb5",
+      "mode": "0644",
+      "size": 3964,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3e46a7f5534bf65981801791a352c20eedffd5192fbbfe680c51cd2686b0b7c8",
+      "mode": "0644",
+      "size": 1096,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "88f65a1065c203298557bf2a15eb77904510c6d55db3919d28f3d0783210038d",
+      "mode": "0644",
+      "size": 2767,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "c0dc1c9fc49d443bebf8a7f46a18b8e49bd30c561c87db58f05602cdc3e824ae",
+      "mode": "0644",
+      "size": 363097,
+      "install": false
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "a301824a16977d545d102c8c1b03e735cf5eb53923abd2f363b8a5f758d3469d",
+      "mode": "0644",
+      "size": 12619,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "2fe023890e55985f7a5f9f9ac8820411a46292406427d02f222ab8e65e6c183a",
+      "mode": "0644",
+      "size": 1369,
+      "install": true
+    },
+    {
+      "source": "service/IconResolver.js",
+      "destination": "service/IconResolver.js",
+      "sha256": "c74edf662be1d7887d3bd5459866e82624ef9c93d4c64d289e472cd119c2185c",
+      "mode": "0644",
+      "size": 1230,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "ba8eb35e9b6275e8072f869284d33372f3514ac829d1c53c44d394f284c2ad82",
+      "mode": "0644",
+      "size": 6383,
+      "install": true
+    },
+    {
+      "source": "service/Model.js",
+      "destination": "service/Model.js",
+      "sha256": "8e4c7ed8736fe62eb8bc13d1014147ac86328e2421202f5cf5250f062f1950fc",
+      "mode": "0644",
+      "size": 1883,
+      "install": true
+    },
+    {
+      "source": "setup.sh",
+      "destination": "setup.sh",
+      "sha256": "f5ebe970c721507840f820a6b9609630fc624fb434e6a467e979e7cea8c8c644",
+      "mode": "0755",
+      "size": 3742,
+      "install": true
+    },
+    {
+      "source": "tests/host.test.cjs",
+      "destination": "tests/host.test.cjs",
+      "sha256": "1965cd86bd1297f015c6b1a6bd66cc71c5f6de20512ad334e0fe222d193c51a8",
+      "mode": "0644",
+      "size": 362,
+      "install": true
+    },
+    {
+      "source": "tests/hover.test.cjs",
+      "destination": "tests/hover.test.cjs",
+      "sha256": "207579ee9dd0656b9c7a79e48967f65be5b0c82e200444d7e030fce12a091dde",
+      "mode": "0644",
+      "size": 720,
+      "install": true
+    },
+    {
+      "source": "tests/icons.test.cjs",
+      "destination": "tests/icons.test.cjs",
+      "sha256": "bb72b22fa9b2c882fe41d4543a8df18064c02c31a214d32a7cb2fddfcca9896f",
+      "mode": "0644",
+      "size": 1294,
+      "install": true
+    },
+    {
+      "source": "tests/initial-position.test.cjs",
+      "destination": "tests/initial-position.test.cjs",
+      "sha256": "d0f78bad4db601d6f39bc7457b149c982c4e3aa8d41f8d9a960919004d993794",
+      "mode": "0644",
+      "size": 982,
+      "install": true
+    },
+    {
+      "source": "tests/keyboard-style.test.cjs",
+      "destination": "tests/keyboard-style.test.cjs",
+      "sha256": "91a4644277d4f9ebc08db3465fce58c7fad4e4ae7eff6b4f2506107d4da0ddbc",
+      "mode": "0644",
+      "size": 512,
+      "install": true
+    },
+    {
+      "source": "tests/layout.test.cjs",
+      "destination": "tests/layout.test.cjs",
+      "sha256": "c47482b5f70c8c35fcf91f7ffe1298656f3389dfde976cf0c78d558c5a5ff3c4",
+      "mode": "0644",
+      "size": 713,
+      "install": true
+    },
+    {
+      "source": "tests/model.test.cjs",
+      "destination": "tests/model.test.cjs",
+      "sha256": "ba7c2088af9cc7f7d52c06340b8b8fe0d11e8908ba809014a44f23d1e339b62e",
+      "mode": "0644",
+      "size": 2975,
+      "install": true
+    },
+    {
+      "source": "tests/motion.test.cjs",
+      "destination": "tests/motion.test.cjs",
+      "sha256": "7450c68afba54467af8f8901d667915901d99104cfe7388ee1ffd46426aa7c38",
+      "mode": "0644",
+      "size": 1382,
+      "install": true
+    },
+    {
+      "source": "tests/scroll.test.cjs",
+      "destination": "tests/scroll.test.cjs",
+      "sha256": "df065af550815ef02f55b52216c30165174a57b5b49da76d8de343d84338d030",
+      "mode": "0644",
+      "size": 1447,
+      "install": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const qml=fs.readFileSync(require('node:path').join(__dirname,'../content/Widget.qml'),'utf8');
+const fn=qml.match(/            function scrollCards\(event\) \{[^]*?\n            }/);
+assert(fn,'panel-wide scroll handler required');
+const ctx={win:{scrollTarget:0},root:{service:{engaged:true}},list:{contentWidth:1500,width:956,contentX:0},scrollMotion:{running:false,to:0,stop(){this.running=false},restart(){this.running=true}}};
+vm.createContext(ctx);vm.runInContext(fn[0],ctx);
+const wheel=y=>({pixelDelta:{x:0,y:0},angleDelta:{x:0,y},accepted:false});
+let e=wheel(-120);ctx.scrollCards(e);assert(e.accepted);assert.equal(ctx.win.scrollTarget,390);
+ctx.scrollCards(wheel(-120));assert.equal(ctx.win.scrollTarget,544,'accumulate rapid wheel events');
+for(let i=0;i<10;i++)ctx.scrollCards(wheel(-120));assert.equal(ctx.win.scrollTarget,544,'clamp right edge');
+ctx.scrollCards(wheel(120));assert.equal(ctx.win.scrollTarget,154);
+ctx.list.contentWidth=500;ctx.scrollCards(wheel(-120));assert.equal(ctx.win.scrollTarget,0,'short lists do not scroll');
+assert.match(qml,/MouseArea\s*\{[^]*?acceptedButtons: Qt.NoButton[^]*?onWheel: event => win.scrollCards\(event\)/);
+assert.doesNotMatch(qml,/event.angleDelta.y < 0 \? 1 : -1/,'wheel must scroll, not change selection');
+console.log('PASS: panel-wide scrolling, rapid accumulation, bounds and short lists');
