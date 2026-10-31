@@ -227,8 +227,9 @@ def main():
     # vertical filigree without being stretched.
     # The frame is drawn above the cursor and needs one row of clearance above
     # it; rows-4 left three blank rows that only ever helped a tall terminal.
-    # A half-screen window (16 rows) gets the ornament too.
-    height = min(16, rows - 2)
+    # A half-screen window (16 rows) gets the ornament too, and rows-1 lets the
+    # block sit a row lower inside it without reaching the blade.
+    height = min(16, rows - 1)
     frame_width = math.ceil(height * cell_h / cell_w * ART_W / ART_H)
     logo_height = max(7, round(height * 0.40))
     logo_width = math.ceil(logo_height * cell_h / cell_w * LOGO_W / LOGO_H)
@@ -266,7 +267,7 @@ def main():
     blocked = (
         frame_width < 24
         or height < 12
-        or height + 2 > rows
+        or height + 1 > rows
         or len(lines) > 8
         or decor < 0
         or room < 22
