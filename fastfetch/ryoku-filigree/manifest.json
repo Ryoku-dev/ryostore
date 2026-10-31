@@ -41,8 +41,8 @@
       "source": "bin/ryoku-fetch",
       "destination": "bin/ryoku-fetch",
       "mode": "0755",
-      "size": 13722,
-      "sha256": "efee47e0e87c3e627000b60578f735352025434c60b8d1e49085caf9558162b4",
+      "size": 11912,
+      "sha256": "671973b657d49a9b37234fb43f714b97b0ff9dc534f974c1e2b9c8a10c678967",
       "install": true
     },
     {

@@ -17,9 +17,6 @@ import tty
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
-# The composition is closed: this preset owns its module list and the artwork
-# is drawn around it. Never read ~/.config/fastfetch here -- a Settings edit
-# that changed the line count would move the text into the sword.
 CONFIG = ROOT / "config.jsonc"
 ARTWORK = ASSETS / "artwork.png"
 LOGO = ASSETS / "logo-mark-v2-ornament.png"
@@ -31,8 +28,6 @@ ART_W = 1786
 ART_H = 881
 
 def cursor_position():
-    # A terminal that is not a tty, or has no /dev/tty (a pipe, a CI box, a
-    # preview spawn), must fall back to the plain readout instead of crashing.
     try:
         fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
     except OSError:
@@ -85,9 +80,6 @@ def palette():
     except Exception:
         data = {}
 
-    # Ryoku's Material roles, never a raw ANSI slot: color2 is xterm's green, so
-    # falling back to it turned the whole composition green on the one palette
-    # that had no primary. Without roles, keep the preset's own warm tone.
     accent = hex_rgb(data.get("primary"), (226, 176, 150))
     text = hex_rgb(
         data.get("onSurface") or data.get("foreground"),
@@ -225,10 +217,6 @@ def main():
     # Both keep their native aspect ratios. The frame remains large enough to
     # wrap the text while the mark gets roughly the same visual height as the
     # vertical filigree without being stretched.
-    # The frame is drawn above the cursor and needs one row of clearance above
-    # it; rows-4 left three blank rows that only ever helped a tall terminal.
-    # A half-screen window (16 rows) gets the ornament too, and rows-1 lets the
-    # block sit a row lower inside it without reaching the blade.
     height = min(16, rows - 1)
     frame_width = math.ceil(height * cell_h / cell_w * ART_W / ART_H)
     logo_height = max(7, round(height * 0.40))
@@ -248,21 +236,10 @@ def main():
     text_x = frame_left + max(20, math.ceil(frame_width * 0.365))
     room = cols - text_x - 1
 
-    # The blade crosses the frame from 75% of its height down, so the readout
-    # ends a whole row above the first lit pixel. Every module line has to fit
-    # above it; when the frame is short, first the tagline and then the gap row
-    # are spent, rather than dropping to plain text the moment the full block
-    # no longer fits.
     last_clear_row = math.floor(height * 0.75) - 1
-    # The block is header, tagline, a gap and the module rows, so its last row
-    # sits at text_y + 1 + decor + len(lines) - 1. last_clear_row is the last
-    # row the artwork still draws nothing over, so the block ends on it -- the
-    # extra -1 that used to sit here pulled the block up a row for no gain.
     decor = 2  # tagline + the gap under it
     while decor >= 0 and last_clear_row - len(lines) - decor < 0:
         decor -= 1
-    # Text starts 36.5% into the frame; the frame must leave it somewhere to
-    # write. 22 characters is the floor before the readout is not a readout.
     blocked = (
         frame_width < 24
         or height < 12
@@ -283,7 +260,6 @@ def main():
         plain_fallback(lines, accent, text, muted)
         return 0
 
-    # Reserve terminal space before painting so invocation near the bottom scrolls normally.
     sys.stdout.write("\n" * (height + 1))
     sys.stdout.flush()
 

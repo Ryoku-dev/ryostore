@@ -1040,7 +1040,7 @@
    "preview": "preview.webp",
    "screenshots": [],
    "manifest": "manifest.json",
-   "manifestSha256": "1c63c9a7d0fb042cd4336a36cbed4065d9aedfda774fce9bc282c58fad9866b6",
+   "manifestSha256": "03771ae213c0414c7c6f98b08fc530cc4913c47abc79caae6b98bf00262124e5",
    "lastUpdated": "2026-10-31",
    "official": false,
    "license": "GPL-3.0-only"
