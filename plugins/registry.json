@@ -2118,7 +2118,8 @@
       "hosts": [
         "framePopout"
       ],
-      "lastUpdated": "2026-10-31"
+      "lastUpdated": "2026-10-31",
+      "upstream": "https://github.com/wolf1999h/native-switcher"
     }
   ]
 }
