@@ -225,7 +225,10 @@ def main():
     # Both keep their native aspect ratios. The frame remains large enough to
     # wrap the text while the mark gets roughly the same visual height as the
     # vertical filigree without being stretched.
-    height = min(16, rows - 4)
+    # The frame is drawn above the cursor and needs one row of clearance above
+    # it; rows-4 left three blank rows that only ever helped a tall terminal.
+    # A half-screen window (16 rows) gets the ornament too.
+    height = min(16, rows - 2)
     frame_width = math.ceil(height * cell_h / cell_w * ART_W / ART_H)
     logo_height = max(7, round(height * 0.40))
     logo_width = math.ceil(logo_height * cell_h / cell_w * LOGO_W / LOGO_H)
@@ -239,6 +242,10 @@ def main():
         logo_height = max(7, round(height * 0.40))
         logo_width = math.ceil(logo_height * cell_h / cell_w * LOGO_W / LOGO_H)
         total_width = logo_width + gap + frame_width
+
+    frame_left = 3 + logo_width + 1
+    text_x = frame_left + max(20, math.ceil(frame_width * 0.365))
+    room = cols - text_x - 1
 
     # The blade crosses the frame from 75% of its height down, so the readout
     # ends a whole row above the first lit pixel. Every module line has to fit
@@ -254,12 +261,15 @@ def main():
     decor = 2  # tagline + the gap under it
     while decor >= 0 and last_clear_row - len(lines) - decor - 1 < 0:
         decor -= 1
+    # Text starts 36.5% into the frame; the frame must leave it somewhere to
+    # write. 22 characters is the floor before the readout is not a readout.
     blocked = (
-        frame_width < 50
+        frame_width < 24
         or height < 12
-        or height + 3 > rows
+        or height + 2 > rows
         or len(lines) > 8
         or decor < 0
+        or room < 22
     )
     if blocked:
         debug(
@@ -329,7 +339,6 @@ def main():
     )
 
     # Text stays inside the ornamental frame, not inside the Ryoku mark.
-    text_x = frame_left + max(20, math.ceil(frame_width * 0.365))
     # Tuck the block under the top edge when the frame is short, but never let
     # its last module row reach the blade: last_clear_row is the highest row the
     # artwork still draws nothing over.
@@ -337,7 +346,6 @@ def main():
     block_rows = len(lines) + decor  # header, decoration, then the module rows
     safe_text_y = max(0, last_clear_row - block_rows - 1)
     text_y = top + min(preferred_text_y, safe_text_y)
-    room = cols - text_x - 1
     debug(
         "drawing: terminal %dx%d frame %dx%d text_row=%d decor=%d lines=%d"
         % (rows, cols, frame_width, height, text_y - top, decor, len(lines))

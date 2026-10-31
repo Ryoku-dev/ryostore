@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "ryoku-filigree",
   "category": "fastfetch",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "destination": "ryoku/fastfetch/ryoku-filigree",
   "files": [
     {
@@ -41,8 +41,8 @@
       "source": "bin/ryoku-fetch",
       "destination": "bin/ryoku-fetch",
       "mode": "0755",
-      "size": 12881,
-      "sha256": "0daadf4ea78d766b604a5e1b81a7767328ffa9a87e344fb2a30e63a6c09af9a9",
+      "size": 13310,
+      "sha256": "4b9dd1282815b80ecba0f2aa39921cdaa4e37aab87f9986fd5ae2cc537dcea6b",
       "install": true
     },
     {
