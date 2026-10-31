@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# native-switcher: Hyprland Bindings Verifier & Setup Notifier
+# ==============================================================================
+set -euo pipefail
+
+cfg_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+conf_file="${cfg_dir}/hypr/user.lua"
+
+# If native-switcher bindings are already configured, exit silently
+if [ -f "$conf_file" ] && grep -q "native-switcher,next" "$conf_file"; then
+    exit 0
+fi
+
+# Send reminder notification if keybindings are missing
+if command -v notify-send >/dev/null 2>&1; then
+    notify-send \
+        --app-name="Native Switcher" \
+        --urgency=normal \
+        --icon="preferences-desktop-keyboard" \
+        "Native Switcher: Setup Required" \
+        "Alt+Tab keybindings are not configured in hypr/user.lua. Check the repository README (wolf1999h/native-switcher) or run setup.sh."
+fi
