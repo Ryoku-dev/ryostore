@@ -342,7 +342,7 @@ def main():
     # Tuck the block under the top edge when the frame is short, but never let
     # its last module row reach the blade: last_clear_row is the highest row the
     # artwork still draws nothing over.
-    preferred_text_y = max(2, round(height * 0.19))
+    preferred_text_y = max(2, round(height * 0.19)) + 1
     block_rows = len(lines) + decor  # header, decoration, then the module rows
     safe_text_y = max(0, last_clear_row - block_rows - 1)
     text_y = top + min(preferred_text_y, safe_text_y)
