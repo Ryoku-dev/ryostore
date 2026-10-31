@@ -1,0 +1,15 @@
+Lumania Launcher
+
+Source: Ported from Lumania Shell
+Upstream: https://github.com/rover-001/lumania-shell
+Commit: 8f1c07f74c109900f7f6a9f898573410baf7b75f
+Author: rover (port by dodo986)
+Description: The bottom-left search notch, ported as a Ryoku app launcher
+License: MIT; see LICENSE
+
+The panel is the search notch from Lumania's bottom-left corner: it blooms out
+of the frame with the search line over a grid of apps, recents first. The
+command runner and the timer command were left out; apps come from
+DesktopEntries and start through AppLaunch. Recents are kept in
+~/.local/state/ryoku/lumania-recents.json, and the hidden-apps list in Ryoku's
+own ~/.config/ryoku/launcher.json is honoured.
