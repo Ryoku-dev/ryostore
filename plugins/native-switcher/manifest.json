@@ -1,7 +1,7 @@
 {
   "id": "native-switcher",
   "name": "Native Switcher",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "author": "wolf1999h <doorman-bust-exile@duck.com>",
   "description": "Event-driven window switcher inside the resident Ryoku shell; lazy UI, no extra daemon.",
   "license": "MIT",
@@ -14,6 +14,7 @@
     "content": "content/Widget.qml"
   },
   "files": [
+    "bin/check-bindings",
     "service/Model.js",
     "service/IconResolver.js",
     "tests/icons.test.cjs",
@@ -41,7 +42,7 @@
     "label": "Native Switcher"
   },
   "dependencies": {
-    "commands": ["ryoku-shell"]
+    "commands": ["ryoku-shell", "notify-send"]
   },
   "metadata": {
     "settings": [

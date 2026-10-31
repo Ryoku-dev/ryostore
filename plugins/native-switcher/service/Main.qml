@@ -39,6 +39,24 @@ Item {
     Timer { id: iconRefresh; interval: 1000; onTriggered: if (!iconLoader.running) iconLoader.running = true }
     Connections { target: DesktopEntries; function onApplicationsChanged() { iconRefresh.restart(); } }
 
+    Process { id: bindingChecker }
+    function checkBindings() {
+        var script = (svc.pluginApi && svc.pluginApi.pluginDir)
+            ? (svc.pluginApi.pluginDir + '/bin/check-bindings')
+            : '';
+        if (script.length > 0) {
+            bindingChecker.command = [script];
+            bindingChecker.running = true;
+        }
+    }
+    Timer {
+        id: startupCheck
+        interval: 2000
+        running: true
+        repeat: false
+        onTriggered: svc.checkBindings()
+    }
+
     readonly property int delayMs: pluginApi && pluginApi.pluginSettings.delayMs !== undefined
         ? Math.max(80, Number(pluginApi.pluginSettings.delayMs)) : 160
 
@@ -124,5 +142,6 @@ Item {
         function model(): string { return JSON.stringify(Hyprland.toplevels.values.map(t=>({address:t.address,data:t.lastIpcObject,workspace:t.workspace?t.workspace.name:''}))); }
         function refresh(): void { Hyprland.refreshToplevels(); }
         function icons(): string { return JSON.stringify({indexed:Object.keys(svc.iconIndex).length,windows:svc.windows.map(w=>({app:w.class,source:svc.iconFor(w)}))}); }
+        function checkBindings(): void { svc.checkBindings(); }
     }
 }

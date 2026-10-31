@@ -2096,7 +2096,7 @@
     {
       "id": "native-switcher",
       "name": "Native Switcher",
-      "version": "0.2.8",
+      "version": "0.2.9",
       "path": "plugins/native-switcher",
       "author": "wolf1999h <doorman-bust-exile@duck.com>",
       "summary": "Event-driven window switcher inside the resident Ryoku shell; lazy UI, no extra daemon.",
@@ -2111,7 +2111,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "2571f7a451a188a3c43080fd521cddfb2203618a00baf5a4902cc85a73a97bbb",
+      "manifestSha256": "71672be5a64aa322eb59b3050e30ad695c1bf540eebf76b3321ee5fdfdf0d540",
       "official": false,
       "tagline": "Event-driven window switcher inside the resident Ryoku shell; lazy UI, no extra daemon.",
       "icon": "",

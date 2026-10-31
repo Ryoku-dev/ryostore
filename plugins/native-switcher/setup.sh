@@ -22,17 +22,23 @@ command -v ryoku >/dev/null 2>&1 || {
     exit 1
 }
 
-# 2. Validate and register plugin
-echo -e "${BLUE}  ->${NC} Validating plugin manifest and sandbox constraints..."
-ryoku plugin validate "${SCRIPT_DIR}"
+# 2. Validate and register plugin (if not already installed via Ryostore)
+if command -v ryoku >/dev/null 2>&1 && ryoku plugin list 2>/dev/null | grep -q "native-switcher"; then
+    echo -e "${GREEN}  ✓${NC} Native Switcher is already registered in Ryoku shell."
+else
+    echo -e "${BLUE}  ->${NC} Validating plugin manifest and sandbox constraints..."
+    ryoku plugin validate "${SCRIPT_DIR}"
 
-echo -e "${BLUE}  ->${NC} Adding plugin to Ryoku shell..."
-ryoku plugin add "${SCRIPT_DIR}" --yes
+    echo -e "${BLUE}  ->${NC} Adding plugin to Ryoku shell..."
+    ryoku plugin add "${SCRIPT_DIR}" --yes
+fi
 
-echo -e "${BLUE}  ->${NC} Configuring plugin placement (centered popout host)..."
-ryoku-plugins-place native-switcher framePopout center center 0 0
-ryoku-plugins-place native-switcher host framePopout
-ryoku-plugins-place native-switcher enabled true
+echo -e "${BLUE}  ->${NC} Ensuring correct plugin placement (centered popout host)..."
+if command -v ryoku-plugins-place >/dev/null 2>&1; then
+    ryoku-plugins-place native-switcher framePopout center center 0 0 || true
+    ryoku-plugins-place native-switcher host framePopout || true
+    ryoku-plugins-place native-switcher enabled true || true
+fi
 
 # 3. Configure Hyprland keybindings in user.lua
 echo -e "${BLUE}  ->${NC} Checking Hyprland configuration in ${HYPR_CONF}..."

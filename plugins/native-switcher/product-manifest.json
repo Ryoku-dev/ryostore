@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "native-switcher",
   "category": "plugins",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "destination": "ryoku/plugins/native-switcher",
   "files": [
     {
@@ -40,9 +40,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "88f65a1065c203298557bf2a15eb77904510c6d55db3919d28f3d0783210038d",
+      "sha256": "2d0458e661f836ff134bab95a80730f508305535545a9e533313bcd37e4603ad",
       "mode": "0644",
-      "size": 2767,
+      "size": 8273,
       "install": false
     },
     {
@@ -52,6 +52,14 @@
       "mode": "0644",
       "size": 363097,
       "install": false
+    },
+    {
+      "source": "bin/check-bindings",
+      "destination": "bin/check-bindings",
+      "sha256": "f13ff983ff045f64e0ad4afed24e540fbba16748018e5bbd078f2cdc61a1adfd",
+      "mode": "0755",
+      "size": 928,
+      "install": true
     },
     {
       "source": "content/Widget.qml",
@@ -64,9 +72,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "2fe023890e55985f7a5f9f9ac8820411a46292406427d02f222ab8e65e6c183a",
+      "sha256": "8924b13b4d99e473613135e94c680ba9f3b892132d3d564a4eb1d1c82a8e278c",
       "mode": "0644",
-      "size": 1369,
+      "size": 1410,
       "install": true
     },
     {
@@ -80,9 +88,9 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "ba8eb35e9b6275e8072f869284d33372f3514ac829d1c53c44d394f284c2ad82",
+      "sha256": "452a6a738a9f634498a2cf225b2036359407a7d17c29bc6ab7fca70635e4ffc6",
       "mode": "0644",
-      "size": 6383,
+      "size": 6950,
       "install": true
     },
     {
@@ -96,9 +104,9 @@
     {
       "source": "setup.sh",
       "destination": "setup.sh",
-      "sha256": "f5ebe970c721507840f820a6b9609630fc624fb434e6a467e979e7cea8c8c644",
+      "sha256": "4bc58686980a1448c38ea3253b24ec10384993a543f98ddaae2f05c73b5e8b06",
       "mode": "0755",
-      "size": 3742,
+      "size": 4096,
       "install": true
     },
     {
