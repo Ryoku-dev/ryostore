@@ -4,11 +4,13 @@ import QtQuick
 import QtQuick.Shapes
 import Quickshell
 import "../../../port/shapes"
+import "../../../port/core"
 import "../../../config"
 import "../../../port/services"
 import "../../../components"
 import "../../../components/widgets"
 import "../../../services"
+
 Item {
     id: root
 
@@ -39,12 +41,12 @@ Item {
             id: bar
 
             required property int modelData
-            readonly property real value: Math.max(1e-2, Math.min(1, Audio.cava?.values?.[modelData] ?? 0))
+            readonly property real value: Math.max(1e-2, Math.min(1, Audio.cava.values[modelData]))
 
             readonly property real angle: modelData * 2 * Math.PI / GlobalConfig.services.visualiserBars
             readonly property real dist: shapeEdgeDist + value * root.maxMagnitude
             readonly property real shapeEdgeDist: {
-                cover.shape.rotation;
+                CUtils.dependency(cover.shape.rotation); // Update when shape rotation changes
                 const sDist = cover.shape.distanceAtAngle(modelData * 360 / GlobalConfig.services.visualiserBars + 90);
                 return sDist + root.spacing + strokeWidth / 2;
             }

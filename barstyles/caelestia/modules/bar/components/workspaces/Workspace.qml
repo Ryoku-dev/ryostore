@@ -4,92 +4,145 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import "../../../../port/shapes"
+import "../../../../port/components"
 import "../../../../config"
 import "../../../../components"
 import "../../../../services"
 import "../../../../utils"
-GridLayout {
+
+Item {
     id: root
 
-    required property int ws
+    required property int modelData
+    required property int index
     required property int activeWsId
-    required property string screenName
-    required property var occupied
+    required property int ws
+    required property var monitor
 
-    readonly property bool isWorkspace: true
-    readonly property bool isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
-    readonly property real rawScale: !isNaN(Config.bar.scale) ? Config.bar.scale : 1.0
-    readonly property real scaleFactor: rawScale < 1.0 ? Math.sqrt(Math.max(0.1, rawScale)) : rawScale
-    readonly property int barThickness: Math.round(Tokens.sizes.bar.innerWidth * scaleFactor)
+    required property int displayType
+    required property bool showWindows
+    required property var iconRules
+    property string activeLabel
+    property string occupiedLabel
+    property string label
+    property bool adding: false
+    property bool removing: false
+    property bool animationsEnabled: true
+    property bool ready: true
+    property real layoutY: y
+    property real preferredHeight: removing ? 0 : layout.implicitHeight + (hasWindows ? Tokens.padding.extraSmall : 0)
+    property real visibleHeight: preferredHeight
 
-    readonly property bool isActive: activeWsId === ws
-    // An inactive, empty workspace keeps its pill only when the user wants the
-    // full strip; otherwise it collapses to nothing.
-    readonly property bool shouldShow: Config.bar.workspaces.showUnoccupied || isOccupied || isActive
-    property real reveal: shouldShow ? 1 : 0
-    readonly property real revealProgress: Math.max(0, Math.min(1, reveal))
+    readonly property list<var> toplevels: Hypr.toplevelsForWs(ws, GlobalConfig.bar.workspaces.ignoredTags)
+    readonly property bool isOccupied: toplevels.length > 0
+    readonly property bool hasWindows: isOccupied && showWindows && Config.bar.workspaces.maxWindowIcons > 0
+    readonly property bool focused: activeWsId === ws
+    readonly property list<int> focusedShapeList: [MaterialShape.Slanted, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny, MaterialShape.Cookie4Sided, MaterialShape.Cookie6Sided, MaterialShape.Cookie7Sided, MaterialShape.Cookie9Sided, MaterialShape.Cookie12Sided, MaterialShape.Clover4Leaf, MaterialShape.SoftBurst, MaterialShape.Ghostish]
 
-    readonly property real size: ((isHorizontal ? implicitWidth : implicitHeight) + (hasWindows ? Tokens.padding.extraSmall : 0)) * revealProgress
+    property color offMonitorColour: Colours.palette.m3outlineVariant
+    readonly property bool onOtherMonitor: {
+        if (Config.bar.workspaces.perMonitor)
+            return false;
+        const mon = Hypr.workspaces.values.find(w => w.id === ws)?.monitor;
+        return !!(mon && mon !== monitor);
+    }
+    readonly property color fgColour: {
+        if (onOtherMonitor)
+            return offMonitorColour;
+        if (focused || isOccupied || Config.bar.workspaces.occupiedBg)
+            return Colours.palette.m3onSurface;
+        return Colours.layer(Colours.palette.m3outlineVariant, 2);
+    }
 
-    readonly property int maxIcons: Config.bar.workspaces.maxWindowIcons
-    readonly property bool isOccupied: occupied[ws] ?? false
-    readonly property bool hasWindows: isOccupied && Config.bar.workspaces.showWindows && (Config.bar.workspaces.maxWindowIcons > 0)
-    property var kwinWindowList: Kwin.windowList
+    function updateShape(): void {
+        const shape = indicator.item as MaterialShape;
+        if (!shape)
+            return;
 
-    property var _cache: ({ colKeys: "", colIcons: [], rowKeys: "", rowIcons: [] })
+        if (focused)
+            shape.shape = focusedShapeList[Math.floor(Math.random() * focusedShapeList.length)];
+        else
+            shape.shape = Qt.binding(() => isOccupied ? MaterialShape.Square : MaterialShape.Circle);
+    }
 
-    columns: isHorizontal ? -1 : 1
-    rows: isHorizontal ? 1 : -1
-    flow: isHorizontal ? GridLayout.LeftToRight : GridLayout.TopToBottom
+    anchors.horizontalCenter: parent?.horizontalCenter
 
-    Layout.alignment: isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
-    Layout.preferredWidth: isHorizontal ? size : -1
-    Layout.preferredHeight: isHorizontal ? -1 : size
+    opacity: removing || adding ? 0 : 1
 
-    columnSpacing: 0
-    rowSpacing: 0
+    onFocusedChanged: updateShape()
+    Component.onCompleted: updateShape()
 
-    visible: shouldShow || revealProgress > 0
-    opacity: revealProgress
+    Behavior on visibleHeight {
+        Anim {}
+    }
 
-    Behavior on reveal {
+    Behavior on y {
+        enabled: root.ready
+
+        Anim {}
+    }
+
+    Behavior on opacity {
         Anim {
             type: Anim.DefaultEffects
         }
     }
 
-    Loader {
-        id: indicator
+    Component {
+        id: shapeComponent
 
-        Layout.alignment: isHorizontal ? (Qt.AlignVCenter | Qt.AlignLeft) : (Qt.AlignHCenter | Qt.AlignTop)
-        Layout.preferredWidth: isHorizontal ? (barThickness - Tokens.padding.small) : -1
-        Layout.preferredHeight: isHorizontal ? -1 : (barThickness - Tokens.padding.small)
+        MaterialShape {
+            implicitSize: Tokens.sizes.bar.innerWidth - Tokens.padding.small
 
-        asynchronous: true
-        sourceComponent: Config.bar.workspaces.displayType === BarWorkspaceDisplay.Text ? textComponent : iconComponent
+            color: root.fgColour
+            scale: root.focused ? 2 / 3 : root.isOccupied ? 1 / 3 : 1 / 4
+
+            animationEasing: Tokens.anim.expressiveDefaultSpatial
+            animationDuration: Tokens.anim.durations.expressiveDefaultSpatial * Tokens.anim.durations.scale
+
+            Behavior on color {
+                CAnim {}
+            }
+
+            Behavior on scale {
+                Anim {}
+            }
+        }
     }
 
     Component {
         id: textComponent
 
         StyledText {
-            anchors.fill: parent
             animate: true
             text: {
-                const wsName = root.ws;
-                let displayName = wsName.toString();
-                if (Config.bar.workspaces.capitalisation.toLowerCase() === "upper") {
-                    displayName = displayName.toUpperCase();
-                } else if (Config.bar.workspaces.capitalisation.toLowerCase() === "lower") {
-                    displayName = displayName.toLowerCase();
+                if (root.focused) {
+                    const label = root.activeLabel;
+                    if (label)
+                        return label;
                 }
-                const label = Config.bar.workspaces.label || displayName;
-                const occupiedLabel = Config.bar.workspaces.occupiedLabel || label;
-                const activeLabel = Config.bar.workspaces.activeLabel || (root.isOccupied ? occupiedLabel : label);
-                return root.activeWsId === root.ws ? activeLabel : root.isOccupied ? occupiedLabel : label;
+
+                if (root.focused || root.isOccupied) {
+                    const label = root.occupiedLabel;
+                    if (label)
+                        return label;
+                }
+
+                const label = root.label;
+                if (label)
+                    return label;
+
+                const ws = Hypr.workspaces.values.find(w => w.id === root.ws);
+                const wsName = !ws || ws.name == root.ws ? root.ws : Hypr.trimWsName(ws.name)[0];
+
+                const capitalisation = Config.bar.workspaces.capitalisation;
+                if (capitalisation === BarWorkspaceCapitalisation.Upper)
+                    return String(wsName).toUpperCase();
+                else if (capitalisation === BarWorkspaceCapitalisation.Lower)
+                    return String(wsName).toLowerCase();
+                return wsName;
             }
-            color: Config.bar.workspaces.occupiedBg || root.isOccupied || root.activeWsId === root.ws ? Colours.palette.m3onSurface : Colours.layer(Colours.palette.m3outlineVariant, 2)
-            horizontalAlignment: Qt.AlignHCenter
+            color: root.fgColour
             verticalAlignment: Qt.AlignVCenter
             font.family: Tokens.font.workspaces
         }
@@ -98,323 +151,130 @@ GridLayout {
     Component {
         id: iconComponent
 
-        Item {
-            id: iconRoot
+        MaterialIcon {
+            fill: 1
+            grade: 25
+            text: iconCacher.icon
+            color: root.fgColour
+            verticalAlignment: Qt.AlignVCenter
 
-            readonly property bool active: root.activeWsId === root.ws
-            readonly property list<int> focusShapes: [MaterialShape.Slanted, MaterialShape.Arch, MaterialShape.Oval, MaterialShape.Pill, MaterialShape.Triangle, MaterialShape.Arrow, MaterialShape.Diamond, MaterialShape.Pentagon, MaterialShape.Gem, MaterialShape.VerySunny, MaterialShape.Sunny]
+            WsIconCacher {
+                id: iconCacher
+            }
+        }
+    }
 
-            property int randShape: MaterialShape.Slanted
-            property bool wasPositionActive: false
-            property int lastKnownWs: -1
-            property int prevActiveWsId: -1
-            property bool hasRandomShape: false
+    Component {
+        id: iconLoaderComponent
 
-            property int prevWs: -1
+        Loader {
+            sourceComponent: loaderIconCacher.icon ? iconComponent : textComponent
 
-            property int watchedWs: root.ws
+            WsIconCacher {
+                id: loaderIconCacher
+            }
+        }
+    }
 
-            property int lastWatchedWs: -1
+    ColumnLayout {
+        id: layout
 
-            property int swipeStartWsId: -1
-            property bool generatedShapeThisSwipe: false
+        anchors.fill: parent
+        spacing: 0
 
-            property real rawSwipeOffset: Kwin.swipeOffsetByOutput?.[root.screenName] ?? Kwin.swipeOffset
-            property real lastRawSwipeOffset: 0.0
-            property bool isSwiping: false
+        Loader {
+            id: indicator
 
-            readonly property real swipeWeight: {
-                if (!isSwiping || rawSwipeOffset === 0.0) return active ? 1.0 : 0.0;
-
-                // Use swipeStartWsId to prevent KWin desyncs when activeWsId changes before rawSwipeOffset resets
-                const startId = swipeStartWsId !== -1 ? swipeStartWsId : root.activeWsId;
-                const activeIdx = startId - 1;
-                const targetIdx = rawSwipeOffset > 0 ? activeIdx + 1 : activeIdx - 1;
-                const t = Math.abs(rawSwipeOffset);
-                const myIdx = root.ws - 1;
-                if (myIdx === activeIdx) return 1.0 - t;
-                if (myIdx === targetIdx) return t;
-                return 0.0;
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+            Layout.preferredHeight: Tokens.sizes.bar.innerWidth - Tokens.padding.small
+            sourceComponent: {
+                if (root.displayType === BarWorkspaceDisplay.Icons)
+                    return iconLoaderComponent;
+                if (root.displayType === BarWorkspaceDisplay.Text)
+                    return textComponent;
+                return shapeComponent;
             }
 
-            property real smoothSwipeWeight: swipeWeight
+            onItemChanged: root.updateShape()
+        }
 
-            function handleActivation() {
-                const wsChanged = lastKnownWs !== root.ws;
-                if (active && (!wasPositionActive || wsChanged)) {
-                    if (!hasRandomShape) {
-                        randShape = focusShapes[Math.floor(Math.random() * focusShapes.length)];
-                        wsShape.shape = randShape;
-                        hasRandomShape = true;
-                    }
-                } else if (!active && (wasPositionActive || wsChanged)) {
-                    if (!isSwiping) {
-                        const targetShape = root.isOccupied ? MaterialShape.Square : MaterialShape.Circle;
-                        wsShape.shape = targetShape;
-                        hasRandomShape = false;
+        Loader {
+            id: windows
+
+            asynchronous: true
+
+            Layout.fillWidth: true
+            Layout.topMargin: -Tokens.spacing.extraSmall / 2
+            Layout.preferredHeight: root.hasWindows && item ? (item as LazyListView).layoutHeight : 0
+
+            visible: active
+            active: root.showWindows && Config.bar.workspaces.maxWindowIcons > 0
+
+            sourceComponent: LazyListView {
+                spacing: 0
+                implicitHeight: contentHeight
+                cullDelegates: false
+                removeDuration: Tokens.anim.durations.expressiveDefaultEffects
+
+                model: ScriptModel {
+                    values: {
+                        const windows = root.toplevels;
+                        const maxIcons = Config.bar.workspaces.maxWindowIcons;
+                        return maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
                     }
                 }
-                wasPositionActive = active;
-                prevWs = lastKnownWs;
-                lastKnownWs = root.ws;
-                prevActiveWsId = root.activeWsId;
-            }
 
-            implicitWidth: barThickness - Tokens.padding.small
-            implicitHeight: barThickness - Tokens.padding.small
+                delegate: MaterialIcon {
+                    id: win
 
-            onRawSwipeOffsetChanged: {
-                if (rawSwipeOffset !== 0.0) {
-                    if (lastRawSwipeOffset === 0.0) {
-                        swipeStartWsId = root.activeWsId;
-                    }
-                    isSwiping = true;
-                    swipeSettleTimer.stop();
-                } else {
-                    swipeSettleTimer.restart();
-                }
-                lastRawSwipeOffset = rawSwipeOffset;
-            }
+                    required property var modelData
+                    required property int index // Needed, LazyListView will fail to set it if it doesn't exist
+                    property bool adding: false
+                    property bool removing: false
+                    property bool animationsEnabled: true
 
-            onIsSwipingChanged: {
-                if (!isSwiping) {
-                    generatedShapeThisSwipe = false;
-                }
-            }
+                    grade: 0
+                    horizontalAlignment: Text.AlignHCenter
+                    text: Icons.getAppCategoryIcon(modelData.lastIpcObject.class, "terminal")
+                    color: root.onOtherMonitor ? root.offMonitorColour : Colours.palette.m3onSurfaceVariant
 
-            onSmoothSwipeWeightChanged: {
-                if (isSwiping) {
-                    if (smoothSwipeWeight >= 0.05 && !hasRandomShape) {
-                        if (!generatedShapeThisSwipe && !active) {
-                            randShape = focusShapes[Math.floor(Math.random() * focusShapes.length)];
-                            generatedShapeThisSwipe = true;
+                    opacity: adding || removing ? 0 : 1
+
+                    Behavior on opacity {
+                        Anim {
+                            type: Anim.DefaultEffects
                         }
-                        wsShape.shape = randShape;
-                        hasRandomShape = true;
-                    } else if (smoothSwipeWeight < 0.05 && hasRandomShape) {
-                        wsShape.shape = root.isOccupied ? MaterialShape.Square : MaterialShape.Circle;
-                        hasRandomShape = false;
                     }
-                }
-            }
 
-            onWatchedWsChanged: {
-                if (lastWatchedWs !== -1 && watchedWs !== lastWatchedWs && !active) {
-                    if (!isSwiping) {
-                        wsShape.shape = root.isOccupied ? MaterialShape.Square : MaterialShape.Circle;
-                        hasRandomShape = false;
-                    }
-                }
-                lastWatchedWs = watchedWs;
-            }
-
-            onPrevActiveWsIdChanged: {
-                if (prevActiveWsId !== -1 && prevActiveWsId !== root.activeWsId && active) {
-                    handleActivation();
-                }
-            }
-
-            onActiveChanged: handleActivation()
-
-            Component.onCompleted: {
-                if (active) {
-                    handleActivation();
-                } else {
-                    wsShape.shape = root.isOccupied ? MaterialShape.Square : MaterialShape.Circle;
-                    hasRandomShape = false;
-                }
-                wasPositionActive = active;
-                prevWs = -1;
-                lastKnownWs = root.ws;
-                prevActiveWsId = root.activeWsId;
-                lastWatchedWs = root.ws;
-            }
-
-            Timer {
-                id: swipeSettleTimer
-
-                interval: 120
-                repeat: false
-                onTriggered: {
-                    iconRoot.isSwiping = false;
-                    if (!iconRoot.active) {
-                        wsShape.shape = root.isOccupied ? MaterialShape.Square : MaterialShape.Circle;
-                        hasRandomShape = false;
-                    }
-                }
-            }
-
-            Behavior on smoothSwipeWeight {
-                enabled: iconRoot.isSwiping
-
-                SmoothedAnimation { velocity: -1; duration: 60; easing.type: Easing.Linear }
-            }
-
-            MaterialShape {
-                id: wsShape
-
-                anchors.centerIn: parent
-                implicitSize: iconRoot.width
-                width: implicitWidth
-                height: implicitHeight
-                scale: {
-                    if (iconRoot.isSwiping) {
-                        return (1 / 3) + (iconRoot.smoothSwipeWeight * (1 / 3));
-                    }
-                    return iconRoot.active ? 2 / 3 : 1 / 3;
-                }
-                color: {
-                    const isActiveVisual = iconRoot.isSwiping ? (iconRoot.smoothSwipeWeight >= 0.8) : iconRoot.active;
-                    return Config.bar.workspaces.occupiedBg || root.isOccupied || isActiveVisual ? Colours.palette.m3onSurface : Colours.layer(Colours.palette.m3outlineVariant, 2);
-                }
-
-                Behavior on color {
-                    CAnim {}
-                }
-
-                Behavior on scale {
-                    enabled: !iconRoot.isSwiping
-
-                    Anim {
-                        type: Anim.FastSpatial
+                    Behavior on y {
+                        Anim {}
                     }
                 }
             }
         }
     }
 
-    Loader {
-        id: windows
+    component WsIconCacher: QtObject {
+        id: cacher
 
-        asynchronous: true
+        property string name
+        readonly property string icon: Icons.matchIconRuleList(Hypr.trimWsName(name), root.iconRules)
+        readonly property var wsObj: Hypr.workspaces.values.find(w => w.id === root.ws) ?? null
 
-        Layout.alignment: isHorizontal ? Qt.AlignVCenter : Qt.AlignHCenter
-        Layout.fillWidth: isHorizontal && enabled
-        Layout.fillHeight: !isHorizontal && enabled
-        Layout.topMargin: isHorizontal ? 0 : -barThickness / 10
-        Layout.leftMargin: isHorizontal ? -barThickness / 10 : 0
-
-        visible: active
-        active: root.hasWindows
-
-        sourceComponent: isHorizontal ? rowComponent : columnComponent
-    }
-
-    Component {
-        id: columnComponent
-
-        Column {
-            spacing: 0
-
-            add: Transition {
-                Anim {
-                    properties: "scale"
-                    from: 0
-                    to: 1
-                    easing: Tokens.anim.standardDecel
-                }
+        readonly property Connections conn: Connections {
+            function onNameChanged(): void {
+                cacher.updateName();
             }
 
-            move: Transition {
-                Anim {
-                    properties: "scale"
-                    to: 1
-                    easing: Tokens.anim.standardDecel
-                }
-                Anim {
-                    properties: "x,y"
-                }
-            }
-
-            Repeater {
-                model: ScriptModel {
-                    values: {
-                        const wins = Kwin.filterWindows(Kwin.windowList, root.ws, root.screenName, false);
-                        let windows = wins.filter(w => !Kwin.isIgnoredWindow(w));
-
-                        const maxIcons = Config.bar.workspaces.maxWindowIcons;
-                        windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
-                        const keys = windows.map(w => w.address || w["class"]).sort().join(",");
-                        if (keys === root._cache.colKeys) return root._cache.colIcons;
-                        root._cache.colKeys = keys;
-                        root._cache.colIcons = windows;
-                        return windows;
-                    }
-                }
-
-                MaterialIcon {
-                    required property var modelData
-
-                    grade: 0
-                    text: Icons.getAppCategoryIcon(modelData.lastIpcObject ? modelData.lastIpcObject["class"] : modelData["class"], "terminal")
-                    color: Colours.palette.m3onSurfaceVariant
-                }
-            }
+            target: cacher.wsObj
         }
-    }
 
-    Component {
-        id: rowComponent
-
-        Row {
-            spacing: 0
-
-            add: Transition {
-                Anim {
-                    properties: "scale"
-                    from: 0
-                    to: 1
-                    easing: Tokens.anim.standardDecel
-                }
-            }
-
-            move: Transition {
-                Anim {
-                    properties: "scale"
-                    to: 1
-                    easing: Tokens.anim.standardDecel
-                }
-                Anim {
-                    properties: "x,y"
-                }
-            }
-
-            Repeater {
-                model: ScriptModel {
-                    values: {
-                        const wins = Kwin.filterWindows(Kwin.windowList, root.ws, root.screenName, false);
-                        let windows = wins.filter(w => !Kwin.isIgnoredWindow(w));
-
-                        const maxIcons = Config.bar.workspaces.maxWindowIcons;
-                        windows = maxIcons > 0 ? windows.slice(0, maxIcons) : windows;
-                        const keys = windows.map(w => w.address || w["class"]).sort().join(",");
-                        if (keys === root._cache.rowKeys) return root._cache.rowIcons;
-                        root._cache.rowKeys = keys;
-                        root._cache.rowIcons = windows;
-                        return windows;
-                    }
-                }
-
-                MaterialIcon {
-                    required property var modelData
-
-                    grade: 0
-                    text: Icons.getAppCategoryIcon(modelData.lastIpcObject ? modelData.lastIpcObject["class"] : modelData["class"], "terminal")
-                    color: Colours.palette.m3onSurfaceVariant
-                }
-            }
+        function updateName(): void {
+            if (wsObj)
+                name = wsObj.name;
         }
-    }
 
-    Behavior on Layout.preferredHeight {
-        enabled: !isHorizontal
-
-        Anim {}
-    }
-
-    Behavior on Layout.preferredWidth {
-        enabled: isHorizontal
-
-        Anim {}
+        onWsObjChanged: updateName()
+        Component.onCompleted: updateName()
     }
 }

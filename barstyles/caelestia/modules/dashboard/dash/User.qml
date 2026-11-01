@@ -1,39 +1,29 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Quickshell.Io
 import "../../../port/shapes"
 import "../../../config"
+import "../../../port/i18n"
+import "../../../port/multimedia"
 import "../../../components"
 import "../../../components/effects"
 import "../../../components/filedialog"
-import "../../../components/images"
 import "../../../services"
 import "../../../utils"
+
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property FileDialog facePicker
 
     property color pfpFallbackColour: Colours.layer(Colours.palette.m3surfaceContainerHighest, 2)
-    property string hyprlandSplashText: ""
 
     anchors.fill: parent
     anchors.margins: Tokens.padding.large
 
     Behavior on pfpFallbackColour {
         CAnim {}
-    }
-
-    Process {
-        running: Config.dashboard.showHyprlandSplash
-        command: ["sh", "-c", "echo \"Welcome back, $USER\""]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                hyprlandSplashText = text.trim();
-            }
-        }
     }
 
     Item {
@@ -50,7 +40,7 @@ Item {
 
             anchors.centerIn: parent
             implicitSize: parent.height
-            shape: GlobalConfig.dashboard.profilePicShape
+            shape: MaterialShape.Pill
             color: Qt.alpha(root.pfpFallbackColour, 1)
             opacity: root.pfpFallbackColour.a
             layer.enabled: true
@@ -68,7 +58,7 @@ Item {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    root.visibilities.dashboard = false;
+                    root.screenState.dashboard = false;
                     root.facePicker.open();
                 }
             }
@@ -84,27 +74,27 @@ Item {
             Loader {
                 anchors.centerIn: parent
                 asynchronous: true
-                active: pfp.status !== Image.Ready
+                active: !pfp.ready
 
                 sourceComponent: MaterialIcon {
                     text: "person_add"
                     color: Colours.palette.m3onSurfaceVariant
                     fontStyle: Tokens.font.icon.extraLarge
                     fill: 1
-                    grade: -2
+                    grade: -2 // Ugh material symbols are such a pain with fill
                 }
             }
 
-            CachingImage {
+            Visual {
                 id: pfp
 
                 anchors.fill: parent
-                path: `${Paths.home}/.face`
+                source: `${Paths.home}/.face`
             }
 
             StyledRect {
                 anchors.fill: parent
-                color: Qt.alpha(Colours.palette.m3scrim, pfp.status === Image.Ready ? 0.4 : 0)
+                color: Qt.alpha(Colours.palette.m3scrim, pfp.ready ? 0.4 : 0)
                 opacity: mouse.containsMouse ? 1 : 0
                 layer.enabled: opacity < 1
 
@@ -188,7 +178,7 @@ Item {
 
         anchors.bottom: parent.bottom
         anchors.left: pfpContainer.right
-        anchors.bottomMargin: -Tokens.padding.small
+        anchors.bottomMargin: -Tokens.padding.small // Clamshell is taller than what it is visually
         anchors.leftMargin: -Tokens.padding.extraLargeIncreased
         implicitSize: Tokens.sizes.dashboard.uptimeSize + Tokens.padding.small * 2
         shape: MaterialShape.ClamShell
@@ -212,7 +202,8 @@ Item {
         anchors.leftMargin: Tokens.spacing.small
         anchors.verticalCenterOffset: Math.round(fontInfo.pointSize * 0.1)
 
-        text: qsTr("up %1").arg(SysInfo.uptime.split(",").slice(0, 2).join(","))
+        // TRANSLATORS: %1 = system uptime, e.g. "2 days, 3 hours"
+        text: Tr.trCtx("up %1", "system uptime").arg(SysInfo.uptimeShort)
         width: Tokens.sizes.dashboard.userWidth - x - Tokens.padding.extraLarge
         elide: Text.ElideRight
     }
@@ -265,7 +256,6 @@ Item {
             MaterialIcon {
                 id: wmIcon
 
-                visible: !Config.dashboard.showHyprlandSplash
                 anchors.verticalCenter: parent.verticalCenter
                 text: "select_window"
                 color: Colours.palette.m3onSecondaryContainer
@@ -276,12 +266,11 @@ Item {
                 id: wmText
 
                 anchors.verticalCenter: parent.verticalCenter
-                text: Config.dashboard.showHyprlandSplash && hyprlandSplashText !== "" ? hyprlandSplashText : SysInfo.wm + "..."
+                anchors.verticalCenterOffset: Math.round(fontInfo.pointSize * 0.1)
+                text: SysInfo.wm + "..."
                 color: Colours.palette.m3onSecondaryContainer
                 font: Tokens.font.body.builders.small.vaxis("slnt", -4).build()
-                width: Math.min(implicitWidth, Tokens.sizes.dashboard.userWidth - wmContainer.x - Tokens.padding.medium * 2 - (wmIcon.visible ? wmIcon.implicitWidth + wmLabel.spacing : 0) - Tokens.padding.extraLarge)
-                wrapMode: Config.dashboard.showHyprlandSplash ? Text.WordWrap : Text.NoWrap
-                maximumLineCount: Config.dashboard.showHyprlandSplash ? 2 : 1
+                width: Math.min(implicitWidth, Tokens.sizes.dashboard.userWidth - wmContainer.x - Tokens.padding.medium * 2 - wmIcon.implicitWidth - wmLabel.spacing - Tokens.padding.extraLarge)
                 elide: Text.ElideRight
             }
         }

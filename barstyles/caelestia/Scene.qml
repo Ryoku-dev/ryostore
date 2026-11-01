@@ -2,16 +2,10 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import shell.services
-import "modules" as CM
+import shell.services as RyokuServices
 import "modules/drawers" as Drawers
-import "modules/settings" as Settings
-import "services" as CS
+import "services" as CaelestiaServices
 
-// The Caelestia style: the Caelestia shell's own drawers (frame, bar, dashboard, session,
-// sidebar, OSD and popouts) running inside the Ryoku shell, in plain QML. They span every
-// output themselves, so the scene hosts them once, from the first output. The config is
-// ~/.config/ryoku/caelestia/shell.json, edited from the style's own settings panel.
 Item {
     id: scene
 
@@ -22,69 +16,104 @@ Item {
     readonly property bool primary: modelData !== null && Quickshell.screens.length > 0
         && modelData.name === Quickshell.screens[0].name
 
-    Binding {
-        target: CS.HostState
-        property: "flags"
-        when: typeof Flags !== "undefined"
-        value: typeof Flags === "undefined" ? null : Flags
+    function screenFor(name: string): var {
+        if (name)
+            return Quickshell.screens.find(screen => screen.name === name) || null;
+        return Quickshell.screens.find(screen => screen.name === CaelestiaServices.Hypr.focusedMonitor?.name)
+            || Quickshell.screens[0] || null;
     }
 
-    // the bar's dock follows the Ryoku dock when this shell has the Caelestia dock design
-    Binding {
-        target: CS.HostState
-        property: "dock"
-        when: typeof Dock.design === "string"
-        value: Dock.design === "caelestia" && Dock.cfg("enabled", false)
+    function stateFor(name: string): var {
+        const screen = screenFor(name);
+        return screen ? CaelestiaServices.ShellState.forScreen(screen) : null;
     }
 
-    // The dashboard follows the Hub's Controls page on shells that have it (SidebarState);
-    // on older ones it shows every section, as the Caelestia shell does on its own.
-    readonly property var controls: typeof SidebarState === "undefined" ? null : SidebarState
+    function componentsFor(name: string): var {
+        const screen = screenFor(name);
+        return screen ? CaelestiaServices.ShellState.componentsFor(screen) : null;
+    }
 
-    Binding {
-        target: CS.HostState
-        property: "controlsSections"
-        when: scene.controls !== null
-        value: {
-            const shown = {};
-            for (const s of scene.controls.controls.sections)
-                shown[s.id] = s.visible;
-            return shown;
+    function closeState(state): void {
+        if (!state)
+            return;
+        state.launcher = false;
+        state.session = false;
+        state.sidebar = false;
+        state.dashboard = false;
+        state.utilities = false;
+    }
+
+    function routeSurface(id: string, monitor: string): void {
+        const base = id.split("#")[0];
+        const state = stateFor(monitor);
+        if (!state)
+            return;
+
+        if (base === "launcher") {
+            const opening = !state.launcher;
+            closeState(state);
+            state.launcher = opening;
+        } else if (base === "settings") {
+            const panels = componentsFor(monitor)?.panels;
+            if (!panels)
+                return;
+            const opening = !panels.popouts.isDetached;
+            closeState(state);
+            if (opening)
+                panels.popouts.detach("appearance");
+            else
+                panels.popouts.close();
+        } else if (base === "dashboard") {
+            closeState(state);
+            state.dashboard = true;
+        } else if (base === "session") {
+            closeState(state);
+            state.session = true;
+        } else if (base === "sidebar") {
+            closeState(state);
+            state.sidebar = true;
+        } else if (base === "utilities") {
+            closeState(state);
+            state.utilities = true;
         }
     }
 
-    Binding {
-        target: CS.HostState
-        property: "controlsOrder"
-        when: scene.controls !== null
-        value: scene.controls.visibleSections.map(s => s.id)
-    }
-
-    Binding {
-        target: CS.HostState
-        property: "controlsHidden"
-        when: scene.controls !== null
-        value: scene.controls.controls.hidden
-    }
-
     Connections {
-        target: CS.HostState
+        target: RyokuServices.ShellState
 
-        function onSession(action: string): void {
-            SessionActions.run(action);
+        function onSurfaceRequested(id, monitor, context): void {
+            scene.routeSurface(id, monitor);
+        }
+
+        function onSurfaceClosed(id, monitor): void {
+            const state = scene.stateFor(monitor);
+            if (!state)
+                return;
+            const base = id.split("#")[0];
+            if (!base || base === "launcher")
+                state.launcher = false;
+            if (!base || base === "session")
+                state.session = false;
+            if (!base || base === "sidebar")
+                state.sidebar = false;
+            if (!base || base === "dashboard")
+                state.dashboard = false;
+            if (!base || base === "settings")
+                scene.componentsFor(monitor)?.panels?.popouts.close();
         }
     }
 
     Loader {
         active: scene.primary
         sourceComponent: Item {
-            CM.ServiceLoader {}
-            Drawers.Drawers {}
-            CM.Shortcuts {}
-
-            Settings.SettingsPanel {
-                screen: scene.modelData
+            Component.onCompleted: {
+                CaelestiaServices.Notifs;
+                CaelestiaServices.Players;
+                CaelestiaServices.Brightness;
+                CaelestiaServices.Weather.reload();
             }
+
+            Drawers.Drawers {}
         }
     }
 }

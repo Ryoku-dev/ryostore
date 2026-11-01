@@ -2,10 +2,13 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
 import "../../../config"
+import "../../../port/i18n"
 import "../../../port/services"
 import "../../../components"
 import "../../../services"
-StyledClippingRect {
+import "../../../utils"
+
+ClipRect {
     id: root
 
     property real animPerc: UPower.displayDevice.percentage
@@ -13,7 +16,7 @@ StyledClippingRect {
     color: Colours.palette.m3secondaryContainer
     radius: Tokens.rounding.large
 
-    implicitWidth: Config.dashboard.performance.showCpu || (Config.dashboard.performance.showGpu && Gpu.type !== Gpu.None) || Config.dashboard.performance.showStorage || Config.dashboard.performance.showMemory ? Tokens.sizes.dashboard.perfBattWidth : Tokens.sizes.dashboard.perfBattWidthSingle
+    implicitWidth: Config.dashboard.performance.showCpu || (Config.dashboard.performance.showGpu && Gpu.type !== GpuType.None) || Config.dashboard.performance.showStorage || Config.dashboard.performance.showMemory ? Tokens.sizes.dashboard.perfBattWidth : Tokens.sizes.dashboard.perfBattWidthSingle
     implicitHeight: Tokens.sizes.dashboard.perfBattHeight
 
     Behavior on animPerc {
@@ -73,7 +76,7 @@ StyledClippingRect {
 
         StyledText {
             Layout.fillWidth: true
-            text: qsTr("Battery")
+            text: Tr.tr("Battery")
             color: contents.textColour
             font: Tokens.font.body.medium
         }
@@ -86,12 +89,23 @@ StyledClippingRect {
             Layout.alignment: Qt.AlignRight
             text: {
                 if (UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
-                    return qsTr("Full");
+                    return Tr.trCtx("Full", "battery state");
 
                 if (contents.charging)
-                    return qsTr("Charging");
+                    return Tr.trCtx("Charging", "battery state");
 
-                return Units.formatDurationShort(UPower.displayDevice.timeToEmpty, "...");
+                const s = UPower.displayDevice.timeToEmpty;
+                if (s === 0)
+                    return "...";
+
+                const hr = Math.floor(s / 3600);
+                const min = Math.floor((s % 3600) / 60);
+                if (hr > 0)
+                    // TRANSLATORS: %1 = hours, %2 = minutes
+                    return Tr.trCtx("%1h %2m", "battery time remaining").arg(hr).arg(min);
+
+                // TRANSLATORS: %1 = minutes
+                return Tr.trCtx("%1m", "battery time remaining").arg(min);
             }
             color: contents.subTextColour
             font: Tokens.font.body.small
@@ -128,7 +142,7 @@ StyledClippingRect {
             }
 
             StyledText {
-                text: `${Math.round(UPower.displayDevice.percentage * 100)}%`
+                text: Strings.percentOne(UPower.displayDevice.percentage)
                 color: contents.accentColour
                 font: Tokens.font.headline.medium
             }

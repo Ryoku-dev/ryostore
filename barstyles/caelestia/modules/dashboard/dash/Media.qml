@@ -1,16 +1,16 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
-import Quickshell.Services.Mpris
 import "../../../port/components"
 import "../../../config"
+import "../../../port/i18n"
 import "../../../port/services"
 import "../../../components"
 import "../../../components/controls"
 import "../../../components/widgets"
 import "../../../services"
 import "../../../utils"
+
 Item {
     id: root
 
@@ -20,15 +20,6 @@ Item {
     }
 
     readonly property real arcCoverGap: Tokens.spacing.extraSmall
-
-    // Lets embedders (e.g. the bar popout) show extra controls in the
-    // built-in row. Defaults to false, so the dashboard renders exactly
-    // as before.
-    property bool extraButtons: false
-
-    // Lets embedders hide the gif block to compact the player.
-    // Defaults to true, so the dashboard renders exactly as before.
-    property bool showGif: true
 
     anchors.top: parent.top
     anchors.bottom: parent.bottom
@@ -48,11 +39,8 @@ Item {
         onTriggered: Players.active?.positionChanged()
     }
 
-    Loader {
-        active: root.visible && (Players.active?.isPlaying ?? false)
-        sourceComponent: ServiceRef {
-            service: Audio.beatTracker
-        }
+    ServiceRef {
+        service: Audio.beatTracker
     }
 
     CircularProgress {
@@ -76,7 +64,6 @@ Item {
     CoverArt {
         id: cover
 
-        visible: HostState.element("mediaArtwork")
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -84,83 +71,66 @@ Item {
         implicitHeight: width
     }
 
-    Column {
-        id: trackInfo
+    StyledText {
+        id: title
 
-        visible: HostState.element("mediaTrack")
         anchors.top: cover.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.topMargin: Tokens.spacing.medium
-        spacing: Tokens.spacing.small
 
-        StyledText {
-            anchors.horizontalCenter: parent.horizontalCenter
+        animate: true
+        horizontalAlignment: Text.AlignHCenter
+        text: (Players.active?.trackTitle ?? Tr.tr("No media")) || Tr.tr("Unknown title")
+        color: Colours.palette.m3primary
+        font: Tokens.font.title.small
 
-            animate: true
-            horizontalAlignment: Text.AlignHCenter
-            text: (Players.active?.trackTitle ?? qsTr("No media")) || qsTr("Unknown title")
-            color: Colours.palette.m3primary
-            font: Tokens.font.title.small
+        width: parent.implicitWidth - Tokens.padding.extraLargeIncreased
+        elide: Text.ElideRight
+    }
 
-            width: root.implicitWidth - Tokens.padding.extraLargeIncreased
-            elide: Text.ElideRight
-        }
+    StyledText {
+        id: album
 
-        StyledText {
-            visible: !!Players.active && text !== ""
-            anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: title.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: Tokens.spacing.small
 
-            animate: true
-            horizontalAlignment: Text.AlignHCenter
-            text: Players.active?.trackAlbum || qsTr("Unknown album")
-            color: Colours.palette.m3outline
-            font: Tokens.font.body.small
+        animate: true
+        horizontalAlignment: Text.AlignHCenter
+        text: (Players.active?.trackAlbum ?? Tr.tr("No media")) || Tr.tr("Unknown album")
+        color: Colours.palette.m3outline
+        font: Tokens.font.body.small
 
-            width: root.implicitWidth - Tokens.padding.extraLargeIncreased
-            elide: Text.ElideRight
-        }
+        width: parent.implicitWidth - Tokens.padding.extraLargeIncreased
+        elide: Text.ElideRight
+    }
 
-        StyledText {
-            visible: !!Players.active && text !== ""
-            anchors.horizontalCenter: parent.horizontalCenter
+    StyledText {
+        id: artist
 
-            animate: true
-            horizontalAlignment: Text.AlignHCenter
-            text: Players.active?.trackArtist || qsTr("Unknown artist")
-            color: Colours.palette.m3secondary
+        anchors.top: album.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: Tokens.spacing.small
 
-            width: root.implicitWidth - Tokens.padding.extraLargeIncreased
-            elide: Text.ElideRight
-        }
+        animate: true
+        horizontalAlignment: Text.AlignHCenter
+        text: (Players.active?.trackArtist ?? Tr.tr("No media")) || Tr.tr("Unknown artist")
+        color: Colours.palette.m3secondary
+
+        width: parent.implicitWidth - Tokens.padding.extraLargeIncreased
+        elide: Text.ElideRight
     }
 
     ButtonRow {
         id: controls
 
-        visible: HostState.element("mediaTransport")
-        anchors.top: trackInfo.bottom
+        anchors.top: artist.bottom
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.topMargin: Tokens.spacing.medium
         anchors.margins: Tokens.padding.large
-        anchors.leftMargin: root.extraButtons ? Tokens.padding.small : Tokens.padding.large
-        anchors.rightMargin: root.extraButtons ? Tokens.padding.small : Tokens.padding.large
 
         spacing: Tokens.spacing.extraSmall
-
-        IconButton {
-            visible: root.extraButtons
-            type: IconButton.Tonal
-            icon: "shuffle"
-            isRound: true
-            shapeMorph: true
-            checked: Players.active?.shuffle ?? false
-            font: Tokens.font.icon.small
-            disabled: !Players.active?.shuffleSupported
-            onClicked: Players.active.shuffle = !Players.active?.shuffle
-            implicitWidth: Math.round(implicitHeight * 0.9)
-        }
 
         IconButton {
             type: IconButton.Tonal
@@ -189,33 +159,11 @@ Item {
             disabled: !Players.active?.canGoNext
             onClicked: Players.active?.next()
         }
-
-        IconButton {
-            visible: root.extraButtons
-            type: IconButton.Tonal
-            icon: Players.active?.loopState === MprisLoopState.Track ? "repeat_one" : "repeat"
-            isRound: true
-            shapeMorph: true
-            checked: Players.active?.loopState === MprisLoopState.Track || Players.active?.loopState === MprisLoopState.Playlist
-            font: Tokens.font.icon.small
-            disabled: !Players.active?.loopSupported
-            onClicked: {
-                const state = Players.active.loopState;
-                if (state === MprisLoopState.None)
-                    Players.active.loopState = MprisLoopState.Track;
-                else if (state === MprisLoopState.Track)
-                    Players.active.loopState = MprisLoopState.Playlist;
-                else
-                    Players.active.loopState = MprisLoopState.None;
-            }
-            implicitWidth: Math.round(implicitHeight * 0.9)
-        }
     }
 
-    Item {
+    AnimatedImage {
         id: bongocat
 
-        visible: root.showGif
         anchors.top: controls.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -224,32 +172,10 @@ Item {
         anchors.bottomMargin: Tokens.padding.large
         anchors.margins: Tokens.padding.extraLargeIncreased
 
-        AnimatedImage {
-            id: gif
-
-            anchors.fill: parent
-
-            playing: Players.active?.isPlaying ?? false
-            speed: Audio.beatTracker.bpm / Config.general.mediaGifSpeedAdjustment // qmllint disable unresolved-type
-            source: Paths.absolutePath(Config.paths.mediaGif)
-            asynchronous: true
-            fillMode: AnimatedImage.PreserveAspectFit
-            visible: !Config.dashboard.useMediaShapes
-        }
-
-        MultiEffect {
-            anchors.fill: gif
-            source: gif
-
-            visible: Config.dashboard.colorizeMediaGif && !Config.dashboard.useMediaShapes
-            colorization: 1
-            colorizationColor: Colours.palette.m3primary
-        }
-
-        MediaShapes {
-            anchors.fill: parent
-            visible: Config.dashboard.useMediaShapes
-            active: Config.dashboard.useMediaShapes
-        }
+        playing: Players.active?.isPlaying ?? false
+        speed: Audio.beatTracker.bpm / Config.general.mediaGifSpeedAdjustment
+        source: Paths.absolutePath(Config.paths.mediaGif)
+        asynchronous: true
+        fillMode: AnimatedImage.PreserveAspectFit
     }
 }

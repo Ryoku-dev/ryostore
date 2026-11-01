@@ -1,16 +1,16 @@
 import QtQuick
 import QtQuick.Layouts
 import "../../../config"
+import "../../../port/i18n"
 import "../../../port/services"
 import "../../../components"
 import "../../../components/controls"
 import "../../../services"
+import "../../../utils"
+
 StyledRect {
     id: root
 
-    property var monitor: null
-    property real swapUsedGiB: monitor?.swapUsedGiB ?? 0
-    property real swapTotalGiB: monitor?.swapTotalGiB ?? 0
     readonly property color accent: Colours.palette.m3tertiary
 
     color: Colours.tPalette.m3surfaceContainer
@@ -37,11 +37,11 @@ StyledRect {
                 text: "memory_alt"
                 fill: 1
                 color: root.accent
-                fontStyle: Tokens.font.icon.builders.medium.weight(Font.DemiBold).build()
+                fontStyle: Tokens.font.icon.builders.medium.weight(Font.DemiBold).build() // DemiBold to fix fill issues
             }
 
             StyledText {
-                text: qsTr("Memory")
+                text: Tr.tr("Memory")
                 font: Tokens.font.title.medium
             }
         }
@@ -69,14 +69,14 @@ StyledRect {
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: Math.round(Memory.percentage * 100) + "%"
+                    text: Strings.percentOne(Memory.percentage)
                     font: Tokens.font.title.builders.large.width(90).build()
                     color: root.accent
                 }
 
                 StyledText {
                     Layout.alignment: Qt.AlignHCenter
-                    text: qsTr("Used")
+                    text: Tr.trCtx("Used", "memory used")
                     font: Tokens.font.body.small
                     color: Colours.palette.m3onSurfaceVariant
                 }
@@ -87,28 +87,6 @@ StyledRect {
             Layout.alignment: Qt.AlignHCenter
             text: Units.formatKibUsage(Memory.used, Memory.total)
             font: Tokens.font.body.medium
-        }
-
-        ColumnLayout {
-            visible: root.swapTotalGiB > 0
-            Layout.fillWidth: true
-            Layout.topMargin: Tokens.spacing.extraSmall
-            spacing: Tokens.spacing.extraSmall
-
-            StyledText {
-                Layout.alignment: Qt.AlignHCenter
-                text: qsTr("Swap: %1").arg(Units.formatKibUsage(root.swapUsedGiB * 1024 * 1024, root.swapTotalGiB * 1024 * 1024))
-                font: Tokens.font.body.small
-                color: Colours.palette.m3onSurfaceVariant
-            }
-
-            StyledProgressBar {
-                Layout.fillWidth: true
-                implicitWidth: 120
-                implicitHeight: Tokens.padding.small
-                value: root.swapTotalGiB > 0 ? root.swapUsedGiB / root.swapTotalGiB : 0
-                fgColour: Colours.palette.m3secondary
-            }
         }
     }
 }

@@ -6,7 +6,9 @@ import Quickshell.Io
 import Quickshell.Services.Mpris
 import "../port/core"
 import "../config"
+import "../port/i18n"
 import "../components/misc"
+
 Singleton {
     id: root
 
@@ -14,8 +16,7 @@ Singleton {
     readonly property MprisPlayer active: props.manualActive ?? list.find(p => getIdentity(p) === GlobalConfig.services.defaultPlayer) ?? list[0] ?? null
     property alias manualActive: props.manualActive
 
-    readonly property list<string> appVolumePlayers: ["Spotify", "Fastpotify", "YouTube Music"]
-
+    // Dedup key for progressive metadata (e.g. mpv-mpris/yt-dlp player fills title then artist later).
     property string lastNowPlayingKey: ""
 
     function getIdentity(player: MprisPlayer): string {
@@ -23,13 +24,6 @@ Singleton {
             return "";
         const alias = GlobalConfig.services.playerAliases.values.find(a => a.from === player.identity);
         return alias?.to ?? player.identity;
-    }
-
-    function supportsAppVolume(player: MprisPlayer): bool {
-        if (!player)
-            return false;
-        const identity = root.getIdentity(player).toLowerCase();
-        return root.appVolumePlayers.some(n => identity.includes(n.toLowerCase()));
     }
 
     function getArtUrl(player: MprisPlayer): string {
@@ -68,7 +62,7 @@ Singleton {
             return;
 
         lastNowPlayingKey = key;
-        Toaster.toast(qsTr("Now Playing"), qsTr("%1 - %2").arg(artist).arg(title), "music_note");
+        Toaster.toast(Tr.tr("Now playing"), Tr.trCtx("%1 - %2", "track artist and title").arg(artist).arg(title), "music_note");
     }
 
     onActiveChanged: lastNowPlayingKey = ""
@@ -101,7 +95,7 @@ Singleton {
     CustomShortcut {
         // qmllint enable unresolved-type
         name: "mediaToggle"
-        description: qsTr("Toggle media playback")
+        description: "Toggle media playback"
         onPressed: {
             const active = root.active;
             if (active && active.canTogglePlaying)
@@ -113,7 +107,7 @@ Singleton {
     CustomShortcut {
         // qmllint enable unresolved-type
         name: "mediaPrev"
-        description: qsTr("Previous track")
+        description: "Previous track"
         onPressed: {
             const active = root.active;
             if (active && active.canGoPrevious)
@@ -125,7 +119,7 @@ Singleton {
     CustomShortcut {
         // qmllint enable unresolved-type
         name: "mediaNext"
-        description: qsTr("Next track")
+        description: "Next track"
         onPressed: {
             const active = root.active;
             if (active && active.canGoNext)
@@ -137,27 +131,14 @@ Singleton {
     CustomShortcut {
         // qmllint enable unresolved-type
         name: "mediaStop"
-        description: qsTr("Stop media playback")
+        description: "Stop media playback"
         onPressed: root.active?.stop()
     }
 
     IpcHandler {
         function getActive(prop: string): string {
             const active = root.active;
-            return active ? active[prop] ?? qsTr("Invalid property") : qsTr("No active player");
-        }
-
-        function status(): string {
-            const active = root.active;
-            if (!active)
-                return JSON.stringify({ title: "", artist: "", artUrl: "", status: "Stopped" });
-
-            return JSON.stringify({
-                title: active.trackTitle ?? "",
-                artist: active.trackArtist ?? "",
-                artUrl: root.getArtUrl(active),
-                status: active.isPlaying ? "Playing" : "Paused"
-            });
+            return active ? active[prop] ?? "Invalid property" : "No active player";
         }
 
         function list(): string {

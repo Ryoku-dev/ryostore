@@ -1,16 +1,15 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
+import "../../port/core"
 import "../../config"
 import ".."
-import "."
 import "../effects"
 import "../../services"
 import "../../modules/drawers"
+
 MouseArea {
     id: root
 
@@ -30,111 +29,30 @@ MouseArea {
     property real marginY
 
     property list<MenuItem> items
-    property var dynamicModel: items
-    property MenuItem active: dynamicModel[0] ?? null
+    property MenuItem active: items[0] ?? null
     property bool expanded
-    property bool rightClickReposition: false
-    property real maxHeight: 320
-    readonly property alias backgroundItem: menu
-    property bool transparentBackground: false
-    // Unfold sideways from the anchor with a short, non-overshooting curve
-    // instead of dropping down.
-    property bool revealHorizontal: false
-    readonly property int firstVisibleIndex: {
-        const model = dynamicModel ?? [];
-        for (let i = 0; i < model.length; i++)
-            if (model[i]?.visible)
-                return i;
-        return -1;
-    }
-    readonly property int lastVisibleIndex: {
-        const model = dynamicModel ?? [];
-        for (let i = model.length - 1; i >= 0; i--)
-            if (model[i]?.visible)
-                return i;
-        return -1;
-    }
 
     signal itemSelected(item: MenuItem)
-    signal rightClickedAt(real x, real y)
-
-    // Plays the opening animation again, e.g. after the menu moved while open.
-    function replayReveal(): void {
-        if (!revealHorizontal || !expanded)
-            return;
-        revealOut.stop();
-        revealIn.stop();
-        menu.hScale = 0;
-        revealIn.start();
-    }
-
-    onExpandedChanged: {
-        if (!revealHorizontal)
-            return;
-        revealIn.stop();
-        revealOut.stop();
-        if (expanded)
-            revealIn.start();
-        else
-            revealOut.start();
-    }
 
     parent: {
-        let node = root.attachTo;
-        let interactionsNode = null;
-        
-        while (node && node.parent) {
-            if (node.utilitiesShortcutActive !== undefined) {
-                interactionsNode = node;
-            }
-            node = node.parent;
-        }
-
-        if (interactionsNode) {
-            return interactionsNode;
-        }
-
-        return node || root.parent;
+        const win = QsWindow.window;
+        const contentWin = win as ContentWindow; // If inside the drawer content window, put it inside the interaction wrapper so hover works
+        return contentWin ? contentWin.interactionWrapper : (win as QsWindow).contentItem;
     }
     anchors.fill: parent
 
     enabled: expanded
-    acceptedButtons: rightClickReposition ? Qt.LeftButton | Qt.RightButton : Qt.LeftButton
-    onClicked: mouse => {
-        if (rightClickReposition && mouse.button === Qt.RightButton) {
-            rightClickedAt(mouse.x, mouse.y);
-            return;
-        }
-        expanded = false;
-    }
+    hoverEnabled: expanded
+    cursorShape: expanded ? Qt.ArrowCursor : undefined
+    onClicked: expanded = false
 
     opacity: expanded ? 1 : 0
-    visible: opacity > 0
+    layer.enabled: opacity < 1
 
     Behavior on opacity {
         Anim {
-            type: root.revealHorizontal ? Anim.FastEffects : Anim.DefaultEffects
+            type: Anim.DefaultEffects
         }
-    }
-
-    NumberAnimation {
-        id: revealIn
-
-        target: menu
-        property: "hScale"
-        to: 1
-        duration: Tokens.anim.durations.small
-        easing: Tokens.anim.emphasizedDecel
-    }
-
-    NumberAnimation {
-        id: revealOut
-
-        target: menu
-        property: "hScale"
-        to: 0
-        duration: Math.round(Tokens.anim.durations.small * 0.75)
-        easing: Tokens.anim.emphasizedAccel
     }
 
     TransformWatcher {
@@ -147,108 +65,60 @@ MouseArea {
     Elevation {
         id: menu
 
-        property string vAnchor: "none"
-        property string hAnchor: "none"
-        property real offsetScale: 1 - animScale
-        property real vScale: root.expanded ? 1 : 0.0
-        property real hScale: 0
-        readonly property real animScale: root.revealHorizontal ? hScale : vScale
-
         x: {
-            watcher.transform;
+            CUtils.dependency(watcher.transform); // mapToItem is not reactive so this forces updates
             const item = root.attachTo;
-            if (!item || !root.parent)
-                return 0;
             let off = root.attachSideX === Menu.Left ? 0 : item.width;
             if (root.thisSideX === Menu.Right)
                 off -= width;
-            const pt = item.mapToItem(root.parent, off, 0);
-            return (pt ? pt.x : 0) + root.marginX;
+            return item.mapToItem(root.parent, off, 0).x + root.marginX;
         }
         y: {
-            watcher.transform;
+            CUtils.dependency(watcher.transform); // mapToItem is not reactive so this forces updates
             const item = root.attachTo;
-            if (!item || !root.parent)
-                return 0;
             let off = root.attachSideY === Menu.Top ? 0 : item.height;
             if (root.thisSideY === Menu.Bottom)
                 off -= height;
-            const pt = item.mapToItem(root.parent, 0, off);
-            return (pt ? pt.y : 0) + root.marginY;
+            return item.mapToItem(root.parent, 0, off).y + root.marginY;
         }
 
         radius: Tokens.rounding.large
-        level: root.transparentBackground ? 0 : 2
-        implicitWidth: Math.max(200, column.implicitWidth + Tokens.padding.extraSmall * 2)
-        implicitHeight: Math.min(root.maxHeight, column.implicitHeight + Tokens.padding.extraSmall * 2)
-        width: root.revealHorizontal ? implicitWidth * animScale : implicitWidth
-        height: root.revealHorizontal ? implicitHeight : implicitHeight * animScale
-        clip: root.revealHorizontal
+        level: 2
 
-        Behavior on vScale {
-            enabled: !root.revealHorizontal
+        implicitWidth: Math.max(200, column.implicitWidth + column.anchors.margins * 2)
+        implicitHeight: column.implicitHeight + column.anchors.margins * 2
 
-            Anim {}
+        transform: Scale {
+            yScale: root.expanded ? 1 : 0.1
+            origin.y: root.thisSideY === Menu.Bottom ? menu.height : 0
+
+            Behavior on yScale {
+                Anim {}
+            }
         }
 
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
             onWheel: e => e.accepted = true
-            onClicked: {}
         }
 
         StyledRect {
-            // Sideways, the content stays pinned to the edge the menu grows
-            // from and trails it by a few pixels while the panel unfolds.
-            x: {
-                if (!root.revealHorizontal)
-                    return 0;
-                const trail = (1 - menu.animScale) * Tokens.padding.extraLarge;
-                return root.thisSideX === Menu.Right ? menu.width - menu.implicitWidth + trail : -trail;
-            }
-            y: root.thisSideY === Menu.Bottom ? menu.height - menu.implicitHeight : 0
-            width: menu.implicitWidth
-            height: menu.implicitHeight
-            opacity: root.revealHorizontal ? Math.min(1, menu.animScale * 1.5) : 1
-
-            transform: Scale {
-                yScale: root.revealHorizontal ? 1 : menu.animScale
-                origin.y: root.thisSideY === Menu.Bottom ? menu.implicitHeight : 0
-            }
-            
+            anchors.fill: parent
             radius: parent.radius
-            color: root.transparentBackground
-                ? Qt.alpha(Colours.palette.m3surfaceContainerLow, 0)
-                : (GlobalConfig.appearance.pitchBlack
-                    ? "#000000"
-                    : Colours.palette.m3surfaceContainerLow)
+            color: Colours.palette.m3surfaceContainerLow
 
-            Flickable {
-                id: flickable
+            ColumnLayout {
+                id: column
 
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.extraSmall
-                contentWidth: width
-                contentHeight: column.implicitHeight
-                clip: true
+                spacing: 0
 
-                interactive: contentHeight > height
+                Repeater {
+                    id: repeater
 
-                ScrollBar.vertical: StyledScrollBar {
-                    flickable: flickable
-                }
-
-                ColumnLayout {
-                    id: column
-
-                    width: parent.width
-                    spacing: 0
-
-                    Repeater {
-                        id: repeater
-
-                        model: root.dynamicModel
+                    model: root.items
 
                     StyledRect {
                         id: item
@@ -257,20 +127,17 @@ MouseArea {
                         required property MenuItem modelData
                         readonly property bool active: modelData === root?.active
 
-                        visible: modelData?.visible ?? false
-
                         Layout.fillWidth: true
                         implicitWidth: menuOptionRow.implicitWidth + Tokens.padding.medium * 2
-                        implicitHeight: visible ? menuOptionRow.implicitHeight + Tokens.padding.medium * 2 : 0
-
+                        implicitHeight: menuOptionRow.implicitHeight + Tokens.padding.medium * 2
 
                         radius: active ? Tokens.rounding.medium : Tokens.rounding.extraSmall
-                        topLeftRadius: index === root.firstVisibleIndex ? Tokens.rounding.medium : radius
-                        topRightRadius: index === root.firstVisibleIndex ? Tokens.rounding.medium : radius
-                        bottomLeftRadius: index === root.lastVisibleIndex ? Tokens.rounding.medium : radius
-                        bottomRightRadius: index === root.lastVisibleIndex ? Tokens.rounding.medium : radius
+                        topLeftRadius: index === 0 ? Tokens.rounding.medium : radius
+                        topRightRadius: index === 0 ? Tokens.rounding.medium : radius
+                        bottomLeftRadius: index === repeater?.count - 1 ? Tokens.rounding.medium : radius
+                        bottomRightRadius: index === repeater?.count - 1 ? Tokens.rounding.medium : radius
 
-                        color: "transparent"
+                        color: Qt.alpha(Colours.palette.m3tertiaryContainer, active ? 1 : 0)
 
                         Behavior on radius {
                             Anim {}
@@ -282,7 +149,7 @@ MouseArea {
                             bottomLeftRadius: parent.bottomLeftRadius
                             bottomRightRadius: parent.bottomRightRadius
 
-                            color: Colours.palette.m3onSurface
+                            color: item.active ? Colours.palette.m3onTertiaryContainer : Colours.palette.m3onSurface
                             disabled: !root.expanded
                             onClicked: {
                                 root.itemSelected(item.modelData);
@@ -302,14 +169,14 @@ MouseArea {
                             MaterialIcon {
                                 Layout.alignment: Qt.AlignVCenter
                                 text: item.modelData?.icon ?? ""
-                                color: Colours.palette.m3onSurfaceVariant
+                                color: item.active ? Colours.palette.m3onTertiaryContainer : Colours.palette.m3onSurfaceVariant
                             }
 
                             StyledText {
                                 Layout.alignment: Qt.AlignVCenter
                                 Layout.fillWidth: true
                                 text: item.modelData?.text ?? ""
-                                color: Colours.palette.m3onSurface
+                                color: item.active ? Colours.palette.m3onTertiaryContainer : Colours.palette.m3onSurface
                             }
 
                             Loader {
@@ -320,14 +187,13 @@ MouseArea {
 
                                 sourceComponent: MaterialIcon {
                                     text: item.modelData.trailingIcon
-                                    color: Colours.palette.m3onSurfaceVariant
+                                    color: item.active ? Colours.palette.m3onTertiaryContainer : Colours.palette.m3onSurfaceVariant
                                 }
                             }
                         }
                     }
                 }
             }
-        }
         }
     }
 }

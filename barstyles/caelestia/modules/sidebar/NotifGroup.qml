@@ -9,13 +9,14 @@ import "../../components"
 import "../../components/effects"
 import "../../services"
 import "../../utils"
+
 StyledRect {
     id: root
 
     required property string modelData
     required property Props props
     required property Flickable container
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     readonly property list<var> notifs: Notifs.list.filter(n => n.appName === modelData)
     readonly property list<var> activeNotifs: notifs.filter(n => !n.closed)
@@ -110,13 +111,13 @@ StyledRect {
                 id: materialIconComp
 
                 MaterialIcon {
-                    text: root.activeNotifs[0]?.materialIcon || Icons.getNotifIcon(root.activeNotifs[0]?.summary, root.urgency)
+                    text: Icons.getNotifIcon(root.activeNotifs[0]?.summary, root.urgency)
                     color: root.urgency === NotificationUrgency.Critical ? Colours.palette.m3onError : root.urgency === NotificationUrgency.Low ? Colours.palette.m3onSurface : Colours.palette.m3onSecondaryContainer
                     fontStyle: Tokens.font.icon.medium
                 }
             }
 
-            StyledClippingRect {
+            ClipRect {
                 anchors.fill: parent
                 color: root.urgency === NotificationUrgency.Critical ? Colours.palette.m3error : root.urgency === NotificationUrgency.Low ? Colours.layer(Colours.palette.m3surfaceContainerHigh, 3) : Colours.palette.m3secondaryContainer
                 radius: Tokens.rounding.full
@@ -239,7 +240,7 @@ StyledRect {
                 notifs: root.notifs
                 expanded: root.expanded
                 container: root.container
-                visibilities: root.visibilities
+                screenState: root.screenState
                 onRequestToggleExpand: expand => root.toggleExpand(expand)
             }
         }

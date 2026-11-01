@@ -10,10 +10,11 @@ import "../../components/containers"
 import "../../components/widgets"
 import "../../services"
 import "../utilities" as Utilities
+
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property Item osdPanel
     required property Item sessionPanel
     required property Item utilitiesPanel
@@ -22,20 +23,7 @@ Item {
 
     anchors.top: parent.top
     anchors.bottom: parent.bottom
-    anchors.left: {
-        const pos = GlobalConfig.notifs.position;
-        if (pos === "auto")
-            return Config.bar.position === "right" ? parent.left : undefined;
-        const h = pos.split("-")[1];
-        return (h === "left" || h === "center") ? parent.left : undefined;
-    }
-    anchors.right: {
-        const pos = GlobalConfig.notifs.position;
-        if (pos === "auto")
-            return Config.bar.position !== "right" ? parent.right : undefined;
-        const h = pos.split("-")[1];
-        return h === "right" ? parent.right : undefined;
-    }
+    anchors.right: parent.right
 
     implicitWidth: Tokens.sizes.notifs.width
     implicitHeight: {
@@ -47,19 +35,19 @@ Item {
         for (let i = 0; i < count; i++)
             height += (list.itemAtIndex(i) as NotifWrapper)?.nonAnimHeight ?? 0;
 
-        if (visibilities.osd) {
+        if (screenState.osd) {
             const h = osdPanel.y - clampedPadding;
             if (height > h)
                 height = h;
         }
 
-        if (visibilities.session) {
+        if (screenState.session) {
             const h = sessionPanel.y - clampedPadding;
             if (height > h)
                 height = h;
         }
 
-        if (visibilities.utilities) {
+        if (screenState.utilities) {
             const h = ((QsWindow.window as QsWindow)?.screen.height ?? 0) - (utilitiesPanel as Utilities.Wrapper).nonAnimHeight - Config.border.thickness * 2 - padding * 2 - Tokens.spacing.extraLarge;
             if (height > h)
                 height = h;
@@ -81,7 +69,7 @@ Item {
             id: list
 
             model: ScriptModel {
-                values: Notifs.list.filter(n => n.popup && !n.closed).slice(0, Math.max(0, Math.floor(GlobalConfig.notifs.maxPopups)))
+                values: Notifs.popups.filter(n => !n.closed)
             }
 
             anchors.fill: parent
@@ -207,7 +195,7 @@ Item {
             }
         }
 
-        ClippingRectangle {
+        ClipRect {
             anchors.top: parent.top
             anchors.topMargin: wrapper.idx === 0 ? 0 : Tokens.spacing.medium
 

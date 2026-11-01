@@ -2,13 +2,13 @@ import QtQuick
 import QtQuick.Layouts
 import "../../../port/components"
 import "../../../config"
+import "../../../port/i18n"
 import "../../../port/services"
 import "../../../components"
 import "../../../services"
+
 StyledRect {
     id: root
-
-    property var monitor: null
 
     color: Colours.tPalette.m3surfaceContainer
     radius: Tokens.rounding.extraLarge
@@ -38,11 +38,12 @@ StyledRect {
             }
 
             StyledText {
-                text: qsTr("Network")
+                text: Tr.tr("Network")
                 font: Tokens.font.title.medium
             }
         }
 
+        // Sparkline graph
         Item {
             Layout.topMargin: Tokens.spacing.medium
             Layout.bottomMargin: Tokens.spacing.small
@@ -56,10 +57,10 @@ StyledRect {
                 property real smoothMax: targetMax
 
                 anchors.fill: parent
-                line1: NetworkUsage.uploadBuffer // qmllint disable missing-type
+                line1: NetworkUsage.uploadBuffer
                 line1Color: Colours.palette.m3secondary
                 line1FillAlpha: 0.15
-                line2: NetworkUsage.downloadBuffer // qmllint disable missing-type
+                line2: NetworkUsage.downloadBuffer
                 line2Color: Colours.palette.m3tertiary
                 line2FillAlpha: 0.2
                 maxValue: smoothMax
@@ -90,15 +91,17 @@ StyledRect {
                 }
             }
 
+            // "Collecting data" placeholder
             StyledText {
                 anchors.centerIn: parent
-                text: qsTr("Collecting data...")
+                text: Tr.tr("Collecting data...")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3outline
                 visible: NetworkUsage.downloadBuffer.count < 2
             }
         }
 
+        // Download row
         RowLayout {
             Layout.fillWidth: true
             spacing: Tokens.spacing.small
@@ -110,7 +113,7 @@ StyledRect {
             }
 
             StyledText {
-                text: qsTr("Download")
+                text: Tr.trCtx("Download", "network throughput")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }
@@ -120,12 +123,13 @@ StyledRect {
             }
 
             StyledText {
-                text: Units.formatBytes((NetworkUsage.downloadSpeed || root.monitor?.networkRxBytesPerSec) ?? 0, true)
+                text: Units.formatBytes(NetworkUsage.downloadSpeed ?? 0, true)
                 font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
                 color: Colours.palette.m3tertiary
             }
         }
 
+        // Upload row
         RowLayout {
             Layout.fillWidth: true
             spacing: Tokens.spacing.small
@@ -137,7 +141,7 @@ StyledRect {
             }
 
             StyledText {
-                text: qsTr("Upload")
+                text: Tr.trCtx("Upload", "network throughput")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }
@@ -147,12 +151,13 @@ StyledRect {
             }
 
             StyledText {
-                text: Units.formatBytes((NetworkUsage.uploadSpeed || root.monitor?.networkTxBytesPerSec) ?? 0, true)
+                text: Units.formatBytes(NetworkUsage.uploadSpeed ?? 0, true)
                 font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
                 color: Colours.palette.m3secondary
             }
         }
 
+        // Session totals
         RowLayout {
             Layout.fillWidth: true
             spacing: Tokens.spacing.small
@@ -164,7 +169,7 @@ StyledRect {
             }
 
             StyledText {
-                text: qsTr("Total")
+                text: Tr.trCtx("Total", "total network data transferred")
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }
@@ -174,7 +179,12 @@ StyledRect {
             }
 
             StyledText {
-                text: `↓${Units.formatBytes(NetworkUsage.downloadTotal ?? 0)} ↑${Units.formatBytes(NetworkUsage.uploadTotal ?? 0)}`
+                text: {
+                    const downText = Units.formatBytes(NetworkUsage.downloadTotal ?? 0);
+                    const upText = Units.formatBytes(NetworkUsage.uploadTotal ?? 0);
+                    // TRANSLATORS: %1 = downloaded total, %2 = uploaded total
+                    return Tr.tr("↓%1 ↑%2").arg(downText).arg(upText);
+                }
                 font: Tokens.font.body.small
                 color: Colours.palette.m3onSurfaceVariant
             }

@@ -3,6 +3,7 @@ import Quickshell
 PersistentProperties {
     required property ShellScreen modelData
 
+    // Drawer visibilities
     property bool bar
     property bool osd
     property bool session
@@ -11,10 +12,7 @@ PersistentProperties {
     property bool utilities
     property bool sidebar
 
+    // Dashboard state
     property int dashboardTab
-    // the extra rows of the dashboard's first tab (connections, levels, quick toggles), shown by its expand button
-    property bool dashboardExpanded
     property date dashboardDate: new Date()
-
-    reloadableId: `screenState-${modelData.name}`
 }

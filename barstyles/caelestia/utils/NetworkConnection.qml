@@ -2,6 +2,7 @@ pragma Singleton
 
 import QtQuick
 import "../services"
+
 /**
  * NetworkConnection
  *
@@ -27,38 +28,39 @@ import "../services"
 QtObject {
     id: root
 
-    property var passwordNetwork: null
-
-    function disconnectFirstIfNeeded(isTarget: bool, connect: var): void {
-        if (Nmcli.active && !isTarget) {
-            Nmcli.disconnectFromNetwork();
-            Qt.callLater(connect);
-        } else {
-            connect();
-        }
-    }
-
+    /**
+     * Handle network connection with automatic disconnection if needed.
+     * If there's an active network different from the target, disconnects first,
+     * then connects to the target network.
+     *
+     * @param network The network object to connect to (must have ssid property)
+     * @param session Optional Session object (for controlcenter - must have network property with showPasswordDialog and pendingNetwork)
+     * @param onPasswordNeeded Optional callback function(network) called when password is needed (for bar popouts)
+     */
     function handleConnect(network, session, onPasswordNeeded): void {
         if (!network) {
             return;
         }
 
-        root.disconnectFirstIfNeeded(Nmcli.active?.ssid === network.ssid, () => {
+        if (Nmcli.active && Nmcli.active.ssid !== network.ssid) {
+            Nmcli.disconnectFromNetwork();
+            Qt.callLater(() => {
+                root.connectToNetwork(network, session, onPasswordNeeded);
+            });
+        } else {
             root.connectToNetwork(network, session, onPasswordNeeded);
-        });
-    }
-
-    function connectToSavedProfile(uuid, onResult): void {
-        if (!uuid) {
-            return;
         }
-
-        const isTarget = !!Nmcli.savedConnectionProfiles.find(p => p.uuid === uuid)?.active;
-        root.disconnectFirstIfNeeded(isTarget, () => {
-            Nmcli.connectToNetworkByUuid(uuid, onResult || null);
-        });
     }
 
+    /**
+     * Connect to a wireless network.
+     * Handles both secured and open networks, checks for saved profiles,
+     * and shows password dialog if needed.
+     *
+     * @param network The network object to connect to (must have ssid, isSecure, bssid properties)
+     * @param session Optional Session object (for controlcenter - must have network property with showPasswordDialog and pendingNetwork)
+     * @param onPasswordNeeded Optional callback function(network) called when password is needed (for bar popouts)
+     */
     function connectToNetwork(network, session, onPasswordNeeded): void {
         if (!network) {
             return;
@@ -70,8 +72,10 @@ QtObject {
             if (hasSavedProfile) {
                 Nmcli.connectToNetwork(network.ssid, "", network.bssid, null);
             } else {
+                // Use password check with callback
                 Nmcli.connectToNetworkWithPasswordCheck(network.ssid, network.isSecure, result => {
                     if (result.needsPassword) {
+                        // Clear pending connection if exists
                         if (Nmcli.pendingConnection) {
                             Nmcli.connectionCheckTimer.stop();
                             Nmcli.immediateCheckTimer.stop();
@@ -94,6 +98,14 @@ QtObject {
         }
     }
 
+    /**
+     * Connect to a wireless network with a provided password.
+     * Used by password dialogs when the user has already entered a password.
+     *
+     * @param network The network object to connect to (must have ssid, bssid properties)
+     * @param password The password to use for connection
+     * @param onResult Optional callback function(result) called with connection result
+     */
     function connectWithPassword(network, password, onResult): void {
         if (!network) {
             return;

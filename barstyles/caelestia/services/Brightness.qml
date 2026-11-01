@@ -7,6 +7,7 @@ import Quickshell.Io
 import "../config"
 import "../components/misc"
 import "."
+
 Singleton {
     id: root
 
@@ -17,42 +18,46 @@ Singleton {
             map[m.connector] = m;
         return map;
     }
-    readonly property list<Monitor> monitors: variants.instances // qmllint disable incompatible-type
+    readonly property list<Monitor> monitors: variants.instances
     property bool appleDisplayPresent: false
 
     function getMonitorForScreen(screen: ShellScreen): var {
-        return monitors.find(m => m.modelData === screen); // qmllint disable missing-property
+        return monitors.find(m => m.modelData === screen);
     }
 
     function getMonitor(query: string): var {
         if (query === "active") {
-            return monitors.find(m => Kwin.monitorFor(m.modelData)?.focused); // qmllint disable missing-property
+            return monitors.find(m => Hypr.monitorFor(m.modelData)?.focused);
         }
 
         if (query.startsWith("model:")) {
             const model = query.slice(6);
-            return monitors.find(m => m.modelData.model === model); // qmllint disable missing-property
+            return monitors.find(m => m.modelData.model === model);
         }
 
         if (query.startsWith("serial:")) {
             const serial = query.slice(7);
-            return monitors.find(m => m.modelData.serialNumber === serial); // qmllint disable missing-property
+            return monitors.find(m => m.modelData.serialNumber === serial);
         }
 
         if (query.startsWith("id:")) {
             const id = parseInt(query.slice(3), 10);
-            return monitors.find(m => Kwin.monitorFor(m.modelData)?.id === id); // qmllint disable missing-property
+            return monitors.find(m => Hypr.monitorFor(m.modelData)?.id === id);
         }
 
-        return monitors.find(m => m.modelData.name === query); // qmllint disable missing-property
+        return monitors.find(m => m.modelData.name === query);
     }
 
     function increaseBrightness(): void {
-        getMonitor("active")?.stepBrightness(GlobalConfig.services.brightnessIncrement);
+        const monitor = getMonitor("active");
+        if (monitor)
+            monitor.setBrightness(monitor.brightness + GlobalConfig.services.brightnessIncrement);
     }
 
     function decreaseBrightness(): void {
-        getMonitor("active")?.stepBrightness(-GlobalConfig.services.brightnessIncrement);
+        const monitor = getMonitor("active");
+        if (monitor)
+            monitor.setBrightness(monitor.brightness - GlobalConfig.services.brightnessIncrement);
     }
 
     onMonitorsChanged: {
@@ -63,14 +68,14 @@ Singleton {
     Variants {
         id: variants
 
-        model: Quickshell.screens
+        model: Quickshell.screens // Don't respect excluded screens cause ipc
 
         Monitor {}
     }
 
     Process {
         running: true
-        command: ["sh", "-c", "asdbctl get"]
+        command: ["asdbctl", "get"]
         stdout: StdioCollector {
             onStreamFinished: root.appleDisplayPresent = text.trim().length > 0
         }
@@ -81,11 +86,10 @@ Singleton {
 
         command: ["ddcutil", "detect", "--brief"]
         stdout: StdioCollector {
-            onStreamFinished: root.ddcMonitors = text.trim().split("\n\n").filter(d => d.startsWith("Display ")).map(d => {
-                        const busNum = d.match(/I2C bus:[ ]*\/dev\/i2c-([0-9]+)/)?.[1];
-                        const connector = d.match(/DRM connector:\s+(.*)/)?.[1]?.replace(/^card\d+-/, "");
-                        return busNum && connector ? { busNum, connector } : null;
-                    }).filter(m => m)
+            onStreamFinished: root.ddcMonitors = text.trim().split("\n\n").filter(d => d.startsWith("Display ")).map(d => ({
+                        busNum: d.match(/I2C bus:[ ]*\/dev\/i2c-([0-9]+)/)[1],
+                        connector: d.match(/DRM connector:\s+(.*)/)[1].replace(/^card\d+-/, "") // strip "card1-"
+                    }))
         }
     }
 
@@ -93,7 +97,7 @@ Singleton {
     CustomShortcut {
         // qmllint enable unresolved-type
         name: "brightnessUp"
-        description: qsTr("Increase brightness")
+        description: "Increase brightness"
         onPressed: root.increaseBrightness()
     }
 
@@ -101,7 +105,7 @@ Singleton {
     CustomShortcut {
         // qmllint enable unresolved-type
         name: "brightnessDown"
-        description: qsTr("Decrease brightness")
+        description: "Decrease brightness"
         onPressed: root.decreaseBrightness()
     }
 
@@ -110,16 +114,9 @@ Singleton {
             return getFor("active");
         }
 
+        // Allows searching by active/model/serial/id/name
         function getFor(query: string): real {
             return root.getMonitor(query)?.brightness ?? -1;
-        }
-
-        function getDimming(): real {
-            return getDimmingFor("active");
-        }
-
-        function getDimmingFor(query: string): real {
-            return root.getMonitor(query)?.dimming ?? -1;
         }
 
         function set(value: string): string {
@@ -132,23 +129,22 @@ Singleton {
             if (!monitor)
                 return "Invalid monitor: " + query;
 
-            const current = monitor.effectiveBrightness;
             let targetBrightness;
             if (value.endsWith("%-")) {
                 const percent = parseFloat(value.slice(0, -2));
-                targetBrightness = current - (percent / 100);
+                targetBrightness = monitor.brightness - (percent / 100);
             } else if (value.startsWith("+") && value.endsWith("%")) {
                 const percent = parseFloat(value.slice(1, -1));
-                targetBrightness = current + (percent / 100);
+                targetBrightness = monitor.brightness + (percent / 100);
             } else if (value.endsWith("%")) {
                 const percent = parseFloat(value.slice(0, -1));
                 targetBrightness = percent / 100;
             } else if (value.startsWith("+")) {
                 const increment = parseFloat(value.slice(1));
-                targetBrightness = current + increment;
+                targetBrightness = monitor.brightness + increment;
             } else if (value.endsWith("-")) {
                 const decrement = parseFloat(value.slice(0, -1));
-                targetBrightness = current - decrement;
+                targetBrightness = monitor.brightness - decrement;
             } else if (value.includes("%") || value.includes("-") || value.includes("+")) {
                 return `Invalid brightness format: ${value}\nExpected: 0.1, +0.1, 0.1-, 10%, +10%, 10%-`;
             } else {
@@ -174,41 +170,19 @@ Singleton {
         readonly property bool isDdc: ddcInfo !== null
         readonly property string busNum: ddcInfo?.busNum ?? ""
         readonly property bool isAppleDisplay: root.appleDisplayPresent && modelData.model.startsWith("StudioDisplay")
-        readonly property bool writesHardwareDirectly: isAppleDisplay || isDdc
-        property real brightness: 1.0
-        property real dimming: 1.0
-        readonly property real effectiveBrightness: brightness * dimming
+        property real brightness
         property real queuedBrightness: NaN
-        property bool verifying: false
 
-        readonly property Process readProc: Process {
+        readonly property Process initProc: Process {
             stdout: StdioCollector {
                 onStreamFinished: {
                     if (monitor.isAppleDisplay) {
                         const val = parseInt(text.trim());
                         monitor.brightness = val / 101;
-                        return;
+                    } else {
+                        const [, , , cur, max] = text.split(" ");
+                        monitor.brightness = parseInt(cur) / parseInt(max);
                     }
-
-                    const [, , , cur, max] = text.split(" ");
-                    const actual = parseInt(cur) / parseInt(max);
-
-                    if (!monitor.verifying) {
-                        monitor.brightness = actual;
-                        return;
-                    }
-
-                    monitor.verifying = false;
-                    const target = Math.round(monitor.brightness * 100);
-
-                    if (isNaN(actual) || Math.round(actual * 100) === target)
-                        return;
-
-                    monitor.writeBrightness(target / 100);
-                    monitor.brightness = target / 100;
-
-                    if (isDdc)
-                        timer.restart();
                 }
             }
         }
@@ -217,54 +191,31 @@ Singleton {
             interval: 500
             onTriggered: {
                 if (!isNaN(monitor.queuedBrightness)) {
-                    const pending = monitor.queuedBrightness;
+                    monitor.setBrightness(monitor.queuedBrightness);
                     monitor.queuedBrightness = NaN;
-                    monitor.brightness = pending;
-                    monitor.writeBrightness(pending);
-                    monitor.timer.restart();
                 }
             }
         }
 
-        function writeBrightness(value: real): void {
+        function setBrightness(value: real): void {
+            value = Math.max(0, Math.min(1, value));
             const rounded = Math.round(value * 100);
+            if (Math.round(brightness * 100) === rounded)
+                return;
+
+            if (isDdc && timer.running) {
+                queuedBrightness = value;
+                return;
+            }
+
+            brightness = value;
 
             if (isAppleDisplay)
                 Quickshell.execDetached(["asdbctl", "set", rounded]);
             else if (isDdc)
                 Quickshell.execDetached(["ddcutil", "-b", busNum, "setvcp", "10", rounded]);
             else
-                Quickshell.execDetached(["brightnessctl", "set", `${rounded}%`]);
-        }
-
-        // Steps are relative to what the screen renders, not to the value last commanded.
-        function stepBrightness(delta: real): void {
-            setBrightness(effectiveBrightness + delta);
-        }
-
-        function setBrightness(value: real): void {
-            value = Math.max(0, Math.min(1, value));
-            const rounded = Math.round(value * 100);
-
-            if (dimming < 1)
-                dimming = 1;
-
-            if (Math.round(brightness * 100) === rounded) {
-                if (isDdc && !timer.running && !readProc.running) {
-                    verifying = true;
-                    readProc.running = true;
-                }
-                return;
-            }
-
-            if (isDdc && timer.running) {
-                queuedBrightness = value;
-                brightness = value;
-                return;
-            }
-
-            brightness = value;
-            writeBrightness(value);
+                Quickshell.execDetached(["brightnessctl", "s", `${rounded}%`]);
 
             if (isDdc)
                 timer.restart();
@@ -272,14 +223,13 @@ Singleton {
 
         function initBrightness(): void {
             if (isAppleDisplay)
-                readProc.command = ["asdbctl", "get"];
+                initProc.command = ["asdbctl", "get"];
             else if (isDdc)
-                readProc.command = ["ddcutil", "-b", busNum, "getvcp", "10", "--brief"];
+                initProc.command = ["ddcutil", "-b", busNum, "getvcp", "10", "--brief"];
             else
-                // Internal panel: shaped like ddcutil's brief reply so one parser reads both.
-                readProc.command = ["sh", "-c", 'echo "VCP 10 C $(brightnessctl get) $(brightnessctl max)"'];
+                initProc.command = ["sh", "-c", "echo a b c $(brightnessctl g) $(brightnessctl m)"];
 
-            readProc.running = true;
+            initProc.running = true;
         }
 
         onBusNumChanged: initBrightness()

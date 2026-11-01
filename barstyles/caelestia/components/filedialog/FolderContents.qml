@@ -4,14 +4,16 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import "../../config"
+import "../../port/i18n"
 import "../../port/models"
+import "../../port/multimedia"
 import ".."
 import "../controls"
 import "../effects"
 import "."
-import "../images"
 import "../../services"
 import "../../utils"
+
 Item {
     id: root
 
@@ -59,7 +61,7 @@ Item {
             }
 
             StyledText {
-                text: qsTr("This folder is empty")
+                text: Tr.tr("This folder is empty")
                 color: Colours.palette.m3outline
                 font: Tokens.font.body.builders.large.weight(Font.Medium).build()
             }
@@ -99,11 +101,7 @@ Item {
             flickable: view
         }
 
-        model: folderModel.entries
-
-        FileSystemModel {
-            id: folderModel
-
+        model: FileSystemModel {
             path: {
                 if (root.dialog.cwd[0] === "Home")
                     return Paths.home + `/${root.dialog.cwd.slice(1).join("/")}`;
@@ -182,14 +180,16 @@ Item {
             }
         }
 
-        CachingIconImage {
+        Visual {
             id: icon
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: Tokens.padding.medium
 
-            implicitSize: Sizes.itemWidth - Tokens.padding.medium * 2
+            implicitWidth: Sizes.itemWidth - Tokens.padding.medium * 2
+            implicitHeight: implicitWidth
+            fillMode: VisualSource.PreserveAspectFit
 
             Component.onCompleted: {
                 const file = item.modelData;

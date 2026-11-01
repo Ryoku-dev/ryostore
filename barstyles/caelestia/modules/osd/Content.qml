@@ -8,11 +8,12 @@ import "../../components"
 import "../../components/controls"
 import "../../services"
 import "../../utils"
+
 Item {
     id: root
 
     required property Brightness.Monitor monitor
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     required property real volume
     required property bool muted
@@ -20,48 +21,41 @@ Item {
     required property bool sourceMuted
     required property real brightness
 
-    implicitWidth: layout.implicitWidth + Tokens.padding.large * 2
+    implicitWidth: layout.implicitWidth + Tokens.padding.large + layout.anchors.horizontalCenterOffset * 2
     implicitHeight: layout.implicitHeight + Tokens.padding.large * 2
 
     ColumnLayout {
         id: layout
 
         anchors.centerIn: parent
+        anchors.horizontalCenterOffset: CUtils.clamp(Tokens.padding.large - Config.border.thickness, 0, Tokens.padding.large) / 2
         spacing: Tokens.spacing.medium
 
-        WrappedLoader {
-            Layout.alignment: Qt.AlignHCenter
-            shouldBeActive: Config.osd.enableVolume !== false && HostState.section("levels") && HostState.element("volume")
-            targetWidth: Tokens.sizes.osd.sliderWidth
-            targetHeight: Tokens.sizes.osd.sliderHeight
+        // Speaker volume
+        CustomMouseArea {
+            function onWheel(event: WheelEvent) {
+                if (event.angleDelta.y > 0)
+                    Audio.incrementVolume();
+                else if (event.angleDelta.y < 0)
+                    Audio.decrementVolume();
+            }
 
-            sourceComponent: CustomMouseArea {
-                function onWheel(event: WheelEvent) {
-                    if (event.angleDelta.y > 0)
-                        Audio.incrementVolume();
-                    else if (event.angleDelta.y < 0)
-                        Audio.decrementVolume();
-                }
+            implicitWidth: Tokens.sizes.osd.sliderWidth
+            implicitHeight: Tokens.sizes.osd.sliderHeight
 
-                implicitWidth: Tokens.sizes.osd.sliderWidth
-                implicitHeight: Tokens.sizes.osd.sliderHeight
+            FilledSlider {
+                anchors.fill: parent
 
-                FilledSlider {
-                    anchors.fill: parent
-
-                    icon: Icons.getVolumeIcon(value, root.muted)
-                    value: root.volume
-                    to: GlobalConfig.services.maxVolume
-                    onMoved: Audio.setVolume(value)
-                }
+                icon: Icons.getVolumeIcon(value, root.muted)
+                value: root.volume
+                to: GlobalConfig.services.maxVolume
+                onMoved: Audio.setVolume(value)
             }
         }
 
+        // Microphone volume
         WrappedLoader {
-            Layout.alignment: Qt.AlignHCenter
-            shouldBeActive: Config.osd.enableMicrophone && HostState.element("micMute") && (!Config.osd.enableBrightness || !root.visibilities.session)
-            targetWidth: Tokens.sizes.osd.sliderWidth
-            targetHeight: Tokens.sizes.osd.sliderHeight
+            shouldBeActive: Config.osd.enableMicrophone && (!Config.osd.enableBrightness || !root.screenState.session)
 
             sourceComponent: CustomMouseArea {
                 function onWheel(event: WheelEvent) {
@@ -85,11 +79,9 @@ Item {
             }
         }
 
+        // Brightness
         WrappedLoader {
-            Layout.alignment: Qt.AlignHCenter
-            shouldBeActive: Config.osd.enableBrightness && HostState.section("levels") && HostState.element("brightness")
-            targetWidth: Tokens.sizes.osd.sliderWidth
-            targetHeight: Tokens.sizes.osd.sliderHeight
+            shouldBeActive: Config.osd.enableBrightness
 
             sourceComponent: CustomMouseArea {
                 function onWheel(event: WheelEvent) {
@@ -97,9 +89,9 @@ Item {
                     if (!monitor)
                         return;
                     if (event.angleDelta.y > 0)
-                        monitor.stepBrightness(GlobalConfig.services.brightnessIncrement);
+                        monitor.setBrightness(monitor.brightness + GlobalConfig.services.brightnessIncrement);
                     else if (event.angleDelta.y < 0)
-                        monitor.stepBrightness(-GlobalConfig.services.brightnessIncrement);
+                        monitor.setBrightness(monitor.brightness - GlobalConfig.services.brightnessIncrement);
                 }
 
                 implicitWidth: Tokens.sizes.osd.sliderWidth
@@ -118,21 +110,12 @@ Item {
 
     component WrappedLoader: Loader {
         required property bool shouldBeActive
-        property real targetWidth: 0
-        property real targetHeight: 0
 
         asynchronous: true
-        Layout.preferredWidth: shouldBeActive ? targetWidth : 0
-        Layout.preferredHeight: shouldBeActive ? targetHeight : 0
+        Layout.preferredHeight: shouldBeActive ? Tokens.sizes.osd.sliderHeight : 0
         opacity: shouldBeActive ? 1 : 0
         active: opacity > 0
         visible: active
-
-        Behavior on Layout.preferredWidth {
-            Anim {
-                type: Anim.Emphasized
-            }
-        }
 
         Behavior on Layout.preferredHeight {
             Anim {

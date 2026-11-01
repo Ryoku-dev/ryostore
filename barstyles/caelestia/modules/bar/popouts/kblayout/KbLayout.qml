@@ -1,28 +1,22 @@
 pragma ComponentBehavior: Bound
 
-import ".."
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../../../config"
+import "../../../../port/i18n"
 import "../../../../components"
 import "../../../../services"
+
 ColumnLayout {
     id: root
-
-    required property PopoutState popouts
-
-    property bool _isSidebarOpen: false
-
-    property real scaleOffset: 1.0
-    property real fontScale: 1.0
 
     function refresh() {
         kb.refresh();
     }
 
-    spacing: Tokens.spacing.small * scaleOffset
-    width: Math.max(Tokens.sizes.bar.kbLayoutWidth * scaleOffset, _isSidebarOpen ? (Visibilities.sidebarWidthFor(Tokens.sizes.sidebar.width) * scaleOffset) - Tokens.padding.extraLargeIncreased * scaleOffset : 0)
+    spacing: Tokens.spacing.small
+    width: Tokens.sizes.bar.kbLayoutWidth
 
     Component.onCompleted: kb.start()
 
@@ -31,9 +25,9 @@ ColumnLayout {
     }
 
     StyledText {
-        Layout.topMargin: Tokens.padding.medium * scaleOffset
-        Layout.rightMargin: Tokens.padding.extraSmall * scaleOffset
-        text: qsTr("Keyboard Layouts")
+        Layout.topMargin: Tokens.padding.medium
+        Layout.rightMargin: Tokens.padding.extraSmall
+        text: Tr.tr("Keyboard layouts")
         font: Tokens.font.body.builders.medium.weight(Font.Medium).build()
     }
 
@@ -97,7 +91,7 @@ ColumnLayout {
             width: list.width
             height: Math.max(36, rowText.implicitHeight + Tokens.padding.small)
             ToolTip.visible: isDisabled && layer.containsMouse
-            ToolTip.text: qsTr("XKB supports only 4 layouts at a time")
+            ToolTip.text: Tr.tr("XKB limitation: maximum 4 layouts allowed")
 
             StateLayer {
                 id: layer

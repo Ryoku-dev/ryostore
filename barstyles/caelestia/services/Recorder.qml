@@ -3,16 +3,15 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import "../utils"
+import "."
+
 Singleton {
     id: root
-
-    readonly property string recordBin: Paths.bin("caelestia-record")
 
     readonly property alias running: props.running
     readonly property alias paused: props.paused
     readonly property alias elapsed: props.elapsed
-    readonly property bool probing: running || needsStart || needsStop || needsPause
+    property int refCount: 0
     property bool needsStart
     property list<string> startArgs
     property bool needsStop
@@ -21,12 +20,6 @@ Singleton {
     function start(extraArgs = []): void {
         needsStart = true;
         startArgs = extraArgs;
-        checkProc.running = true;
-    }
-
-    function startGif(): void {
-        needsStart = true;
-        startArgs = ["--gif"];
         checkProc.running = true;
     }
 
@@ -40,77 +33,74 @@ Singleton {
         checkProc.running = true;
     }
 
-    function launchSpectacle(): void {
-        Launch.exec(["spectacle", "-R", "r"]);
+    function ryokuStartArgs(): list<string> {
+        if (startArgs.includes("-sr"))
+            return ["--region", "--with-desktop-audio"];
+        if (startArgs.includes("-r"))
+            return ["--region"];
+        if (startArgs.includes("-s"))
+            return ["--with-desktop-audio"];
+        return [];
     }
 
-    // Forces a fresh probe of gpu-screen-recorder; `running` updates on exit.
-    function probeRecording(): void {
-        if (!checkProc.running) checkProc.running = true;
+    function reconcile(isRunning: bool): void {
+        if (isRunning && needsStop) {
+            commandProc.exec(["ryoku-shell", "record", "stop"]);
+            props.running = false;
+            props.paused = false;
+        } else if (isRunning && needsPause) {
+            commandProc.exec(["ryoku-shell", "record", props.paused ? "resume" : "pause"]);
+            props.paused = !props.paused;
+        } else if (!isRunning && needsStart) {
+            commandProc.exec(["ryoku-shell", "record", "start", ...ryokuStartArgs()]);
+            props.running = true;
+            props.paused = false;
+            props.elapsed = 0;
+        } else if (isRunning !== props.running && !commandProc.running) {
+            props.running = isRunning;
+            props.paused = false;
+            props.elapsed = 0;
+        }
+        needsStart = false;
+        needsStop = false;
+        needsPause = false;
     }
 
     PersistentProperties {
         id: props
-
         property bool running: false
         property bool paused: false
         property real elapsed: 0
-
         reloadableId: "recorder"
     }
 
-    property bool _wasRunning: false
-
     Process {
         id: checkProc
-
-        command: ["sh", "-c", "pidof gpu-screen-recorder >/dev/null && f=\"$(cat $HOME/.local/state/caelestia/record/current_recording_path 2>/dev/null)\" && [ -n \"$f\" ] && test -f \"$f\""]
-        onExited: code => { // qmllint disable signal-handler-parameters
-            let isRunning = (code === 0);
-
-            if (isRunning && !root._wasRunning) {
-                props.elapsed = 0;
-                props.paused = false;
-            }
-
-            root._wasRunning = isRunning;
-            props.running = isRunning;
-
-            if (isRunning) {
-                if (root.needsStop) {
-                    Launch.exec([root.recordBin, "--stop"]);
-                } else if (root.needsPause) {
-                    Launch.exec([root.recordBin, "--pause"]);
-                    props.paused = !props.paused;
-                }
-            } else if (root.needsStart) {
-                Launch.exec([root.recordBin, ...root.startArgs]);
-            }
-
-            root.needsStart = false;
-            root.needsStop = false;
-            root.needsPause = false;
+        running: true
+        command: ["ryoku-shell", "record", "status"]
+        stdout: StdioCollector {
+            onStreamFinished: root.reconcile(text.trim() === "recording")
         }
     }
 
-    Timer {
-        interval: root.probing ? 500 : 2500
-        repeat: true
-        running: true
-        onTriggered: {
-            if (!checkProc.running) {
-                checkProc.running = true;
-            }
-        }
+    Process {
+        id: commandProc
+        onExited: checkProc.running = true
     }
 
     Timer {
         interval: 1000
+        running: root.refCount > 0
         repeat: true
-        running: props.running && !props.paused
+        triggeredOnStart: true
+        onTriggered: checkProc.running = true
+    }
 
-        onTriggered: {
+    Connections {
+        function onSecondsChanged(): void {
             props.elapsed++;
         }
+        enabled: props.running && !props.paused
+        target: Time
     }
 }

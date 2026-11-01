@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell.Widgets
-import "../../port/core"
 import "../../port/images"
+
 IconImage {
     id: root
 

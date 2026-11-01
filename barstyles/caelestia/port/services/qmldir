@@ -1,9 +1,14 @@
+singleton AudioCollector 1.0 AudioCollector.qml
+BeatTracker 1.0 BeatTracker.qml
+CavaProvider 1.0 CavaProvider.qml
 singleton Cpu 1.0 Cpu.qml
 DiskInfo 1.0 DiskInfo.qml
 singleton Gpu 1.0 Gpu.qml
+singleton Lyrics 1.0 Lyrics.qml
 singleton Memory 1.0 Memory.qml
 singleton NetworkUsage 1.0 NetworkUsage.qml
 ServiceRef 1.0 ServiceRef.qml
+singleton SessionManager 1.0 SessionManager.qml
 singleton Storage 1.0 Storage.qml
 SystemMonitor 1.0 SystemMonitor.qml
 singleton Weather 1.0 Weather.qml

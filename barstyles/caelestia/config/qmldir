@@ -1,11 +1,16 @@
+BarWorkspaceCapitalisation 1.0 BarWorkspaceCapitalisation.qml
 BarWorkspaceDisplay 1.0 BarWorkspaceDisplay.qml
 ClockFormat 1.0 ClockFormat.qml
+DataUnit 1.0 DataUnit.qml
+GpuType 1.0 GpuType.qml
+LyricsBackend 1.0 LyricsBackend.qml
+Name 1.0 Name.qml
+NotifsFullscreen 1.0 NotifsFullscreen.qml
+TemperatureUnit 1.0 TemperatureUnit.qml
+WallpaperTransition 1.0 WallpaperTransition.qml
 singleton Config 1.0 Config.qml
 ConfigList 1.0 ConfigList.qml
-DataUnit 1.0 DataUnit.qml
-DockWindowGrouping 1.0 DockWindowGrouping.qml
 FontStyle 1.0 FontStyle.qml
 singleton GlobalConfig 1.0 GlobalConfig.qml
-TemperatureUnit 1.0 TemperatureUnit.qml
 singleton TokenConfig 1.0 TokenConfig.qml
 singleton Tokens 1.0 Tokens.qml

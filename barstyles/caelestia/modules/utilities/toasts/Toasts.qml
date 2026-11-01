@@ -6,12 +6,12 @@ import "../../../port/core"
 import "../../../config"
 import "../../../components"
 import "../../../services"
+
 Item {
     id: root
 
     readonly property int spacing: Tokens.spacing.small
     property bool flag
-    required property DrawerVisibilities visibilities
 
     function shouldShowToast(toast: Toast): bool {
         if (!Notifs.hasFullscreen())
@@ -64,6 +64,7 @@ Item {
 
         required property int index
         required property Toast modelData
+
         readonly property bool previewHidden: {
             let extraHidden = 0;
             for (let i = 0; i < index; i++)
@@ -76,10 +77,12 @@ Item {
             if (initAnim.running && previewHidden)
                 initAnim.stop();
         }
+
         opacity: modelData.closed || previewHidden ? 0 : 1
         scale: modelData.closed || previewHidden ? 0.7 : 1
+
         anchors.bottomMargin: {
-            root.flag;
+            root.flag; // Force update
             let y = 0;
             for (let i = 0; i < index; i++) {
                 const item = repeater.itemAt(i) as ToastWrapper;
@@ -88,23 +91,28 @@ Item {
             }
             return y;
         }
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         implicitHeight: toastInner.implicitHeight
+
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
         onClicked: modelData.close()
+
         Component.onCompleted: modelData.lock(this)
 
         Anim {
             id: initAnim
 
             Component.onCompleted: running = !toast.previewHidden
+
             target: toast
             properties: "opacity,scale"
             from: 0
             to: 1
         }
+
         ParallelAnimation {
             running: toast.modelData.closed
             onStarted: toast.anchors.bottomMargin = toast.anchors.bottomMargin
@@ -122,19 +130,23 @@ Item {
                 to: 0.7
             }
         }
+
         ToastItem {
             id: toastInner
 
             modelData: toast.modelData
         }
+
         Behavior on opacity {
             Anim {
                 type: Anim.DefaultEffects
             }
         }
+
         Behavior on scale {
             Anim {}
         }
+
         Behavior on anchors.bottomMargin {
             Anim {}
         }

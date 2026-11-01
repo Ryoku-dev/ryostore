@@ -1,5 +1,6 @@
 import QtQuick
 import "../config"
+
 AnchorAnimation {
     enum Type {
         StandardSmall = 0,
@@ -29,7 +30,7 @@ AnchorAnimation {
             return Tokens.anim.durations.expressiveSlowSpatial;
 
         const types = ["small", "normal", "large", "extraLarge"];
-        const idx = type % 4;
+        const idx = type % 4; // 0-7 are the 4 standard types
         return Tokens.anim.durations[types[idx]];
     }
     easing: {

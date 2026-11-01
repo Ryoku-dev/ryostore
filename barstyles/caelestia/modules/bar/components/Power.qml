@@ -2,12 +2,11 @@ import QtQuick
 import "../../../config"
 import "../../../components"
 import "../../../services"
-import "../../../utils"
+
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
-
+    required property ScreenState screenState
 
     implicitWidth: icon.implicitHeight + Tokens.padding.small
     implicitHeight: icon.implicitHeight
@@ -19,24 +18,13 @@ Item {
         implicitWidth: implicitHeight
         implicitHeight: icon.implicitHeight + Tokens.padding.small
         radius: Tokens.rounding.full
-        Accessible.name: qsTr("Power and session menu")
-        Accessible.role: Accessible.Button
-        Accessible.description: qsTr("Opens the power, restart, and logout menu")
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: mouse => {
-            if (mouse.button === Qt.RightButton) {
-                Hub.open("shellstyle");
-                return;
-            }
-            root.visibilities.session = !root.visibilities.session
-        }
+        onClicked: root.screenState.session = !root.screenState.session
     }
 
     MaterialIcon {
         id: icon
 
         anchors.centerIn: parent
-        anchors.horizontalCenterOffset: Centering.pixelAlign(parent.width, width)
 
         text: "power_settings_new"
         color: Colours.palette.m3error

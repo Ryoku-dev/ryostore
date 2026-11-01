@@ -8,6 +8,7 @@ import "../../config"
 import "../../components"
 import "../../components/controls"
 import "../../services"
+
 Item {
     id: root
 
@@ -19,26 +20,28 @@ Item {
 
     implicitHeight: bar.implicitHeight + bar.anchors.topMargin + indicator.implicitHeight + indicator.anchors.topMargin + separator.implicitHeight
 
-    // A plain row, not a TabBar: a TabBar row over its contentModel left a tab added
-    // after it was built (Performance coming back with Vitals) empty. The selected tab
-    // lives in screenState.dashboardTab.
-    RowLayout {
+    TabBar {
         id: bar
-
-        readonly property int currentIndex: root.screenState.dashboardTab
-        readonly property int count: tabRepeater.count
-        readonly property Item currentItem: count > 0 ? tabRepeater.itemAt(currentIndex) : null
 
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.topMargin: Tokens.sizes.dashboard.tabIndicatorSpacing
 
-        spacing: 0
+        currentIndex: root.screenState.dashboardTab
+        onCurrentIndexChanged: root.screenState.dashboardTab = currentIndex
+
+        implicitHeight: contentHeight
+        background: null
+        contentItem: RowLayout {
+            spacing: 0
+
+            Repeater {
+                model: bar.contentModel
+            }
+        }
 
         Repeater {
-            id: tabRepeater
-
             model: ScriptModel {
                 values: root.tabs
             }
@@ -110,11 +113,10 @@ Item {
         id: tab
 
         required property string iconName
-        required property int index
-        readonly property bool current: index === root.screenState.dashboardTab
+        readonly property bool current: TabBar.tabBar.currentItem === this
 
         Layout.fillWidth: true
-        Layout.preferredWidth: 1
+        Layout.preferredWidth: 1 // Uniform width across all tabs
         implicitWidth: implicitContentWidth
         implicitHeight: implicitContentHeight
         background: null
@@ -135,7 +137,7 @@ Item {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
 
-            onPressed: root.screenState.dashboardTab = tab.index
+            onPressed: root.screenState.dashboardTab = tab.TabBar.index
 
             StateLayer {
                 id: stateLayer
@@ -148,7 +150,7 @@ Item {
 
                 radius: Tokens.rounding.medium
                 color: tab.current ? Colours.palette.m3primary : Colours.palette.m3onSurface
-                onClicked: root.screenState.dashboardTab = tab.index
+                onClicked: root.screenState.dashboardTab = tab.TabBar.index
             }
 
             MaterialIcon {

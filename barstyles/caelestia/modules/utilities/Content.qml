@@ -1,23 +1,22 @@
+pragma ComponentBehavior: Bound
+
 import "cards"
 import QtQuick
 import QtQuick.Layouts
 import "../../config"
 import "../../components"
 import "../bar/popouts" as BarPopouts
+
 Item {
     id: root
 
     required property var props
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property BarPopouts.Wrapper popouts
     required property matrix4x4 deformMatrix
 
-    // The cards that are showing, in the order the layout stacks them: their own
-    // non-animated heights, plus the spacing between them.
-    readonly property real nonAnimHeight: {
-        const visible = [idleInhibit, capture, toggles].filter(card => card.visible);
-        return visible.reduce((total, card) => total + card.nonAnimHeight, 0) + layout.spacing * Math.max(0, visible.length - 1);
-    }
+    readonly property int enabledCards: (idleInhibit.active ? 1 : 0) + (record.active ? 1 : 0) + (toggles.active ? 1 : 0)
+    readonly property real nonAnimHeight: ((idleInhibit.item as IdleInhibit)?.nonAnimHeight ?? 0) + ((record.item as Record)?.nonAnimHeight ?? 0) + ((toggles.item as Toggles)?.implicitHeight ?? 0) + layout.spacing * Math.max(0, enabledCards - 1)
 
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
@@ -28,29 +27,47 @@ Item {
         anchors.fill: parent
         spacing: Tokens.spacing.medium
 
-        IdleInhibit {
+        Loader {
             id: idleInhibit
 
-            visible: Config.utilities.showKeepAwake
+            Layout.fillWidth: true
+            active: Config.utilities.cards.keepAwake
+            visible: active
+
+            sourceComponent: IdleInhibit {
+                objectName: "utilitiesKeepAwake"
+            }
         }
 
-        CaptureCard {
-            id: capture
+        Loader {
+            id: record
 
-            visible: Config.utilities.showScreenRecorder
-
-            props: root.props
-            visibilities: root.visibilities
+            Layout.fillWidth: true
+            active: Config.utilities.cards.recorder
+            visible: active
             z: 1
+
+            sourceComponent: Record {
+                objectName: "utilitiesScreenRecorder"
+
+                props: root.props
+                screenState: root.screenState
+            }
         }
 
-        Toggles {
+        Loader {
             id: toggles
 
-            visible: Config.utilities.showQuickToggles
+            Layout.fillWidth: true
+            active: Config.utilities.cards.quickToggles
+            visible: active
 
-            visibilities: root.visibilities
-            popouts: root.popouts
+            sourceComponent: Toggles {
+                objectName: "utilitiesQuickToggles"
+
+                screenState: root.screenState
+                popouts: root.popouts
+            }
         }
     }
 
@@ -58,5 +75,4 @@ Item {
         props: root.props
         deformMatrix: root.deformMatrix
     }
-
 }

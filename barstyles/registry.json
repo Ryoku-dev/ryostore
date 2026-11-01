@@ -239,7 +239,7 @@
     {
       "id": "caelestia",
       "name": "Caelestia",
-      "version": "1.0.2",
+      "version": "2.0.0",
       "path": "barstyles/caelestia",
       "author": "lhen",
       "upstream": "https://github.com/caelestia-dots/shell",
@@ -264,8 +264,8 @@
         "assets/screenshot-settings.webp"
       ],
       "manifest": "manifest.json",
-      "manifestSha256": "49a7504a642d999062e7c2d639cfa8a77d0a3cef09c79c9bb0e5e07532648324",
-      "lastUpdated": "2026-10-26",
+      "manifestSha256": "a3c83deeac3798bf3f440b8857d06a86e794f4879a533c94d973b1b88cc24475",
+      "lastUpdated": "2026-10-31",
       "official": false,
       "license": "GPL-3.0-only"
     },

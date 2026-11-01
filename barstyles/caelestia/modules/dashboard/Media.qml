@@ -3,12 +3,14 @@ import QtQuick
 import QtQuick.Layouts
 import "../../port/shapes"
 import "../../config"
+import "../../port/i18n"
 import "../../components"
 import "../../services"
+
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     implicitWidth: Tokens.sizes.dashboard.mediaTabWidth
     implicitHeight: Tokens.sizes.dashboard.mediaTabHeight
@@ -113,12 +115,12 @@ Item {
 
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Nothing playing")
+                        text: Tr.tr("Nothing playing")
                         font: Tokens.font.headline.medium
                     }
 
                     StyledText {
-                        text: qsTr("Play something for it to show up here!")
+                        text: Tr.tr("Play something for it to show up here!")
                         color: Colours.palette.m3onSurfaceVariant
                         font: Tokens.font.body.large
                     }
@@ -137,6 +139,11 @@ Item {
 
                     Details {
                         Layout.fillWidth: true
+                    }
+
+                    LyricsAndSelector {
+                        Layout.fillHeight: true
+                        implicitWidth: Tokens.sizes.dashboard.mediaSectionWidth
                     }
                 }
             }

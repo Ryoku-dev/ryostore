@@ -1,12 +1,24 @@
 Caelestia Ryoku Bar Style
 
-Source: Caelestia shell, https://github.com/caelestia-dots/shell (GPL-3.0)
-Via: the KDE port by ladybug-me, https://github.com/ladybug-me/caelestia-kde, commit 6769205
+Upstream: Caelestia shell, https://github.com/caelestia-dots/shell
+Pinned revision: b51fdb35ca7a14ac5a49e0d94fc5de2d79756aed
+Upstream license: GNU General Public License version 3
 Ported to Ryoku by: lhen
-Shape and wavy line components: adapted from the imi bar style in this store (dodo986, GPL-3.0)
 License: GNU General Public License version 3; see LICENSE
 
-The Caelestia shell's own bar, dashboard, session menu, sidebar, OSD and popouts, running
-inside the Ryoku shell. Upstream ships a C++ plugin; this item replaces it with plain QML:
-the config and design tokens are generated from the plugin's defaults, and system data
-comes from Ryoku's shell services.
+All 251 upstream files under modules, services, components, config and utils are carried from the pinned revision, except the following desktop-owner directories:
+- modules/areapicker: Ryoshot owns region and screen capture.
+- modules/background: Ryogami owns the wallpaper surface and engine.
+- modules/lock: qylock and `ryoku-shell lock` own locking.
+
+The native Caelestia plugin is replaced by plain QML. Config and token defaults are generated from the pinned plugin headers. Ryoku services provide compositor state, palette, audio, media, weather, session actions, keep-awake state and desktop surface routing. The native shader hosts are replaced by the bundled crossfade shader, Material shapes are painted by the carried Canvas implementation, translations return the source text with JavaScript plural selection, and image analysis uses Canvas.
+
+Honest degradations:
+- Calculator results require `qalc` on PATH.
+- Beat timing is derived from Ryoku's cava bars instead of the native beat tracker.
+- Lyrics load local LRC files from the configured lyrics directory; online Caelestia lyric providers are not contacted.
+- Focus-grab click-away is inert where the compositor lacks a neutral grab API; Escape and explicit close controls remain.
+- Hyprland-only pinning and layer-rule mutation are hidden or handed to Ryoku.
+- Hibernate reports unavailable when Ryoku has no supported session action.
+
+Shape and wavy-line QML originated in the earlier Ryoku port and the imi bar style in this store (dodo986, GPL-3.0). They remain GPL-3.0-compatible.

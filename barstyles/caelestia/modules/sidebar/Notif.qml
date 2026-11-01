@@ -3,15 +3,17 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import "../../config"
+import "../../port/i18n"
 import "../../components"
 import "../../services"
+
 StyledRect {
     id: root
 
     required property NotifData modelData
     required property Props props
     required property bool expanded
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     readonly property StyledText body: (expandedContent.item as ExpandedBody)?.body ?? null
     readonly property real nonAnimHeight: expanded ? summary.implicitHeight + expandedContent.implicitHeight + expandedContent.anchors.topMargin + Tokens.padding.medium * 2 : summaryHeightMetrics.height
@@ -50,7 +52,7 @@ StyledRect {
         id: summaryHeightMetrics
 
         font: summary.font
-        text: " "
+        text: " " // Use this height to prevent weird characters from changing the line height
     }
 
     StyledText {
@@ -60,7 +62,7 @@ StyledRect {
         anchors.left: parent.left
 
         width: parent.width
-        text: root.modelData?.summaryPlain ?? ""
+        text: root.modelData?.summary ?? ""
         color: root.modelData?.urgency === "critical" ? Colours.palette.m3onSecondaryContainer : Colours.palette.m3onSurface
         elide: Text.ElideRight
         wrapMode: Text.WordWrap
@@ -74,7 +76,7 @@ StyledRect {
         anchors.left: parent.left
 
         visible: false
-        text: root.modelData?.summaryPlain ?? ""
+        text: root.modelData?.summary ?? ""
     }
 
     WrappedLoader {
@@ -87,7 +89,7 @@ StyledRect {
         anchors.leftMargin: Tokens.spacing.small
 
         sourceComponent: StyledText {
-            text: String(root.modelData?.bodyPlain ?? "").replace(/\n+/g, " ")
+            text: String(root.modelData?.body ?? "").replace(/\n/g, " ")
             color: root.modelData?.urgency === "critical" ? Colours.palette.m3secondary : Colours.palette.m3outline
             elide: Text.ElideRight
         }
@@ -134,14 +136,13 @@ StyledRect {
 
             Layout.fillWidth: true
             textFormat: Text.MarkdownText
-            text: String(root.modelData?.body ?? "").replace(/(.)\n(?!\n)/g, "$1\n\n") || qsTr("No body here! :/")
+            text: String(root.modelData?.body ?? "").replace(/(.)\n(?!\n)/g, "$1\n\n") || Tr.tr("No body here! :/")
             color: root.modelData?.urgency === "critical" ? Colours.palette.m3secondary : Colours.palette.m3outline
             wrapMode: Text.WordWrap
 
             onLinkActivated: link => {
                 Qt.openUrlExternally(link);
-                if (!Visibilities.sidebarPinned)
-                    root.visibilities.sidebar = false;
+                root.screenState.sidebar = false;
             }
         }
 
@@ -158,6 +159,7 @@ StyledRect {
         active: false
         opacity: 0
 
+        // Makes the loader load on the same frame shouldBeActive becomes true, which ensures size is set
         states: State {
             name: "active"
             when: comp.shouldBeActive

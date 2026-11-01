@@ -3,17 +3,17 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import "../../port/i18n"
 import ".."
 import "../../services"
+
 LazyLoader {
     id: loader
 
     property list<string> cwd: ["Home"]
-    property string filterLabel: qsTr("All files")
+    property string filterLabel: Tr.tr("All files")
     property list<string> filters: ["*"]
-    property bool selectFolder: false
-    property string title: selectFolder ? qsTr("Select a folder") : qsTr("Select a file")
-    property bool countedOpen: false
+    property string title: Tr.tr("Select a file")
 
     signal accepted(path: string)
     signal rejected
@@ -29,29 +29,16 @@ LazyLoader {
     onAccepted: activeAsync = false
     onRejected: activeAsync = false
 
-    onActiveAsyncChanged: {
-        if (activeAsync !== countedOpen) {
-            Visibilities.openDialogs += activeAsync ? 1 : -1;
-            countedOpen = activeAsync;
-        }
-    }
-    Component.onDestruction: {
-        if (countedOpen)
-            Visibilities.openDialogs -= 1;
-    }
-
     FloatingWindow {
         id: root
 
-        property bool selectFolder: loader.selectFolder
         property list<string> cwd: loader.cwd
         property string filterLabel: loader.filterLabel
         property list<string> filters: loader.filters
 
         readonly property bool selectionValid: {
-            if (loader.selectFolder) return true;
             const file = folderContents.currentItem?.modelData;
-            return (file && !file.isDir && (filters.includes("*") || filters.some(f => f.toLowerCase() === file.suffix.toLowerCase()))) ?? false;
+            return (file && !file.isDir && (filters.includes("*") || filters.some(filter => filter.toLowerCase() === file.suffix.toLowerCase()))) ?? false;
         }
 
         function accepted(path: string): void {

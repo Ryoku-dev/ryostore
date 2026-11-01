@@ -1,42 +1,24 @@
-pragma ComponentBehavior: Bound
-
 import QtQuick
-import Quickshell
-import "../../config"
 import "../../components"
-import "../../services"
+
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property Item sidebarPanel
-    property ShellScreen screen
     property alias osdPanel: content.osdPanel
     property alias sessionPanel: content.sessionPanel
     property alias utilitiesPanel: content.utilitiesPanel
-    readonly property real baseTopMargin: -5
 
-    readonly property bool isTargetScreen: {
-        if (GlobalConfig.notifs.monitor !== "focused")
-            return true;
-        const targetOutput = Notifs.activeTargetOutput || Notifs.getTargetOutput();
-        return targetOutput !== "" && targetOutput === root.screen?.name;
-    }
-    readonly property bool isAllowedByFullscreen: {
-        if (GlobalConfig.notifs.fullscreen === "on")
-            return true;
-        return !Kwin.hasFullscreenOn(root.screen?.name ?? "");
-    }
-
-    visible: height > 0 && isTargetScreen && isAllowedByFullscreen
-    anchors.topMargin: baseTopMargin
-    implicitWidth: (isTargetScreen && isAllowedByFullscreen) ? Math.max(sidebarPanel.width, content.implicitWidth) : 0
-    implicitHeight: (isTargetScreen && isAllowedByFullscreen) ? content.implicitHeight : 0
+    visible: height > 0
+    anchors.topMargin: -5
+    implicitWidth: Math.max(sidebarPanel.width, content.implicitWidth)
+    implicitHeight: content.implicitHeight
 
     Content {
         id: content
 
-        anchors.topMargin: -root.baseTopMargin
-        visibilities: root.visibilities
+        anchors.topMargin: -root.anchors.topMargin
+        screenState: root.screenState
     }
 }
