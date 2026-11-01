@@ -1,0 +1,78 @@
+{
+  "id": "smart-brightness",
+  "name": "Smart Brightness",
+  "version": "0.2.1",
+  "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
+  "description": "Max the backlight for fullscreen media, then restore. Runs from a desktop widget (or the bar) — no QS Bar required.",
+  "license": "MIT",
+  "official": false,
+  "tags": [
+    "brightness",
+    "media",
+    "fullscreen",
+    "desktop-widget",
+    "bar-widget"
+  ],
+  "hosts": [
+    "desktopWidget",
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 320
+  },
+  "files": [
+    "content/Logic.js",
+    "content/Glyph.qml",
+    "content/Card.qml",
+    "assets/preview-widget.png"
+  ],
+  "commands": [
+    "bin/brightness"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact",
+      "glyph"
+    ]
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "card"
+    },
+    "icon": "brightness_auto",
+    "label": "Smart Brightness"
+  },
+  "dependencies": {
+    "commands": [
+      "brightnessctl"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "enabled",
+        "type": "toggle",
+        "label": "Watch for fullscreen media",
+        "group": "Smart Brightness",
+        "default": true
+      },
+      {
+        "key": "barLabel",
+        "type": "choice",
+        "label": "Beside the mark (bar)",
+        "group": "Smart Brightness",
+        "default": "state",
+        "options": [
+          { "value": "none", "label": "Nothing" },
+          { "value": "state", "label": "ON / VIDEO / OFF" }
+        ]
+      }
+    ]
+  }
+}
