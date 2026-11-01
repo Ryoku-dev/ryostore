@@ -2092,6 +2092,34 @@
       ],
       "lastUpdated": "2026-10-26",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/radio-atlas"
+    },
+    {
+      "id": "native-switcher",
+      "name": "Native Switcher",
+      "version": "0.2.9",
+      "path": "plugins/native-switcher",
+      "author": "wolf1999h <doorman-bust-exile@duck.com>",
+      "summary": "Event-driven window switcher inside the resident Ryoku shell; lazy UI, no extra daemon.",
+      "description": "Event-driven window switcher inside the resident Ryoku shell; lazy UI, no extra daemon.",
+      "tags": [
+        "desktop-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "71672be5a64aa322eb59b3050e30ad695c1bf540eebf76b3321ee5fdfdf0d540",
+      "official": false,
+      "tagline": "Event-driven window switcher inside the resident Ryoku shell; lazy UI, no extra daemon.",
+      "icon": "",
+      "hosts": [
+        "framePopout"
+      ],
+      "lastUpdated": "2026-10-31",
+      "upstream": "https://github.com/wolf1999h/native-switcher"
     }
   ]
 }
