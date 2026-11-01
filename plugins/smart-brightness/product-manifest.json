@@ -48,9 +48,9 @@
     {
       "source": "assets/preview-widget.png",
       "destination": "assets/preview-widget.png",
-      "sha256": "3df7d35a11621a551745220aad1a6f593773f90af6822e650c06a85418fcf15c",
+      "sha256": "137bc960f5bd7a79db9680183d763bf3f2818aa1d294bf015c2d31465a005d66",
       "mode": "0644",
-      "size": 3627,
+      "size": 12612,
       "install": false
     },
     {
