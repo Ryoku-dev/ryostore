@@ -2120,6 +2120,34 @@
       ],
       "lastUpdated": "2026-10-31",
       "upstream": "https://github.com/wolf1999h/native-switcher"
+    },
+    {
+      "id": "removable-drives",
+      "name": "Removable Drives",
+      "version": "0.1.0",
+      "path": "plugins/removable-drives",
+      "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+      "summary": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "description": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png",
+        "assets/mounted-devices.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "8ebd07c973a598068b9b14693d1242675fa05e6d2868aca51b5b615f4f1b594d",
+      "official": false,
+      "tagline": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-01"
     }
   ]
 }

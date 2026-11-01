@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "id": "removable-drives",
+  "category": "plugins",
+  "version": "0.1.0",
+  "destination": "ryoku/plugins/removable-drives",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "95016da7f4aca5dd48892041defca1d29453098b80ebba8273a629222da09786",
+      "mode": "0644",
+      "size": 1063,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "c1ba192fe4c4a6bbc110a132ee565467cc938fa25f0b11c12eec817ab02521ce",
+      "mode": "0644",
+      "size": 3058,
+      "install": false
+    },
+    {
+      "source": "assets/mounted-devices.png",
+      "destination": "assets/mounted-devices.png",
+      "sha256": "2badeca029542a0e78c4b747820c524664aa85558af513329d126ebf2aba1065",
+      "mode": "0644",
+      "size": 37870,
+      "install": false
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "assets/preview.png",
+      "sha256": "c8ab9fab7aa37602794629ba14cd9c75ed966c5ba6ee2104d0df925b8f5ef385",
+      "mode": "0644",
+      "size": 27858,
+      "install": false
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "9fa59a2bd723231829b1e8cf6f54dd86f0f6f9a639a22e245573b18215b22f5f",
+      "mode": "0644",
+      "size": 9925,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "40bbe8fee06dc9dac3f9ce6149a67bcb0819a247bcc25c160c1e195ca13876ec",
+      "mode": "0644",
+      "size": 2491,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "d3513ce69f6cd7836a0799beac17172266d7015997820039556d42dce651caa9",
+      "mode": "0644",
+      "size": 1217,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "474bcbac845fb76df98fd84d2091e94ca58a78a43b1630563f770592a15a2124",
+      "mode": "0644",
+      "size": 9048,
+      "install": true
+    }
+  ]
+}
