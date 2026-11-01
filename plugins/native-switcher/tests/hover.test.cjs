@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const qml=fs.readFileSync(require('node:path').join(__dirname,'../content/Widget.qml'),'utf8');
+assert.match(qml,/onEntered: \{ hoverEntry.restart\(\)/);
+const exit=qml.match(/onExited: \{([^}]+)\}/)[1];
+const ctx={card:{hoverGlow:.1},hoverEntry:{stop(){this.stopped=true}},hoverLiftIn:{stop(){}}};
+vm.runInNewContext(exit,ctx);
+assert.equal(ctx.card.hoverGlow,0);
+assert.equal(ctx.hoverEntry.stopped,true);
+assert.match(qml,/property: "hoverGlow"; from: 0; to: 0.12/);
+assert.doesNotMatch(qml,/color: selected \? Theme.threadBg : \(mouse.containsMouse/);
+console.log('PASS: explicit entry-only pulse; exit stops and clears glow');
