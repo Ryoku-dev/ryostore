@@ -73,6 +73,34 @@ There are no `command` modules. Anything that shells out depends on the user's
 tools and can hang a terminal on every launch. Use the built-in module instead,
 or drop the row.
 
+## Renderers
+
+A readout that fastfetch cannot draw itself — icat PNGs under the text, for
+example — may ship its own renderer. Applying still copies `config.jsonc` over
+`~/.config/fastfetch/config.jsonc`; Ryoku's `ryoku-fastfetch` wrapper reads this
+line, resolves the target inside the product's own folder, and execs it:
+
+```jsonc
+// ryoku:renderer <id>/<relative-executable>
+```
+
+- The target must live in this product (`<id>/bin/...`), be executable, and be
+  declared in `manifest.json` with `"install": true` and `"mode": "0755"`.
+  Absolute paths, `..` and another product's id are rejected.
+- **The renderer owns the composition.** Ship a fixed module list in the
+  product's `config.jsonc`; the renderer reads that file, never
+  `~/.config/fastfetch/config.jsonc`. A Settings edit that changed the line
+  count would move the text out of artwork drawn around it.
+- Keep the fallback honest: with arguments, or outside a terminal that can draw
+  the artwork (kitty), print a plain, readable readout. The validator still
+  parses `config.jsonc` as a normal preset.
+- Write the marker as a `//` line at the start of a line; `ryoku-fastfetch`
+  takes the first one, so ship exactly one.
+- Do not create `PATH` shims, edit shell startup files, or make `fastfetch`
+  call the renderer. Ryoku's shell already runs `ryoku-fastfetch`, which is the
+  single entry point; a second greeting line is what makes two readouts appear.
+
+
 ## Every Ryoku edition
 
 Ryoku runs on Arch, CachyOS, Fedora and Void, and a preset can be applied on
