@@ -3,107 +3,95 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Widgets
+import Quickshell.Wayland
 import "../../config"
+import "../../port/i18n"
 import "../../components"
-import "../../components/effects"
-import "../../components/images"
 import "../../services"
+
 Item {
     id: root
 
+    required property ShellScreen screen
     required property var client
 
-    implicitWidth: 400
-    implicitHeight: 300
+    Layout.preferredWidth: preview.implicitWidth + Tokens.padding.extraLargeIncreased
+    Layout.fillHeight: true
 
-    Item {
-        id: previewContainer
+    ClipRect {
+        id: preview
 
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
+        anchors.bottom: label.top
         anchors.topMargin: Tokens.padding.large
         anchors.bottomMargin: Tokens.spacing.medium
 
-        AmbientGlow {
-            anchors.fill: preview
-            address: root.client?.address ?? ""
-            fallbackIcon: root.client ? WinIcons.sourceFor(null, root.client.class, root.client.iconName, root.client.pid ?? 0) : ""
-            sourceAspect: preview.windowAspect
-            deform: true
-            glowOpacity: GlobalConfig.appearance.ambientOpacity
-            radius: Tokens.rounding.medium
-            visible: !!root.client && opacity > 0.01
-            z: -1
+        implicitWidth: view.implicitWidth
+
+        color: Colours.tPalette.m3surfaceContainer
+        radius: Tokens.rounding.medium
+
+        Loader {
+            asynchronous: true
+            anchors.centerIn: parent
+            active: !root.client
+
+            sourceComponent: ColumnLayout {
+                spacing: 0
+
+                MaterialIcon {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: "web_asset_off"
+                    color: Colours.palette.m3outline
+                    fontStyle: Tokens.font.icon.builders.extraLarge.scale(3).build()
+                }
+
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: Tr.tr("No active client")
+                    color: Colours.palette.m3outline
+                    font: Tokens.font.body.builders.large.size(28).weight(Font.Medium).build()
+                }
+
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: Tr.tr("Try switching to a window")
+                    color: Colours.palette.m3outline
+                    font: Tokens.font.body.large
+                }
+            }
         }
 
-        StyledClippingRect {
-            id: preview
+        ScreencopyView {
+            id: view
 
-            readonly property real windowAspect: {
-                const w = root.client ? (root.client.width > 0 ? root.client.width : 16) : 16;
-                const h = root.client ? (root.client.height > 0 ? root.client.height : 10) : 10;
-                return w / h;
-            }
-
-            width: {
-                const containerAspect = previewContainer.width / previewContainer.height;
-                if (windowAspect > containerAspect) {
-                    return previewContainer.width;
-                } else {
-                    return previewContainer.height * windowAspect;
-                }
-            }
-            height: {
-                const containerAspect = previewContainer.width / previewContainer.height;
-                if (windowAspect > containerAspect) {
-                    return previewContainer.width / windowAspect;
-                } else {
-                    return previewContainer.height;
-                }
-            }
             anchors.centerIn: parent
-            radius: Tokens.rounding.medium
 
-                Loader {
-                    asynchronous: true
-                    anchors.centerIn: parent
-                    active: !root.client
-                    sourceComponent: ColumnLayout {
-                        spacing: 0
+            captureSource: root.client?.wayland ?? null
+            live: true
 
-                        MaterialIcon {
-                            text: "web_asset_off"
-                            color: Colours.palette.m3onSurfaceVariant
-                            fontStyle: Tokens.font.icon.builders.extraLarge.scale(3).build()
-                            Layout.alignment: Qt.AlignHCenter
-                        }
-                        StyledText {
-                            text: qsTr("No active client")
-                            color: Colours.palette.m3onSurfaceVariant
-                            font: Tokens.font.body.builders.large.size(28).weight(Font.Medium).build()
-                            Layout.alignment: Qt.AlignHCenter
-                        }
-                        StyledText {
-                            text: qsTr("Try switching to a window")
-                            color: Colours.palette.m3onSurfaceVariant
-                            font: Tokens.font.body.large
-                            Layout.alignment: Qt.AlignHCenter
-                        }
-                    }
-                }
-                WindowPreview {
-                    anchors.fill: parent
-                    address: root.client?.address ?? ""
-                    fallbackIcon: root.client ? WinIcons.sourceFor(null, root.client.class, root.client.iconName, root.client.pid ?? 0) : ""
-                    fallbackScale: 0.4
-                    sourceAspect: preview.windowAspect
-                    visible: !!root.client
-                }
+            constraintSize.width: root.client ? parent.height * Math.min(root.screen.width / root.screen.height, root.client?.lastIpcObject.size[0] / root.client?.lastIpcObject.size[1]) : parent.height
+            constraintSize.height: parent.height
+        }
     }
-}
-    Layout.fillWidth: true
-    Layout.fillHeight: true
+
+    StyledText {
+        id: label
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: Tokens.padding.large
+
+        animate: true
+        text: {
+            const client = root.client;
+            if (!client)
+                return Tr.tr("No active client");
+
+            const mon = client.monitor;
+            // TRANSLATORS: %1 = window title, %2 = monitor name, %3/%4 = x/y position in pixels
+            return Tr.tr("%1 on monitor %2 at %3, %4").arg(client.title).arg(mon.name).arg(client.lastIpcObject.at[0]).arg(client.lastIpcObject.at[1]);
+        }
+    }
 }

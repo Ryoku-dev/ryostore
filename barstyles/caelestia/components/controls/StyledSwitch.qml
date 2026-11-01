@@ -4,21 +4,25 @@ import QtQuick.Templates
 import "../../config"
 import ".."
 import "../../services"
+
 Switch {
     id: root
 
     property int cLayer: 1
+    property bool disabled
+
+    enabled: !disabled
 
     implicitWidth: implicitIndicatorWidth
     implicitHeight: implicitIndicatorHeight
 
-    onToggled: {
-        Audio.playEffectTick();
-    }
-
     indicator: StyledRect {
         radius: Tokens.rounding.full
-        color: root.checked ? Colours.palette.m3primary : Colours.layer(Colours.palette.m3surfaceContainerHighest, root.cLayer)
+        color: {
+            if (root.disabled)
+                return root.checked ? Qt.alpha(Colours.palette.m3onSurface, 0.12) : Qt.alpha(Colours.palette.m3surfaceContainerHighest, 0.38);
+            return root.checked ? Colours.palette.m3primary : Colours.layer(Colours.palette.m3surfaceContainerHighest, root.cLayer);
+        }
 
         implicitWidth: implicitHeight * 1.7
         implicitHeight: Tokens.font.body.medium.pointSize + Tokens.padding.small * 2
@@ -27,7 +31,11 @@ Switch {
             readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.2 : implicitHeight
 
             radius: Tokens.rounding.full
-            color: root.checked ? Colours.palette.m3onPrimary : Colours.layer(Colours.palette.m3outline, root.cLayer + 1)
+            color: {
+                if (root.disabled)
+                    return root.checked ? Colours.palette.m3surface : Qt.alpha(Colours.palette.m3onSurface, 0.12);
+                return root.checked ? Colours.palette.m3onPrimary : Colours.layer(Colours.palette.m3outline, root.cLayer + 1);
+            }
 
             x: root.checked ? parent.implicitWidth - nonAnimWidth - Tokens.padding.extraSmall / 2 : Tokens.padding.extraSmall / 2
             implicitWidth: nonAnimWidth
@@ -94,7 +102,11 @@ Switch {
 
                 ShapePath {
                     strokeWidth: Tokens.font.body.large.pointSize * 0.15
-                    strokeColor: root.checked ? Colours.palette.m3primary : Colours.palette.m3surfaceContainerHighest
+                    strokeColor: {
+                        if (root.disabled)
+                            return root.checked ? Colours.palette.m3outline : Colours.palette.m3surfaceContainer;
+                        return root.checked ? Colours.palette.m3primary : Colours.palette.m3surfaceContainerHighest;
+                    }
                     fillColor: "transparent"
                     capStyle: Tokens.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
 

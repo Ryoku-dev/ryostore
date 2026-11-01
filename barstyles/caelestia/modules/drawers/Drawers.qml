@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import "../../services"
+
 Variants {
     model: Screens.screens
 
@@ -14,7 +15,6 @@ Variants {
         Exclusions {
             screen: scope.modelData
             bar: content.bar
-            visibilities: content.visibilities
         }
 
         ContentWindow {

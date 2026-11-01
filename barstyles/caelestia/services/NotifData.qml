@@ -5,8 +5,10 @@ import Quickshell
 import Quickshell.Services.Notifications
 import "../port/core"
 import "../config"
+import "../port/i18n"
 import "."
 import "../utils"
+
 QtObject {
     id: notif
 
@@ -15,7 +17,20 @@ QtObject {
     property var locks: new Set()
 
     property date time: new Date()
-    property string timeStr: qsTr("now")
+    property int ageMins: 0
+    readonly property string timeStr: {
+        if (ageMins < 1)
+            return Tr.tr("now");
+
+        const h = Math.floor(ageMins / 60);
+        const d = Math.floor(h / 24);
+
+        if (d > 0)
+            return Tr.trCtx("%1d", "abbreviated notification age, days").arg(d);
+        if (h > 0)
+            return Tr.trCtx("%1h", "abbreviated notification age, hours").arg(h);
+        return Tr.trCtx("%1m", "abbreviated notification age, minutes").arg(ageMins);
+    }
 
     readonly property Timer timeStrTimer: Timer {
         running: !notif.closed
@@ -25,35 +40,34 @@ QtObject {
     }
 
     property Notification notification
-    property string id
+    property string notificationId
     property string summary
     property string body
     property string appIcon
-    // A Material Symbols name to fall back on when there is no icon theme entry to
-    // resolve through appIcon, as is the case for shell-raised notifications.
-    property string materialIcon
     property string appName
     property string image
-    // Body with markup stripped, for single-line previews (eliding raw markup cuts tags in half)
-    readonly property string bodyPlain: body.replace(/<[^>]*>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, "&").trim()
-    // Summary is always shown on a single line, so collapse any whitespace too
-    readonly property string summaryPlain: summary.replace(/<[^>]*>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim()
-    property var hints
+    property var hints // Hints are not persisted across restarts
     property real expireTimeout: GlobalConfig.notifs.defaultExpireTimeout
     property int urgency: NotificationUrgency.Normal
     property bool resident
     property bool hasActionIcons
-    // A notification the shell raised itself. Kept out of the on-disk history:
-    // its actions hold live callbacks that would not survive a restart.
-    property bool shellRaised
     property list<var> actions
 
-    readonly property bool hasFullscreen: Kwin.hasFullscreen()
+    readonly property bool hasFullscreen: {
+        const monitor = Hypr.focusedMonitor;
+        const specialName = monitor?.lastIpcObject.specialWorkspace?.name;
+        if (specialName) {
+            const specialWs = Hypr.workspaces.values.find(ws => ws.name === specialName);
+            return specialWs?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1) ?? false;
+        }
+        return monitor?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen > 1) ?? false;
+    }
 
     readonly property Timer timer: Timer {
         running: true
         interval: notif.expireTimeout > 0 ? notif.expireTimeout : notif.hasFullscreen ? GlobalConfig.notifs.fullscreenExpireTimeout : GlobalConfig.notifs.defaultExpireTimeout
         onTriggered: {
+            // Always expire if the active workspace has a fullscreen window
             if (GlobalConfig.notifs.expire || notif.hasFullscreen)
                 notif.popup = false;
         }
@@ -75,7 +89,7 @@ QtObject {
                     if (status !== Image.Ready || width != TokenConfig.sizes.notifs.image || height != TokenConfig.sizes.notifs.image)
                         return;
 
-                    const cacheKey = notif.appName + notif.summary + notif.id + notif.image;
+                    const cacheKey = notif.appName + notif.summary + notif.notificationId + notif.image;
                     let h1 = 0xdeadbeef, h2 = 0x41c6ce57, ch;
                     for (let i = 0; i < cacheKey.length; i++) {
                         ch = cacheKey.charCodeAt(i);
@@ -111,8 +125,7 @@ QtObject {
 
     readonly property Connections conn: Connections {
         function onClosed(): void {
-            if (!notif.closed)
-                notif.close();
+            notif.close();
         }
 
         function onSummaryChanged(): void {
@@ -153,9 +166,7 @@ QtObject {
         }
 
         function onActionsChanged(): void {
-            // qmllint disable unresolved-type
-            notif.actions = notif.notification.actions.map(a => ({
-                        // qmllint enable unresolved-type
+            notif.actions = (notif.notification.actions as Array).map(a => ({
                         identifier: a.identifier,
                         text: a.text,
                         invoke: () => a.invoke()
@@ -172,31 +183,24 @@ QtObject {
     function updateTimeStr(): void {
         const diff = Date.now() - time.getTime();
         const m = Math.floor(diff / 60000);
+        ageMins = m;
 
         if (m < 1) {
-            timeStr = qsTr("now");
             timeStrTimer.interval = 5000;
         } else {
             const h = Math.floor(m / 60);
             const d = Math.floor(h / 24);
 
-            if (d > 0) {
-                timeStr = `${d}d`;
+            if (d > 0)
                 timeStrTimer.interval = 3600000;
-            } else if (h > 0) {
-                timeStr = `${h}h`;
+            else if (h > 0)
                 timeStrTimer.interval = 300000;
-            } else {
-                timeStr = `${m}m`;
+            else
                 timeStrTimer.interval = m < 10 ? 30000 : 60000;
-            }
         }
     }
 
     function maybeTriggerDummyImageLoader(): void {
-        // Absolute image-path hints (e.g. Chromium) arrive as image://icon//abs/path, which renders as a missing icon
-        if (image.startsWith("image://icon//"))
-            image = "file://" + image.slice("image://icon/".length);
         if (image && !image.startsWith("image://icon/") && !image.startsWith(Paths.notifimagecache))
             dummyImageLoader.active = true;
     }
@@ -212,25 +216,19 @@ QtObject {
     }
 
     function close(): void {
-        if (closed && !notification)
-            return;
         closed = true;
-        if (locks.size > 0)
-            return;
-
-        if (Notifs.list.includes(this))
+        if (locks.size === 0 && Notifs.list.includes(this)) {
             Notifs.list = Notifs.list.filter(n => n !== this);
-        const notifObj = notification;
-        notification = null;
-        notifObj?.dismiss();
-        destroy();
+            notification?.dismiss();
+            destroy();
+        }
     }
 
     Component.onCompleted: {
         if (!notification)
             return;
 
-        id = notification.id;
+        notificationId = notification.id;
         summary = notification.summary;
         body = notification.body;
         appIcon = notification.appIcon;
@@ -242,9 +240,8 @@ QtObject {
         urgency = notification.urgency;
         resident = notification.resident;
         hasActionIcons = notification.hasActionIcons;
-        // qmllint disable unresolved-type
-        actions = notification.actions.map(a => ({
-                    // qmllint enable unresolved-type
+
+        actions = (notification.actions as Array).map(a => ({
                     identifier: a.identifier,
                     text: a.text,
                     invoke: () => a.invoke()

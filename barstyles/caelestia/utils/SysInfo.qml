@@ -4,8 +4,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import "../config"
-import "../services"
+import "../port/i18n"
 import "."
+
 Singleton {
     id: root
 
@@ -13,21 +14,21 @@ Singleton {
     property string osPrettyName
     property string osId
     property list<string> osIdLike
-    property string osLogo: Qt.resolvedUrl(`${Paths.caelestiaDir}/assets/logo.svg`)
+    property string osLogo: Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`)
     property bool isDefaultLogo: true
 
-    readonly property bool recolourCustomLogo: GlobalConfig.general.recolourCustomLogo
-    readonly property real customLogoSize: GlobalConfig.general.customLogoSize
-
     property string uptime
+    // Uptime trimmed to its two largest components
+    property string uptimeShort
     readonly property string user: Quickshell.env("USER")
     readonly property string wm: Quickshell.env("XDG_CURRENT_DESKTOP") || Quickshell.env("XDG_SESSION_DESKTOP")
-    readonly property string shell: Quickshell.env("SHELL").split("/").pop()
+    readonly property string shell: (Quickshell.env("SHELL") || "").split("/").pop()
 
     property string kernel
     property string hostname
     property string firmware
 
+    // DMI vendor/model, combined into a single human-readable device name
     property string boardVendor
     property string boardName
     readonly property string device: {
@@ -61,7 +62,7 @@ Singleton {
 
             const logo = Quickshell.iconPath(fd("LOGO"), true);
             if (GlobalConfig.general.logo === "caelestia") {
-                root.osLogo = Qt.resolvedUrl(`${Paths.caelestiaDir}/assets/logo.svg`);
+                root.osLogo = Qt.resolvedUrl(`${Quickshell.shellDir}/assets/logo.svg`);
                 root.isDefaultLogo = true;
             } else if (GlobalConfig.general.logo) {
                 root.osLogo = Quickshell.iconPath(GlobalConfig.general.logo, true) || "file://" + Paths.absolutePath(GlobalConfig.general.logo);
@@ -122,7 +123,24 @@ Singleton {
         path: "/proc/uptime"
         onLoaded: {
             const up = parseInt(text().split(" ")[0] ?? 0);
-            root.uptime = Units.formatUptime(up);
+
+            const days = Math.floor(up / 86400);
+            const hours = Math.floor((up % 86400) / 3600);
+            const minutes = Math.floor((up % 3600) / 60);
+
+            // TRANSLATORS: joins uptime components, e.g. "2 days, 3 hours"
+            const sep = Tr.trCtx(", ", "uptime component separator");
+
+            const parts = [];
+            if (days > 0)
+                parts.push(Tr.trN("%n day", "%n days", days));
+            if (hours > 0)
+                parts.push(Tr.trN("%n hour", "%n hours", hours));
+            if (minutes > 0 || parts.length === 0)
+                parts.push(Tr.trN("%n minute", "%n minutes", minutes));
+
+            root.uptime = parts.join(sep);
+            root.uptimeShort = parts.slice(0, 2).join(sep);
         }
     }
 }

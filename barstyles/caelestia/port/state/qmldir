@@ -1,0 +1,2 @@
+singleton PersistentState 1.0 PersistentState.qml
+singleton RuntimeState 1.0 RuntimeState.qml

@@ -2,18 +2,16 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import "../../../config"
+import "../../../port/i18n"
 import "../../../port/services"
 import "../../../components"
 import "../../../components/controls"
 import "../../../services"
+import "../../../utils"
+
 StyledRect {
     id: root
 
-    property var monitor: null
-    property real diskReadBytesPerSec: monitor?.diskReadBytesPerSec ?? 0
-    property real diskWriteBytesPerSec: monitor?.diskWriteBytesPerSec ?? 0
-    property real storageTemp: monitor?.storageTemp ?? 0
-    property bool storageTempAvailable: monitor?.storageTempAvailable ?? false
     readonly property color accent: Colours.palette.m3secondary
     readonly property real percentage: Storage.primaryDisk?.perc ?? 0
 
@@ -68,14 +66,14 @@ StyledRect {
 
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
-                        text: Math.round(root.percentage * 100) + "%"
+                        text: Strings.percentOne(root.percentage)
                         font: Tokens.font.title.builders.large.width(90).build()
                         color: root.accent
                     }
 
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
-                        text: qsTr("Used")
+                        text: Tr.trCtx("Used", "storage used")
                         font: Tokens.font.body.small
                         color: Colours.palette.m3onSurfaceVariant
                     }
@@ -87,45 +85,14 @@ StyledRect {
                 spacing: Tokens.spacing.extraSmall
 
                 StyledText {
-                    text: qsTr("Storage")
+                    text: Tr.tr("Storage")
                     font: Tokens.font.title.medium
                 }
 
                 StyledText {
-                    text: {
-                        if (!Storage.primaryDisk)
-                            return qsTr("No disks detected");
-
-                        const fmt = Units.formatKibUsage(Storage.primaryDisk.used, Storage.primaryDisk.total);
-                        return fmt;
-                    }
+                    text: Storage.primaryDisk ? Units.formatKibUsage(Storage.primaryDisk.used, Storage.primaryDisk.total) : Tr.tr("No disks detected")
                     font: Tokens.font.body.large
                     color: root.accent
-                }
-
-                StyledText {
-                    visible: Storage.primaryDisk !== null
-                    text: `↓ ${Units.formatBytes(root.diskReadBytesPerSec, true)}  ↑ ${Units.formatBytes(root.diskWriteBytesPerSec, true)}`
-                    font: Tokens.font.body.small
-                    color: Colours.palette.m3onSurfaceVariant
-                }
-
-                RowLayout {
-                    visible: root.storageTempAvailable && root.storageTemp > 0
-                    spacing: Tokens.spacing.extraSmall
-
-                    MaterialIcon {
-                        text: root.storageTemp > 70 ? "thermometer_alert" : "thermometer"
-                        color: root.storageTemp > 70 ? Colours.palette.m3error : Colours.palette.m3onSurfaceVariant
-                        fontStyle: Tokens.font.icon.small
-                        fill: 1
-                    }
-
-                    StyledText {
-                        text: Units.formatSensorTemp(root.storageTemp)
-                        font: Tokens.font.body.small
-                        color: Colours.palette.m3onSurfaceVariant
-                    }
                 }
             }
         }
@@ -136,7 +103,7 @@ StyledRect {
             type: SplitButton.Tonal
             disabled: !Storage.disks.length
             fallbackIcon: "storage"
-            fallbackText: qsTr("No disks")
+            fallbackText: Tr.tr("No disks")
             menuOnTop: true
             minLeftWidth: row.implicitWidth * 0.6
 

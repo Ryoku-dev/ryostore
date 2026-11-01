@@ -11,6 +11,7 @@ import "../../components/controls"
 import "../../components/effects"
 import "../../services"
 import "../../utils"
+
 StyledRect {
     id: root
 
@@ -114,7 +115,7 @@ StyledRect {
                 height: TokenConfig.sizes.notifs.image
                 visible: root.hasImage || root.hasAppIcon
 
-                sourceComponent: StyledClippingRect {
+                sourceComponent: ClipRect {
                     radius: Tokens.rounding.full
                     color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3error : root.modelData.urgency === NotificationUrgency.Low ? Colours.layer(Colours.palette.m3surfaceContainerHighest, 2) : Colours.palette.m3secondaryContainer
                     implicitWidth: TokenConfig.sizes.notifs.image
@@ -174,10 +175,10 @@ StyledRect {
                         asynchronous: true
                         active: !root.hasAppIcon
                         anchors.centerIn: parent
-                        anchors.verticalCenterOffset: Centering.pixelAlign(parent.height, height)
+                        anchors.verticalCenterOffset: 1
 
                         sourceComponent: MaterialIcon {
-                            text: root.modelData.materialIcon || Icons.getNotifIcon(root.modelData.summary, root.modelData.urgency)
+                            text: Icons.getNotifIcon(root.modelData.summary, root.modelData.urgency)
                             color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.palette.m3onError : root.modelData.urgency === NotificationUrgency.Low ? Colours.palette.m3onSurface : Colours.palette.m3onSecondaryContainer
                             fontStyle: Tokens.font.icon.medium
                         }
@@ -300,7 +301,7 @@ StyledRect {
             TextMetrics {
                 id: summaryMetrics
 
-                text: root.modelData.summaryPlain
+                text: root.modelData.summary
                 font: summary.font
                 elide: Text.ElideRight
                 elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - Tokens.spacing.small * 3
@@ -390,6 +391,7 @@ StyledRect {
                 anchors.rightMargin: Tokens.spacing.small
 
                 animate: true
+                textFormat: root.bodyTextFormat
                 text: bodyPreviewMetrics.elidedText
                 color: Colours.palette.m3onSurfaceVariant
                 font: Tokens.font.body.small
@@ -406,7 +408,7 @@ StyledRect {
             TextMetrics {
                 id: bodyPreviewMetrics
 
-                text: root.modelData.bodyPlain
+                text: root.modelData.body
                 font: bodyPreview.font
                 elide: Text.ElideRight
                 elideWidth: bodyPreview.width

@@ -1,8 +1,9 @@
 import QtQuick.Layouts
 import "../../config"
+import "../../port/i18n"
 import ".."
 import "../../services"
-import "../../utils"
+
 StyledRect {
     id: root
 
@@ -22,7 +23,7 @@ StyledRect {
         spacing: Tokens.spacing.small
 
         StyledText {
-            text: qsTr("Filter:")
+            text: Tr.trCtx("Filter:", "file filter")
         }
 
         StyledRect {
@@ -37,7 +38,11 @@ StyledRect {
                 anchors.fill: parent
                 anchors.margins: Tokens.padding.medium
 
-                text: root.dialog.selectFolder ? qsTr("Folders") : `${root.dialog.filterLabel} (${root.dialog.filters.map(f => `*.${f}`).join(", ")})`
+                text: {
+                    const filters = root.dialog.filters.map(f => `*.${f}`).join(Tr.trCtx(", ", "file filter separator"));
+                    // TRANSLATORS: %1 = filter label, %2 = file patterns
+                    return Tr.trCtx("%1 (%2)", "file filter label and patterns").arg(root.dialog.filterLabel).arg(filters);
+                }
             }
         }
 
@@ -45,25 +50,12 @@ StyledRect {
             color: Colours.tPalette.m3surfaceContainerHigh
             radius: Tokens.rounding.medium
 
-            implicitWidth: selectText.implicitWidth + Tokens.padding.medium * 2
-            implicitHeight: selectText.implicitHeight + Tokens.padding.medium * 2
+            implicitWidth: cancelText.implicitWidth + Tokens.padding.medium * 2
+            implicitHeight: cancelText.implicitHeight + Tokens.padding.medium * 2
 
             StateLayer {
                 disabled: !root.dialog.selectionValid
-                onClicked: {
-                    if (root.dialog.selectFolder) {
-                        if (root.folder.currentItem?.modelData?.isDir) {
-                            root.dialog.accepted(root.folder.currentItem.modelData.path);
-                        } else {
-                            const currentPath = root.dialog.cwd[0] === "Home"
-                                ? (Paths.home + (root.dialog.cwd.length > 1 ? `/${root.dialog.cwd.slice(1).join("/")}` : ""))
-                                : root.dialog.cwd.join("/");
-                            root.dialog.accepted(currentPath);
-                        }
-                    } else if (root.folder.currentItem?.modelData) {
-                        root.dialog.accepted(root.folder.currentItem.modelData.path);
-                    }
-                }
+                onClicked: root.dialog.accepted(root.folder.currentItem.modelData.path)
             }
 
             StyledText {
@@ -72,7 +64,7 @@ StyledRect {
                 anchors.centerIn: parent
                 anchors.margins: Tokens.padding.medium
 
-                text: root.dialog.selectFolder ? qsTr("Select Folder") : qsTr("Select")
+                text: Tr.trCtx("Select", "button")
                 color: root.dialog.selectionValid ? Colours.palette.m3onSurface : Colours.palette.m3outline
             }
         }
@@ -96,7 +88,7 @@ StyledRect {
                 anchors.centerIn: parent
                 anchors.margins: Tokens.padding.medium
 
-                text: qsTr("Cancel")
+                text: Tr.trCtx("Cancel", "button")
             }
         }
     }

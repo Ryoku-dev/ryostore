@@ -5,18 +5,20 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import "../../config"
+import "../../port/i18n"
 import "../../components"
 import "../../components/containers"
 import "../../components/controls"
 import "../../components/effects"
 import "../../services"
 import "../../utils"
+
 Item {
     id: root
 
     required property Props props
-    required property DrawerVisibilities visibilities
-    readonly property int notifCount: Notifs.openCount
+    required property ScreenState screenState
+    readonly property int notifCount: Notifs.list.reduce((acc, n) => n.closed ? acc : acc + 1, 0)
 
     anchors.fill: parent
     anchors.margins: Tokens.padding.medium
@@ -64,32 +66,61 @@ Item {
             anchors.right: parent.right
             anchors.leftMargin: Tokens.spacing.extraSmall
 
-            text: root.notifCount > 0 ? qsTr("notification%1").arg(root.notifCount === 1 ? "" : "s") : qsTr("Notifications")
+            // TRANSLATORS: the count itself is rendered separately, immediately to the left
+            text: root.notifCount > 0 ? Tr.trCtxN("notification", "notifications", root.notifCount, "notification count label, number shown separately") : Tr.tr("Notifications")
             color: Colours.palette.m3outline
             font: Tokens.font.label.large
             elide: Text.ElideRight
         }
     }
 
-    ClippingRectangle {
+    ClipRect {
         id: clipRect
 
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: title.bottom
-        anchors.bottom: clearLoader.opacity > 0 ? clearLoader.top : parent.bottom
-        anchors.bottomMargin: Tokens.padding.medium
+        anchors.bottom: parent.bottom
         anchors.topMargin: Tokens.spacing.medium
 
         radius: Tokens.rounding.medium
         color: "transparent"
 
-        MaterialIcon {
+        Loader {
+            asynchronous: true
             anchors.centerIn: parent
-            visible: root.notifCount === 0
-            text: "notifications_off"
-            color: Colours.palette.m3outline
-            fontStyle: Tokens.font.icon.extraLarge
+            active: opacity > 0
+            opacity: root.notifCount > 0 ? 0 : 1
+
+            sourceComponent: ColumnLayout {
+                spacing: Tokens.spacing.extraLarge
+
+                Image {
+                    asynchronous: true
+                    source: Paths.absolutePath(Config.paths.noNotifsPic)
+                    fillMode: Image.PreserveAspectFit
+                    sourceSize.width: clipRect.width * 0.8 * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
+
+                    layer.enabled: true
+                    layer.effect: Colouriser {
+                        colorizationColor: Colours.palette.m3outlineVariant
+                        brightness: 1
+                    }
+                }
+
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: Tr.tr("All up to date!")
+                    color: Colours.palette.m3outlineVariant
+                    font: Tokens.font.headline.builders.small.width(90).build()
+                }
+            }
+
+            Behavior on opacity {
+                Anim {
+                    type: Anim.StandardExtraLarge
+                }
+            }
         }
 
         StyledFlickable {
@@ -100,7 +131,6 @@ Item {
             flickableDirection: Flickable.VerticalFlick
             contentWidth: width
             contentHeight: notifList.implicitHeight
-            opacity: root.notifCount > 0 ? 1 : 0
 
             StyledScrollBar.vertical: StyledScrollBar {
                 flickable: view
@@ -110,16 +140,39 @@ Item {
                 id: notifList
 
                 props: root.props
-                visibilities: root.visibilities
+                screenState: root.screenState
                 container: view
             }
         }
     }
 
+    Timer {
+        id: clearTimer
+
+        repeat: true
+        triggeredOnStart: true
+        interval: Math.max(15, Math.min(80, 69.8 - 12.3 * Math.log(Notifs.notClosed.length)))
+        onTriggered: {
+            const first = Notifs.notClosed[0];
+            if (!first) {
+                stop();
+                return;
+            }
+
+            const appName = first.appName;
+            let cleared = 0;
+            for (const n of Notifs.notClosed.filter(n => n.appName === appName)) {
+                n.close();
+                cleared++;
+                if (cleared > 30) {
+                    interval = 5;
+                    return;
+                }
+            }
+        }
+    }
 
     Loader {
-        id: clearLoader
-
         asynchronous: true
         anchors.right: parent.right
         anchors.bottom: parent.bottom
@@ -134,7 +187,7 @@ Item {
 
             icon: "clear_all"
             font: Tokens.font.icon.large
-            onClicked: Notifs.clear()
+            onClicked: clearTimer.start()
 
             Elevation {
                 anchors.fill: parent

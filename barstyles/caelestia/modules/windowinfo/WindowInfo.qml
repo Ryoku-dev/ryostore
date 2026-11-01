@@ -4,66 +4,61 @@ import Quickshell
 import "../../config"
 import "../../components"
 import "../../services"
-StyledRect {
+
+Item {
     id: root
 
-    property string clientAddress: ""
-    property var client: {
-        if (Kwin.windowList.length > 0) {
-            if (clientAddress !== "") {
-                for (let i = 0; i < Kwin.windowList.length; ++i) {
-                    if (Kwin.windowList[i].address === clientAddress) {
-                        return Kwin.windowList[i];
-                    }
-                }
-            } else {
-                for (let i = 0; i < Kwin.windowList.length; ++i) {
-                    if (Kwin.activeWindow && Kwin.windowList[i].address === Kwin.activeWindow.address) {
-                        return Kwin.windowList[i];
-                    }
-                }
-            }
-        }
-        return null;
-    }
+    required property ShellScreen screen
+    required property var client
 
-    signal closeRequested()
-
-    color: Colours.palette.m3surfaceContainer
-    radius: Tokens.rounding.large
-    clip: true
-    implicitWidth: 1100
-    implicitHeight: 650
+    implicitWidth: child.implicitWidth
+    implicitHeight: screen.height * Tokens.sizes.winfo.heightMult
 
     RowLayout {
         id: child
 
         anchors.fill: parent
         anchors.margins: Tokens.padding.large
+
         spacing: Tokens.spacing.medium
 
         Preview {
+            screen: root.screen
             client: root.client
-            Layout.fillWidth: true
-            Layout.fillHeight: true
         }
+
         ColumnLayout {
             spacing: Tokens.spacing.medium
 
-            Details {
-                client: root.client
+            Layout.preferredWidth: Tokens.sizes.winfo.detailsWidth
+            Layout.fillHeight: true
+
+            StyledRect {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-            }
-            Buttons {
-                id: buttons
 
-                client: root.client
-                onCloseRequested: root.closeRequested()
-                Layout.fillWidth: true
+                color: Colours.tPalette.m3surfaceContainer
+                radius: Tokens.rounding.large
+                clip: true
+
+                Details {
+                    client: root.client
+                }
             }
-            Layout.preferredWidth: 420
-            Layout.fillHeight: true
+
+            StyledRect {
+                Layout.fillWidth: true
+                Layout.preferredHeight: buttons.implicitHeight
+
+                color: Colours.tPalette.m3surfaceContainer
+                radius: Tokens.rounding.large
+
+                Buttons {
+                    id: buttons
+
+                    client: root.client
+                }
+            }
         }
     }
 }

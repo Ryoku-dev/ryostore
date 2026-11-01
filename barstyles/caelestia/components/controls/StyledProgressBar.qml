@@ -7,6 +7,7 @@ import "../../port/components"
 import "../../config"
 import ".."
 import "../../services"
+
 ProgressBar {
     id: root
 
@@ -31,6 +32,7 @@ ProgressBar {
         startFrac = CUtils.clamp(startFrac, 0, 1);
         endFrac = CUtils.clamp(endFrac, 0, 1);
 
+        // Ramp down gap size
         const GAP_RAMP_DOWN_THRESHOLD = 0.01;
         gapSize += height / 2;
         const startGapSize = (gapSize * CUtils.clamp(startFrac, 0, GAP_RAMP_DOWN_THRESHOLD) / GAP_RAMP_DOWN_THRESHOLD);
@@ -114,8 +116,6 @@ ProgressBar {
                 color: root.fgColour
 
                 Behavior on implicitSize {
-                    enabled: root.visible
-
                     Anim {
                         type: Anim.FastSpatial
                     }
@@ -129,8 +129,6 @@ ProgressBar {
                 Component.onCompleted: implicitWidth = Qt.binding(() => parent.width * root.visualPosition)
 
                 Behavior on implicitWidth {
-                    enabled: root.visible
-
                     Anim {}
                 }
             }
@@ -145,25 +143,25 @@ ProgressBar {
 
             Line {
                 bounds: {
-                    const i = manager.activeIndicators[0]; // qmllint disable unresolved-type
+                    const i = manager.activeIndicators[0];
                     return i ? root.toBounds(0, i.startFraction, i.gapSize / 2) : Qt.point(0, 0);
                 }
             }
 
             Line {
                 bounds: {
-                    const i = manager.activeIndicators[manager.activeIndicators.length - 1]; // qmllint disable unresolved-type
+                    const i = manager.activeIndicators[manager.activeIndicators.length - 1];
                     return i ? root.toBounds(i.endFraction, 1, i.gapSize / 2) : Qt.point(0, 0);
                 }
             }
 
             Instantiator {
-                model: Math.max(manager.activeIndicators.length, 1) - 1 // qmllint disable unresolved-type
+                model: Math.max(manager.activeIndicators.length, 1) - 1
 
                 delegate: Line {
                     required property int index
-                    readonly property LinearIndicatorSegment cur: manager.activeIndicators[index] // qmllint disable unresolved-type
-                    readonly property LinearIndicatorSegment next: manager.activeIndicators[index + 1 % manager.activeIndicators.length] // qmllint disable unresolved-type
+                    readonly property LinearIndicatorSegment cur: manager.activeIndicators[index]
+                    readonly property LinearIndicatorSegment next: manager.activeIndicators[index + 1 % manager.activeIndicators.length]
 
                     bounds: root.toBounds(cur.endFraction, next.startFraction, cur.gapSize / 2)
                 }
@@ -177,7 +175,7 @@ ProgressBar {
             }
 
             Instantiator {
-                model: manager.activeIndicators // qmllint disable unresolved-type
+                model: manager.activeIndicators
 
                 delegate: Wave {
                     required property LinearIndicatorSegment modelData
@@ -227,7 +225,7 @@ ProgressBar {
 
         Anim on waveProgress {
             running: true
-            paused: wave.amplitudeMultiplier === 0 || root.wavePaused || !root.visible
+            paused: wave.amplitudeMultiplier === 0 || root.wavePaused
             from: 0
             to: 1
             duration: root.waveDuration

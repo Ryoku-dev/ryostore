@@ -5,21 +5,20 @@ import Quickshell
 import "../../config"
 import "../../components"
 import "../../services"
+
 Item {
     id: root
 
     required property ShellScreen screen
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
     required property bool sidebarOrSessionVisible
+
     property bool hovered
     readonly property Brightness.Monitor monitor: Brightness.getMonitorForScreen(root.screen)
-    readonly property bool shouldBeActive: visibilities.osd && Config.osd.enabled && !(visibilities.utilities && Config.utilities.enabled)
-    // what the Controls page leaves of its Levels: no slider, and no pop-up for it
-    readonly property bool volumeOn: HostState.section("levels") && HostState.element("volume")
-    readonly property bool brightnessOn: HostState.section("levels") && HostState.element("brightness")
-    readonly property bool micOn: HostState.element("micMute")
+    readonly property bool shouldBeActive: screenState.osd && Config.osd.enabled && !(screenState.utilities && Config.utilities.enabled)
     property real offsetScale: shouldBeActive ? 0 : 1
     property real sidebarOffset: sidebarOrSessionVisible ? 12 : 0
+
     property real volume
     property bool muted
     property real sourceVolume
@@ -27,12 +26,8 @@ Item {
     property real brightness
 
     function show(): void {
-        visibilities.osd = true;
+        screenState.osd = true;
         timer.restart();
-    }
-
-    function refreshBrightness(): void {
-        root.brightness = root.monitor?.effectiveBrightness ?? 0;
     }
 
     Component.onCompleted: {
@@ -40,11 +35,11 @@ Item {
         muted = Audio.muted;
         sourceVolume = Audio.sourceVolume;
         sourceMuted = Audio.sourceMuted;
-        refreshBrightness();
+        brightness = root.monitor?.brightness ?? 0;
     }
+
     visible: offsetScale < 1
-    anchors.leftMargin: Config.bar.position === "right" ? (-implicitWidth - 5 - sidebarOffset) * offsetScale : 0
-    anchors.rightMargin: Config.bar.position !== "right" ? (-implicitWidth - 5 - sidebarOffset) * offsetScale : 0
+    anchors.rightMargin: (-implicitWidth - 5 - sidebarOffset) * offsetScale
     implicitWidth: content.implicitWidth
     implicitHeight: content.implicitHeight
     opacity: 1 - offsetScale
@@ -52,62 +47,62 @@ Item {
     Behavior on offsetScale {
         Anim {}
     }
+
     Connections {
         function onMutedChanged(): void {
-            if (root.volumeOn)
-                root.show();
+            root.show();
             root.muted = Audio.muted;
         }
+
         function onVolumeChanged(): void {
-            if (root.volumeOn)
-                root.show();
+            root.show();
             root.volume = Audio.volume;
         }
+
         function onSourceMutedChanged(): void {
-            if (root.micOn)
-                root.show();
+            root.show();
             root.sourceMuted = Audio.sourceMuted;
         }
+
         function onSourceVolumeChanged(): void {
-            if (root.micOn)
-                root.show();
+            root.show();
             root.sourceVolume = Audio.sourceVolume;
         }
 
         target: Audio
     }
+
     Connections {
         function onBrightnessChanged(): void {
-            if (root.brightnessOn)
-                root.show();
-            root.refreshBrightness();
-        }
-
-        function onDimmingChanged(): void {
-            root.refreshBrightness();
+            root.show();
+            root.brightness = root.monitor?.brightness ?? 0;
         }
 
         target: root.monitor
     }
+
     Timer {
         id: timer
 
         interval: Config.osd.hideDelay
         onTriggered: {
             if (!root.hovered)
-                root.visibilities.osd = false;
+                root.screenState.osd = false;
         }
     }
+
     Loader {
         id: content
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
+
         asynchronous: true
         active: root.shouldBeActive || root.visible
+
         sourceComponent: Content {
             monitor: root.monitor
-            visibilities: root.visibilities
+            screenState: root.screenState
             volume: root.volume
             muted: root.muted
             sourceVolume: root.sourceVolume

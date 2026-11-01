@@ -4,7 +4,7 @@ import QtQuick.Templates
 import "../../config"
 import ".."
 import "../../services"
-import "../../utils"
+
 Slider {
     id: root
 
@@ -68,7 +68,7 @@ Slider {
                 property bool moving
 
                 anchors.centerIn: parent
-                anchors.verticalCenterOffset: Centering.pixelAlign(parent.height, height)
+                anchors.verticalCenterOffset: 1
                 text: moving ? Math.round(root.value * 100) : root.icon
                 color: Colours.palette.m3inverseOnSurface
                 font: moving ? Tokens.font.body.small : Tokens.font.icon.medium

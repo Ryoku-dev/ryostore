@@ -3,6 +3,7 @@ import QtQuick.Templates
 import "../../config"
 import ".."
 import "../../services"
+
 TextField {
     id: root
 
@@ -10,7 +11,7 @@ TextField {
     implicitHeight: contentHeight + topPadding + bottomPadding
 
     color: Colours.palette.m3onSurface
-    placeholderTextColor: Colours.palette.m3onSurfaceVariant
+    placeholderTextColor: Colours.palette.m3onSurfaceVariant // No anim cause placeholder is custom
     selectionColor: Qt.alpha(Colours.palette.m3primary, 0.4)
     selectedTextColor: color
 
@@ -76,7 +77,7 @@ TextField {
 
         Behavior on x {
             Anim {
-                easing.bezierCurve: [0.2, 1, 0.21, 1, 1, 1]
+                easing.bezierCurve: [0.2, 1, 0.21, 1, 1, 1] // Damped variant of fast spatial curve
                 duration: Tokens.anim.durations.expressiveFastEffects
             }
         }

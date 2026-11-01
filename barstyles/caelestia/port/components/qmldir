@@ -4,5 +4,7 @@ CircularIndicatorManager 1.0 CircularIndicatorManager.qml
 LazyListView 1.0 LazyListView.qml
 LinearIndicatorManager 1.0 LinearIndicatorManager.qml
 LinearIndicatorSegment 1.0 LinearIndicatorSegment.qml
+RoundedMask 1.0 RoundedMask.qml
 SparklineItem 1.0 SparklineItem.qml
+VisualiserBars 1.0 VisualiserBars.qml
 WavyLine 1.0 WavyLine.qml

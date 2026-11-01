@@ -1,19 +1,17 @@
 pragma ComponentBehavior: Bound
 
-import "../../services"
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Widgets
 import "../../port/core"
 import "../../config"
+import "../../port/i18n"
 import "../../components"
 import "../../components/filedialog"
-import "../../utils"
+
 Item {
     id: root
 
-    required property DrawerVisibilities visibilities
     required property ScreenState screenState
     required property FileDialog facePicker
 
@@ -22,44 +20,26 @@ Item {
             {
                 component: dashComponent,
                 iconName: "dashboard",
-                text: qsTr("Dashboard"),
+                text: Tr.tr("Dashboard"),
                 enabled: Config.dashboard.showDashboard
             },
             {
                 component: mediaComponent,
                 iconName: "queue_music",
-                text: qsTr("Media"),
+                text: Tr.tr("Media"),
                 enabled: Config.dashboard.showMedia
             },
             {
                 component: performanceComponent,
                 iconName: "speed",
-                text: qsTr("Performance"),
-                enabled: Config.dashboard.showPerformance && HostState.section("vitals")
-            },
-            {
-                component: extensionsComponent,
-                iconName: "extension",
-                text: qsTr("Extensions"),
-                enabled: HostState.extensionCount > 0 && HostState.section("bottomControls") && HostState.element("pluginCards")
+                text: Tr.tr("Performance"),
+                enabled: Config.dashboard.showPerformance
             },
             {
                 component: weatherComponent,
                 iconName: "cloud",
-                text: qsTr("Weather"),
-                enabled: Config.dashboard.showWeather && !Paths.hosted
-            },
-            {
-                component: notesComponent,
-                iconName: "sticky_note_2",
-                text: qsTr("Notes"),
-                enabled: Config.dashboard.showNotes
-            },
-            {
-                component: terminalComponent,
-                iconName: "terminal",
-                text: qsTr("Terminal"),
-                enabled: Config.dashboard.showTerminal
+                text: Tr.tr("Weather"),
+                enabled: Config.dashboard.showWeather
             }
         ];
         return allTabs.filter(tab => tab.enabled);
@@ -68,24 +48,8 @@ Item {
     readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
     readonly property real nonAnimHeight: tabs.implicitHeight + tabs.anchors.topMargin + view.implicitHeight + viewWrapper.anchors.margins * 2
 
-    onDashboardTabsChanged: {
-        if (dashboardTabs.length > 0 && screenState.dashboardTab >= dashboardTabs.length) {
-            screenState.dashboardTab = dashboardTabs.length - 1;
-        }
-    }
-
     implicitWidth: nonAnimWidth
     implicitHeight: nonAnimHeight
-
-    Connections {
-        function onOpenExtensions(): void {
-            const i = root.dashboardTabs.findIndex(tab => tab.iconName === "extension");
-            if (i >= 0)
-                root.screenState.dashboardTab = i;
-        }
-
-        target: HostState
-    }
 
     Tabs {
         id: tabs
@@ -101,7 +65,7 @@ Item {
         tabs: root.dashboardTabs
     }
 
-    ClippingRectangle {
+    ClipRect {
         id: viewWrapper
 
         anchors.top: tabs.bottom
@@ -118,7 +82,7 @@ Item {
 
             readonly property int currentIndex: root.screenState.dashboardTab
             readonly property Item currentItem: {
-                repeater.count;
+                CUtils.dependency(repeater.count); // Trigger update on count change
                 return repeater.itemAt(currentIndex);
             }
 
@@ -159,6 +123,8 @@ Item {
 
             RowLayout {
                 id: row
+                width: implicitWidth
+                height: implicitHeight
 
                 Repeater {
                     id: repeater
@@ -172,31 +138,12 @@ Item {
 
                         required property int index
                         required property var modelData
-                        property bool visited: false
+                        active: index === view.currentIndex
 
                         Layout.alignment: Qt.AlignTop
 
                         sourceComponent: modelData.component
 
-                        // Preload neighbours for swiping without depending on
-                        // geometry that changes when the Loader becomes active.
-                        active: root.visibilities.dashboard
-                            && (visited || Math.abs(index - view.currentIndex) <= 1)
-
-                        // Keep a loaded tab until close without reading our own
-                        // active binding. Defer the latch until loading settles.
-                        function rememberLoaded(): void {
-                            if (active) visited = true;
-                        }
-                        onLoaded: Qt.callLater(rememberLoaded)
-
-                        Connections {
-                            target: root.visibilities
-                            function onDashboardChanged(): void {
-                                if (!root.visibilities.dashboard)
-                                    paneLoader.visited = false;
-                            }
-                        }
                     }
                 }
             }
@@ -205,7 +152,6 @@ Item {
                 id: dashComponent
 
                 Dash {
-                    visibilities: root.visibilities
                     screenState: root.screenState
                     facePicker: root.facePicker
                 }
@@ -215,7 +161,7 @@ Item {
                 id: mediaComponent
 
                 Media {
-                    visibilities: root.visibilities
+                    screenState: root.screenState
                 }
             }
 
@@ -226,47 +172,9 @@ Item {
             }
 
             Component {
-                id: extensionsComponent
-
-                Item {
-                    implicitWidth: Tokens.sizes.dashboard.mediaWidth * 3
-                    implicitHeight: 380
-
-                    Loader {
-                        id: extensions
-
-                        anchors.fill: parent
-                        sourceComponent: HostState.extensions
-                    }
-
-                    Connections {
-                        function onRequestClose(): void {
-                            root.visibilities.dashboard = false;
-                        }
-
-                        target: extensions.item
-                    }
-                }
-            }
-
-            Component {
                 id: weatherComponent
 
                 WeatherTab {}
-            }
-
-            Component {
-                id: notesComponent
-
-                NotesTab {
-                    dashboardOpen: root.visibilities.dashboard
-                }
-            }
-            
-            Component {
-                id: terminalComponent
-
-                TerminalTab {}
             }
 
             Behavior on contentX {

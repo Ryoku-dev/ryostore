@@ -7,6 +7,7 @@ import "../../port/components"
 import "../../config"
 import ".."
 import "../../services"
+
 Slider {
     id: root
 
@@ -25,9 +26,8 @@ Slider {
     property real filledWidth
 
     signal interaction(v: real)
-    signal released(v: real)
 
-    Component.onCompleted: filledWidth = Qt.binding(() => root.wavy ? (width - handle.implicitWidth - handle.anchors.leftMargin) * pos : Math.max(height, width * pos))
+    Component.onCompleted: filledWidth = Qt.binding(() => (width - handle.implicitWidth - handle.anchors.leftMargin) * pos)
 
     implicitWidth: 200
     implicitHeight: 12
@@ -35,32 +35,8 @@ Slider {
     contentItem: Item {
         anchors.fill: parent
 
-        // A pill track filled from the left, with no handle (as Control Center sliders);
-        // the wavy seek bar keeps Caelestia's handle below.
-        Item {
-            anchors.fill: parent
-            visible: !root.wavy
-
-            StyledRect {
-                anchors.fill: parent
-                radius: height / 2
-                color: root.bgColour
-            }
-
-            StyledRect {
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: root.filledWidth
-                radius: height / 2
-                color: root.fgColour
-            }
-        }
-
         StyledRect {
             id: remaining
-
-            visible: root.wavy
 
             anchors.left: handle.right
             anchors.right: parent.right
@@ -77,7 +53,6 @@ Slider {
         }
 
         StyledRect {
-            visible: root.wavy
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.rightMargin: 4 * remaining.opacity
@@ -93,7 +68,6 @@ Slider {
         StyledRect {
             id: handle
 
-            visible: root.wavy
             anchors.left: filled.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: Tokens.spacing.extraSmall
@@ -118,7 +92,6 @@ Slider {
         Loader {
             id: filled
 
-            active: root.wavy
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             asynchronous: true
@@ -189,16 +162,14 @@ Slider {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        cursorShape: Qt.PointingHandCursor
+
         preventStealing: true
-        implicitHeight: root.wavy ? handle.implicitHeight : Math.max(root.height, 20)
+        implicitHeight: handle.implicitHeight
 
         onPressed: e => {
             widthBehavior.enabled = false;
             pressStartX = e.x;
-            pressStartPos = CUtils.clamp(e.x / width, 0, 1);
-            if (root.interactionOnMove)
-                root.interaction(pressStartPos);
+            pressStartPos = root.visualPosition;
         }
         onPositionChanged: e => {
             dragMovement = (e.x - pressStartX) / width;
@@ -206,8 +177,9 @@ Slider {
                 root.interaction(posBinding.value);
         }
         onReleased: e => {
-            root.interaction(posBinding.value);
-            root.released(posBinding.value);
+            const clickPos = e.x / width;
+            const finalPos = mouse.dragMovement !== 0 ? posBinding.value : CUtils.clamp(clickPos, 0, 1);
+            root.interaction(finalPos);
             widthBehavior.enabled = true;
             dragMovement = 0;
         }

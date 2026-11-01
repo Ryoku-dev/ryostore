@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import ".."
+
 Image {
     id: root
 

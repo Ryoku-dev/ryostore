@@ -6,6 +6,7 @@ import "../../port/components"
 import "../../config"
 import ".."
 import "../../services"
+
 Item {
     id: root
 
@@ -27,11 +28,11 @@ Item {
 
     readonly property real size: Math.min(width, height)
     readonly property real arcRadius: (size - padding - strokeWidth * (1 + waveAmplitude * 2)) / 2
-    property real clampedVal: Math.max(1 / 360, Math.min(1, isNaN(value) ? 0 : value))
+    property real clampedVal: Math.max(1 / 360, Math.min(1, isNaN(value) ? 0 : value)) // Not readonly for animations
     readonly property real gapAngle: ((spacing + strokeWidth) / (arcRadius || 1)) * (180 / Math.PI)
     readonly property real dotAngleRad: (startAngle + sweepAngle - gapAngle * (sweepAngle < 360 ? 0 : 1)) * Math.PI / 180
 
-    readonly property real thickness: strokeWidth * (1 + waveAmplitude) * 2
+    readonly property real thickness: strokeWidth * (1 + waveAmplitude) * 2 // For consumers
     property real implicitSize
 
     implicitWidth: implicitSize
@@ -85,7 +86,7 @@ Item {
             id: waveProgAnim
 
             running: true
-            paused: root.wavePaused || wave.amplitudeMultiplier === 0 || !root.visible
+            paused: root.wavePaused || wave.amplitudeMultiplier === 0
             from: 0
             to: 1
             duration: 2000

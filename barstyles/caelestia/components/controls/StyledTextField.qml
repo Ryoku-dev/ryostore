@@ -5,6 +5,7 @@ import QtQuick.Shapes
 import "../../config"
 import ".."
 import "../../services"
+
 TextFieldBase {
     id: root
 
@@ -32,7 +33,7 @@ TextFieldBase {
     property string errorText
     property bool isError
     property bool emptyIsValid: true
-    property var validate
+    property var validate // Regex or function
     readonly property bool valid: !validate || (!text && emptyIsValid) || (validate instanceof RegExp ? validate.test(text) : !!validate(text))
     readonly property string effectiveSupportingText: isError && errorText ? errorText : supportingText
     readonly property int supportingTextOffset: effectiveSupportingText ? supportingTextLoader.height + Tokens.spacing.extraSmall : 0

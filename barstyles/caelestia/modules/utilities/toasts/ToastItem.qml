@@ -2,9 +2,11 @@ import QtQuick
 import QtQuick.Layouts
 import "../../../port/core"
 import "../../../config"
+import "../../../port/i18n"
 import "../../../components"
 import "../../../components/effects"
 import "../../../services"
+
 StyledRect {
     id: root
 
@@ -16,18 +18,13 @@ StyledRect {
 
     radius: Tokens.rounding.large
     color: {
-        let baseColor = Colours.palette.m3surface;
         if (root.modelData.type === Toast.Success)
-            baseColor = Colours.palette.m3successContainer;
-        else if (root.modelData.type === Toast.Warning)
-            baseColor = Colours.palette.m3secondary;
-        else if (root.modelData.type === Toast.Error)
-            baseColor = Colours.palette.m3errorContainer;
-
-        if (GlobalConfig.utilities.toasts.transparency && !(GameMode.enabled && GlobalConfig.utilities.gameMode.disableToastTransparency)) {
-            return Qt.alpha(baseColor, Math.max(0.1, GlobalConfig.utilities.toasts.transparencyBase));
-        }
-        return baseColor;
+            return Colours.palette.m3successContainer;
+        if (root.modelData.type === Toast.Warning)
+            return Colours.palette.m3secondary;
+        if (root.modelData.type === Toast.Error)
+            return Colours.palette.m3errorContainer;
+        return Colours.palette.m3surface;
     }
 
     border.width: 1
@@ -48,7 +45,6 @@ StyledRect {
         opacity: parent.opacity
         z: -1
         level: 3
-        visible: !GlobalConfig.utilities.toasts.transparency || (GameMode.enabled && GlobalConfig.utilities.gameMode.disableToastTransparency)
     }
 
     RowLayout {
@@ -101,7 +97,7 @@ StyledRect {
                 id: title
 
                 Layout.fillWidth: true
-                text: root.modelData.title
+                text: Tr.trMarked(root.modelData.title)
                 color: {
                     if (root.modelData.type === Toast.Success)
                         return Colours.palette.m3onSuccessContainer;
@@ -118,7 +114,7 @@ StyledRect {
             StyledText {
                 Layout.fillWidth: true
                 textFormat: Text.StyledText
-                text: root.modelData.message
+                text: Tr.trMarked(root.modelData.message)
                 color: {
                     if (root.modelData.type === Toast.Success)
                         return Colours.palette.m3onSuccessContainer;

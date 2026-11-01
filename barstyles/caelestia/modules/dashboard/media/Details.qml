@@ -3,11 +3,28 @@ import QtQuick.Layouts
 import Quickshell.Services.Mpris
 import "../../../port/components"
 import "../../../config"
+import "../../../port/i18n"
 import "../../../components"
 import "../../../components/controls"
 import "../../../services"
+
 ColumnLayout {
     id: root
+
+    readonly property bool hasUnknownLength: (Players.active?.length ?? 0) > 2147483647
+
+    function lengthStr(length: int): string {
+        if (length < 0)
+            return "-1:-1";
+
+        const hours = Math.floor(length / 3600);
+        const mins = Math.floor((length % 3600) / 60);
+        const secs = Math.floor(length % 60).toString().padStart(2, "0");
+
+        if (hours > 0)
+            return `${hours}:${mins.toString().padStart(2, "0")}:${secs}`;
+        return `${mins}:${secs}`;
+    }
 
     spacing: Tokens.spacing.extraSmall
 
@@ -29,7 +46,7 @@ ColumnLayout {
 
     StyledText {
         Layout.fillWidth: true
-        text: Players.active?.trackArtist || qsTr("Unknown artist")
+        text: Players.active?.trackArtist || Tr.tr("Unknown artist")
         color: Colours.palette.m3onSurfaceVariant
         font: Tokens.font.title.medium
         elide: Text.ElideRight
@@ -38,7 +55,7 @@ ColumnLayout {
 
     StyledText {
         Layout.fillWidth: true
-        text: Players.active?.trackAlbum || qsTr("Unknown album")
+        text: Players.active?.trackAlbum || Tr.tr("Unknown album")
         color: Colours.palette.m3secondary
         font: Tokens.font.title.medium
         elide: Text.ElideRight
@@ -53,7 +70,7 @@ ColumnLayout {
         TextMetrics {
             id: timeMetrics
 
-            text: Players.active ? Units.formatDuration(Math.max(Players.active.position, Players.active.length)).replace(/[1-9]/g, "0") : "00:00"
+            text: Players.active ? root.lengthStr(Math.max(Players.active.position, root.hasUnknownLength ? 0 : Players.active.length)).replace(/[1-9]/g, "0") : "00:00"
             font: Tokens.font.label.medium
         }
 
@@ -61,7 +78,7 @@ ColumnLayout {
             id: positionLabel
 
             Layout.preferredWidth: timeMetrics.width
-            text: Units.formatDuration(Players.active?.position ?? -1)
+            text: root.lengthStr(Players.active?.position ?? -1)
             color: Colours.palette.m3onSurfaceVariant
             font: timeMetrics.font
             horizontalAlignment: Text.AlignHCenter
@@ -72,7 +89,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             value: Players.active ? Players.active.position / (Players.active.length || 1) : 0
-            enabled: Players.active?.canSeek ?? false
+            enabled: (Players.active?.canSeek ?? false) && !root.hasUnknownLength
             wavy: true
             animateWave: Players.active?.isPlaying ?? false
             waveFrequency: 5
@@ -87,14 +104,14 @@ ColumnLayout {
             Binding {
                 target: positionLabel
                 property: "text"
-                value: Units.formatDuration(positionSlider.pos * (Players.active?.length ?? 0))
+                value: root.lengthStr(positionSlider.pos * (Players.active?.length ?? 0))
                 when: positionSlider.dragging
             }
         }
 
         StyledText {
             Layout.preferredWidth: timeMetrics.width
-            text: Units.formatDuration(Players.active?.length ?? -1)
+            text: root.hasUnknownLength ? "--:--" : root.lengthStr(Players.active?.length ?? -1)
             color: Colours.palette.m3onSurfaceVariant
             font: timeMetrics.font
             horizontalAlignment: Text.AlignHCenter

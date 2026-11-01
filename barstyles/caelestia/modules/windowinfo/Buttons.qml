@@ -3,110 +3,160 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import "../../config"
+import "../../port/i18n"
 import "../../components"
 import "../../services"
+import Ryoku.Ui.Singletons
+
 ColumnLayout {
     id: root
 
     required property var client
+    property bool moveToWsExpanded
 
-    signal closeRequested()
-
+    anchors.fill: parent
     spacing: Tokens.spacing.small
 
     RowLayout {
-        spacing: Tokens.spacing.medium
-
-        StyledText {
-            text: qsTr("Move to workspace")
-            elide: Text.ElideRight
-            Layout.fillWidth: true
-        }
         Layout.topMargin: Tokens.padding.large
         Layout.leftMargin: Tokens.padding.large
         Layout.rightMargin: Tokens.padding.large
+
+        spacing: Tokens.spacing.medium
+
+        StyledText {
+            Layout.fillWidth: true
+            text: Tr.tr("Move to workspace")
+            elide: Text.ElideRight
+        }
+
+        StyledRect {
+            color: Colours.palette.m3primary
+            radius: Tokens.rounding.medium
+
+            implicitWidth: moveToWsIcon.implicitWidth + Tokens.padding.small
+            implicitHeight: moveToWsIcon.implicitHeight + Tokens.padding.extraSmall
+
+            StateLayer {
+                color: Colours.palette.m3onPrimary
+                onClicked: root.moveToWsExpanded = !root.moveToWsExpanded
+            }
+
+            MaterialIcon {
+                id: moveToWsIcon
+
+                anchors.centerIn: parent
+
+                animate: true
+                text: root.moveToWsExpanded ? "expand_more" : "keyboard_arrow_right"
+                color: Colours.palette.m3onPrimary
+                fontStyle: Tokens.font.icon.large
+            }
+        }
     }
-    Flow {
+
+    GridLayout {
         id: wsGrid
 
+        Layout.fillWidth: true
+        Layout.leftMargin: Tokens.padding.large
+        Layout.rightMargin: Tokens.padding.large
+        Layout.bottomMargin: root.moveToWsExpanded ? Tokens.spacing.medium : 0
+        Layout.preferredHeight: root.moveToWsExpanded ? implicitHeight : 0
+        opacity: root.moveToWsExpanded ? 1 : 0
         clip: true
-        spacing: Tokens.spacing.small
 
-        Repeater {
-            model: Kwin.workspaces.length
+        rowSpacing: Tokens.spacing.small
+        columnSpacing: Tokens.spacing.small
+        columns: 5
 
-            Button {
-                required property int index
-                readonly property int wsId: Kwin.workspaces[index].index
-                readonly property string wsName: wsId.toString()
-                readonly property bool isCurrent: root.client?.workspace?.id === wsId
-
-                onClicked: {
-                    Kwin.setWindowDesktop(root.client?.address, wsId);
-                    Kwin.switchToWorkspace(wsId);
-                }
-                color: isCurrent ? Colours.tPalette.m3surfaceContainerHighest : Colours.palette.m3tertiaryContainer
-                onColor: isCurrent ? Colours.palette.m3onSurface : Colours.palette.m3onTertiaryContainer
-                text: wsName
-                disabled: isCurrent
-            }
-        }
-        Layout.fillWidth: true
-        Layout.leftMargin: Tokens.padding.large
-        Layout.rightMargin: Tokens.padding.large
-        Layout.bottomMargin: Tokens.spacing.medium
-    }
-    RowLayout {
-        spacing: Tokens.spacing.small
-
-        Button {
-            color: Colours.palette.m3errorContainer
-            onColor: Colours.palette.m3onErrorContainer
-            text: qsTr("Kill")
-            onClicked: {
-                Kwin.closeWindow(root.client?.address);
-            }
-        }
-        Layout.fillWidth: true
-        Layout.leftMargin: Tokens.padding.large
-        Layout.rightMargin: Tokens.padding.large
-        Layout.bottomMargin: Tokens.padding.large
-    }
-
-    component Button: StyledRect {
-        property color onColor: Colours.palette.m3onSurface
-        property alias disabled: stateLayer.disabled
-        property alias text: label.text
-
-        signal clicked
-
-        radius: stateLayer.pressed ? Tokens.rounding.small : Tokens.rounding.medium
-        implicitWidth: label.implicitWidth + Tokens.padding.medium * 2
-        implicitHeight: label.implicitHeight + Tokens.padding.small
-        Layout.fillWidth: true
-
-        Behavior on radius {
+        Behavior on Layout.bottomMargin {
             Anim {
                 type: Anim.DefaultEffects
             }
         }
 
+        Behavior on Layout.preferredHeight {
+            Anim {
+                type: Anim.DefaultEffects
+            }
+        }
+
+        Behavior on opacity {
+            Anim {
+                type: Anim.DefaultEffects
+            }
+        }
+
+        Repeater {
+            model: 10
+
+            WButton {
+                required property int index
+                readonly property int wsId: Math.floor((Hypr.activeWsId - 1) / 10) * 10 + index + 1
+                readonly property bool isCurrent: root.client?.workspace.id === wsId
+
+                onClicked: Wm.moveWindowToWorkspace(root.client?.address ?? "", wsId)
+
+                color: isCurrent ? Colours.tPalette.m3surfaceContainerHighest : Colours.palette.m3tertiaryContainer
+                textColor: isCurrent ? Colours.palette.m3onSurface : Colours.palette.m3onTertiaryContainer
+                text: wsId
+                disabled: isCurrent
+            }
+        }
+    }
+
+    RowLayout {
+        Layout.fillWidth: true
+        Layout.leftMargin: Tokens.padding.large
+        Layout.rightMargin: Tokens.padding.large
+        Layout.bottomMargin: Tokens.padding.large
+
+        spacing: root.client?.lastIpcObject.floating ? Tokens.spacing.medium : Tokens.spacing.small
+
+        WButton {
+            color: Colours.palette.m3secondaryContainer
+            textColor: Colours.palette.m3onSecondaryContainer
+            text: root.client?.lastIpcObject.floating ? Tr.tr("Tile") : Tr.tr("Float")
+            visible: Wm.caps.windowFloat === true
+            onClicked: Wm.floatWindow(root.client?.address ?? "")
+        }
+
+
+        WButton {
+            color: Colours.palette.m3errorContainer
+            textColor: Colours.palette.m3onErrorContainer
+            text: Tr.tr("Kill")
+            onClicked: Wm.closeWindow(root.client?.address ?? "")
+        }
+    }
+
+    component WButton: StyledRect {
+        property color textColor: Colours.palette.m3onSurface
+        property alias disabled: stateLayer.disabled
+        property alias text: label.text
+
+        signal clicked
+
+        radius: Tokens.rounding.medium
+
+        Layout.fillWidth: true
+        implicitHeight: label.implicitHeight + Tokens.padding.small
+
         StateLayer {
             id: stateLayer
 
-            color: parent.onColor
-            onClicked: {
-                parent.clicked()
-                root.closeRequested()
-            }
+            color: parent.textColor
+            onClicked: parent.clicked()
         }
 
         StyledText {
             id: label
 
             anchors.centerIn: parent
+
             animate: true
-            color: parent.onColor
+            color: parent.textColor
             font: Tokens.font.body.medium
         }
     }

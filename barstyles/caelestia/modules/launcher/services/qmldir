@@ -1,0 +1,4 @@
+singleton Actions 1.0 Actions.qml
+singleton Apps 1.0 Apps.qml
+singleton M3Variants 1.0 M3Variants.qml
+singleton Schemes 1.0 Schemes.qml

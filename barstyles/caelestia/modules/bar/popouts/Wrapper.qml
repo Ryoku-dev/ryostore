@@ -5,58 +5,57 @@ import Quickshell
 import Quickshell.Wayland
 import "../../../config"
 import "../../../components"
-import "../../../components/misc"
 import "../../../services"
+import "../../nexus"
 import "../../windowinfo"
+import "../../../components/misc"
+
 Item {
     id: root
 
     required property ShellScreen screen
     required property real offsetScale
-    required property DrawerVisibilities visibilities
+
     readonly property alias content: content
     readonly property alias winfo: winfo
-    readonly property real nonAnimWidth: content.shouldBeActive ? content.implicitWidth : winfo.shouldBeActive ? winfo.implicitWidth : content.implicitWidth
-    readonly property real nonAnimHeight: content.shouldBeActive ? content.implicitHeight : winfo.shouldBeActive ? winfo.implicitHeight : content.implicitHeight
+    readonly property alias nexus: nexus
+
+    readonly property real nonAnimWidth: children.find(c => c.shouldBeActive)?.implicitWidth ?? content.implicitWidth
+    readonly property real nonAnimHeight: children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight
     readonly property Item current: (content.item as Content)?.current ?? null
     readonly property bool isDetached: detachedMode.length > 0
-    readonly property bool sidebarOpen: popoutState.sidebarOpen
-    // Popouts excluded from pushing the notification column / sidebar out of the
-    // way (Panels.qml) and from visually merging with the sidebar (ContentWindow.qml):
-    // hover previews and context menus are transient, so shoving panels around for
-    // them feels jittery. The clock popout is deliberately NOT here — the calendar
-    // is a real panel-sized popout and displaces notifications like audio/network do.
-    readonly property bool isDockPopout: currentName === "dockhover" || currentName === "dockcontext" || currentName === "dockbgcontext" || currentName === "greeter" || currentName === "greetercontext" || currentName === "activewindow" || currentName === "clockcontext" || currentName === "statusiconscontext" || currentName === "workspacescontext" || currentName === "traycontext"
+
     property alias currentName: popoutState.currentName
     property alias hasCurrent: popoutState.hasCurrent
-    property alias dockModel: popoutState.dockModel
-    property alias tasksModel: popoutState.tasksModel
     property real currentCenter
-    // Set by ClipWrapper: whether the current bar item sits under the sidebar,
-    // which can be narrower than the bar's right side now that it is resizable.
-    property bool underSidebar: true
+
     property string detachedMode
+    property string queuedMode
+
+    // Dummy object so Tokens attached prop resolves to global config
+    // Anim configs are not per-monitor
     readonly property QtObject dummy: QtObject {}
     property int animLength: Tokens.anim.durations.expressiveDefaultSpatial
-    property var animCurve: Tokens.anim.expressiveDefaultSpatial
+    property var animCurve: Tokens.anim.expressiveDefaultSpatial // The easingCurve type is Qt 6.11+ so we gotta use var for now
 
     function setAnims(detach: bool): void {
         const type = `expressive${detach ? "Slow" : "Default"}Spatial`;
         animLength = Tokens.anim.durations[type];
         animCurve = Tokens.anim[type];
     }
+
     function detach(mode: string): void {
         setAnims(true);
         if (mode === "winfo") {
             detachedMode = mode;
-            focus = true;
         } else {
-            // network and bluetooth are system settings, so they open the Ryoku Hub
-            Hub.open("connections");
-            close();
+            queuedMode = mode;
+            detachedMode = "any";
         }
         setAnims(false);
+        focus = true;
     }
+
     function close(): void {
         hasCurrent = false;
         detachedMode = "";
@@ -64,8 +63,10 @@ Item {
 
     implicitWidth: nonAnimWidth
     implicitHeight: nonAnimHeight
+
     focus: hasCurrent
     Keys.onEscapePressed: {
+        // Forward escape to password popout if active, otherwise close
         if (currentName === "wirelesspassword" && content.item) {
             const passwordPopout = (content.item as Content)?.children.find(c => c.name === "wirelesspassword");
             if (passwordPopout && passwordPopout.item) {
@@ -75,7 +76,9 @@ Item {
         }
         close();
     }
+
     Keys.onPressed: event => {
+        // Don't intercept keys when password popout is active - let it handle them
         if (currentName === "wirelesspassword") {
             event.accepted = false;
         }
@@ -84,52 +87,76 @@ Item {
     PopoutState {
         id: popoutState
 
-        // Only attach to the sidebar when the popout would open below it anyway;
-        // otherwise it would end up away from the item that opened it.
-        sidebarOpen: root.visibilities.sidebar && root.underSidebar
-        isHorizontal: Config.bar.position === "top" || Config.bar.position === "bottom"
         onDetachRequested: mode => root.detach(mode)
     }
+
     FocusGrab {
         active: root.isDetached
         windows: [QsWindow.window]
         onCleared: root.close()
     }
+
     Binding {
         when: root.isDetached || (root.hasCurrent && root.currentName === "wirelesspassword")
+
         target: QsWindow.window
         property: "WlrLayershell.keyboardFocus"
         value: WlrKeyboardFocus.OnDemand
     }
+
     Comp {
         id: content
 
         shouldBeActive: root.hasCurrent && !root.detachedMode
         anchors.fill: parent
+
         sourceComponent: Content {
             popouts: popoutState
         }
     }
+
     Comp {
         id: winfo
 
         shouldBeActive: root.detachedMode === "winfo"
         anchors.centerIn: parent
+
         sourceComponent: WindowInfo {
-            clientAddress: popoutState.selectedClientAddress
+            screen: root.screen
+            client: Hypr.activeToplevel
         }
-        onShouldBeActiveChanged: {
-            if (!shouldBeActive) {
-                popoutState.selectedClientAddress = "";
+    }
+
+    Comp {
+        id: nexus
+
+        shouldBeActive: root.detachedMode === "any"
+        anchors.centerIn: parent
+
+        sourceComponent: ClipRect {
+            radius: Tokens.rounding.extraLarge
+            implicitWidth: nexusInner.implicitWidth
+            implicitHeight: nexusInner.implicitHeight
+
+            Nexus {
+                id: nexusInner
+
+                anchors.fill: parent
+                nState.screen: root.screen
+                nState.animatingContainer: nexus.opacity < 1
+                nState.currentPageIdx: ["appearance", "network", "bluetooth", "audio"].indexOf(root.queuedMode)
+                onClose: root.close()
             }
         }
     }
+
     Behavior on implicitWidth {
         Anim {
             duration: root.animLength
             easing: root.animCurve
         }
     }
+
     Behavior on implicitHeight {
         enabled: root.offsetScale < 1
 
@@ -146,6 +173,8 @@ Item {
 
         active: false
         opacity: 0
+
+        // Makes the loader load on the same frame shouldBeActive becomes true, which ensures size is set
         states: State {
             name: "active"
             when: comp.shouldBeActive
@@ -155,6 +184,7 @@ Item {
                 comp.active: true
             }
         }
+
         transitions: [
             Transition {
                 from: ""

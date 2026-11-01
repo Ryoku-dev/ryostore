@@ -3,6 +3,7 @@ import Quickshell
 import "../../port/shapes"
 import ".."
 import "../../services"
+
 MaterialShape {
     id: root
 
@@ -18,9 +19,6 @@ MaterialShape {
     property bool containsIcon
 
     property bool animated: true
-    // Hidden indicators (an unshown tab, a closed panel) keep their animations
-    // stopped; a running animation keeps its window rendering every frame.
-    readonly property bool running: animated && visible
     property int morphAnimRotation: 60
     property real morphScale: 0.14
     property alias rotateAnimDuration: rotateAnim.duration
@@ -37,7 +35,7 @@ MaterialShape {
     }
     readonly property real springMaxVelocity: {
         const wn = Math.sqrt(stiffness);
-        const factor = Math.exp(-dampingRatio * Math.acos(dampingRatio) / Math.sqrt(1 - dampingRatio * dampingRatio));
+        const factor = Math.exp(-z * Math.acos(z) / Math.sqrt(1 - z * z));
         return wn * factor;
     }
     property bool springSettled: true
@@ -63,7 +61,7 @@ MaterialShape {
     }
 
     FrameAnimation {
-        running: root.running && !root.springSettled
+        running: root.animated && !root.springSettled
         onTriggered: {
             const t = timer.elapsed();
 
@@ -71,7 +69,7 @@ MaterialShape {
                 root.springSettled = true;
             } else {
                 const [pos, vel] = root.spring(t);
-                root.morphProgress = Math.min(1, pos);
+                root.morphProgress = Math.min(1, pos); // Overshooting the morph looks weird
                 root.thisLRotation = pos * root.morphAnimRotation;
                 root.scale = 1 + vel * root.morphScale / root.springMaxVelocity;
             }
@@ -82,7 +80,7 @@ MaterialShape {
         interval: 650
         repeat: true
         triggeredOnStart: true
-        running: root.running
+        running: root.animated
         onTriggered: {
             root.beginBatchUpdate();
             root.fromShape = root.toShape;
@@ -104,7 +102,7 @@ MaterialShape {
     RotationAnimation on cRotation {
         id: rotateAnim
 
-        running: root.running
+        running: root.animated
         from: 0
         to: 360
         easing.type: Easing.Linear

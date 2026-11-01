@@ -3,61 +3,45 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import "../../port/core"
-import shell.services as ShellServices
 import "../../config"
+import "../../port/services"
 import "../../components"
 import "../../components/controls"
-import "../../components/effects"
 import "../../services"
 import "../../utils"
+
 Column {
     id: root
 
-    required property DrawerVisibilities visibilities
+    required property ScreenState screenState
 
     padding: Tokens.padding.large
     rightPadding: CUtils.clamp(padding - Config.border.thickness, 0, padding)
     spacing: Tokens.spacing.large
 
     SessionButton {
-        id: lock
-
-        visible: !Paths.hosted || HostState.element("lock")
-        action: "lock"
-        icon: "lock"
-        command: ["loginctl", "lock-session"]
-
-        KeyNavigation.down: logout
-    }
-
-    SessionButton {
         id: logout
 
-        visible: !Paths.hosted || HostState.element("logout")
-        action: "logout"
         icon: Config.session.icons.logout
-        command: ["sh", "-c", "qdbus6 org.kde.Shutdown /Shutdown org.kde.Shutdown.logout 2>/dev/null"]
+        command: Config.session.commands.logout
 
-        KeyNavigation.up: lock
         KeyNavigation.down: shutdown
 
         Component.onCompleted: forceActiveFocus()
 
         Connections {
             function onLauncherChanged(): void {
-                if (!root.visibilities.launcher)
+                if (!root.screenState.launcher)
                     logout.forceActiveFocus();
             }
 
-            target: root.visibilities
+            target: root.screenState
         }
     }
 
     SessionButton {
         id: shutdown
 
-        visible: !Paths.hosted || HostState.element("powerOff")
-        action: "shutdown"
         icon: Config.session.icons.shutdown
         command: Config.session.commands.shutdown
 
@@ -65,71 +49,25 @@ Column {
         KeyNavigation.down: hibernate
     }
 
-    Item {
-        width: Tokens.sizes.session.button
-        height: Tokens.sizes.session.button
+    Loader {
+        active: root.screenState.session && Config.paths.sessionGif.trim() !== ""
 
-        AnimatedImage {
-            anchors.fill: parent
+        sourceComponent: AnimatedImage {
+            width: Tokens.sizes.session.button
+            height: Tokens.sizes.session.button
             sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
-            playing: visible
+
+            playing: root.screenState.session && visible
             asynchronous: true
             speed: Config.general.sessionGifSpeed
             source: Paths.absolutePath(Config.paths.sessionGif)
             fillMode: AnimatedImage.PreserveAspectFit
-            opacity: GlobalConfig.general.caelestiaMode ? 0 : 1
-
-            Behavior on opacity { Anim { type: Anim.Standard } }
-
-            visible: Config.paths.sessionGif !== ""
-        }
-
-        AnimatedImage {
-            anchors.fill: parent
-            sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
-            playing: visible
-            asynchronous: true
-            speed: Config.general.sessionGifSpeed
-            source: Paths.absolutePath("root:/assets/dino.gif")
-            fillMode: AnimatedImage.PreserveAspectFit
-            opacity: GlobalConfig.general.caelestiaMode ? 1 : 0
-
-            Behavior on opacity { Anim { type: Anim.Standard } }
-            
-            layer.enabled: true
-
-            layer.effect: Colouriser {
-                colorizationColor: Colours.palette.m3onSurface
-                sourceColor: "white"
-            }
-        }
-
-        AnimatedImage {
-            anchors.fill: parent
-            sourceSize.width: width * ((QsWindow.window as QsWindow)?.devicePixelRatio ?? 1)
-            playing: visible
-            asynchronous: true
-            speed: Config.general.sessionGifSpeed
-            source: Paths.absolutePath("root:/assets/dino.gif")
-            fillMode: AnimatedImage.PreserveAspectFit
-            opacity: GlobalConfig.general.caelestiaMode ? 1 : 0
-
-            Behavior on opacity { Anim { type: Anim.Standard } }
-            
-            layer.enabled: true
-
-            layer.effect: Colouriser {
-                colorizationColor: Colours.palette.m3onSurface
-                sourceColor: "white"
-            }
         }
     }
 
     SessionButton {
         id: hibernate
 
-        visible: !Paths.hosted || HostState.element("sleep")
-        action: "suspend"
         icon: Config.session.icons.hibernate
         command: Config.session.commands.hibernate
 
@@ -140,8 +78,6 @@ Column {
     SessionButton {
         id: reboot
 
-        visible: !Paths.hosted || HostState.element("restart")
-        action: "reboot"
         icon: Config.session.icons.reboot
         command: Config.session.commands.reboot
 
@@ -152,19 +88,9 @@ Column {
         id: button
 
         required property list<string> command
-        required property string action
 
         function exec(): void {
-            root.visibilities.session = false;
-            if (Paths.hosted) {
-                HostState.session(action);
-                return;
-            }
-            if (action === "logout" || action === "reboot" || action === "shutdown") {
-                ShellServices.SessionActions.run(action);
-                return;
-            }
-            if (command.length > 1)
+            if (!SessionManager.exec(command))
                 Quickshell.execDetached(command);
         }
 
@@ -179,7 +105,7 @@ Column {
 
         Keys.onEnterPressed: exec()
         Keys.onReturnPressed: exec()
-        Keys.onEscapePressed: root.visibilities.session = false
+        Keys.onEscapePressed: root.screenState.session = false
         Keys.onPressed: event => {
             if (!Config.session.vimKeybinds)
                 return;

@@ -2,6 +2,7 @@ pragma Singleton
 
 import Quickshell
 import "../config"
+
 Singleton {
     id: root
 

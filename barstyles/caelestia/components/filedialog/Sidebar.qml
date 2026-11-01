@@ -3,9 +3,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import "../../config"
+import "../../port/i18n"
 import ".."
 import "."
 import "../../services"
+
 StyledRect {
     id: root
 
@@ -29,7 +31,7 @@ StyledRect {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: Tokens.padding.extraSmall / 2
             Layout.bottomMargin: Tokens.spacing.medium
-            text: qsTr("Files")
+            text: Tr.trCtx("Files", "file dialog sidebar heading")
             color: Colours.palette.m3onSurface
             font: Tokens.font.body.builders.large.weight(Font.Bold).build()
         }

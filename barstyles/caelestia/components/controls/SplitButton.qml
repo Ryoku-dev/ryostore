@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import "../../config"
 import ".."
 import "../../services"
+
 Row {
     id: root
 

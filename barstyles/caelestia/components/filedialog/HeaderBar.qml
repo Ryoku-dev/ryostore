@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import "../../config"
 import ".."
 import "../../services"
+
 StyledRect {
     id: root
 

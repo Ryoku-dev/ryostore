@@ -10,10 +10,34 @@ Singleton {
 
     // shortcut: no lock-key state without the plugin; the caps/num lock icons stay hidden
     readonly property bool capsLock: false
+    readonly property string version: "2.0.0"
+    readonly property string qtVersion: "6"
     readonly property bool numLock: false
 
     function clamp(value: real, min: real, max: real): real {
-        return Math.min(Math.max(value, min), max);
+        if (!(value > min))
+            return min;
+        return value > max ? max : value;
+    }
+
+    function dependency(value): void {}
+
+    function enumToString(object, propertyName: string): string {
+        const enums = {
+            backend: ["Auto", "Local", "LRCLIB", "NetEase"],
+            wallpaperTransition: [
+                "ChromaticBloom", "ColourDistance", "Crossfade", "Crosshatch",
+                "Crosswarp", "Directional", "DirectionalWipe", "FadeColour",
+                "Glitch", "GlitchDisplace", "HeatMelt", "InkSplash",
+                "InkwellDrop", "Iris", "Morph", "ParametricGlitch", "Perlin",
+                "Pixelate", "PixelfadeWave", "PlasmaFlow", "PolkaDotsCurtain",
+                "PuzzleRight", "RandomSquares", "Smoke", "SoftWarpFade",
+                "VoronoiShatter", "ZoomBlurPull"
+            ]
+        };
+        const values = enums[propertyName];
+        const index = Number(object?.[propertyName]);
+        return values && index >= 0 && index < values.length ? values[index] : "";
     }
 
     function toLocalFile(url: url): string {
