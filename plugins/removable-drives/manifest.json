@@ -1,0 +1,58 @@
+{
+  "id": "removable-drives",
+  "name": "Removable Drives",
+  "version": "0.1.0",
+  "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+  "description": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 360
+  },
+  "files": [],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Removable Drives"
+  },
+  "dependencies": {
+    "commands": [
+      "lsblk",
+      "udisksctl",
+      "notify-send"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "pollSeconds",
+        "type": "int",
+        "label": "Refresh interval (seconds)",
+        "group": "Removable Drives",
+        "default": 5,
+        "min": 2,
+        "max": 60
+      },
+      {
+        "key": "showBadge",
+        "type": "toggle",
+        "label": "Show count badge on the bar",
+        "group": "Removable Drives",
+        "default": true
+      }
+    ]
+  }
+}
