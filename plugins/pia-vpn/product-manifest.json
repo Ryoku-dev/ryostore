@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "id": "pia-vpn",
+  "category": "plugins",
+  "version": "0.1.0",
+  "destination": "ryoku/plugins/pia-vpn",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "f5aa0c2b14211cd64aeb9816d9a7d8fcfa0b33714a28c80076ed1c3f09574b0a",
+      "mode": "0644",
+      "size": 1063,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "540e5533319fa2ce58d59c443449f5c64281ab47f014d2af3f93187fde8ac536",
+      "mode": "0644",
+      "size": 4080,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "4e97763d742a7f9e8c847bfc791c0fa65b183ba155dc513531889031809c98ed",
+      "mode": "0644",
+      "size": 90609,
+      "install": false
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "94f987e9fa01ad4905eddd7650cfead09080933c9d998400358c0464bca12632",
+      "mode": "0644",
+      "size": 10630,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "ffe9f67ff142f6086cccc789f61c0271c932bf3a76a5d387e45edf716fd90583",
+      "mode": "0644",
+      "size": 2788,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "3342393b78d3fea81cdb53572610e2fb953b163f22d7a6c1a68e88ee9f8a6482",
+      "mode": "0644",
+      "size": 1293,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "049f111fb7a06acc21739ff369df82f215ae0c83474e88c37c3c56486911ffc6",
+      "mode": "0644",
+      "size": 6922,
+      "install": true
+    }
+  ]
+}

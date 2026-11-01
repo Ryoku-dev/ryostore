@@ -2120,6 +2120,33 @@
       ],
       "lastUpdated": "2026-10-31",
       "upstream": "https://github.com/wolf1999h/native-switcher"
+    },
+    {
+      "id": "pia-vpn",
+      "name": "PIA VPN",
+      "version": "0.1.0",
+      "path": "plugins/pia-vpn",
+      "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+      "summary": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "description": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7beed3173cf9ad81d6949dd9ceee7dd2e44cac721b347690345d8f9b33ebe74f",
+      "official": false,
+      "tagline": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-01"
     }
   ]
 }
