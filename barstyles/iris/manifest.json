@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "id": "iris",
+  "category": "barstyles",
+  "version": "2.33.0",
+  "destination": "ryoku/barstyles/iris",
+  "files": [
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 1526,
+      "sha256": "029bee637f7369e46cfd8b4d3eac8f923b776ae2c9a314f10d504c9f43273a6d",
+      "install": false
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 498,
+      "sha256": "2216713a84d1416d0d2939bac541af16625e4fc884b4d0464043b524540bac2e",
+      "install": false
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "mode": "0644",
+      "size": 67070,
+      "sha256": "3f1255ba7b8866b3a1801d59e036d0f226dd45bd423a9ae43d74d7c81ed29b6f",
+      "install": false
+    }
+  ]
+}
