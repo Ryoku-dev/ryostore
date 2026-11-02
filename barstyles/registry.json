@@ -181,38 +181,6 @@
       "license": "GPL-3.0-only"
     },
     {
-      "id": "iris",
-      "name": "Shima",
-      "version": "2.33.0",
-      "path": "barstyles/iris",
-      "author": "snowarch & aethctl",
-      "upstream": "https://github.com/snowarch/iNiR",
-      "summary": "Complete iNiR desktop on Ryoku",
-      "description": "iRiS, Material ii and Waffle panel families, upstream widgets, responsive Cava edge and frame visualisers, Matugen colour palettes, Liquid Glass and Ryoku appearance. Shima stays inside Ryoku with Hub access and native installation, switching and crash recovery.",
-      "tags": [
-        "subshell",
-        "niri",
-        "desktop",
-        "widgets",
-        "visualizer",
-        "liquid-glass",
-        "matugen"
-      ],
-      "accent": "#91bfe6",
-      "surface": "#071723",
-      "preview": "assets/preview.webp",
-      "screenshots": [],
-      "manifest": "manifest.json",
-      "manifestSha256": "fd764170569327be9f0e97406024c07d06238e57063fffd9cada988ba333f1e8",
-      "lastUpdated": "2026-11-02",
-      "downloadPaused": true,
-      "downloadPauseReason": "Storefront metadata only. Install through the native Shima RyoStore integration on a supported Ryoku edition.",
-      "windowManager": "niri",
-      "windowManagerReason": "Shima is a Niri-integrated Ryoku subshell.",
-      "official": false,
-      "license": "GPL-3.0-only"
-    },
-    {
       "id": "tansu",
       "name": "Tansu",
       "version": "1.4.66",
