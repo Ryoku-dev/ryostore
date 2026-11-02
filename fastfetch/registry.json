@@ -818,56 +818,6 @@
    "official": false
   },
   {
-   "id": "vector",
-   "name": "Vector",
-   "version": "1.0.0",
-   "path": "fastfetch/vector",
-   "author": "aethctl",
-   "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/vector",
-   "summary": "Angular Matugen hardware profile",
-   "description": "A compact angular machine readout using sharp separators and a small distro mark to present core system, hardware and compositor information. Current Ryoku renders the bundled palette; automatic wallpaper recolouring requires shell support.",
-   "tags": [
-    "angular",
-    "technical",
-    "matugen",
-    "hardware",
-    "compact"
-   ],
-   "accent": "#dba4c4",
-   "surface": "#0d0d0d",
-   "preview": "preview.webp",
-   "screenshots": [],
-   "manifest": "manifest.json",
-   "manifestSha256": "c23a38e57984cfb1a614c66ec014c087b62175baeb2e913f599ef0715554a455",
-   "lastUpdated": "2026-09-07",
-   "official": false
-  },
-  {
-   "id": "terminal-84",
-   "name": "Terminal 84",
-   "version": "1.0.0",
-   "path": "fastfetch/terminal-84",
-   "author": "aethctl",
-   "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/fastfetch/terminal-84",
-   "summary": "Amber retro boot monitor",
-   "description": "A fixed warm-amber terminal display with original monitor ASCII and an old-computer boot-monitor personality covering the essential machine statistics.",
-   "tags": [
-    "retro",
-    "amber",
-    "terminal",
-    "fixed-palette",
-    "ascii"
-   ],
-   "accent": "#ffd37a",
-   "surface": "#100d08",
-   "preview": "preview.webp",
-   "screenshots": [],
-   "manifest": "manifest.json",
-   "manifestSha256": "9b3997f31f202ac7db137421e6956df90309407fbd8322c26b0fe34344805307",
-   "lastUpdated": "2026-09-07",
-   "official": false
-  },
-  {
    "id": "crt",
    "name": "CRT",
    "version": "1.0.0",
