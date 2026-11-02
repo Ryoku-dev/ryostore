@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "smart-brightness",
   "category": "plugins",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "destination": "ryoku/plugins/smart-brightness",
   "files": [
     {
@@ -104,7 +104,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "e41ecb5fad362f26995d8bcd8599489090e62c5d18333e879a3fe74473d1228d",
+      "sha256": "7b31fe8168a89f6962bd1db3ec1c3a0a4738296c0b0197bec444a7eba9a5557c",
       "mode": "0644",
       "size": 1672,
       "install": true
@@ -112,9 +112,9 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "dbffeee8412f68117f7d43ad319cdb6ead67ba9ec029404f446b56c5c52e3dbd",
+      "sha256": "b39ad876dc5002f9c58fa81ce4f3312d47739a015771e82b0b90bb220cd5bf11",
       "mode": "0644",
-      "size": 8267,
+      "size": 8465,
       "install": true
     }
   ]
