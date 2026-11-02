@@ -71,10 +71,12 @@ Item {
     }
 
     readonly property string _bin: {
-        var dir = pluginApi ? pluginApi.pluginDir : "";
+        var dir = pluginApi && pluginApi.pluginDir ? pluginApi.pluginDir : "";
         return dir.length > 0 ? (dir + "/bin/brightness") : "";
     }
-    readonly property string _stateDir: pluginApi ? pluginApi.stateDir : ""
+    // Guard stateDir the same way as pluginDir: during host bind-up pluginApi
+    // can exist before stateDir is set, and QString refuses undefined.
+    readonly property string _stateDir: (pluginApi && pluginApi.stateDir) ? pluginApi.stateDir : ""
 
     function setEnabled(on) {
         if (!pluginApi || !pluginApi.saveSetting)
