@@ -265,6 +265,8 @@
       ],
       "manifest": "manifest.json",
       "manifestSha256": "a3c83deeac3798bf3f440b8857d06a86e794f4879a533c94d973b1b88cc24475",
+      "downloadPaused": true,
+      "downloadPauseReason": "Delisted due to issues and bugs",
       "lastUpdated": "2026-10-31",
       "official": false,
       "license": "GPL-3.0-only"
