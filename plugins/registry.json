@@ -1224,7 +1224,7 @@
     {
       "id": "smart-brightness",
       "name": "Smart Brightness",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "path": "plugins/smart-brightness",
       "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
       "upstream": "https://github.com/visnudeva/ryostore/tree/main/plugins/smart-brightness",
@@ -1244,7 +1244,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "45101b80033f2baeed91bf2fcfadb13d1581ad137c972c4652fe39d680004991",
+      "manifestSha256": "97d12212b59362cb6b02ac0cccaccdfb4d3fe39c4d0195f9a4ec4b76fcc202e5",
       "official": false,
       "tagline": "Max the backlight for fullscreen media, then restore.",
       "icon": "brightness_auto",
@@ -1252,7 +1252,7 @@
         "desktopWidget",
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-11-01"
+      "lastUpdated": "2026-11-02"
     },
     {
       "id": "stargate",
