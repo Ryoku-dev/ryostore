@@ -1,7 +1,7 @@
 {
   "id": "smart-brightness",
   "name": "Smart Brightness",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
   "description": "Max the backlight for fullscreen media, then restore. Runs from a desktop widget (or the bar) — no QS Bar required.",
   "license": "MIT",
