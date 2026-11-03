@@ -1,0 +1,9 @@
+Upstream: iNiR by snowarch and contributors
+Upstream URL: https://github.com/snowarch/iNiR
+Pinned upstream revision: 48cdcecb0f6089cfbb7019054602eab28e154b3b
+Upstream version: 2.33.0
+Upstream licence: GPL-3.0
+Ryoku integration: aethctl (Ryoku-dev/Ryoku-on-NixOS)
+Storefront preview: integrated Shima desktop screenshot supplied by aethctl
+Packaging: metadata and preview only. No installable shell runtime in RyoStore.
+Native install/update/remove: Ryoku-on-NixOS RyoStore barstyles/iris provider.
