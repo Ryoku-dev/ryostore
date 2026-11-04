@@ -1,0 +1,599 @@
+import "../../../.."
+import "../../../../services"
+import "../.."
+import "../../widgets"
+import "../../functions"
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
+import Quickshell.Io
+import Quickshell.Bluetooth
+import Quickshell
+import Quickshell.Wayland
+import "../../widgets/cards"
+
+WindowDialog {
+    id: root
+    // Dashboard keeps the historical sidebar-close behaviour. Other hosts
+    // (for example Welcome) can keep their owner untouched.
+    property bool closeOwningSidebarOnDetails: true
+    property bool showDetailsAction: true
+
+    signal detailsRequested()
+
+    backgroundHeight: 600
+
+    property var _connectedDevicesModel: (BluetoothStatus.friendlyDeviceList || []).filter(d => d?.connected)
+    property var _savedDevicesModel: (BluetoothStatus.friendlyDeviceList || []).filter(d => d?.paired && !d?.connected)
+    property var exitingAddresses: ({})
+    property var enteringAddresses: ({})
+    property var _lastConnectedMap: ({})
+
+    readonly property var connectedDevices: _connectedDevicesModel
+    readonly property var savedDevices: _savedDevicesModel
+    readonly property var availableDevices: (BluetoothStatus.friendlyDeviceList || []).filter(d => !d?.paired && !d?.connected)
+
+    function syncListsImmediately() {
+        const list = BluetoothStatus.friendlyDeviceList || [];
+        _connectedDevicesModel = list.filter(d => d?.connected);
+        _savedDevicesModel = list.filter(d => d?.paired && !d?.connected);
+        exitingAddresses = {};
+        enteringAddresses = {};
+        _lastConnectedMap = {};
+        for (let i = 0; i < list.length; i++) {
+            if (list[i]?.address) {
+                _lastConnectedMap[list[i].address] = !!list[i].connected;
+            }
+        }
+    }
+
+    function updateDeviceListsWithTransition() {
+        if (!root.show) {
+            syncListsImmediately();
+            return;
+        }
+
+        const currentList = BluetoothStatus.friendlyDeviceList || [];
+        const newConnected = currentList.filter(d => d?.connected);
+        const newSaved = currentList.filter(d => d?.paired && !d?.connected);
+
+        let newlyConnectedMacs = [];
+        let newlyDisconnectedMacs = [];
+
+        for (let i = 0; i < currentList.length; i++) {
+            const d = currentList[i];
+            if (!d?.address) continue;
+            const wasConnected = !!root._lastConnectedMap[d.address];
+            const isNowConnected = !!d.connected;
+
+            if (wasConnected && !isNowConnected) {
+                newlyDisconnectedMacs.push(d.address);
+            } else if (!wasConnected && isNowConnected) {
+                newlyConnectedMacs.push(d.address);
+            }
+            root._lastConnectedMap[d.address] = isNowConnected;
+        }
+
+        if (newlyConnectedMacs.length === 0 && newlyDisconnectedMacs.length === 0) {
+            if (Object.keys(root.exitingAddresses).length === 0) {
+                _connectedDevicesModel = newConnected;
+                _savedDevicesModel = newSaved;
+            }
+            return;
+        }
+
+        let newExiting = Object.assign({}, root.exitingAddresses);
+        for (let i = 0; i < newlyDisconnectedMacs.length; i++) {
+            newExiting[newlyDisconnectedMacs[i]] = true;
+        }
+        for (let i = 0; i < newlyConnectedMacs.length; i++) {
+            newExiting[newlyConnectedMacs[i]] = true;
+        }
+        root.exitingAddresses = newExiting;
+    }
+
+    function handleDeviceExitFinished(address) {
+        if (!address) return;
+
+        let newExiting = Object.assign({}, root.exitingAddresses);
+        delete newExiting[address];
+        root.exitingAddresses = newExiting;
+
+        let newEntering = Object.assign({}, root.enteringAddresses);
+        newEntering[address] = true;
+        root.enteringAddresses = newEntering;
+
+        const currentList = BluetoothStatus.friendlyDeviceList || [];
+        _connectedDevicesModel = currentList.filter(d => d?.connected);
+        _savedDevicesModel = currentList.filter(d => d?.paired && !d?.connected);
+
+        clearEnteringTimer.restart();
+    }
+
+    Timer {
+        id: clearEnteringTimer
+        interval: (Appearance?.animation?.elementMoveEnter?.duration ?? 400) + 50
+        onTriggered: {
+            root.enteringAddresses = {};
+        }
+    }
+
+    Timer {
+        id: exitFallbackTimer
+        interval: (Appearance?.animation?.elementMoveExit?.duration ?? 200) + 150
+        running: Object.keys(root.exitingAddresses).length > 0
+        onTriggered: {
+            if (Object.keys(root.exitingAddresses).length > 0) {
+                root.syncListsImmediately();
+            }
+        }
+    }
+
+    function prepareForOpen() {
+        root.syncListsImmediately();
+        if (!Bluetooth.defaultAdapter)
+            return;
+        if (BluetoothStatus.enabled) {
+            BluetoothStatus.startDiscovery();
+            return;
+        }
+        // Powering on is asynchronous, so defer the scan until the adapter is up.
+        root._scanWhenEnabled = true;
+        BluetoothStatus.setEnabled(true);
+    }
+
+    function cleanupAfterClose() {
+        root._scanWhenEnabled = false;
+        BluetoothStatus.stopDiscovery();
+        root.syncListsImmediately();
+    }
+
+    property bool _scanWhenEnabled: false
+
+    Connections {
+        target: BluetoothStatus
+        function onEnabledChanged() {
+            if (!BluetoothStatus.enabled || !root._scanWhenEnabled)
+                return;
+            root._scanWhenEnabled = false;
+            BluetoothStatus.startDiscovery();
+        }
+        function onFriendlyDeviceListChanged() {
+            if (!root.show) {
+                root.syncListsImmediately();
+                return;
+            }
+            root.updateDeviceListsWithTransition();
+        }
+    }
+
+    onShowChanged: {
+        if (show)
+            root.prepareForOpen();
+        else
+            root.cleanupAfterClose();
+    }
+
+    Component.onDestruction: root.cleanupAfterClose()
+
+    // Header (margins, fonts, and spacing matching WifiDialog/VolumeDialog)
+    RowLayout {
+        Layout.fillWidth: true
+        Layout.leftMargin: 4
+        Layout.rightMargin: 4
+        spacing: 0
+        
+        StyledText {
+            Layout.fillWidth: true
+            text: Translation.tr("Bluetooth")
+            font.pixelSize: Appearance.font.pixelSize.larger
+            font.weight: Font.Bold
+            color: Appearance.colors.colOnLayer1
+        }
+
+        StyledSwitch {
+            checked: Bluetooth.defaultAdapter?.enabled ?? false
+            onToggled: {
+                BluetoothStatus.setEnabled(checked);
+            }
+        }
+    }
+
+    // Scrollable content area
+    StyledFlickable {
+        id: scrollArea
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        Layout.topMargin: -4
+        contentHeight: scrollContent.implicitHeight
+        clip: true
+
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: Item {
+                id: maskRoot
+                width: scrollArea.width
+                height: scrollArea.height
+
+                property color topFadeColor: scrollArea.atYBeginning ? "white" : "transparent"
+                property color bottomFadeColor: scrollArea.atYEnd ? "white" : "transparent"
+
+                Behavior on topFadeColor {
+                    ColorAnimation {
+                        duration: Appearance.animation.elementMoveFast.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                    }
+                }
+                Behavior on bottomFadeColor {
+                    ColorAnimation {
+                        duration: Appearance.animation.elementMoveFast.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                    }
+                }
+
+                Column {
+                    anchors.fill: parent
+                    spacing: 0
+
+                    Rectangle {
+                        width: parent.width
+                        height: Math.min(46, parent.height / 2)
+                        color: "transparent"
+                        gradient: Gradient {
+                            GradientStop {
+                                position: 0.0
+                                color: maskRoot.topFadeColor
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: "white"
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: Math.max(0, parent.height - Math.min(46, parent.height / 2) - Math.min(56, parent.height / 2))
+                        color: "white"
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: Math.min(56, parent.height / 2)
+                        color: "transparent"
+                        gradient: Gradient {
+                            GradientStop {
+                                position: 0.0
+                                color: "white"
+                            }
+                            GradientStop {
+                                position: 1.0
+                                color: maskRoot.bottomFadeColor
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ColumnLayout {
+            id: scrollContent
+            width: parent.width
+            spacing: 16
+
+            // Connected devices section
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 6
+                visible: Bluetooth.defaultAdapter?.enabled ?? false
+
+                StyledText {
+                    text: Translation.tr("Connected devices")
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.bold: true
+                    color: Appearance.colors.colSubtext
+                    Layout.fillWidth: true
+                }
+
+                // Empty state for connected devices
+                PagePlaceholder {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 120
+                    fillParent: false
+                    icon: "devices"
+                    title: Translation.tr("No connected devices")
+                    shape: MaterialShape.Shape.Cookie7Sided
+                    iconSize: 30
+                    titlePixelSize: Appearance.font.pixelSize.normal
+                    shown: root.connectedDevices.length === 0
+                }
+
+                // Connected devices list
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+                    visible: root.connectedDevices.length > 0
+
+                    Repeater {
+                        model: ScriptModel {
+                            values: root.connectedDevices
+                        }
+                        delegate: BluetoothDeviceItem {
+                            required property BluetoothDevice modelData
+                            required property int index
+                            device: modelData
+                            isFirst: index === 0
+                            isLast: index === root.connectedDevices.length - 1
+                            index: index
+                            totalCount: root.connectedDevices.length
+                            isPairedSection: true
+                            Layout.fillWidth: true
+                            isExiting: !!root.exitingAddresses[modelData?.address]
+                            animateEntry: !!root.enteringAddresses[modelData?.address]
+                            onExitFinished: root.handleDeviceExitFinished(modelData?.address)
+                        }
+                    }
+                }
+            }
+
+            // Saved devices section
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 6
+                visible: Bluetooth.defaultAdapter?.enabled ?? false
+
+                StyledText {
+                    text: Translation.tr("Saved devices")
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.bold: true
+                    color: Appearance.colors.colSubtext
+                    Layout.fillWidth: true
+                }
+
+                // Empty state for saved devices
+                PagePlaceholder {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 120
+                    fillParent: false
+                    icon: "bookmark"
+                    title: Translation.tr("No saved devices")
+                    shape: MaterialShape.Shape.Cookie7Sided
+                    iconSize: 30
+                    titlePixelSize: Appearance.font.pixelSize.normal
+                    shown: root.savedDevices.length === 0
+                }
+
+                // Saved devices list
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    spacing: 6
+                    visible: root.savedDevices.length > 0
+
+                    Repeater {
+                        model: ScriptModel {
+                            values: root.savedDevices
+                        }
+                        delegate: BluetoothDeviceItem {
+                            required property BluetoothDevice modelData
+                            required property int index
+                            device: modelData
+                            isFirst: index === 0
+                            isLast: index === root.savedDevices.length - 1
+                            index: index
+                            totalCount: root.savedDevices.length
+                            isPairedSection: true
+                            Layout.fillWidth: true
+                            isExiting: !!root.exitingAddresses[modelData?.address]
+                            animateEntry: !!root.enteringAddresses[modelData?.address]
+                            onExitFinished: root.handleDeviceExitFinished(modelData?.address)
+                        }
+                    }
+                }
+            }
+
+            // Available devices section
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 6
+                visible: Bluetooth.defaultAdapter?.enabled ?? false
+
+                StyledText {
+                    text: Translation.tr("Available devices")
+                    font.pixelSize: Appearance.font.pixelSize.normal
+                    font.bold: true
+                    color: Appearance.colors.colSubtext
+                    Layout.fillWidth: true
+                }
+
+                // Available devices list
+                ColumnLayout {
+                    id: availableDevicesList
+                    Layout.fillWidth: true
+                    spacing: 4
+                    visible: root.availableDevices.length > 0
+
+                    Repeater {
+                        model: ScriptModel {
+                            values: root.availableDevices
+                        }
+                        delegate: BluetoothDeviceItem {
+                            required property BluetoothDevice modelData
+                            required property int index
+                            device: modelData
+                            isFirst: index === 0
+                            isLast: index === root.availableDevices.length - 1
+                            index: index
+                            totalCount: root.availableDevices.length
+                            isPairedSection: false
+                            Layout.fillWidth: true
+                            isExiting: !!root.exitingAddresses[modelData?.address]
+                            animateEntry: !!root.enteringAddresses[modelData?.address]
+                            onExitFinished: root.handleDeviceExitFinished(modelData?.address)
+                        }
+                    }
+                }
+
+                // Searching / Empty placeholder for available devices
+                LoadingPlaceholder {
+                    id: availableDevicesPlaceholder
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 100
+                    visible: root.availableDevices.length === 0
+                    loading: Bluetooth.defaultAdapter?.discovering ?? false
+                    loadingText: Translation.tr("Searching...")
+                    emptyText: Translation.tr("No devices found")
+                    indicatorSize: 36
+                }
+
+                // Scan for devices button
+                RippleButton {
+                    id: scanForDevicesBtn
+                    Layout.fillWidth: true
+                    implicitHeight: 56
+                    buttonRadius: Appearance.rounding.large
+                    
+                    // Disabled when discovering is active
+                    enabled: !(Bluetooth.defaultAdapter?.discovering ?? false)
+                    opacity: enabled ? 1.0 : 0.5
+                    
+                    colBackground: scanMouseArea.containsPress ? Appearance.colors.colSurfaceContainerHighestActive
+                                   : scanMouseArea.containsMouse ? Appearance.colors.colSurfaceContainerHighestHover
+                                   : Appearance.colors.colSurfaceContainerHighest
+                    
+                    Behavior on colBackground {
+                        ColorAnimation { duration: 150 }
+                    }
+                    
+                    Behavior on opacity {
+                        NumberAnimation { duration: 150 }
+                    }
+
+                    MouseArea {
+                        id: scanMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: parent.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: {
+                            if (!Bluetooth.defaultAdapter?.discovering) {
+                                BluetoothStatus.startDiscovery();
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        anchors.centerIn: parent
+                        spacing: 12
+
+                        MaterialSymbol {
+                            text: "search"
+                            iconSize: 24
+                            color: Appearance.colors.colOnSurface
+                        }
+
+                        StyledText {
+                            text: Translation.tr("Scan for devices")
+                            font.pixelSize: Appearance.font.pixelSize.normal
+                            font.bold: true
+                            color: Appearance.colors.colOnSurface
+                        }
+                    }
+                }
+            }
+
+            // Bluetooth disabled placeholder
+            PagePlaceholder {
+                id: offPlaceholder
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                Layout.preferredHeight: 300
+                icon: "bluetooth_disabled"
+                title: Translation.tr("Bluetooth is off")
+                description: Translation.tr("Turn on Bluetooth to see devices")
+                shape: MaterialShape.Shape.Cookie7Sided
+                shown: !(Bluetooth.defaultAdapter?.enabled ?? false)
+                visible: shown
+            }
+        }
+    }
+
+    // Bottom Buttons Row (Details and Done)
+    WindowDialogButtonRow {
+        Layout.leftMargin: 0
+        Layout.rightMargin: 0
+        Layout.bottomMargin: -8
+        
+        // Details button with only a border and no fill
+        RippleButton {
+            id: detailsBtn
+            visible: root.showDetailsAction
+            buttonRadius: Appearance.rounding.full
+            colBackground: "transparent"
+            colBackgroundHover: "transparent"
+            colRipple: "transparent"
+            implicitHeight: 36
+            implicitWidth: detailsText.implicitWidth + 48
+
+            Rectangle {
+                anchors.fill: parent
+                color: "transparent"
+                border.width: 1
+                border.color: detailsBtn.hovered ? Appearance.colors.colOnSurface : Appearance.colors.colOutline
+                radius: parent.buttonEffectiveRadius
+
+                Behavior on border.color {
+                    ColorAnimation { duration: 150 }
+                }
+            }
+
+            contentItem: StyledText {
+                id: detailsText
+                text: Translation.tr("Details")
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: Appearance.font.pixelSize.small
+                font.variableAxes: ({
+                        "wght": 500
+                    })
+                color: detailsBtn.hovered ? Appearance.colors.colOnSurface : Appearance.colors.colOutline
+                Behavior on color { ColorAnimation { duration: 150 } }
+            }
+            onClicked: {
+                GlobalStates.openSettingsPage("network", "", "Bluetooth");
+                root.detailsRequested();
+                if (root.closeOwningSidebarOnDetails)
+                    GlobalStates.sidebarRightOpen = false;
+            }
+        }
+
+        Item {
+            Layout.fillWidth: true
+        }
+
+        // Done button with fill
+        RippleButton {
+            id: doneBtn
+            buttonRadius: Appearance.rounding.full
+            colBackground: Appearance.colors.colPrimary
+            colBackgroundHover: Appearance.colors.colPrimaryHover
+            colRipple: Appearance.colors.colPrimaryActive
+            implicitHeight: 36
+            implicitWidth: doneText.implicitWidth + 48
+
+            contentItem: StyledText {
+                id: doneText
+                text: Translation.tr("Done")
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: Appearance.font.pixelSize.small
+                font.variableAxes: ({
+                        "wght": 700
+                    })
+                color: Appearance.colors.colOnPrimary
+            }
+            onClicked: root.dismiss()
+        }
+    }
+}

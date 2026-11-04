@@ -1,17 +1,17 @@
 pragma Singleton
-pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import shell.services as RyokuServices
+import shell.services as HostServices
 
+// Adapter over the host's updates service: the daemon owns the background check (ryoku status topic) and streams the frame, so there is nothing to poll or parse here.
 Singleton {
     id: root
 
-    readonly property int count: RyokuServices.Updates.pending
-    readonly property bool checking: false
+    readonly property bool available: HostServices.Updates.available
+    readonly property int count: HostServices.Updates.pending
 
-    function refresh(): void {
-        RyokuServices.Updates.check();
+    function refresh() {
+        HostServices.Updates.check();
     }
 }

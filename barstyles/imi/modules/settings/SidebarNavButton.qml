@@ -1,0 +1,163 @@
+pragma ComponentBehavior: Bound
+import QtQuick
+import QtQuick.Layouts
+import "../../modules/common"
+import "../../modules/common/widgets"
+
+/**
+ * Settings v2 sidebar navigation button.
+ *
+ * Implements "smart radius" logic:
+ *   - Active item       → full radius on all 4 corners
+ *   - Item above active → full radius on bottom corners, verysmall on top
+ *   - Item below active → full radius on top corners, verysmall on bottom
+ *   - First in group    → full radius on top-outer corners
+ *   - Last in group     → full radius on bottom-outer corners
+ *   - Everything else   → verysmall radius on all corners
+ */
+Item {
+    id: root
+
+    scale: isPressed ? 0.95 : (mouseArea.containsMouse ? 1.03 : 1.0)
+    z: mouseArea.containsMouse || isPressed ? 1 : 0
+
+    Behavior on scale {
+        NumberAnimation {
+            duration: 150
+            easing.type: Easing.OutQuad
+        }
+    }
+
+    // ── Position context (set by parent Repeater) ──────────────────────────
+    property bool isFirst: false
+    property bool isLast: false
+    property bool isActive: false
+    property bool prevIsActive: false   // item immediately above is active
+    property bool nextIsActive: false   // item immediately below is active
+
+    property bool isPressed: mouseArea.pressed
+    property bool prevIsPressed: false
+    property bool nextIsPressed: false
+
+    // ── Page data ──────────────────────────────────────────────────────────
+    property string iconName: ""
+    property string pageLabel: ""
+
+    // ── Geometry ───────────────────────────────────────────────────────────
+    property real itemHeight: 52
+
+    Layout.fillWidth: true
+    implicitWidth: 100
+    implicitHeight: itemHeight
+
+    // ── Radius helpers ─────────────────────────────────────────────────────
+    readonly property real _rFull: Appearance.rounding.scale === 0 ? 0 : Math.min(itemHeight / 2, Appearance.rounding.large ?? 24)
+    readonly property real _rLarge: Appearance.rounding.scale === 0 ? 0 : (Appearance.rounding.large ?? 24)
+    readonly property real _rSmall: Appearance.rounding.scale === 0 ? 0 : (Appearance.rounding.verysmall ?? 4)
+
+    readonly property bool _isTopPill: isActive || isPressed || prevIsActive || prevIsPressed
+    readonly property bool _isBottomPill: isActive || isPressed || nextIsActive || nextIsPressed
+
+    readonly property real _topLeftRadius: _isTopPill ? _rFull : (isFirst ? _rLarge : _rSmall)
+    readonly property real _topRightRadius: _isTopPill ? _rFull : (isFirst ? _rLarge : _rSmall)
+    readonly property real _bottomLeftRadius: _isBottomPill ? _rFull : (isLast ? _rLarge : _rSmall)
+    readonly property real _bottomRightRadius: _isBottomPill ? _rFull : (isLast ? _rLarge : _rSmall)
+
+    // ── Signal ─────────────────────────────────────────────────────────────
+    signal clicked
+
+    // ── Background ─────────────────────────────────────────────────────────
+    Rectangle {
+        id: btnBg
+        anchors.fill: parent
+        antialiasing: true
+
+        topLeftRadius: root._topLeftRadius
+        topRightRadius: root._topRightRadius
+        bottomLeftRadius: root._bottomLeftRadius
+        bottomRightRadius: root._bottomRightRadius
+
+        color: isActive ? (mouseArea.pressed ? Appearance.colors.colPrimaryActive : mouseArea.containsMouse ? Appearance.colors.colPrimaryHover : Appearance.colors.colPrimary) : (mouseArea.pressed ? Appearance.colors.colLayer2Active : mouseArea.containsMouse ? Appearance.colors.colLayer2Hover : Appearance.colors.colLayer2)
+
+        Behavior on color {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(btnBg)
+        }
+        Behavior on topLeftRadius {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(btnBg)
+        }
+        Behavior on topRightRadius {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(btnBg)
+        }
+        Behavior on bottomLeftRadius {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(btnBg)
+        }
+        Behavior on bottomRightRadius {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(btnBg)
+        }
+    }
+
+    // ── Content ────────────────────────────────────────────────────────────
+    RowLayout {
+        anchors {
+            fill: parent
+            leftMargin: 8
+            rightMargin: 12
+        }
+        spacing: 12
+
+        // Circle icon container
+        Rectangle {
+            id: iconCircle
+            implicitWidth: 36
+            implicitHeight: 36
+            radius: width / 2
+            Layout.alignment: Qt.AlignVCenter
+
+            color: isActive ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(Appearance.colors.colOnLayer2.r, Appearance.colors.colOnLayer2.g, Appearance.colors.colOnLayer2.b, 0.10)
+
+            Behavior on color {
+                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+            }
+
+            MaterialSymbol {
+                anchors.centerIn: parent
+                text: root.iconName
+                iconSize: 20
+                fill: isActive ? 1 : 0
+                color: isActive ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer2
+
+                Behavior on color {
+                    animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+                }
+                Behavior on fill {
+                    NumberAnimation {
+                        duration: 150
+                    }
+                }
+            }
+        }
+
+        // Label
+        StyledText {
+            text: root.pageLabel
+            Layout.fillWidth: true
+            elide: Text.ElideRight
+            font.pixelSize: Appearance.font.pixelSize.small
+            font.weight: isActive ? Font.DemiBold : Font.Normal
+            color: isActive ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer2
+
+            Behavior on color {
+                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+            }
+        }
+    }
+
+    // ── Interaction ────────────────────────────────────────────────────────
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.clicked()
+    }
+}

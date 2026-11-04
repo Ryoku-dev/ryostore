@@ -8,10 +8,9 @@ Item {
     id: root
     required property string text
     property bool shown: false
-    property real horizontalPadding: Appearance.spacing.space125
-    property real verticalPadding: Appearance.spacing.space50
+    property real horizontalPadding: 10
+    property real verticalPadding: 5
     property alias font: tooltipTextObject.font
-    property alias textFormat: tooltipTextObject.textFormat
     implicitWidth: tooltipTextObject.implicitWidth + 2 * root.horizontalPadding
     implicitHeight: tooltipTextObject.implicitHeight + 2 * root.verticalPadding
 
@@ -45,9 +44,10 @@ Item {
             anchors.centerIn: parent
             text: root.text
             font.pixelSize: Appearance?.font.pixelSize.smaller ?? 14
-            font.hintingPreference: Font.PreferNoHinting
+            font.hintingPreference: Font.PreferNoHinting // Prevent shaky text
             color: Appearance?.colors.colOnTooltip ?? "#FFFFFF"
             wrapMode: Text.Wrap
         }
     }   
 }
+

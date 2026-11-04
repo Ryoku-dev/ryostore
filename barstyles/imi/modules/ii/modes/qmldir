@@ -1,0 +1,25 @@
+module qs.modules.ii.modes
+ActionList 1.0 ActionList.qml
+ActionRow 1.0 ActionRow.qml
+AddRowButton 1.0 AddRowButton.qml
+ChipInput 1.0 ChipInput.qml
+ColorDots 1.0 ColorDots.qml
+DurationField 1.0 DurationField.qml
+EditorRow 1.0 EditorRow.qml
+EditorSection 1.0 EditorSection.qml
+FormChoice 1.0 FormChoice.qml
+FormHint 1.0 FormHint.qml
+FormIconButton 1.0 FormIconButton.qml
+FormLabel 1.0 FormLabel.qml
+IconPicker 1.0 IconPicker.qml
+ModesAiAgent 1.0 ModesAiAgent.qml
+ModesApp 1.0 ModesApp.qml
+ModesAppContent 1.0 ModesAppContent.qml
+ModesAppWindow 1.0 ModesAppWindow.qml
+singleton ModeUi 1.0 ModeUi.qml
+PercentField 1.0 PercentField.qml
+PlainField 1.0 PlainField.qml
+SmallButton 1.0 SmallButton.qml
+TimeField 1.0 TimeField.qml
+TriggerRow 1.0 TriggerRow.qml
+TypeMenu 1.0 TypeMenu.qml

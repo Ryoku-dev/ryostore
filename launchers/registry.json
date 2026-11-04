@@ -77,6 +77,31 @@
       "lastUpdated": "2026-10-29",
       "official": false,
       "license": "MIT"
+    },
+    {
+      "id": "imi",
+      "name": "Imi",
+      "version": "1.0.0",
+      "path": "launchers/imi",
+      "author": "dodo986",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/launchers/imi",
+      "summary": "Imi overview search",
+      "description": "Grouped search with nine core panels - apps with frecency, calculator, clipboard, emojis, windows, commands, web search, file search and file content - hosted natively by the shell.",
+      "tags": [
+        "search",
+        "apps",
+        "panels",
+        "material3"
+      ],
+      "accent": "#9ecaff",
+      "surface": "#141414",
+      "preview": "assets/preview.png",
+      "screenshots": [],
+      "manifest": "manifest.json",
+      "manifestSha256": "a1bb7a58514f4db7d8273cb3eb2bf076edbe4ffabe8be60b3550368c26ef20ef",
+      "lastUpdated": "2026-11-04",
+      "official": false,
+      "license": "GPL-3.0-only"
     }
   ]
 }

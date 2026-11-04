@@ -4,17 +4,21 @@ import "."
 import QtQuick
 import QtQuick.Controls
 
-
+/**
+ * Material 3 progress bar. See https://m3.material.io/components/progress-indicators/overview
+ */
 ProgressBar {
     id: root
     property real valueBarWidth: 120
     property real valueBarHeight: 4
     property real valueBarGap: 4
+    readonly property real stopPointSize: Math.max(4, Math.round(valueBarHeight * 2 / 3))
+    readonly property real stopPointMargin: Math.max(2, Math.round(stopPointSize * 0.4))
     property color highlightColor: Appearance?.colors.colPrimary ?? "#685496"
     property color trackColor: Appearance?.m3colors.m3secondaryContainer ?? "#F1D3F9"
-    property bool wavy: false
-    property bool animateWave: true
-    property real waveAmplitudeMultiplier: wavy ? 0.5 : 0
+    property bool wavy: false // If true, the progress bar will have a wavy fill effect
+    property bool animateWave: false
+    property real waveAmplitudeMultiplier: wavy ? 0.3 : 0
     property real waveFrequency: 6
     property real waveFps: 60
 
@@ -25,7 +29,7 @@ ProgressBar {
     Behavior on value {
         animation: Appearance?.animation.elementMoveEnter.numberAnimation.createObject(this)
     }
-    
+
     background: Item {
         implicitHeight: valueBarHeight
         implicitWidth: valueBarWidth
@@ -45,22 +49,12 @@ ProgressBar {
                 id: wavyFill
                 frequency: root.waveFrequency
                 color: root.highlightColor
-                amplitudeMultiplier: root.wavy ? 0.5 : 0
+                amplitudeMultiplier: root.waveAmplitudeMultiplier
                 height: contentItem.height * 6
                 width: contentItem.width * root.visualPosition
                 lineWidth: contentItem.height
                 fullLength: root.width
-                Connections {
-                    target: root
-                    function onValueChanged() { wavyFill.requestPaint(); }
-                    function onHighlightColorChanged() { wavyFill.requestPaint(); }
-                }
-                FrameAnimation {
-                    running: root.animateWave
-                    onTriggered: {
-                        wavyFill.requestPaint()
-                    }
-                }
+                animateWave: root.animateWave
             }
         }
 
@@ -70,24 +64,35 @@ ProgressBar {
                 anchors.left: parent.left
                 width: contentItem.width * root.visualPosition
                 height: contentItem.height
-                radius: height / 2
+                radius: Appearance.rounding.full
                 color: root.highlightColor
             }
         }
-        
-        Rectangle {
+
+        Rectangle { // Right remaining part fill
+            readonly property real remainingSpace: (1 - root.visualPosition) * contentItem.width
+            readonly property real computedWidth: remainingSpace - root.valueBarGap
+            visible: computedWidth > 1
             anchors.right: parent.right
-            width: (1 - root.visualPosition) * parent.width - valueBarGap
+            width: Math.max(0, computedWidth)
             height: parent.height
-            radius: height / 2
+            radius: Appearance.rounding.full
             color: root.trackColor
         }
-        
-        Rectangle {
+
+        Rectangle { // Stop point
+            readonly property real remainingTrackWidth: (1 - root.visualPosition) * contentItem.width - root.valueBarGap
+            readonly property real availableSize: remainingTrackWidth - 2 * root.stopPointMargin
+            readonly property int trackGap: Math.max(1, Math.round((parent.height - root.stopPointSize) / 2))
+            readonly property real alignedStopPointSize: parent.height - (trackGap * 2)
+            readonly property real effectiveSize: Math.min(alignedStopPointSize, Math.max(0, availableSize))
+            visible: effectiveSize >= 2
+            anchors.rightMargin: root.stopPointMargin
             anchors.right: parent.right
-            width: valueBarGap
-            height: valueBarGap
-            radius: height / 2
+            anchors.verticalCenter: parent.verticalCenter
+            width: effectiveSize
+            height: effectiveSize
+            radius: effectiveSize / 2
             color: root.highlightColor
         }
     }

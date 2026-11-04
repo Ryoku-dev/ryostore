@@ -1,0 +1,372 @@
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Effects
+import Qt5Compat.GraphicalEffects
+import "../../../../common"
+import "../../../../common/widgets"
+import "../../../../common/functions"
+import "../../../../../services"
+import Quickshell
+import Quickshell.Io
+import Quickshell.Services.Mpris
+
+Item {
+    id: root
+
+    required property MprisPlayer player
+
+    readonly property color colBg: Config.options.appearance.transparency.popups ? Appearance.colors.colLayer4 : Appearance.m3colors.m3surfaceContainer
+    readonly property color colAlbumBg: Config.options.appearance.transparency.popups ? Appearance.colors.colLayer4 : Appearance.m3colors.m3surfaceContainerHigh
+    readonly property color colControlsBg: Appearance.colors.colPrimaryContainer
+    readonly property color colText: Appearance.colors.colOnSurface
+    readonly property color colTimeMain: Appearance.colors.colOnPrimaryContainer
+    readonly property color colTimeSub: ColorUtils.transparentize(Appearance.colors.colOnPrimaryContainer, 0.4)
+    readonly property color colProgressHighlight: Appearance.colors.colPrimary
+    readonly property color colProgressTrack: ColorUtils.transparentize(Appearance.colors.colOnPrimaryContainer, 0.6)
+    readonly property color colBtnSecondary: Appearance.colors.colSecondaryContainer
+    readonly property color colBtnSecondaryHover: Appearance.colors.colSecondaryContainerHover
+    readonly property color colBtnSecondaryActive: Appearance.colors.colSecondaryContainerActive
+    readonly property color colBtnPlayBg: Appearance.colors.colPrimary
+    readonly property color colBtnPlayRipple: Appearance.colors.colPrimaryHover
+    readonly property color colBtnPlayIcon: Appearance.colors.colOnPrimary
+    readonly property color colBtnIcon: Appearance.colors.colOnSecondaryContainer
+    readonly property color colAlbumBorder: Appearance.m3colors.m3surfaceContainer
+
+    readonly property int globalRadius: Appearance.rounding.large
+    readonly property int controlsRadius: Appearance.rounding.large
+    readonly property int btnRadius: Appearance.rounding.large
+    readonly property int btnPlayRadius: Appearance.rounding.full
+
+    readonly property int cardPadding: 12
+    readonly property int cardSpacing: 10
+    readonly property int albumContainerSize: 148
+    readonly property int albumCircleSize: 128
+    readonly property int albumBorderWidth: 8
+    readonly property int centerDotSize: 32
+    readonly property int controlsPadding: 16
+    readonly property int controlsSpacing: 8
+    readonly property int timerSpacing: 6
+    readonly property int timerPrimarySize: Appearance.font.pixelSize.huge
+    readonly property int timerSecondarySize: Appearance.font.pixelSize.small
+    readonly property int btnRowHeight: 44
+    readonly property int btnPlayWidth: 44
+
+    readonly property string trackTitle: player?.trackTitle || Translation.tr("No media")
+    readonly property string trackArtist: player?.trackArtist || Translation.tr("Unknown Artist")
+    readonly property string artUrl: player?.trackArtUrl ?? ""
+    readonly property string artSource: CoverArt.source(root.artUrl)
+
+    implicitWidth: cardPadding * 2 + albumContainerSize + cardSpacing + 350
+    implicitHeight: 240
+
+    FontLoader {
+        id: ledFont
+        source: Qt.resolvedUrl("../../../assets/fonts/LED Dot-Matrix.ttf")
+    }
+
+    Timer {
+        running: root.player?.playbackState == MprisPlaybackState.Playing
+        interval: Config.options.resources.updateInterval
+        repeat: true
+        onTriggered: root.player.positionChanged()
+    }
+
+    Rectangle {
+        id: mainBg
+        anchors.fill: parent
+        anchors.margins: 8
+        color: root.colBg
+        radius: root.globalRadius
+        border.color: Appearance.colors.colLayer0Border
+        border.width: 1
+        clip: true
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: root.cardPadding
+            spacing: root.cardSpacing
+
+            StyledText {
+                Layout.fillWidth: true
+                text: root.trackTitle.toUpperCase()
+                color: root.colText
+                font.family: ledFont.name
+                font.pixelSize: 28
+                font.weight: Font.Light
+                elide: Text.ElideRight
+                Layout.bottomMargin: -6
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                spacing: root.cardSpacing
+
+                Rectangle {
+                    id: albumPill
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: height
+                    Layout.alignment: Qt.AlignVCenter
+                    color: root.colAlbumBg
+                    radius: root.globalRadius
+
+                    Item {
+                        id: albumArtItem
+                        anchors.centerIn: parent
+                        width: parent.height - 20
+                        height: parent.height - 20
+
+                        RotationAnimator {
+                            target: albumArtItem
+                            from: 0
+                            to: 360
+                            duration: 10000
+                            loops: Animation.Infinite
+                            running: root.player?.isPlaying
+                        }
+
+                        Image {
+                            id: albumArtImage
+                            anchors.fill: parent
+                            anchors.margins: 1
+                            source: root.artSource
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                            cache: false
+                            antialiasing: true
+                            sourceSize.width: width
+                            sourceSize.height: height
+
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: Rectangle {
+                                    width: albumArtImage.width
+                                    height: albumArtImage.height
+                                    radius: width / 2
+                                }
+                            }
+                        }
+
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            visible: albumArtImage.status !== Image.Ready
+                            iconSize: 48
+                            text: "music_note"
+                            color: Appearance.colors.colSubtext
+                        }
+
+                        // Inset ring border on top of image
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "transparent"
+                            radius: width / 2
+                            border.color: root.colAlbumBorder
+                            border.width: root.albumBorderWidth
+                            z: 2
+                        }
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: root.centerDotSize
+                            height: root.centerDotSize
+                            radius: width / 2
+                            color: Appearance.m3colors.m3surfaceContainer
+                            z: 3
+                        }
+                    }
+                }
+
+                // Controls panel
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.alignment: Qt.AlignVCenter
+                    color: root.colControlsBg
+                    radius: root.controlsRadius
+                    clip: true
+
+                    ColumnLayout {
+                        anchors.fill: parent
+                        anchors.topMargin: root.controlsPadding
+                        anchors.leftMargin: root.controlsPadding
+                        anchors.rightMargin: root.controlsPadding
+                        anchors.bottomMargin: root.controlsPadding
+                        spacing: root.controlsSpacing
+
+                        RowLayout {
+                            Layout.fillWidth: true
+                            spacing: root.timerSpacing
+                            Layout.alignment: Qt.AlignTop
+
+                            Text {
+                                text: StringUtils.friendlyTimeForSeconds(MprisController.trackPositionOf(root.player))
+                                color: root.colTimeMain
+                                font.pixelSize: root.timerPrimarySize
+                                font.weight: Font.ExtraBold
+                                Layout.alignment: Qt.AlignTop
+                            }
+
+                            Text {
+                                text: MprisController.hasTrackLength(root.player)
+                                    ? StringUtils.friendlyTimeForSeconds(root.player.length) : "\u2013\u2013:\u2013\u2013"
+                                color: root.colTimeSub
+                                font.pixelSize: root.timerSecondarySize
+                                font.weight: Font.Regular
+                                Layout.alignment: Qt.AlignTop
+                                Layout.topMargin: 4
+                            }
+
+                            StyledText {
+                                text: root.trackArtist
+                                color: root.colTimeSub
+                                font.pixelSize: root.timerSecondarySize
+                                font.weight: Font.Regular
+                                Layout.maximumWidth: 150
+                                elide: Text.ElideRight
+                                horizontalAlignment: Text.AlignLeft
+                                Layout.alignment: Qt.AlignTop
+                                Layout.topMargin: 4
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                            }
+
+                            RippleButton {
+                                implicitWidth: 20
+                                implicitHeight: 20
+                                Layout.alignment: Qt.AlignTop
+                                Layout.topMargin: 3
+                                colBackground: "transparent"
+                                colBackgroundHover: root.colBtnSecondaryHover
+                                colRipple: root.colBtnSecondaryActive
+                                buttonRadius: Appearance.rounding.full
+                                contentItem: MaterialSymbol {
+                                    text: "keep"
+                                    iconSize: 18
+                                    fill: GlobalStates.mediaControlsPinned ? 1 : 0
+                                    color: GlobalStates.mediaControlsPinned ? Appearance.colors.colPrimary : root.colTimeSub
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+                                onClicked: GlobalStates.mediaControlsPinned = !GlobalStates.mediaControlsPinned
+                            }
+                        }
+
+                        Item {
+                            Layout.fillWidth: true
+                            implicitHeight: Math.max(sliderLoader.implicitHeight, progressLoader.implicitHeight)
+
+                            Loader {
+                                id: sliderLoader
+                                anchors.fill: parent
+                                active: root.player?.canSeek ?? false
+                                sourceComponent: StyledSlider {
+                                    configuration: StyledSlider.Configuration.Wavy
+                                    animateWave: (root.player?.isPlaying ?? false) && root.visible
+                                    highlightColor: root.colProgressHighlight
+                                    trackColor: root.colProgressTrack
+                                    handleColor: root.colProgressHighlight
+                                    value: MprisController.trackProgressOf(root.player)
+                                    // Nothing to seek to while the player publishes no length.
+                                    enabled: MprisController.hasTrackLength(root.player)
+                                    onMoved: MprisController.seekFraction(root.player, value)
+                                    // QQuickSlider writes `value` itself while the user drags, which destroys
+                                    // the binding below it. Without this the bar froze where the drag left it
+                                    // and never followed the track again.
+                                    onPressedChanged: if (!pressed)
+                                        value = Qt.binding(() => MprisController.trackProgressOf(root.player))
+                                }
+                            }
+
+                            Loader {
+                                id: progressLoader
+                                anchors {
+                                    verticalCenter: parent.verticalCenter
+                                    left: parent.left
+                                    right: parent.right
+                                }
+                                active: !!root.player && !sliderLoader.active
+                                sourceComponent: StyledProgressBar {
+                                    wavy: root.player?.isPlaying
+                                    animateWave: (root.player?.isPlaying ?? false) && root.visible
+                                    highlightColor: root.colProgressHighlight
+                                    trackColor: root.colProgressTrack
+                                    value: MprisController.trackProgressOf(root.player)
+                                }
+                            }
+                        }
+
+                        // Buttons row
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: root.btnRowHeight
+                            spacing: root.controlsSpacing
+
+                            RippleButton {
+                                Layout.fillWidth: true
+                                Layout.preferredWidth: 0
+                                Layout.preferredHeight: root.btnPlayWidth
+                                Layout.alignment: Qt.AlignVCenter
+                                colBackground: root.colBtnSecondary
+                                colBackgroundHover: root.colBtnSecondaryHover
+                                colRipple: root.colBtnSecondaryActive
+                                buttonRadius: root.btnRadius
+                                contentItem: MaterialSymbol {
+                                    text: "skip_previous"
+                                    color: root.colBtnIcon
+                                    fill: 1
+                                    iconSize: Appearance.font.pixelSize.huge
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+                                onClicked: root.player?.previous()
+                            }
+
+                            RippleButton {
+                                implicitWidth: root.btnPlayWidth
+                                implicitHeight: root.btnPlayWidth
+                                colBackground: root.colBtnPlayBg
+                                colRipple: root.colBtnPlayRipple
+                                buttonRadius: root.player?.isPlaying ? Appearance.rounding.small : Appearance.rounding.full
+
+                                Behavior on buttonRadius {
+                                    NumberAnimation {
+                                        duration: 250
+                                        easing.type: Easing.OutQuint
+                                    }
+                                }
+
+                                contentItem: MaterialSymbol {
+                                    text: root.player?.isPlaying ? "pause" : "play_arrow"
+                                    color: root.colBtnPlayIcon
+                                    fill: 1
+                                    iconSize: Appearance.font.pixelSize.huge
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+                                onClicked: root.player?.togglePlaying()
+                            }
+
+                            RippleButton {
+                                Layout.fillWidth: true
+                                Layout.preferredWidth: 0
+                                Layout.preferredHeight: root.btnPlayWidth
+                                Layout.alignment: Qt.AlignVCenter
+                                colBackground: root.colBtnSecondary
+                                colBackgroundHover: root.colBtnSecondaryHover
+                                colRipple: root.colBtnSecondaryActive
+                                buttonRadius: root.btnRadius
+                                contentItem: MaterialSymbol {
+                                    text: "skip_next"
+                                    color: root.colBtnIcon
+                                    fill: 1
+                                    iconSize: Appearance.font.pixelSize.huge
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+                                onClicked: root.player?.next()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,110 @@
+import "../../../../common"
+import "../../../../common/widgets"
+import QtQuick
+import QtQuick.Layouts
+
+Item {
+    id: root
+    required property string iconName
+    required property double percentage
+    property int warningThreshold: 100
+    property bool shown: true
+    property bool showPercentageText: Config.options.bar.resources.showPercentageText
+    clip: true
+    visible: width > 0 && height > 0
+    implicitWidth: resourceRowLayout.x < 0 ? 0 : resourceRowLayout.implicitWidth
+    implicitHeight: Appearance.sizes.baseBarHeight
+    property bool warning: percentage * 100 >= warningThreshold
+
+    property color colorActive: Appearance.colors.colOnSecondaryContainer
+    property color colorIcon: Appearance.colors.colOnSecondaryContainer
+    property color colorText: Appearance.colors.colOnLayer1
+
+    RowLayout {
+        id: resourceRowLayout
+        spacing: 4
+        x: shown ? 0 : -resourceRowLayout.width
+        anchors {
+            verticalCenter: parent.verticalCenter
+        }
+
+        ClippedFilledCircularProgress {
+            id: resourceCircProg
+            Layout.alignment: Qt.AlignVCenter
+            lineWidth: Appearance.rounding.unsharpen
+            value: percentage
+            implicitSize: 20
+            colPrimary: root.warning ? Appearance.colors.colError : root.colorActive
+            accountForLightBleeding: !root.warning
+            enableAnimation: false
+
+            Item {
+                anchors.centerIn: parent
+                width: resourceCircProg.implicitSize
+                height: resourceCircProg.implicitSize
+
+                MaterialSymbol {
+                    anchors.centerIn: parent
+                    font.weight: Font.DemiBold
+                    fill: 1
+                    text: iconName
+                    iconSize: Appearance.font.pixelSize.normal
+                    color: root.colorIcon
+                }
+            }
+        }
+
+        Item {
+            id: percentageTextContainer
+            Layout.alignment: Qt.AlignVCenter
+            implicitWidth: root.showPercentageText ? (fullPercentageTextMetrics.width + 5) : 0
+            implicitHeight: percentageText.implicitHeight
+            visible: root.showPercentageText
+            clip: true
+
+            TextMetrics {
+                id: fullPercentageTextMetrics
+                text: "100"
+                font.pixelSize: Appearance.font.pixelSize.small
+            }
+
+            StyledText {
+                id: percentageText
+                anchors.centerIn: parent
+                color: root.colorText
+                font.pixelSize: Appearance.font.pixelSize.small
+                text: {
+                    if (root.iconName === "thermostat") {
+                        if (Config.options.bar.weather.useUSCS) {
+                            return Math.round((root.percentage * 100) * 1.8 + 32) + "°F";
+                        } else {
+                            return Math.round(root.percentage * 100) + "°C";
+                        }
+                    } else {
+                        return `${Math.round(root.percentage * 100).toString()}%`;
+                    }
+                }
+            }
+
+            Behavior on implicitWidth {
+                animation: Appearance.animation.barResize.numberAnimation.createObject(this)
+            }
+        }
+
+        Behavior on x {
+            animation: Appearance.animation.elementMove.numberAnimation.createObject(this)
+        }
+    }
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.NoButton
+        enabled: resourceRowLayout.x >= 0 && root.width > 0 && root.visible
+    }
+
+    Behavior on implicitWidth {
+        animation: Appearance.animation.barResize.numberAnimation.createObject(this)
+    }
+}

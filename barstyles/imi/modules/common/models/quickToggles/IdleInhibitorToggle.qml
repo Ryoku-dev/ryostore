@@ -1,15 +1,20 @@
 import QtQuick
+import Quickshell
+import "../../../.."
 import "../../../../services"
 import "../.."
 import "../../functions"
 import "../../widgets"
-import shell.services as RyokuServices
 
 QuickToggleModel {
     name: Translation.tr("Keep awake")
+    statusText: Idle.timed ? Translation.tr("%1 left").arg(Idle.remainingText) : toggled ? Translation.tr("On") : Translation.tr("Off")
 
-    toggled: RyokuServices.Toggles.keepAwake
-    icon: "coffee"
-    mainAction: () => RyokuServices.Toggles.toggleCaffeine()
-    tooltipText: Translation.tr("Keep system awake")
+    toggled: Idle.inhibit
+    icon: toggled ? "kettle" : "coffee"
+    mainAction: () => {
+        Idle.toggleInhibit()
+    }
+    hasMenu: true
+    tooltipText: Translation.tr("Keep system awake | Right-click to set a duration")
 }

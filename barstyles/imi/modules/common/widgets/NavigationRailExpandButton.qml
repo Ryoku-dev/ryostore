@@ -3,18 +3,33 @@ import QtQuick.Layouts
 import ".."
 import "."
 
-IconButton {
+RippleButton {
     id: root
     Layout.alignment: Qt.AlignLeft
-    Layout.leftMargin: Appearance.spacing.space100
-    iconSize: Appearance.font.pixelSize.hugeass
-    buttonIcon: root.parent.expanded ? "menu_open" : "menu"
+    implicitWidth: 40
+    implicitHeight: 40
+    Layout.leftMargin: 8
     downAction: () => {
         parent.expanded = !parent.expanded;
     }
+    buttonRadius: Appearance.rounding.full
+    property bool _isInitialized: false
+    Component.onCompleted: _isInitialized = true
+
 
     rotation: root.parent.expanded ? 0 : -180
     Behavior on rotation {
+        enabled: root._isInitialized
+
         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+    }
+
+    contentItem: MaterialSymbol {
+        id: icon
+        anchors.centerIn: parent
+        horizontalAlignment: Text.AlignHCenter
+        iconSize: 24
+        color: Appearance.colors.colOnLayer1
+        text: root.parent.expanded ? "menu_open" : "menu"
     }
 }

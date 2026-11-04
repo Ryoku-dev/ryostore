@@ -1,0 +1,312 @@
+import QtQuick
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
+import "../../../../services"
+import "../.."
+import ".."
+import "../../animations"
+import "../../models/quickToggles"
+import "../../functions"
+import "../../widgets"
+import "QuickToggleCatalog.js" as QuickToggleCatalog
+import "QuickToggleResize.js" as Resize
+
+Item {
+    id: root
+
+    required property int buttonIndex
+    required property var buttonData
+    required property real baseCellWidth
+    required property real baseCellHeight
+
+    // Mirrors AndroidQuickToggleButton: chrome scales with the cell height so touch-sized
+    // grids get proportionally larger icons. Identity at the ii default cell height.
+    function scaled(value) {
+        return QuickToggleMetrics.scaled(root.baseCellHeight, value);
+    }
+    required property real cellSpacing
+    required property int cellSize
+
+    readonly property var catalogSize: QuickToggleCatalog.normalizeSize(root.buttonData.type, root.buttonData.sizeW, root.buttonData.sizeH, root.gridColumns)
+
+    property bool editMode: false
+    property bool isUnused: false
+    property bool isDragging: false
+    property real dragOffsetX: 0
+    property real dragOffsetY: 0
+    property int pageIndex: 0
+    property int gridColumns: 4
+    property var panel: null
+    property var gridRef: null
+
+    // Active pages and the drawer use one explicit packed coordinate system.
+    // Bind only when geometry is present so fixed sliders can still be owned by
+    // their Column positioner.
+    readonly property bool hasExplicitGeometry: root.buttonData
+        && root.buttonData.layoutX !== undefined
+        && root.buttonData.layoutY !== undefined
+    Binding on x {
+        when: root.hasExplicitGeometry
+        value: editableItem.resizing ? editableItem.resizeOriginX : Number(root.buttonData.layoutX)
+        restoreMode: Binding.RestoreBindingOrValue
+    }
+    Binding on y {
+        when: root.hasExplicitGeometry
+        value: editableItem.resizing ? editableItem.resizeOriginY : Number(root.buttonData.layoutY)
+        restoreMode: Binding.RestoreBindingOrValue
+    }
+    z: root.isDragging || editableItem.resizing ? 100 : 0
+
+    Behavior on x {
+        enabled: root.hasExplicitGeometry && !root.isDragging && !editableItem.resizing
+        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(root)
+    }
+    Behavior on y {
+        enabled: root.hasExplicitGeometry && !root.isDragging && !editableItem.resizing
+        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(root)
+    }
+
+    property int entranceTrigger: -1
+    readonly property bool entranceAnimationsEnabled: Config.options.sidebar.dashboardEntranceAnimations
+    readonly property bool entrancePageActive: root.pageIndex === -1 || !root.panel
+        || root.panel.currentPage === root.pageIndex
+
+    DashboardEntranceProgress {
+        id: entranceProgress
+        animationSpec: Appearance.animation.elementMove
+        animationsEnabled: root.entranceAnimationsEnabled
+        trigger: root.entranceTrigger
+        pageActive: root.entrancePageActive
+        delayIndex: Math.min(Math.max(root.buttonIndex, 0), 15)
+        baseDelayRatio: 0.35
+        staggerRatio: 0.1
+    }
+
+    property real currentSliderValue: root.sliderValue * entranceProgress.progress
+    property int _activeValueAnimDuration: 0
+
+    property string tooltipText: ""
+
+    property string materialSymbol: ""
+    property string secondaryMaterialSymbol: ""
+    property real sliderValue: 0
+    signal moved(real value)
+    
+    // For specific toggles to handle right-click actions if they want
+    signal openMenu
+
+    // Effective sizes for live preview during resize
+    readonly property int effectiveSizeW: root.catalogSize[0]
+    readonly property int effectiveSizeH: root.catalogSize[1]
+    readonly property bool isVertical: root.effectiveSizeH >= 3
+    readonly property real verticalProgress: Resize.progress(visualButton.height,
+        root.baseCellHeight * 2 + root.cellSpacing, root.baseCellHeight * 3 + root.cellSpacing * 2)
+    readonly property real tallProgress: Resize.progress(visualButton.height,
+        root.compactHeight, root.baseCellHeight * 2 + root.cellSpacing)
+
+    property bool hovered: hoverHandler.hovered || (root.editMode && editableItem.containsMouse)
+
+    HoverHandler {
+        id: hoverHandler
+    }
+
+    property real baseWidth: root.baseCellWidth * root.effectiveSizeW + cellSpacing * (root.effectiveSizeW - 1)
+    property real baseHeight: root.baseCellHeight * root.effectiveSizeH + cellSpacing * (root.effectiveSizeH - 1)
+
+    // Compact vertical footprint: the track keeps StyledSlider's M preset at the
+    // reference cell height, so a full cell read as ~13px of dead margin per side.
+    // The widget hugs the track instead, and the packer reserves this height for
+    // slider-only rows (QuickToggleLayout.rowPixelHeights) instead of a full cell.
+    readonly property real compactHeight: QuickToggleMetrics.sliderWidgetHeight(root.baseCellHeight)
+
+    readonly property real effectiveTrackThickness: {
+        var baseTrack = QuickToggleMetrics.sliderTrack(root.baseCellHeight);
+        if (!(baseTrack > 0))
+            baseTrack = 30; // StyledSlider.Configuration.M
+        var maxTrack = Math.max(baseTrack, visualButton.height - root.scaled(12));
+        var horizontalTrack = Resize.mix(baseTrack, (baseTrack + maxTrack) / 2, root.tallProgress);
+        return Resize.mix(horizontalTrack, root.scaled(48), root.verticalProgress);
+    }
+
+    // Track corners follow the user's rounding preference (windowRounding is
+    // derived from appearance.roundingValue) but at a reduced fraction — the full
+    // token saturates a ~30px track into a blob. Half the track thickness is the
+    // geometric pill limit, and sharp mode zeroes the override the same way the
+    // StyledSlider default would.
+    readonly property real trackCornerRadius: Config.options.appearance.sharpMode ? 0
+        : Resize.mix(Math.min(effectiveTrackThickness / 2, Appearance.rounding.windowRounding * 0.3),
+            Appearance.rounding.large, root.tallProgress)
+    readonly property real horizontalMargin: QuickToggleMetrics.sliderHorizontalMargin(root.baseCellHeight)
+
+    readonly property real allocatedWidth: (root.buttonData && root.buttonData.pixelWidth !== undefined)
+        ? Number(root.buttonData.pixelWidth)
+        : baseWidth
+
+    width: allocatedWidth
+    implicitWidth: baseWidth
+    implicitHeight: (root.isVertical || root.effectiveSizeH > 1) ? baseHeight : Math.min(baseHeight, compactHeight)
+    
+    Rectangle {
+        anchors {
+            fill: parent
+            leftMargin: root.horizontalMargin
+            rightMargin: root.horizontalMargin
+        }
+        radius: Appearance.rounding.large
+        color: Appearance.colors.colSurfaceContainer
+        visible: root.isDragging
+        opacity: 0.5
+    }
+
+    Item {
+        id: visualButton
+
+        x: root.horizontalMargin
+        y: 0
+        
+        Behavior on x {
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(visualButton)
+        }
+        Behavior on width {
+            enabled: !editableItem.resizing
+            NumberAnimation {
+                duration: Appearance.animation.elementResize.duration
+                easing.type: Appearance.animation.elementResize.type
+                easing.bezierCurve: Appearance.animation.elementResize.bezierCurve
+            }
+        }
+        Behavior on height {
+            enabled: !editableItem.resizing
+            NumberAnimation {
+                duration: Appearance.animation.elementResize.duration
+                easing.type: Appearance.animation.elementResize.type
+                easing.bezierCurve: Appearance.animation.elementResize.bezierCurve
+            }
+        }
+        
+        width: Math.max(1, (editableItem.resizing ? editableItem.previewWidth : root.width) - root.horizontalMargin * 2)
+        height: editableItem.resizing ? editableItem.previewHeight : root.height
+
+        scale: (root.isDragging ? 1.05 : 1.0) * (0.85 + 0.15 * entranceProgress.progress)
+        opacity: {
+            if (entranceProgress.progress < 1) return entranceProgress.progress;
+            if (root.isUnused) return 0.5;
+            if (root.editMode && !root.isDragging) return 0.9;
+            if (root.isDragging) return 0.95;
+            return 1.0;
+        }
+        z: root.isDragging ? 99 : 1
+        
+        transform: Translate {
+            x: root.isDragging ? root.dragOffsetX : 0
+            y: (root.isDragging ? root.dragOffsetY : 0) + 20 * (1 - entranceProgress.progress)
+        }
+        
+        Behavior on scale {
+            enabled: !entranceProgress.running
+            animation: Appearance.animation.clickBounce.numberAnimation.createObject(visualButton)
+        }
+        Behavior on opacity {
+            enabled: !entranceProgress.running
+            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(visualButton)
+        }
+
+        property real radius: root.trackCornerRadius
+        Item {
+            id: sliderFrame
+            width: Resize.mix(visualButton.width, visualButton.height, root.verticalProgress)
+            height: Resize.mix(visualButton.height, visualButton.width, root.verticalProgress)
+            x: (visualButton.width - width) / 2
+            y: (visualButton.height - height) / 2
+            rotation: -90 * root.verticalProgress
+
+            StyledSlider {
+                id: quickSliderHorizontal
+                objectName: "quickToggleSharedSlider"
+                anchors.fill: parent
+                // Touch-sized cells get a track proportional to the cell; at the reference
+                // cell height sliderTrack() returns -1 and the fixed M preset stands.
+                readonly property real trackThickness: root.effectiveTrackThickness
+                configuration: trackThickness > 0 ? trackThickness : StyledSlider.Configuration.M
+                trackRadius: root.trackCornerRadius
+                unsharpenRadius: Resize.mix(root.trackCornerRadius, Appearance.rounding.unsharpen, root.tallProgress)
+                stopIndicatorValues: []
+                dividerValues: root.secondaryMaterialSymbol.length > 0 ? [secondaryIcon.iconLocation] : []
+                valueAnimationDuration: root._activeValueAnimDuration
+                value: root.currentSliderValue
+                onMoved: {
+                    root._activeValueAnimDuration = 0;
+                    root.moved(value);
+                }
+                
+                // To prevent flickable dragging when using slider
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    cursorShape: Qt.PointingHandCursor
+                    hoverEnabled: true
+                    onClicked: root.openMenu()
+                }
+
+                QuickToggleIcon {
+                    id: horizIcon
+                    // A tray tile only has to be recognisable; see allowAnimated.
+                    allowAnimated: !root.isUnused
+                    toggleType: root.buttonData.type
+                    property bool nearFull: quickSliderHorizontal.value >= 0.82
+                    visible: root.materialSymbol.length > 0
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        right: nearFull ? quickSliderHorizontal.handle.right : parent.right
+                        rightMargin: Resize.mix(nearFull ? root.scaled(10) : root.scaled(4), nearFull ? root.scaled(14) : root.scaled(12), root.tallProgress)
+                    }
+                    iconSize: Resize.mix(root.scaled(20), root.scaled(22), root.tallProgress)
+                    rotation: 90 * root.verticalProgress
+                    text: root.materialSymbol
+
+                    color: {
+                        if (quickSliderHorizontal.value > 1.0) {
+                            return Appearance.m3colors.m3onErrorContainer;
+                        }
+                        return nearFull ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer;
+                    }
+
+                    Behavior on color {
+                        animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+                    }
+                    Behavior on anchors.rightMargin {
+                        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                    }
+                }
+
+                MaterialSymbol {
+                    id: secondaryIcon
+                    visible: root.secondaryMaterialSymbol.length > 0
+                    opacity: 1 - root.verticalProgress
+                    property real iconLocation: 0.3
+                    property bool nearIcon: iconLocation - quickSliderHorizontal.value <= 0.1 && iconLocation - quickSliderHorizontal.value > (quickSliderHorizontal.handleWidth + 8 - 14) / quickSliderHorizontal.effectiveDraggingWidth
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        right: nearIcon ? quickSliderHorizontal.handle.right : parent.right
+                        rightMargin: nearIcon ? 14 : (1 - iconLocation) * quickSliderHorizontal.effectiveDraggingWidth + quickSliderHorizontal.rightPadding + 8
+                    }
+                    iconSize: Resize.mix(root.scaled(20), root.scaled(22), root.tallProgress)
+                    rotation: 90 * root.verticalProgress
+                    color: quickSliderHorizontal.value >= iconLocation - 0.1 ? Appearance.colors.colOnPrimary : Appearance.colors.colOnSecondaryContainer
+                    text: root.secondaryMaterialSymbol
+
+                    Behavior on color {
+                        animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+                    }
+                }
+            }
+        }
+
+    }
+
+    EditableQuickToggleItem {
+        id: editableItem
+        target: root
+        visualItem: visualButton
+    }
+}

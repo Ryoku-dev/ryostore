@@ -1,52 +1,38 @@
 import ".."
-import "../functions/marquee.js" as Marquee
 import QtQuick
 
 Item {
     id: root
+    property string text: ""
+    property int fontSize: Appearance.font.pixelSize.normal
+    property int fontWeight: Font.Normal
+    property color textColor: Appearance.colors.colOnLayer0
+    property bool running: false
 
-    property alias text: label.text
-    property alias color: label.color
-    property alias font: label.font
-    property int horizontalAlignment: Text.AlignLeft
-
-    readonly property bool overflows: Marquee.overflows(label.implicitWidth, root.width)
-    readonly property real travelDistance: Marquee.travelDistance(label.implicitWidth, root.width)
-
-    readonly property bool scrolling: root.overflows && root.visible
-
-    implicitWidth: label.implicitWidth
-    implicitHeight: label.implicitHeight
     clip: true
-
-    onScrollingChanged: if (!root.scrolling) label.x = 0
+    implicitHeight: innerText.implicitHeight
 
     StyledText {
-        id: label
-
-        width: root.width
-        height: root.height
-        x: 0
+        id: innerText
+        text: root.text
+        font.pixelSize: root.fontSize
+        font.weight: root.fontWeight
+        color: root.textColor
         elide: Text.ElideNone
-        verticalAlignment: Text.AlignVCenter
-        horizontalAlignment: root.overflows ? Text.AlignLeft : root.horizontalAlignment
+        x: 0
+
+        readonly property bool overflows: implicitWidth > root.width + 1
     }
 
-    SequentialAnimation {
-        running: root.scrolling
-        loops: Animation.Infinite
-
-        PauseAnimation { duration: Marquee.dwell(Appearance.animation.reduceMotion) }
-        MarqueeTravel { to: -root.travelDistance }
-        PauseAnimation { duration: Marquee.dwell(Appearance.animation.reduceMotion) }
-        MarqueeTravel { to: 0 }
-    }
-
-    component MarqueeTravel: NumberAnimation {
-        target: label
+    NumberAnimation {
+        target: innerText
         property: "x"
-        duration: Appearance.animation.scale(
-            Marquee.travelDuration(label.implicitWidth, root.width))
+        running: root.running && innerText.overflows
+        from: 0
+        to: -(innerText.implicitWidth - root.width + 20)
+        duration: Math.max(3500, (innerText.implicitWidth - root.width) * 28)
         easing.type: Easing.Linear
+        loops: Animation.Infinite
+        onStopped: innerText.x = 0
     }
 }

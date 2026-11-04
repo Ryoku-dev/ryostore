@@ -1,0 +1,122 @@
+import "../../popups/keyboard"
+import "../../../../common"
+import "../../../../common/functions"
+import "../../../../common/widgets"
+import "../../../../../services"
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
+
+MouseArea {
+    id: root
+    property bool vertical: false
+    property bool uppercaseLayout: Config.options.bar.keyboardLayout.uppercaseLayout
+    
+    readonly property bool hasMultipleLayouts: HyprlandXkb.layoutCodes.length > 1
+    visible: HyprlandXkb.layoutCodes.length >= 1
+
+    implicitWidth: visible ? (vertical ? Appearance.sizes.verticalBarWidth - 8 : ((rowLoader.item ? rowLoader.item.implicitWidth : 0) + 28)) : 0
+    implicitHeight: visible ? (vertical ? ((colLoader.item ? colLoader.item.implicitHeight : 0) + 12) : Appearance.sizes.baseBarHeight - 8) : 0
+    
+    hoverEnabled: !BarInteraction.clickToShow
+
+    // Click-to-show gives the left click to the popup; cycling moves to the right button.
+    readonly property bool rightClickCycles: BarInteraction.cycleOnRightClick
+    acceptedButtons: rightClickCycles ? (Qt.LeftButton | Qt.RightButton) : Qt.LeftButton
+
+    function abbreviateLayoutCode(fullCode) {
+        if (!fullCode) return "";
+        const firstLayout = fullCode.split(':')[0].split('-')[0];
+        let abbr = firstLayout.slice(0, 2);
+        return root.uppercaseLayout ? abbr.toUpperCase() : abbr.toLowerCase();
+    }
+
+    Process {
+        id: switchProc
+        command: ["bash", "-c", "hyprctl switchxkblayout all next"]
+    }
+
+    onClicked: mouse => {
+        if (mouse.button !== (rightClickCycles ? Qt.RightButton : Qt.LeftButton))
+            return;
+        if (hasMultipleLayouts) {
+            switchProc.running = false;
+            switchProc.running = true;
+        }
+    }
+
+    BarWidgetPalette {
+        id: widgetPalette
+        colorMode: Config.options.bar.keyboardLayout.colorMode
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: (typeof rootItem !== "undefined" ? rootItem.groupStyle : Config.options.bar.barGroupStyle) === 1 ? Appearance.rounding.windowRounding : Appearance.rounding.full
+        color: "transparent"
+        border.width: 1
+        border.color: root.containsMouse ? widgetPalette.colBackgroundHover : widgetPalette.colBackground
+
+        Loader {
+            id: rowLoader
+            active: !root.vertical
+            visible: active
+            anchors.centerIn: parent
+            sourceComponent: RowLayout {
+                spacing: 6
+                MaterialSymbol {
+                    text: "keyboard"
+                    iconSize: 18
+                    color: root.containsMouse ? widgetPalette.colBackgroundHover : widgetPalette.colBackground
+                }
+                StyledText {
+                    text: root.abbreviateLayoutCode(HyprlandXkb.currentLayoutCode)
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.weight: Font.Black
+                    color: root.containsMouse ? widgetPalette.colBackgroundHover : widgetPalette.colBackground
+                    animateChange: true
+                }
+            }
+        }
+
+        Loader {
+            id: colLoader
+            active: root.vertical
+            visible: active
+            anchors.centerIn: parent
+            sourceComponent: ColumnLayout {
+                spacing: 2
+                MaterialShape {
+                    Layout.alignment: Qt.AlignHCenter
+                    shapeString: "Cookie12Sided"
+                    color: root.containsMouse ? widgetPalette.colBackgroundHover : widgetPalette.colBackground
+                    implicitSize: Appearance.sizes.verticalBarWidth - 18
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "keyboard"
+                        iconSize: 16
+                        color: widgetPalette.colOnBackground
+                    }
+                }
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: root.abbreviateLayoutCode(HyprlandXkb.currentLayoutCode)
+                    font.pixelSize: 10
+                    font.weight: Font.Black
+                    color: root.containsMouse ? widgetPalette.colBackgroundHover : widgetPalette.colBackground
+                    animateChange: true
+                }
+            }
+        }
+    }
+
+    // Lazy: popup controller is only built on approach (same as ExpressiveSports).
+    PopupLoader {
+        active: BarInteraction.enablePopups
+            && (BarInteraction.clickToShow || root.containsMouse || held)
+        sourceComponent: KeyboardLayoutPopup {
+            hoverTarget: root
+        }
+    }
+}
