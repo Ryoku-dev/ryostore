@@ -1,0 +1,6 @@
+IslandController 1.0 IslandController.qml
+singleton IslandGeometry 1.0 IslandGeometry.qml
+IslandHoverIntent 1.0 IslandHoverIntent.qml
+singleton IslandMotion 1.0 IslandMotion.qml
+singleton IslandPolicy 1.0 IslandPolicy.qml
+singleton IslandRegistry 1.0 IslandRegistry.qml

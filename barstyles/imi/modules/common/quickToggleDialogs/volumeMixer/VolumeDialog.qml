@@ -1,0 +1,103 @@
+pragma ComponentBehavior: Bound
+import "../../../.."
+import "../../../../services"
+import "../.."
+import "../../widgets"
+import "../../functions"
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Services.Pipewire
+
+WindowDialog {
+    id: root
+    property bool isSink: true
+    property bool closeOwningSidebarOnDetails: true
+    property bool showDetailsAction: true
+
+    signal detailsRequested()
+
+    backgroundHeight: 600
+
+    VolumeDialogContent {
+        isSink: root.isSink
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+    }
+
+    WindowDialogButtonRow {
+        Layout.leftMargin: 0
+        Layout.rightMargin: 0
+        Layout.bottomMargin: -8
+        // Details button with only a border and no fill
+        RippleButton {
+            id: detailsBtn
+            visible: root.showDetailsAction
+            buttonRadius: Appearance.rounding.full
+            colBackground: "transparent"
+            colBackgroundHover: "transparent"
+            colRipple: "transparent"
+            implicitHeight: 36
+            implicitWidth: detailsText.implicitWidth + 48
+
+            Rectangle {
+                anchors.fill: parent
+                color: "transparent"
+                border.width: 1
+                border.color: detailsBtn.hovered ? Appearance.colors.colOnSurface : Appearance.colors.colOutline
+                radius: parent.buttonEffectiveRadius
+
+                Behavior on border.color {
+                    ColorAnimation { duration: 150 }
+                }
+            }
+
+            contentItem: StyledText {
+                id: detailsText
+                text: Translation.tr("Details")
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: Appearance.font.pixelSize.small
+                font.variableAxes: ({
+                        "wght": 500
+                    })
+                color: detailsBtn.hovered ? Appearance.colors.colOnSurface : Appearance.colors.colOutline
+                Behavior on color { ColorAnimation { duration: 150 } }
+            }
+            onClicked: {
+                Quickshell.execDetached(["bash", "-c", `${Config.options.apps.volumeMixer}`]);
+                root.detailsRequested();
+                if (root.closeOwningSidebarOnDetails)
+                    GlobalStates.sidebarRightOpen = false;
+            }
+        }
+
+        Item {
+            Layout.fillWidth: true
+        }
+
+        // Done button with fill
+        RippleButton {
+            id: doneBtn
+            buttonRadius: Appearance.rounding.full
+            colBackground: Appearance.colors.colPrimary
+            colBackgroundHover: Appearance.colors.colPrimaryHover
+            colRipple: Appearance.colors.colPrimaryActive
+            implicitHeight: 36
+            implicitWidth: doneText.implicitWidth + 48
+
+            contentItem: StyledText {
+                id: doneText
+                text: Translation.tr("Done")
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                font.pixelSize: Appearance.font.pixelSize.small
+                font.variableAxes: ({
+                        "wght": 700
+                    })
+                color: Appearance.colors.colOnPrimary
+            }
+            onClicked: root.dismiss()
+        }
+    }
+}

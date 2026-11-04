@@ -1,0 +1,8 @@
+Imi launcher for the Ryoku desktop.
+
+Overview search derived from the ii desktop shell family (pedrovfx's
+fork of end-4's dots-hyprland, GPL-3.0), sharing its UI files with the
+imi barstyle. Runs as a store launcher: services run on the shell's own
+service facade, app launches go through the host AppLaunch, and window
+results come from the host Wm interface.
+Maintainer: dodo98 (https://github.com/dodo98).

@@ -3,18 +3,25 @@ import Quickshell
 
 Singleton {
     id: root
+    /**
+     * @param { string } summary 
+     * @returns { string }
+     */
     function findSuitableMaterialSymbol(summary = "") {
         const defaultType = 'chat';
         if (summary.length === 0) return defaultType;
 
         const keywordsToTypes = {
+            // The depth effect's cutout cards (services/DepthEffect.qml).
+            'cutout failed': 'error',
+            'subject': 'layers',
             'reboot': 'restart_alt',
             'record': 'screen_record',
             'battery': 'power',
             'power': 'power',
             'screenshot': 'screenshot_monitor',
             'welcome': 'waving_hand',
-            'time': 'scheduleb',
+            'time': 'schedule',
             'installed': 'download',
             'configuration reloaded': 'reset_wrench',
             'unable': 'question_mark',
@@ -28,7 +35,12 @@ Singleton {
             'install': 'deployed_code_update',
             'input': 'keyboard_alt',
             'preedit': 'keyboard_alt',
-            'startswith:file': 'folder_copy',
+            'startswith:file': 'folder_copy', // Declarative startsWith check
+            'localsend': 'devices',
+            'task': 'checklist',
+            'tarefa': 'checklist',
+            'to do': 'checklist',
+            'todo': 'checklist',
         };
 
         const lowerSummary = summary.toLowerCase();
@@ -47,15 +59,21 @@ Singleton {
         return defaultType;
     }
 
+    /**
+     * @param { number | string | Date } timestamp 
+     * @returns { string }
+     */
     function getFriendlyNotifTimeString(timestamp) {
         if (!timestamp) return '';
         const messageTime = new Date(timestamp);
         const now = new Date();
         const diffMs = now.getTime() - messageTime.getTime();
 
+        // Less than 1 minute
         if (diffMs < 60000)
             return 'Now';
 
+        // Same day - show relative time
         if (messageTime.toDateString() === now.toDateString()) {
             const diffMinutes = Math.floor(diffMs / 60000);
             const diffHours = Math.floor(diffMs / 3600000);
@@ -67,30 +85,18 @@ Singleton {
             }
         }
 
+        // Yesterday
         if (messageTime.toDateString() === new Date(now.getTime() - 86400000).toDateString())
             return 'Yesterday';
 
+        // Older dates
         return Qt.formatDateTime(messageTime, "MMMM dd");
-    }
-
-    function decodeHtmlEntitiesOnce(text) {
-        const named = {
-            "lt": "<", "gt": ">", "amp": "&",
-            "quot": "\"", "apos": "'", "#39": "'"
-        };
-        return text.replace(/&(lt|gt|amp|quot|apos|#39);/g, (match, entity) => named[entity]);
-    }
-
-    function isDoubleEscapingRelay(appName) {
-        return !!appName && appName.replace(/[\s_-]/g, "").toLowerCase().includes("kdeconnect");
     }
 
     function processNotificationBody(body, appName) {
         let processedBody = body
-
-        if (root.isDoubleEscapingRelay(appName))
-            processedBody = root.decodeHtmlEntitiesOnce(processedBody)
-
+        
+        // Clean Chromium-based browsers notifications - remove first line
         if (appName) {
             const lowerApp = appName.toLowerCase()
             const chromiumBrowsers = [

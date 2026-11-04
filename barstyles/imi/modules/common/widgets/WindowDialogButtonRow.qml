@@ -7,12 +7,9 @@ import "."
 
 RowLayout {
     id: root
-    spacing: Appearance.spacing.space100
+    spacing: 4
 
-    readonly property bool hasFilledAction: {
-        for (const child of root.children)
-            if (child.dialogActionFilled === true)
-                return true;
-        return false;
-    }
+    // These shouldn't be needed but it would be a terrible waste of space to follow the spec
+    Layout.margins: -8
+    Layout.topMargin: 0
 }

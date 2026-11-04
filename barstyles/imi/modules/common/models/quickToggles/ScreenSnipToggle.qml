@@ -20,7 +20,9 @@ QuickToggleModel {
         id: delayedActionTimer
         interval: 300
         repeat: false
-        onTriggered: Quickshell.execDetached(["sh", "-c", "flock -n -o /tmp/ryoshot.lock qs -c ryoshot"])
+        onTriggered: {
+            Quickshell.execDetached(["qs", "-p", Directories.shellPath(""), "ipc", "call", "region", "screenshot"]);
+        }
     }
 
     tooltipText: Translation.tr("Screen snip")

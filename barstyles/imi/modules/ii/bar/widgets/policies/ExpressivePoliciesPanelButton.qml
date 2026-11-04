@@ -1,0 +1,180 @@
+import QtQuick
+import "../../../../.."
+import "../../../../../services"
+import "../../../../common"
+import "../../../../common/widgets"
+
+Item {
+    id: root
+    readonly property string screenName: root.QsWindow?.window?.screen?.name ?? ""
+    property bool vertical: false
+    property bool showPing: false
+    // Derived from Config (not Ai.enabled) so a disabled AI policy never
+    // instantiates the Ai singleton just to light the ping badge.
+    property bool aiChatEnabled: Number(Config.options?.policies?.ai ?? 1) !== 0
+    property bool translatorEnabled: Config.options.sidebar.translator.enable
+    property bool animeEnabled: Config.options.policies.weeb !== 0
+    visible: true
+
+    implicitWidth: vertical ? Appearance.sizes.verticalBarWidth - 8 : Appearance.sizes.baseBarHeight - 8
+    implicitHeight: vertical ? Appearance.sizes.verticalBarWidth - 8 : Appearance.sizes.baseBarHeight - 8
+
+    // The shape, the symbol and the ping badge all follow the bar with the plate.
+    readonly property real contentScale: root.vertical
+        ? Appearance.sizes.verticalBarContentScale
+        : Appearance.sizes.barContentScale
+
+    Connections {
+        // Ternary gate: when the policy is off, the singleton is never evaluated
+        // (and therefore never instantiated) by this widget.
+        target: root.aiChatEnabled ? AiResponseBus : null
+        function onResponseFinished() {
+            if (GlobalStates.sidebarLeftOpen)
+                return;
+            root.showPing = true;
+        }
+    }
+    Connections {
+        target: root.animeEnabled ? Booru : null
+        function onResponseFinished() {
+            if (GlobalStates.sidebarLeftOpen)
+                return;
+            root.showPing = true;
+        }
+    }
+    Connections {
+        target: GlobalStates
+        function onSidebarLeftOpenChanged() {
+            root.showPing = false;
+        }
+    }
+
+    // Phone integration in-use state (scrcpy mirror, phone webcam or phone mic).
+    // While any of these is running, the button switches to the error container
+    // palette as a recording/broadcast indicator (colErrorContainer /
+    // colOnErrorContainer), mirroring the RecordIndicator convention.
+    //
+    // We also include the "connecting"/"launching" states so the colour flips
+    // instantly when the user clicks — otherwise the button would wait 5-6s
+    // for the verify timers to confirm the process is alive before changing
+    // colour, which feels broken.
+    //
+    // Gated by Config.options.policies.phone: when Phone integration is
+    // disabled, this binding short-circuits to false without ever
+    // referencing the singletons, which prevents QML from instantiating
+    // KdeConnectService / PhoneCameraService / PhoneMicService on boot.
+    readonly property bool phoneIntegrationActive:
+        Config.options.policies.phone !== 0
+        && (KdeConnectService.scrcpyRunning
+            || KdeConnectService.scrcpyLaunching
+            || PhoneCameraService.connecting
+            || PhoneCameraService.running
+            || PhoneMicService.connecting
+            || PhoneMicService.running)
+
+    BarWidgetPalette {
+        id: palette
+        colorMode: Config.options.bar.policies.colorMode
+    }
+
+    RippleButton {
+        id: button
+        anchors.fill: parent
+        buttonRadius: Appearance.rounding.full
+
+        colBackground: root.phoneIntegrationActive
+            ? Appearance.colors.colErrorContainer
+            : (GlobalStates.sidebarLeftOpen ? palette.colBackgroundVariant : palette.colBackground)
+        colBackgroundHover: root.phoneIntegrationActive
+            ? (Appearance.colors.colErrorContainerHover ?? Appearance.colors.colErrorContainer)
+            : (GlobalStates.sidebarLeftOpen ? palette.colBackgroundVariantHover : palette.colBackgroundHover)
+        colRipple: root.phoneIntegrationActive
+            ? (Appearance.colors.colErrorContainerActive ?? Appearance.colors.colErrorContainer)
+            : (GlobalStates.sidebarLeftOpen ? palette.colBackgroundVariantActive : palette.colBackgroundActive)
+
+        onPressed: {
+            GlobalStates.toggleLeftSidebar(root.screenName);
+        }
+
+        MaterialShape {
+            id: shapeContainer
+            anchors.centerIn: parent
+            implicitSize: Math.round((root.vertical ? 28 : 22) * root.contentScale)
+
+            // Morph shape based on panel state
+            shape: GlobalStates.sidebarLeftOpen ? MaterialShape.Shape.Clover4Leaf : MaterialShape.Shape.Cookie9Sided
+
+            // Contrast shape color with button background
+            color: root.phoneIntegrationActive
+                ? Appearance.colors.colOnErrorContainer
+                : (GlobalStates.sidebarLeftOpen ? palette.colOnBackgroundVariant : palette.colOnBackground)
+
+            // Rotate shape 90 degrees smoothly
+            rotation: GlobalStates.sidebarLeftOpen ? 90 : 0
+            Behavior on rotation {
+                animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(shapeContainer)
+            }
+
+            CustomIcon {
+                id: distroIcon
+                anchors.centerIn: parent
+                width: root.vertical ? 16 : 14
+                height: root.vertical ? 16 : 14
+                visible: !Config.options.bar.useMaterialSymbolForTopLeftIcon
+                source: {
+                    const icon = Config.options.bar.topLeftIcon;
+                    if (icon === 'distro') return SystemInfo.distroIcon;
+                    if (icon === 'docker') return 'docker.svg';
+                    if (icon.endsWith('.svg') || icon.endsWith('.png')) return icon;
+                    return `${icon}-symbolic`;
+                }
+                colorize: true
+                color: root.phoneIntegrationActive
+                    ? Appearance.colors.colErrorContainer
+                    : (GlobalStates.sidebarLeftOpen ? palette.colBackgroundVariant : palette.colBackground)
+
+                // Negate rotation to keep the distro icon straight
+                rotation: -shapeContainer.rotation
+            }
+
+            MaterialSymbol {
+                id: materialIcon
+                anchors.centerIn: parent
+                visible: Config.options.bar.useMaterialSymbolForTopLeftIcon
+                text: Config.options.bar.topLeftIcon
+                iconSize: Math.round((root.vertical ? 18 : 16) * root.contentScale)
+                fill: 1
+                color: root.phoneIntegrationActive
+                    ? Appearance.colors.colErrorContainer
+                    : (GlobalStates.sidebarLeftOpen ? palette.colBackgroundVariant : palette.colBackground)
+
+                // Negate rotation to keep the distro icon straight
+                rotation: -shapeContainer.rotation
+            }
+
+            Rectangle {
+                id: pingBadge
+                opacity: root.showPing ? 1 : 0
+                visible: opacity > 0
+                anchors {
+                    bottom: parent.bottom
+                    right: parent.right
+                    bottomMargin: -1
+                    rightMargin: -1
+                }
+                implicitWidth: Math.round(8 * root.contentScale)
+                implicitHeight: Math.round(8 * root.contentScale)
+                radius: Appearance.rounding.full
+                color: Appearance.colors.colError
+                border.width: 1.5 * root.contentScale
+                border.color: root.phoneIntegrationActive
+                    ? Appearance.colors.colOnErrorContainer
+                    : (GlobalStates.sidebarLeftOpen ? palette.colOnBackgroundVariant : palette.colOnBackground)
+
+                Behavior on opacity {
+                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(pingBadge)
+                }
+            }
+        }
+    }
+}
