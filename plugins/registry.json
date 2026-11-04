@@ -1201,7 +1201,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "7beed3173cf9ad81d6949dd9ceee7dd2e44cac721b347690345d8f9b33ebe74f",
+      "manifestSha256": "d1ccaf0293997fff6605c8ab4df63464f4f6829f5d4e3556a42793ba3ee80e01",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/pia-vpn",
       "official": false,
       "tagline": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
@@ -1209,7 +1209,7 @@
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-11-01"
+      "lastUpdated": "2026-11-04"
     }
   ]
 }

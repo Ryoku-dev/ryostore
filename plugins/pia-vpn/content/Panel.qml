@@ -151,9 +151,18 @@ Item {
                 width: openLabel.implicitWidth + 24 * root.s
                 height: openLabel.implicitHeight + 12 * root.s
                 radius: Theme.radius
-                color: openArea.pressed ? Theme.tint5 ?? Theme.dim : "transparent"
-                border.width: Theme.border ?? 1
-                border.color: Theme.line ?? Theme.dim
+                // Was literal "transparent": with no opaque fill, this button
+                // painted nothing of its own, so whatever the compositor had
+                // behind the floating panel (a background window's text or
+                // graphics) showed straight through it. Theme.tileBg is the
+                // real token for a non-accent button surface -- the same
+                // pattern removable-drives' Unmount/Refresh buttons already
+                // use. Pressed state matches that sibling plugin too
+                // (Theme.vermDeep, not the nonexistent Theme.tint5 that used
+                // to sit behind a silently-triggered "?? Theme.dim" fallback).
+                color: openArea.pressed ? Theme.vermDeep : Theme.tileBg
+                border.width: Theme.border2
+                border.color: Theme.border
 
                 Text {
                     id: openLabel
@@ -229,9 +238,15 @@ Item {
             width: col.width
             height: filterInput.implicitHeight + 10 * root.s
             radius: Theme.radius
-            color: "transparent"
-            border.width: Theme.border ?? 1
-            border.color: Theme.line ?? Theme.dim
+            // Was literal "transparent" with no fill of its own underneath the
+            // TextInput, so a background window's content/text showed straight
+            // through the search field (and through the caret/typed text),
+            // which is what made it unreadable and easy to miss entirely.
+            // Theme.tileBg gives it the same opaque input-surface tint as
+            // every other non-accent control in the plugin kit.
+            color: Theme.tileBg
+            border.width: Theme.border2
+            border.color: Theme.border
 
             TextInput {
                 id: filterInput
