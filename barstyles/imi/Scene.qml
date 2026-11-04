@@ -1,405 +1,131 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
-import Quickshell.Wayland
-import "modules/imi/bar" as ImiBar
+import Quickshell.Io
 import "modules/common"
-import "modules/common/widgets"
-import "modules/common/plugins"
-import "modules/common/functions/layout_ops.js" as LayoutOps
+import "modules/ii/bar"
+import "modules/ii/dynamicIsland"
+import "modules/ii/dynamicIsland/core"
+import "modules/ii/sidebarPolicies"
+import "modules/ii/sidebarDashboard"
+import "modules/ii/onScreenDisplay"
+import "modules/ii/onScreenDisplay/minimalist"
+import "modules/ii/notificationPopup"
+import "modules/ii/sessionScreen"
+import "modules/ii/mediaControls"
+import "modules/ii/bluetoothConnectionPopup"
+import "modules/ii/bluetoothPairing"
+import "modules/ii/modeFlashPopup"
+import "modules/ii/alarmRingingPopup"
+import "modules/ii/timerAlertPopup"
+import "modules/ii/reminderAlertPopup"
+import "modules/ii/polkit"
+import "modules/ii/screenCorners"
+import "modules/ii/wrappedFrame"
+import "modules/ii/modes"
+import "modules/ii/verticalBar"
+import "modules/ii/phoneControls"
+import "modules/common/panels/windowSwitcher"
+import "modules/settings"
+import "services"
 
+// Entry point, loaded by Ryoku Frame.qml once per monitor with modelData set
+// to the screen. Surfaces that resolve their own screen (island, sidebars,
+// OSD, toasts, session) are instantiated here per screen// family did per screen.
 Scope {
-    id: root
+    id: scene
 
     property var modelData: null
 
-    readonly property var uniqueScreens: {
-        const seen = {};
-        const out = [];
-        for (const s of Quickshell.screens) {
-            if (!s || seen[s.name])
-                continue;
-            seen[s.name] = true;
-            out.push(s);
-        }
-        return out;
-    }
-
-    readonly property bool isPrimary: root.uniqueScreens.length > 0 && !!root.modelData
-        && root.uniqueScreens[0].name === root.modelData.name
+    readonly property bool usingWrappedFrame: Config.options.appearance.fakeScreenRounding === 3
 
     Loader {
-        active: root.isPrimary
-        source: "modules/imi/shell/ImiShell.qml"
+        active: !BarPlacement.vertical
+        sourceComponent: Bar { screen: scene.modelData }
     }
 
-    PanelWindow {
-        id: win
-        screen: root.modelData
-
-        color: "transparent"
-        exclusionMode: ExclusionMode.Ignore
-        WlrLayershell.layer: WlrLayer.Top
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        WlrLayershell.namespace: "ryoku-imi"
-
-        anchors {
-            top: true
-            left: true
-            right: true
-        }
-
-        implicitHeight: 48
-
-        readonly property bool autoHide: Config.options.bar.autoHide.enable ?? false
-        property bool superShow: false
-        property bool mustShow: !win.autoHide || hoverRegion.containsMouse || win.superShow
-            || GlobalStates.editMode
-            || ((GlobalStates.mediaControlsOpen || GlobalStates.sysTrayOverflowOpen) && (Config.options.bar.autoHide.dismissPopups ?? true))
-
-        property QtObject barSpaceReserver: ImiBar.BarExclusiveZoneReserver {
-            screen: root.modelData
-            barNamespace: "ryoku-imi"
-            farEdge: false
-            edgeMargin: 0
-            zone: (!win.autoHide || (win.mustShow && (Config.options.bar.autoHide.pushWindows ?? false))) ? win.implicitHeight : 0
-        }
-
-        mask: Region {
-            item: hoverMaskRegion
-        }
-
-        Timer {
-            id: showBarTimer
-            interval: (Config?.options.bar.autoHide.showWhenPressingSuper.delay ?? 100)
-            repeat: false
-            onTriggered: {
-                win.superShow = true
-            }
-        }
-        Connections {
-            target: GlobalStates
-            function onSuperDownChanged() {
-                if (!Config?.options.bar.autoHide.showWhenPressingSuper.enable) return;
-                if (GlobalStates.superDown) showBarTimer.restart();
-                else {
-                    showBarTimer.stop();
-                    win.superShow = false;
-                }
-            }
-        }
-
-        MouseArea {
-            id: hoverRegion
-            anchors.fill: parent
-            hoverEnabled: true
-
-            Item {
-                id: hoverMaskRegion
-                readonly property real reveal: (Config.options.bar.autoHide.hoverRegionWidth ?? 2)
-                readonly property real rawTop: barContent.y - reveal
-                readonly property real rawBottom: barContent.y + barContent.height + reveal
-
-                x: 0
-                width: parent.width
-                y: Math.max(0, rawTop)
-                height: Math.max(0, Math.min(parent.height, rawBottom) - y)
-            }
-
-            ImiBar.BarContent {
-                id: barContent
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    top: parent.top
-                    topMargin: (win.autoHide && !win.mustShow) ? -height : 0
-                }
-                height: win.implicitHeight
-                Behavior on anchors.topMargin {
-                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
-                }
-
-                TapHandler {
-                    acceptedButtons: Qt.LeftButton
-                    gesturePolicy: TapHandler.ReleaseWithinBounds
-                    onDoubleTapped: GlobalStates.editMode = !GlobalStates.editMode
-                }
-            }
-        }
+    Loader {
+        active: BarPlacement.vertical
+        sourceComponent: VerticalBar {}
     }
 
-    PanelWindow {
-        id: editButtons
-        screen: root.modelData
-        visible: GlobalStates.editMode
-        color: "transparent"
-        exclusionMode: ExclusionMode.Ignore
-        exclusiveZone: 0
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        WlrLayershell.namespace: "ryoku-imi-edit-buttons"
-
-        anchors {
-            top: true
-            left: true
-            right: true
-        }
-
-        implicitHeight: 36
-        WlrLayershell.margins.top: 48
-
-        Row {
-            spacing: 8
-            x: (parent.width - width) / 2
-            y: 4
-
-            Rectangle {
-                width: 28
-                height: 28
-                radius: 14
-                color: Appearance.m3colors.m3secondaryContainer
-
-                Text {
-                    text: "add"
-                    font.family: "Material Symbols Rounded"
-                    font.pixelSize: 18
-                    color: Appearance.m3colors.m3onSecondaryContainer
-                    anchors.centerIn: parent
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: widgetPicker.visible = !widgetPicker.visible
-                }
-            }
-
-            Rectangle {
-                width: doneRow.width + 16
-                height: 28
-                radius: 14
-                color: Appearance.m3colors.m3primary
-
-                Row {
-                    id: doneRow
-                    anchors.centerIn: parent
-                    spacing: 4
-                    Text {
-                        text: "Done"
-                        color: Appearance.m3colors.m3onPrimary
-                        font.pixelSize: 13
-                        font.weight: Font.Medium
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: GlobalStates.editMode = false
-                }
-            }
-        }
+    Loader {
+        active: IslandPolicy.enabled
+        sourceComponent: DynamicIsland {}
     }
 
-    PanelWindow {
-        id: widgetPicker
-        screen: root.modelData
-        visible: false
-        color: "transparent"
-        exclusionMode: ExclusionMode.Ignore
-        exclusiveZone: 0
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        WlrLayershell.namespace: "ryoku-imi-widget-picker"
+    SidebarPolicies {}
+    SidebarDashboard {}
 
-        anchors {
-            top: true
-        }
-
-        implicitWidth: 260
-        implicitHeight: pickerColumn.height + 24
-
-        WlrLayershell.margins.left: (root.modelData ? root.modelData.width / 2 - 130 : 400)
-        WlrLayershell.margins.top: 90
-
-        Connections {
-            target: GlobalStates
-            function onEditModeChanged() {
-                if (!GlobalStates.editMode) widgetPicker.visible = false
-            }
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            anchors.margins: 4
-            radius: 12
-            color: Appearance.m3colors.m3surface
-            border.color: Appearance.m3colors.m3outlineVariant
-            border.width: 1
-
-            Column {
-                id: pickerColumn
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: 8
-                spacing: 2
-
-                Text {
-                    text: "Add Widget"
-                    color: Appearance.m3colors.m3onSurface
-                    font.pixelSize: 14
-                    font.weight: Font.Bold
-                    bottomPadding: 4
-                }
-
-                Repeater {
-                    model: BarWidgets.offerFor(
-                        Config.options.bar.layouts.leftLayout
-                            .concat(Config.options.bar.layouts.middleLayout)
-                            .concat(Config.options.bar.layouts.rightLayout),
-                        Config.options.bar.borderless
-                    )
-
-                    Rectangle {
-                        required property var modelData
-                        width: pickerColumn.width
-                        height: 32
-                        radius: 8
-                        color: pickHover.hovered ? Appearance.m3colors.m3surfaceContainerHigh : "transparent"
-
-                        HoverHandler { id: pickHover }
-
-                        Row {
-                            anchors.fill: parent
-                            anchors.leftMargin: 8
-                            spacing: 8
-
-                            Text {
-                                text: modelData.icon
-                                font.family: "Material Symbols Rounded"
-                                font.pixelSize: 18
-                                color: Appearance.m3colors.m3onSurfaceVariant
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                            Text {
-                                text: modelData.name
-                                color: Appearance.m3colors.m3onSurface
-                                font.pixelSize: 13
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                let layout = Config.options.bar.layouts.middleLayout.slice()
-                                layout.push(modelData.id)
-                                Config.options.bar.layouts.middleLayout = layout
-                                widgetPicker.visible = false
-                            }
-                        }
-                    }
-                }
-
-                Rectangle {
-                    width: pickerColumn.width
-                    height: 1
-                    color: Appearance.m3colors.m3outlineVariant
-                    opacity: 0.5
-                }
-
-                Rectangle {
-                    id: autoHideRow
-                    width: pickerColumn.width
-                    height: 36
-                    radius: 8
-                    color: autoHideHover.hovered ? Appearance.m3colors.m3surfaceContainerHigh : "transparent"
-
-                    HoverHandler { id: autoHideHover }
-
-                    readonly property bool autoHideOn: Config.options.bar.autoHide.enable ?? false
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.leftMargin: 8
-                        anchors.rightMargin: 8
-                        spacing: 8
-
-                        Text {
-                            text: "visibility_off"
-                            font.family: "Material Symbols Rounded"
-                            font.pixelSize: 18
-                            color: Appearance.m3colors.m3onSurfaceVariant
-                            Layout.alignment: Qt.AlignVCenter
-                        }
-                        Text {
-                            text: "Autohide bar"
-                            color: Appearance.m3colors.m3onSurface
-                            font.pixelSize: 13
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignVCenter
-                        }
-                        Rectangle {
-                            Layout.alignment: Qt.AlignVCenter
-                            width: 34
-                            height: 20
-                            radius: 10
-                            color: autoHideRow.autoHideOn ? Appearance.m3colors.m3primary : Appearance.m3colors.m3surfaceContainerHigh
-                            border.width: autoHideRow.autoHideOn ? 0 : 1
-                            border.color: Appearance.m3colors.m3outline
-
-                            Rectangle {
-                                width: 14
-                                height: 14
-                                radius: 7
-                                anchors.verticalCenter: parent.verticalCenter
-                                x: autoHideRow.autoHideOn ? parent.width - width - 3 : 3
-                                color: autoHideRow.autoHideOn ? Appearance.m3colors.m3onPrimary : Appearance.m3colors.m3onSurfaceVariant
-                                Behavior on x {
-                                    NumberAnimation { duration: 150 }
-                                }
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Config.options.bar.autoHide.enable = !autoHideRow.autoHideOn
-                    }
-                }
-            }
-        }
+    Loader {
+        active: !(Config.options.osd.style === "minimalist" || Config.options.osd.style === "material")
+        sourceComponent: OnScreenDisplay {}
+    }
+    Loader {
+        active: Config.options.osd.style === "minimalist" || Config.options.osd.style === "material"
+        sourceComponent: MinimalistOsd {}
     }
 
-    ImiBar.PopoutOverlay {
-        modelData: root.modelData
+    Loader {
+        active: !IslandPolicy.ownsNotifications
+        sourceComponent: NotificationPopup {}
     }
 
-    PanelWindow {
-        id: editDismiss
-        screen: root.modelData
-        visible: GlobalStates.editMode
-        color: "transparent"
-        exclusionMode: ExclusionMode.Ignore
-        exclusiveZone: 0
-        WlrLayershell.layer: WlrLayer.Bottom
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        WlrLayershell.namespace: "ryoku-imi-edit-dismiss"
+    SessionScreen {}
+    MediaControls {}
 
-        anchors {
-            top: true
-            left: true
-            right: true
-            bottom: true
-        }
+    Loader {
+        active: !IslandPolicy.ownsBluetoothPopup
+        sourceComponent: BluetoothConnectionPopup {}
+    }
+    BluetoothPairing {}
+    Loader {
+        active: !IslandPolicy.ownsModeFlash && Config.options.modes.overlayEnabled
+        sourceComponent: ModeFlashPopup {}
+    }
+    Loader {
+        active: AlarmService.ringingAlarmIndex !== -1 && Config.options.time.alarms.useFullscreenPopup
+        sourceComponent: AlarmRingingPopup {}
+    }
+    Loader {
+        active: TimerService.alert !== null
+        sourceComponent: TimerAlertPopup {}
+    }
+    Loader {
+        active: false // ReminderAlertPopup: reminders service is not part of this port yet
+    }
+    ScreenCorners {}
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: GlobalStates.editMode = false
+    Polkit {}
+    Loader {
+        active: scene.usingWrappedFrame
+        sourceComponent: WrappedFrame {}
+    }
+    Loader {
+        active: Config.options.modes.overlayEnabled
+        sourceComponent: ModesApp {}
+    }
+    WindowSwitcherPanel {}
+    WindowSwitcherPeek {}
+    // Phone floating-window controls return with the phone suite (KDE Connect
+    // based) in a later wave.
+
+    // Settings is a single FloatingWindow on the primary screen.
+    Loader {
+        active: scene.modelData !== null && scene.modelData.name !== undefined
+            && scene.modelData.name === (Quickshell.screens[0]?.name ?? "")
+            && (GlobalStates.settingsOpen || GlobalStates.settingsPendingPageName !== "")
+        sourceComponent: SettingsWindow {}
+    }
+
+    // Handoff for Ryoku Hub > Bar Studio.
+    IpcHandler {
+        target: "imi"
+        function open(): void { GlobalStates.openSettings(); }
+        function toggle(): void { GlobalStates.editMode = !GlobalStates.editMode; }
+        function openSettings(): void {
+            GlobalStates.openSettings();
         }
     }
 }

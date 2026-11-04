@@ -1,2 +1,3 @@
-module qs
 singleton GlobalStates 1.0 GlobalStates.qml
+Scene 1.0 Scene.qml
+SettingsWindow 1.0 SettingsWindow.qml

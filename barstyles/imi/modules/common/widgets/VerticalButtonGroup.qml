@@ -3,10 +3,14 @@ import "."
 import QtQuick
 import QtQuick.Layouts
 
+/**
+ * A container that supports GroupButton children for bounciness.
+ * See https://m3.material.io/components/button-groups/overview
+ */
 Rectangle {
     id: root
     default property alias content: columnLayout.data
-    property real spacing: Appearance.spacing.space100
+    property real spacing: 5
     property real padding: 0
     property int clickIndex: columnLayout.clickIndex
 
@@ -19,23 +23,23 @@ Rectangle {
         return total + columnLayout.spacing * (columnLayout.children.length - 1);
     }
 
-    topLeftRadius: columnLayout.children.length > 0 ? (columnLayout.children[0].radius + padding) : 
-        Appearance?.rounding?.small
+    topLeftRadius: columnLayout.children.length > 0 ? (columnLayout.children[0].radius + padding) : Appearance?.rounding?.small
     topRightRadius: topLeftRadius
-    bottomLeftRadius: columnLayout.children.length > 0 ? (columnLayout.children[columnLayout.children.length - 1].radius + padding) : 
-        Appearance?.rounding?.small
+    bottomLeftRadius: columnLayout.children.length > 0 ? (columnLayout.children[columnLayout.children.length - 1].radius + padding) : Appearance?.rounding?.small
     bottomRightRadius: bottomLeftRadius
 
     color: "transparent"
     height: root.contentHeight + padding * 2
     implicitWidth: columnLayout.implicitWidth + padding * 2
     implicitHeight: root.contentHeight + padding * 2
-    
-    children: [ColumnLayout {
-        id: columnLayout
-        anchors.fill: parent
-        anchors.margins: root.padding
-        spacing: root.spacing
-        property int clickIndex: -1
-    }]
+
+    children: [
+        ColumnLayout {
+            id: columnLayout
+            anchors.fill: parent
+            anchors.margins: root.padding
+            spacing: root.spacing
+            property int clickIndex: -1
+        }
+    ]
 }

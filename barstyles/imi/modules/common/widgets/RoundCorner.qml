@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import ".."
 
 Item {
     id: root
@@ -76,5 +77,5 @@ Item {
             }
         }
     }
-
 }
+

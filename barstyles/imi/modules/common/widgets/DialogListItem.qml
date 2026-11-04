@@ -8,7 +8,7 @@ RippleButton {
     property bool active: false
 
     horizontalPadding: Appearance.rounding.large
-    verticalPadding: Appearance.spacing.space150
+    verticalPadding: 12
 
     clip: true
     pointingHandCursor: !active    

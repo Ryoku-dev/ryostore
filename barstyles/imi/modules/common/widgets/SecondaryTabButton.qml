@@ -10,11 +10,15 @@ TabButton {
     id: root
     property string buttonText
     property string buttonIcon
+    // Controlled bars supply the same selection that drives their page content.
+    // Native TabBar insertion may change checked, but must not change this view.
+    property bool current: root.checked
+    Accessible.checked: root.current
     property int rippleDuration: 1200
-    property int tabContentWidth: buttonBackground.width - buttonBackground.radius*2
+    property int tabContentWidth: buttonBackground.width - buttonBackground.radius * 2
 
     property color colBackground: ColorUtils.transparentize(Appearance.colors.colSurfaceContainer)
-    property color colBackgroundHover: ColorUtils.transparentize(Appearance.colors.colOnSurface, root.checked ? 1 : 0.95)
+    property color colBackgroundHover: ColorUtils.transparentize(Appearance.colors.colOnSurface, root.current ? 1 : 0.95)
     property color colRipple: ColorUtils.transparentize(Appearance.colors.colOnSurface, 0.95)
 
     PointingHandInteraction {}
@@ -28,21 +32,24 @@ TabButton {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onPressed: (event) => {
-            root.click()
-            const {x,y} = event
+        onPressed: event => {
+            root.click(); // Because the MouseArea already consumed the event
+            const {
+                x,
+                y
+            } = event;
             const stateY = buttonBackground.y;
             rippleAnim.x = x;
             rippleAnim.y = y - stateY;
 
-            const dist = (ox,oy) => ox*ox + oy*oy
-            const stateEndY = stateY + buttonBackground.height
-            rippleAnim.radius = Math.sqrt(Math.max(dist(0, stateY), dist(0, stateEndY), dist(width, stateY), dist(width, stateEndY)))
+            const dist = (ox, oy) => ox * ox + oy * oy;
+            const stateEndY = stateY + buttonBackground.height;
+            rippleAnim.radius = Math.sqrt(Math.max(dist(0, stateY), dist(0, stateEndY), dist(width, stateY), dist(width, stateEndY)));
 
             rippleFadeAnim.complete();
             rippleAnim.restart();
         }
-        onReleased: (event) => {
+        onReleased: event => {
             rippleFadeAnim.restart();
         }
     }
@@ -91,7 +98,7 @@ TabButton {
         id: buttonBackground
         anchors {
             fill: parent
-            margins: Appearance.spacing.space50
+            margins: 3
         }
         radius: Appearance?.rounding.normal
         implicitHeight: 42
@@ -104,7 +111,7 @@ TabButton {
                 radius: buttonBackground.radius
             }
         }
-        
+
         Behavior on color {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
         }
@@ -126,9 +133,18 @@ TabButton {
             RadialGradient {
                 anchors.fill: parent
                 gradient: Gradient {
-                    GradientStop { position: 0.0; color: root.colRipple }
-                    GradientStop { position: 0.3; color: root.colRipple }
-                    GradientStop { position: 0.5 ; color: Qt.rgba(root.colRipple.r, root.colRipple.g, root.colRipple.b, 0) }
+                    GradientStop {
+                        position: 0.0
+                        color: root.colRipple
+                    }
+                    GradientStop {
+                        position: 0.3
+                        color: root.colRipple
+                    }
+                    GradientStop {
+                        position: 0.5
+                        color: Qt.rgba(root.colRipple.r, root.colRipple.g, root.colRipple.b, 0)
+                    }
                 }
             }
 
@@ -144,12 +160,12 @@ TabButton {
         RowLayout {
             anchors.centerIn: parent
             spacing: 0
-            
+
             Loader {
                 id: iconLoader
                 active: buttonIcon?.length > 0
                 sourceComponent: buttonIcon?.length > 0 ? materialSymbolComponent : null
-                Layout.rightMargin: Appearance.spacing.space100
+                Layout.rightMargin: 5
             }
 
             Component {
@@ -158,8 +174,8 @@ TabButton {
                     verticalAlignment: Text.AlignVCenter
                     text: buttonIcon
                     iconSize: Appearance.font.pixelSize.huge
-                    fill: root.checked ? 1 : 0
-                    color: root.checked ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer1
+                    fill: root.current ? 1 : 0
+                    color: root.current ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer1
                     Behavior on color {
                         animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
                     }
@@ -169,7 +185,7 @@ TabButton {
                 id: buttonTextWidget
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: Appearance.font.pixelSize.small
-                color: root.checked ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer1
+                color: root.current ? Appearance.colors.colPrimary : Appearance.colors.colOnLayer1
                 text: buttonText
                 Behavior on color {
                     animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)

@@ -1,0 +1,501 @@
+import "../../popups/battery"
+import "../../../../common"
+import "../../../../common/functions"
+import "../../../../common/widgets"
+import "../../../../../services"
+import Quickshell.Services.UPower
+import QtQuick
+import QtQuick.Layouts
+
+MouseArea {
+    id: root
+    property bool borderless: Config.options.bar.borderless
+    property bool disablePopup: false
+    property bool isMaterial: Config.options.bar.styles.battery === "material"
+    property bool vertical: BarPlacement.vertical
+
+    readonly property var chargeState: Battery.chargeState
+    readonly property bool isCharging: Battery.isCharging
+    readonly property bool isPluggedIn: Battery.isPluggedIn
+    readonly property real percentage: Battery.percentage
+    // Battery.isFull honours Config.options.battery.full; atChargeCeiling ignores it, which made
+    // a 100 %-plugged battery swap its bolt for a checkmark even when the user's full threshold
+    // says it never gets "full" (ffae821a0 regression).
+    readonly property bool isFull: Battery.isFull
+    readonly property bool isLow: percentage <= Config.options.battery.low / 100
+    readonly property bool isCritical: percentage <= Config.options.battery.critical / 100
+    readonly property bool effectivelyCharging: (root.isCharging || root.isPluggedIn) && !Battery.showDefaultWhenFull
+    readonly property bool chargeLimitReached: Battery.chargeLimitReached
+    readonly property bool showCheck: root.chargeLimitReached || (root.isFull && root.effectivelyCharging)
+
+    readonly property bool colorByPowerProfile: Config.options.bar.battery.colorByPowerProfile ?? true
+    readonly property bool isPowerSaving: root.colorByPowerProfile && (PowerProfiles.profile === PowerProfile.PowerSaver)
+    readonly property bool isPerformance: root.colorByPowerProfile && (PowerProfiles.profile === PowerProfile.Performance)
+
+    property color colText: Appearance.colors.colOnSurface
+    // One UI draws the percentage (and the charging bolt) inside the pill; "Show Percentage" only toggles it.
+    readonly property bool oneuiShowPercentage: (Config.options.bar.battery.showPercentage ?? "off") !== "off"
+    visible: Battery.available
+
+    Component.onCompleted: {
+        if (typeof rootItem !== "undefined") {
+            rootItem.toggleVisible(Battery.available);
+        }
+    }
+
+    Connections {
+        target: Battery
+        function onAvailableChanged() {
+            if (typeof rootItem !== "undefined") {
+                rootItem.toggleVisible(Battery.available);
+            }
+        }
+    }
+    
+    readonly property real _contentWidth: {
+        if (root.isMaterial) {
+            return rowLoader.item?.width - 1
+        }
+        if (Config.options.battery.style === "android16") {
+            return rowLoader.item?.width + 12;
+        }
+        if (Config.options.battery.style === "oneui") {
+            return rowLoader.item?.implicitWidth + 12;
+        }
+        return rowLoader.item?.implicitWidth + 12;
+    }
+    implicitWidth: Battery.available ? _contentWidth : 0
+    implicitHeight: Battery.available ? Appearance.sizes.baseBarHeight : 0
+    hoverEnabled: !BarInteraction.clickToShow
+
+    Behavior on implicitWidth {
+        animation: Appearance.animation.barResize.numberAnimation.createObject(this)
+    }
+
+    Loader {
+        id: rowLoader
+        active: !root.vertical
+        visible: active
+        anchors.centerIn: parent
+        sourceComponent: root.isMaterial ? rowMaterial : rowDefault
+
+        Component {
+            id: rowDefault
+            Item {
+                implicitWidth: {
+                    if (Config.options.battery.style === "android16")
+                        return android16Battery.width;
+                    if (Config.options.battery.style === "oneui")
+                        return oneuiBattery.implicitWidth;
+                    return batteryContainerOuter.implicitWidth;
+                }
+
+                // ─── OneUI style ──────────────────────────────────────────
+                ClippedProgressBar {
+                    id: oneuiBattery
+                    visible: Config.options.battery.style === "oneui"
+                    anchors.centerIn: parent
+                    value: root.percentage
+                    highlightColor: (root.isLow && !root.effectivelyCharging) ? Appearance.m3colors.m3error : Appearance.colors.colOnSecondaryContainer
+
+                    // Bolt + percentage punched out of the fill. Both follow the "Show Percentage" setting.
+                    textMask: Item {
+                        width: oneuiBattery.valueBarWidth
+                        height: oneuiBattery.valueBarHeight
+
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 0
+                            visible: root.oneuiShowPercentage
+
+                            MaterialSymbol {
+                                anchors.verticalCenter: parent.verticalCenter
+                                renderType: Text.QtRendering
+                                fill: 1
+                                text: root.showCheck ? "check" : "bolt"
+                                iconSize: Appearance.font.pixelSize.smaller
+                                visible: (root.effectivelyCharging || root.showCheck) && root.percentage < 1
+                            }
+                            StyledText {
+                                anchors.verticalCenter: parent.verticalCenter
+                                renderType: Text.QtRendering
+                                font: oneuiBattery.font
+                                text: oneuiBattery.text
+                            }
+                        }
+                    }
+                }
+
+                // ─── Android 16 style ────────────────────────────────────
+                Item {
+                    id: android16Battery
+                    visible: Config.options.battery.style === "android16"
+                    anchors.centerIn: parent
+                    width: 29
+                    height: 14
+
+                    // Two-tone percentage: the part over the fill reads against the fill, the part over
+                    // the track against the track. The track is trackColor over the backdrop, so it is
+                    // flattened first to measure what the text really sits on. The backdrop has to be opaque:
+                    // colLayer0 is transparentized by backgroundTransparency, and contrastRatio ignores alpha.
+                    readonly property color colBackdrop: Appearance.m3colors.m3surface
+                    readonly property color colTrackFlat: ColorUtils.mix(batteryProgress.trackColor, colBackdrop, batteryProgress.trackColor.a)
+                    readonly property color colOnFill: ColorUtils.mostReadable(batteryProgress.highlightColor, [colBackdrop, "#FFFFFF", "#000000"])
+                    readonly property color colOnTrack: ColorUtils.mostReadable(colTrackFlat, [root.colText, colBackdrop])
+
+                    Row {
+                        id: batteryRow
+                        anchors.centerIn: parent
+                        spacing: 1
+
+                        ClippedProgressBar {
+                            id: batteryProgress
+                            width: 26
+                            height: 14
+                            radius: 4.5
+                            value: root.percentage
+                            highlightColor: {
+                                if (root.isLow && !root.effectivelyCharging)
+                                    return Appearance.m3colors.m3error;
+                                if (root.effectivelyCharging || root.chargeLimitReached)
+                                    return '#55c35a';
+                                if (root.isPowerSaving)
+                                    return "#FFC917";
+                                if (root.isPerformance)
+                                    return "#42A5F5";
+                                return root.colText;
+                            }
+                            trackColor: {
+                                if (root.isLow && !root.effectivelyCharging)
+                                    return Appearance.m3colors.m3errorContainer;
+                                return Qt.rgba(root.colText.r, root.colText.g, root.colText.b, 0.3);
+                            }
+
+                            // No knockout: the percentage is drawn in two tones, split at the fill edge (below)
+                            textMask: Item {
+                                width: 26
+                                height: 14
+                            }
+                        }
+
+                        Rectangle {
+                            id: batteryTip
+                            width: 2
+                            height: 6
+                            anchors.verticalCenter: parent.verticalCenter
+                            radius: 1
+                            color: (root.percentage >= 0.98) ? batteryProgress.highlightColor : batteryProgress.trackColor
+                        }
+                    }
+
+                    // Percentage split at the fill edge, each part clipped to what sits under it
+                    Item {
+                        id: percentOnFill
+                        x: batteryRow.x + batteryProgress.x
+                        y: batteryRow.y + batteryProgress.y
+                        width: batteryProgress.width * batteryProgress.visualPosition
+                        height: batteryProgress.height
+                        clip: true
+
+                        StyledText {
+                            x: (batteryProgress.width - implicitWidth) / 2
+                            y: (batteryProgress.height - implicitHeight) / 2
+                            font.pixelSize: 10
+                            // Single family: StyledText's numbers branch passes a family list, which ignores variable axes
+                            font.family: Appearance.font.family.main
+                            font.variableAxes: Object.assign({}, Appearance.font.variableAxes.main, { "wght": 750 })
+                            text: batteryProgress.text
+                            color: android16Battery.colOnFill
+                        }
+                    }
+
+                    Item {
+                        id: percentOnTrack
+                        x: percentOnFill.x + percentOnFill.width
+                        y: batteryRow.y + batteryProgress.y
+                        width: batteryProgress.width - percentOnFill.width
+                        height: batteryProgress.height
+                        clip: true
+
+                        StyledText {
+                            x: (batteryProgress.width - implicitWidth) / 2 - percentOnFill.width
+                            y: (batteryProgress.height - implicitHeight) / 2
+                            font.pixelSize: 10
+                            // Single family: StyledText's numbers branch passes a family list, which ignores variable axes
+                            font.family: Appearance.font.family.main
+                            font.variableAxes: Object.assign({}, Appearance.font.variableAxes.main, { "wght": 750 })
+                            text: batteryProgress.text
+                            color: android16Battery.colOnTrack
+                        }
+                    }
+
+                    MaterialSymbol {
+                        visible: root.effectivelyCharging || root.showCheck
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.right
+                        anchors.horizontalCenterOffset: -1
+                        text: root.showCheck ? "check" : "bolt"
+                        iconSize: 15
+                        fill: 1
+                        color: Appearance.colors.colLayer0
+                        z: 2
+                    }
+
+                    MaterialSymbol {
+                        visible: root.effectivelyCharging || root.showCheck
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.right
+                        anchors.horizontalCenterOffset: -1
+                        text: root.showCheck ? "check" : "bolt"
+                        iconSize: 14
+                        fill: 1
+                        color: root.colText
+                        z: 3
+                    }
+                }
+
+                // ─── Default (legacy) style ─────────────────────────────
+                Row {
+                    id: batteryContainerOuter
+                    visible: Config.options.battery.style !== "android16" && Config.options.battery.style !== "oneui"
+                    anchors.centerIn: parent
+                    spacing: 7
+
+                    StyledText {
+                        visible: (Config.options.bar.battery.showPercentage === "left")
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: (Config.options.bar.battery.showPercentage === "left" || Config.options.bar.battery.showPercentage === "right") ? 0.5 : 0
+                        text: Math.round(root.percentage * 100) + "%"
+                        color: root.colText
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        font.weight: Font.Bold
+                    }
+
+                    Item {
+                        id: batteryContainer
+                        anchors.verticalCenter: parent.verticalCenter
+                        height: 14
+                        width: height * (28 / 13)
+
+                        Item {
+                            id: fillClipping
+                            clip: true
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.left: parent.left
+                            anchors.leftMargin: 3
+
+                            readonly property real clampedPct: Math.max(0, Math.min(1, root.percentage))
+                            width: (batteryContainer.width - 9) * clampedPct
+                            z: 0
+
+                            Rectangle {
+                                y: 3
+                                anchors.left: parent.left
+                                height: 8
+                                width: batteryContainer.width - 9
+                                radius: 2
+                                color: {
+                                    if (root.isCritical && !root.effectivelyCharging)
+                                        return "#E53935";
+                                    if (root.isLow && !root.effectivelyCharging)
+                                        return "#FB8C00";
+                                    if (root.effectivelyCharging || root.chargeLimitReached)
+                                        return "#43A047";
+                                    if (root.isPowerSaving)
+                                        return "#FFC917";
+                                    if (root.isPerformance)
+                                        return "#42A5F5";
+                                    return root.colText;
+                                }
+                            }
+                        }
+
+                        CustomIcon {
+                            anchors.fill: parent
+                            source: "Battery.svg"
+                            colorize: true
+                            color: {
+                                if (root.isCritical && !root.effectivelyCharging)
+                                    return Appearance.m3colors.m3error;
+                                if (root.isLow && !root.effectivelyCharging)
+                                    return Appearance.m3colors.m3error;
+                                return root.colText;
+                            }
+                            z: 1
+                        }
+
+                        MaterialSymbol {
+                            visible: root.effectivelyCharging || root.showCheck
+                            anchors.top: parent.top
+                            anchors.topMargin: root.showCheck ? -3 : -5
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.horizontalCenterOffset: -(parent.width * (4 / 28)) / 2
+                            text: root.showCheck ? "check" : "bolt"
+                            iconSize: 17
+                            fill: 1
+                            color: Appearance.colors.colLayer0
+                            z: 2
+                        }
+
+                        MaterialSymbol {
+                            visible: root.effectivelyCharging || root.showCheck
+                            anchors.top: parent.top
+                            anchors.topMargin: root.showCheck ? -4 : -6
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.horizontalCenterOffset: -(parent.width * (4 / 28)) / 2
+                            text: root.showCheck ? "check" : "bolt"
+                            iconSize: 16
+                            fill: 1
+                            color: root.colText
+                            z: 3
+                        }
+                    }
+
+                    StyledText {
+                        visible: (Config.options.bar.battery.showPercentage === "right")
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Math.round(root.percentage * 100) + "%"
+                        color: root.colText
+                        font.pixelSize: Appearance.font.pixelSize.small
+                        font.weight: Font.Bold
+                    }
+                }
+            }
+        }
+
+        Component {
+            id: rowMaterial
+
+            MaterialBarWidget {
+                primaryComponent: batteryIndicatorComponent
+                secondaryComponent: batteryPercentageComponent
+                secondaryExtraMargin: 6
+                componentsPadding: 6
+
+                showSecondary: Config.options.bar.battery.showSecondary
+                secondaryOpposite: Config.options.bar.battery.secondaryOpposite
+                swapPrimaryWithSecondary: Config.options.bar.battery.swapPrimaryWithSecondary
+                showPrimary: Config.options.bar.battery.showPrimary
+
+                Component {
+                    id: batteryPercentageComponent
+                    StyledText {
+                        id: text
+                        text: Math.round(root.percentage * 100)
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.verticalCenterOffset: 1
+                        color: Config.options.bar.battery.swapPrimaryWithSecondary ? Appearance.colors.colOnPrimary : Appearance.colors.colPrimary
+                        font.family: Appearance.font.family.main
+                        font.features: { "tnum": 1 }
+                        font.pixelSize: Appearance.font.pixelSize.small
+                    }
+                }
+
+                Component {
+                    id: batteryIndicatorComponent
+                    Item {
+                        id: android16Battery
+                        anchors.centerIn: parent
+                        width: 26
+                        height: 14
+                        implicitWidth: width
+
+                        Row {
+                            id: batteryRow
+                            anchors.centerIn: parent
+                            spacing: 1
+
+                            ClippedProgressBar {
+                                id: batteryProgress
+                                width: 26
+                                height: 14
+                                radius: 4.5
+
+                                value: root.percentage
+                                highlightColor: {
+                                    if (root.isLow && !root.effectivelyCharging)
+                                        return Appearance.m3colors.m3error;
+                                    if (root.effectivelyCharging || root.chargeLimitReached)
+                                        return '#55c35a';
+                                    if (root.isPowerSaving)
+                                        return "#FFC917";
+                                    if (root.isPerformance)
+                                        return "#42A5F5";
+                                    var color = Config.options.bar.battery.swapPrimaryWithSecondary ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainerHover
+                                    return color;
+                                }
+                                trackColor: {
+                                    if (root.isLow && !root.effectivelyCharging)
+                                        return Appearance.m3colors.m3errorContainer;
+                                    var color = Config.options.bar.battery.swapPrimaryWithSecondary ? Appearance.colors.colPrimary : Appearance.colors.colPrimaryContainerHover
+                                    var opacity = Config.options.bar.battery.swapPrimaryWithSecondary ? 0.3 : 0.6
+                                    return Qt.rgba(color.r, color.g, color.b, opacity);
+                                }
+
+                                // No knockout: the percentage is drawn over the bar in colText (below)
+                                textMask: Item {
+                                    width: 26
+                                    height: 14
+                                }
+                            }
+
+                            // Battery Tip
+                            Rectangle {
+                                id: batteryTip
+                                width: 2
+                                height: 6
+                                anchors.verticalCenter: parent.verticalCenter
+                                radius: 1
+                                color: (root.percentage >= 0.98) ? batteryProgress.highlightColor : batteryProgress.trackColor
+                            }
+                        }
+
+                        // Centred on the bar body, positioned from the Row (Row children cannot take anchors)
+                        StyledText {
+                            visible: Config.options.bar.battery.showPercentageInsideBattery
+                            x: batteryRow.x + batteryProgress.x + (batteryProgress.width - width) / 2
+                            y: batteryRow.y + batteryProgress.y + (batteryProgress.height - height) / 2
+                            font.pixelSize: 10
+                            // Single family: StyledText's numbers branch passes a family list, which ignores variable axes
+                            font.family: Appearance.font.family.main
+                            font.variableAxes: Object.assign({}, Appearance.font.variableAxes.main, { "wght": 750 })
+                            text: batteryProgress.text
+                            color: (root.isLow && !root.effectivelyCharging) ? Appearance.m3colors.m3onError : root.colText
+                        }
+
+                        MaterialSymbol {
+                            visible: root.effectivelyCharging || root.showCheck
+
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.horizontalCenter: parent.right
+                            anchors.horizontalCenterOffset: -1
+
+                            text: root.showCheck ? "check" : "bolt"
+                            iconSize: 14
+                            fill: 1
+                            style: Text.Outline
+                            styleColor: batteryProgress.trackColor
+                            color: root.colText
+                            z: 2
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: popupComponent
+        BatteryPopup {
+            hoverTarget: root
+        }
+    }
+
+    PopupLoader {
+        // Lazy: popup controller is only built on approach (same as ExpressiveSports).
+        active: !root.disablePopup && BarInteraction.enablePopups
+            && (BarInteraction.clickToShow || root.containsMouse || held)
+        sourceComponent: popupComponent
+    }
+}

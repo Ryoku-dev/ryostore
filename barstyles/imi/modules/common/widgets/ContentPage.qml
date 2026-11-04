@@ -2,94 +2,158 @@ import QtQuick
 import QtQuick.Layouts
 import ".."
 import "."
+import Qt5Compat.GraphicalEffects
 
-StyledFlickable {
+Item {
     id: root
+    anchors.fill: parent
     property real baseWidth: 600
     property bool forceWidth: false
-    property real bottomContentPadding: 90
-    property string currentSection: ""
-    property var availableSections: []
+    property real bottomContentPadding: 100
+    // A host that draws its own title - Edit Mode's per-widget options popup -
+    // hides the page's header row rather than showing a back button into a
+    // navigation stack that host does not have.
+    property bool headerVisible: true
+    readonly property bool scrollFadeEnabled: Config.options?.appearance?.scrollFadeMask ?? true
+    readonly property bool settingsPerformanceMode: Config.options?.appearance?.settingsPerformanceMode ?? false
+    readonly property bool allowScrollFade: root.scrollFadeEnabled && !root.settingsPerformanceMode
 
-    function navigationSections(item) {
-        let sections = []
-        for (let index = 0; index < item.children.length; index++) {
-            const child = item.children[index]
-            if (child.settingsNavigationSection === true)
-                sections.push(child)
-            else if (child.children && child.children.length > 0)
-                sections = sections.concat(navigationSections(child))
-        }
-        return sections
-    }
-
-    function updateCurrentSection() {
-        let firstSection = ""
-        let visibleSection = ""
-        let closestY = -Infinity
-        const markerY = root.contentY + Appearance.spacing.space600
-
-        const sections = navigationSections(contentColumn)
-        const nextAvailableSections = []
-        for (let index = 0; index < sections.length; index++) {
-            const child = sections[index]
-            if (child.title.length === 0 || !child.visible)
-                continue
-            nextAvailableSections.push(child.title)
-            if (firstSection.length === 0)
-                firstSection = child.title
-            const position = child.mapToItem(contentColumn, 0, 0).y
-            if (position <= markerY && position > closestY) {
-                closestY = position
-                visibleSection = child.title
-            }
-        }
-
-        const nextSection = visibleSection || firstSection
-        if (JSON.stringify(nextAvailableSections) !== JSON.stringify(root.availableSections))
-            root.availableSections = nextAvailableSections
-        if (nextSection !== root.currentSection)
-            root.currentSection = nextSection
-    }
+    property alias contentY: flickable.contentY
+    property alias atYBeginning: flickable.atYBeginning
+    property alias atYEnd: flickable.atYEnd
+    /// For anything that has to scroll the page itself, such as a drag reaching its edge.
+    readonly property alias flickable: flickable
 
     default property alias contentData: contentColumn.data
 
-    clip: true
-    momentumScroll: true
-    contentHeight: contentColumn.implicitHeight + root.bottomContentPadding
-    implicitWidth: contentColumn.implicitWidth
-    onContentYChanged: updateCurrentSection()
-    onContentHeightChanged: Qt.callLater(updateCurrentSection)
-    Component.onCompleted: {
-        Qt.callLater(updateCurrentSection);
-        sectionEntrance.run(root.visible);
+    Item {
+        id: headerContainer
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        visible: root.headerVisible
+        height: (root.headerVisible && children.length > 0 && children[0].visible) ? children[0].implicitHeight : 0
+        z: 2
     }
 
-    StaggerWave {
-        id: sectionEntrance
-        target: contentColumn
-        step: Appearance.animation.staggerStep
-        leadIn: Appearance.animation.staggerStep * 3
-    }
+    StyledFlickable {
+        id: flickable
+        anchors.top: headerContainer.bottom
+        anchors.topMargin: headerContainer.height > 0 ? 12 : 0
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        clip: true
 
-    onVisibleChanged: sectionEntrance.run(root.visible)
+        // Performance Mode leaves the entire mask subtree unloaded, including
+        // the offscreen layer texture. Normal Mode retains the existing fade.
+        layer.enabled: root.allowScrollFade && flickable.contentHeight > flickable.height
+        // layer.effect takes a Component in Qt 6; assigning the Loader's
+        // instance silently failed AND kept an orphan OpacityMask alive.
+        layer.effect: root.allowScrollFade ? fadeMaskComponent : null
 
-    Timer {
-        interval: 100
-        running: true
-        repeat: false
-        onTriggered: root.updateCurrentSection()
-    }
-    
-    ColumnLayout {
-        id: contentColumn
-        width: root.forceWidth ? root.baseWidth : Math.max(root.baseWidth, implicitWidth)
-        anchors {
-            top: parent.top
-            horizontalCenter: parent.horizontalCenter
-            margins: Appearance.spacing.space250
+        Component {
+            id: fadeMaskComponent
+
+            OpacityMask {
+                maskSource: Item {
+                    id: maskRoot
+                    width: flickable.width
+                    height: flickable.height
+
+                    property bool fadeEnabled: root.allowScrollFade
+                    property color topFadeColor: (fadeEnabled && !flickable.atYBeginning) ? "transparent" : "white"
+                    property color bottomFadeColor: (fadeEnabled && !flickable.atYEnd) ? "transparent" : "white"
+
+                    Behavior on topFadeColor {
+                        ColorAnimation {
+                            duration: Appearance.animation.elementMoveFast.duration
+                            easing.type: Appearance.animation.elementMoveFast.type
+                            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                        }
+                    }
+                    Behavior on bottomFadeColor {
+                        ColorAnimation {
+                            duration: Appearance.animation.elementMoveFast.duration
+                            easing.type: Appearance.animation.elementMoveFast.type
+                            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                        }
+                    }
+
+                    Column {
+                        anchors.fill: parent
+                        spacing: 0
+
+                        Rectangle {
+                            width: parent.width
+                            height: Math.min(36, parent.height / 2)
+                            topLeftRadius: Appearance.rounding.normal
+                            topRightRadius: Appearance.rounding.normal
+                            color: "transparent"
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: maskRoot.topFadeColor }
+                                GradientStop { position: 1.0; color: "white" }
+                            }
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: Math.max(0, parent.height - Math.min(36, parent.height / 2) * 2)
+                            color: "white"
+                        }
+
+                        Rectangle {
+                            width: parent.width
+                            height: Math.min(36, parent.height / 2)
+                            bottomLeftRadius: Appearance.rounding.normal
+                            bottomRightRadius: Appearance.rounding.normal
+                            color: "transparent"
+                            gradient: Gradient {
+                                GradientStop { position: 0.0; color: "white" }
+                                GradientStop { position: 1.0; color: maskRoot.bottomFadeColor }
+                            }
+                        }
+                    }
+                }
+            }
         }
-    spacing: Appearance.spacing.space400
+        contentHeight: contentColumn.implicitHeight + root.bottomContentPadding // Add some padding at the bottom
+        implicitWidth: contentColumn.implicitWidth
+        flickableDirection: Flickable.VerticalFlick
+
+        ColumnLayout {
+            id: contentColumn
+            width: root.forceWidth ? root.baseWidth : (parent ? parent.width - (anchors.leftMargin + anchors.rightMargin) : 600)
+            anchors {
+                top: parent.top
+                left: root.forceWidth ? undefined : parent.left
+                right: root.forceWidth ? undefined : parent.right
+                horizontalCenter: root.forceWidth ? parent.horizontalCenter : undefined
+                leftMargin: root.forceWidth ? 20 : 0
+                rightMargin: root.forceWidth ? 20 : 0
+                topMargin: root.forceWidth ? 20 : 0
+                bottomMargin: root.forceWidth ? 20 : 0
+            }
+            spacing: 12
+        }
     }
 
+    Component.onCompleted: {
+        if (root.hasOwnProperty("goBack") && contentColumn.children.length > 0) {
+            let firstChild = contentColumn.children[0];
+            if (firstChild.toString().indexOf("RowLayout") !== -1) {
+                firstChild.parent = headerContainer;
+
+                firstChild.anchors.top = headerContainer.top;
+
+                if (root.forceWidth) {
+                    firstChild.anchors.left = headerContainer.horizontalCenter;
+                    firstChild.anchors.leftMargin = -root.baseWidth / 2;
+                } else {
+                    firstChild.anchors.left = headerContainer.left;
+                    firstChild.anchors.leftMargin = 0;
+                }
+            }
+        }
+    }
 }

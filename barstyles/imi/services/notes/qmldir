@@ -1,0 +1,5 @@
+NotesDocumentFile 1.0 NotesDocumentFile.qml
+singleton NotesLinkPreview 1.0 NotesLinkPreview.qml
+singleton NotesRevisions 1.0 NotesRevisions.qml
+NotesStore 1.0 NotesStore.qml
+singleton NotesSync 1.0 NotesSync.qml

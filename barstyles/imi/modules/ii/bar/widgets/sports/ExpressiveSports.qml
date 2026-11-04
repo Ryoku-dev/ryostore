@@ -1,0 +1,298 @@
+import "../../../../.."
+import "../../popups/sports"
+import QtQuick
+import QtQuick.Layouts
+import "../../../../common"
+import "../../../../common/widgets"
+import "../../../../../services"
+import Quickshell
+
+MouseArea {
+    id: root
+    property bool vertical: false
+
+    BarWidgetPalette {
+        id: palette
+        colorMode: Config.options.bar.sports.colorMode
+    }
+
+    readonly property bool shouldBeVisible: Config.options.bar.sports.enable && SportsService.allGames.length > 0
+    
+    // Stable game for animations - prevents instant data swap during transitions
+    property var displayGame: SportsService.currentGame
+    
+    // Keeps the widget "alive" during exit animation
+    property bool internalVisible: shouldBeVisible
+    visible: internalVisible || opacity > 0
+    
+    implicitWidth: shouldBeVisible ? (vertical ? Appearance.sizes.verticalBarWidth : layout.implicitWidth + 8) : 0
+    implicitHeight: shouldBeVisible ? (vertical ? layoutVert.implicitHeight + 8 : Appearance.sizes.baseBarHeight) : 0
+    hoverEnabled: !BarInteraction.clickToShow
+
+    // Click-to-show gives the left click to the popup; cycling moves to the right button.
+    readonly property bool rightClickCycles: BarInteraction.cycleOnRightClick
+    acceptedButtons: rightClickCycles ? (Qt.LeftButton | Qt.RightButton) : Qt.LeftButton
+
+    // Animation offsets
+    property real verticalOffset: 0
+    property real horizontalOffset: 0
+
+    // Synchronize visibility with the bar system but wait for animations
+    onShouldBeVisibleChanged: {
+        if (typeof rootItem !== "undefined") rootItem.toggleVisible(shouldBeVisible);
+        if (shouldBeVisible) {
+            internalVisible = true;
+            displayGame = SportsService.currentGame;
+            entranceAnim.restart();
+        } else {
+            exitAnim.restart();
+        }
+    }
+
+    Component.onCompleted: {
+        if (typeof rootItem !== "undefined") rootItem.toggleVisible(shouldBeVisible);
+        if (shouldBeVisible) {
+            opacity = 1;
+            verticalOffset = 0;
+            horizontalOffset = 0;
+        } else {
+            opacity = 0;
+            verticalOffset = vertical ? 0 : 10;
+            horizontalOffset = vertical ? 10 : 0;
+        }
+        Qt.callLater(() => { root.isReady = true; });
+    }
+
+    // Connections for switch animation
+    Connections {
+        target: SportsService
+        function onCurrentGameChanged() {
+            if (typeof rootItem !== "undefined") rootItem.toggleVisible(root.shouldBeVisible);
+            if (shouldBeVisible && displayGame !== SportsService.currentGame) {
+                if (displayGame && SportsService.currentGame && displayGame.id === SportsService.currentGame.id) {
+                    displayGame = SportsService.currentGame;
+                } else {
+                    switchAnim.restart();
+                }
+            }
+        }
+    }
+
+    // Animations
+    SequentialAnimation {
+        id: entranceAnim
+        PropertyAction { target: root; property: "verticalOffset"; value: vertical ? 0 : -10 }
+        PropertyAction { target: root; property: "horizontalOffset"; value: vertical ? -10 : 0 }
+        ParallelAnimation {
+            NumberAnimation { target: root; property: "opacity"; to: 1; duration: 250; easing.type: Easing.OutCubic }
+            NumberAnimation { target: root; property: "verticalOffset"; to: 0; duration: 250; easing.type: Easing.OutCubic }
+            NumberAnimation { target: root; property: "horizontalOffset"; to: 0; duration: 250; easing.type: Easing.OutCubic }
+        }
+    }
+
+    SequentialAnimation {
+        id: exitAnim
+        ParallelAnimation {
+            NumberAnimation { target: root; property: "opacity"; to: 0; duration: 200; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "verticalOffset"; to: vertical ? 0 : 10; duration: 200; easing.type: Easing.InCubic }
+            NumberAnimation { target: root; property: "horizontalOffset"; to: vertical ? 10 : 0; duration: 200; easing.type: Easing.InCubic }
+        }
+        ScriptAction {
+            script: {
+                internalVisible = false;
+            }
+        }
+    }
+
+    SequentialAnimation {
+        id: switchAnim
+        ParallelAnimation {
+            NumberAnimation { target: root; property: "opacity"; to: 0; duration: 150; easing.type: Easing.InSine }
+            NumberAnimation { target: root; property: "verticalOffset"; to: vertical ? 0 : 8; duration: 150; easing.type: Easing.InSine }
+            NumberAnimation { target: root; property: "horizontalOffset"; to: vertical ? 8 : 0; duration: 150; easing.type: Easing.InSine }
+        }
+        ScriptAction {
+            script: {
+                if (SportsService.currentGame) displayGame = SportsService.currentGame;
+            }
+        }
+        PropertyAction { target: root; property: "verticalOffset"; value: vertical ? 0 : -8 }
+        PropertyAction { target: root; property: "horizontalOffset"; value: vertical ? -8 : 0 }
+        ParallelAnimation {
+            NumberAnimation { target: root; property: "opacity"; to: 1; duration: 150; easing.type: Easing.OutSine }
+            NumberAnimation { target: root; property: "verticalOffset"; to: 0; duration: 150; easing.type: Easing.OutSine }
+            NumberAnimation { target: root; property: "horizontalOffset"; to: 0; duration: 150; easing.type: Easing.OutSine }
+        }
+    }
+
+    onClicked: mouse => {
+        if (mouse.button !== (rightClickCycles ? Qt.RightButton : Qt.LeftButton))
+            return;
+        SportsService.nextGame();
+    }
+
+    property bool isReady: false
+
+    Behavior on implicitWidth {
+        enabled: root.isReady
+        animation: Appearance.animation.barResize.numberAnimation.createObject(this)
+    }
+
+    Behavior on implicitHeight {
+        enabled: root.isReady
+        animation: Appearance.animation.barResize.numberAnimation.createObject(this)
+    }
+
+    RowLayout {
+        id: layout
+        visible: !root.vertical
+        anchors.centerIn: parent
+        spacing: 4
+        transform: Translate { x: root.horizontalOffset; y: root.verticalOffset }
+
+        MaterialShape {
+            Layout.alignment: Qt.AlignVCenter
+            shapeString: "Cookie7Sided"
+            color: palette.colBackgroundVariant
+            implicitSize: Appearance.sizes.baseBarHeight - 8
+            StyledImage {
+                anchors.centerIn: parent
+                width: parent.implicitSize - 14
+                height: parent.implicitSize - 14
+                source: !root.vertical && root.displayGame ? root.displayGame.home.logo : ""
+                cache: false
+            }
+        }
+
+        Rectangle {
+            id: statusPill
+            Layout.alignment: Qt.AlignVCenter
+            Layout.preferredHeight: Appearance.sizes.baseBarHeight - 14
+            Layout.preferredWidth: Math.max(statusText.implicitWidth + 16, 30)
+            radius: Appearance.rounding.full
+            color: root.containsMouse ? palette.colBackgroundHover : palette.colBackground
+            
+            StyledText {
+                id: statusText
+                anchors.centerIn: parent
+                // If game state is "in" (active), show score. Otherwise show full status (time/date)
+                text: root.displayGame ? (root.displayGame.state === "in" ? `${root.displayGame.home.score} - ${root.displayGame.away.score}` : root.displayGame.status) : ""
+                font.pixelSize: 10
+                font.weight: Font.Black
+                color: palette.colOnBackground
+                animateChange: true
+            }
+        }
+
+        MaterialShape {
+            Layout.alignment: Qt.AlignVCenter
+            shapeString: "Cookie7Sided"
+            color: palette.colBackgroundVariant
+            implicitSize: Appearance.sizes.baseBarHeight - 8
+            StyledImage {
+                anchors.centerIn: parent
+                width: parent.implicitSize - 14
+                height: parent.implicitSize - 14
+                source: !root.vertical && root.displayGame ? root.displayGame.away.logo : ""
+                cache: false
+            }
+        }
+    }
+
+    // Vertical Material
+    ColumnLayout {
+        id: layoutVert
+        visible: root.vertical
+        anchors {
+            top: parent.top
+            topMargin: 4
+            horizontalCenter: parent.horizontalCenter
+        }
+        spacing: 6
+        transform: Translate { x: root.horizontalOffset; y: root.verticalOffset }
+
+        // Home Team
+        ColumnLayout {
+            spacing: 2
+            Layout.alignment: Qt.AlignHCenter
+            MaterialShape {
+                Layout.alignment: Qt.AlignHCenter
+                shapeString: "Cookie7Sided"
+                color: palette.colBackgroundVariant
+                implicitSize: Appearance.sizes.verticalBarWidth - 8
+                StyledImage {
+                    anchors.centerIn: parent
+                    width: parent.implicitSize - 12
+                    height: parent.implicitSize - 12
+                    source: root.vertical && root.displayGame ? root.displayGame.home.logo : ""
+                    cache: false
+                }
+            }
+            StyledText {
+                Layout.alignment: Qt.AlignHCenter
+                text: root.displayGame ? root.displayGame.home.score : ""
+                font.pixelSize: 12
+                font.weight: Font.Black
+                color: palette.colBare
+                visible: root.displayGame ? root.displayGame.state !== "pre" : false
+                animateChange: true
+            }
+        }
+
+        // Status
+        Rectangle {
+            Layout.alignment: Qt.AlignHCenter
+            implicitWidth: Appearance.sizes.verticalBarWidth - 8
+            implicitHeight: 20 // Fixed height is probably okay here for vertical flow
+            radius: Appearance.rounding.full
+            color: root.containsMouse ? palette.colBackgroundHover : palette.colBackground
+            StyledText {
+                anchors.centerIn: parent
+                text: root.displayGame ? (root.displayGame.state === "in" ? root.displayGame.status : root.displayGame.status.split(" ")[0]) : ""
+                font.pixelSize: 8
+                font.weight: Font.Black
+                color: palette.colOnBackground
+                animateChange: true
+            }
+        }
+
+        // Away Team
+        ColumnLayout {
+            spacing: 2
+            Layout.alignment: Qt.AlignHCenter
+            StyledText {
+                Layout.alignment: Qt.AlignHCenter
+                text: root.displayGame ? root.displayGame.away.score : ""
+                font.pixelSize: 12
+                font.weight: Font.Black
+                color: palette.colBare
+                visible: root.displayGame ? root.displayGame.state !== "pre" : false
+                animateChange: true
+            }
+            MaterialShape {
+                Layout.alignment: Qt.AlignHCenter
+                shapeString: "Cookie7Sided"
+                color: palette.colBackgroundVariant
+                implicitSize: Appearance.sizes.verticalBarWidth - 8
+                StyledImage {
+                    anchors.centerIn: parent
+                    width: parent.implicitSize - 12
+                    height: parent.implicitSize - 12
+                    source: root.vertical && root.displayGame ? root.displayGame.away.logo : ""
+                    cache: false
+                }
+            }
+        }
+    }
+
+    PopupLoader {
+        id: popupLoader
+        // Do not construct the StyledPopup interaction/window graph until
+        // the sports widget is actually approached or clicked.
+        active: (root.shouldBeVisible || GlobalStates.isBarPopupOpen("sports", root.screen?.name)) && BarInteraction.enablePopups
+            && (BarInteraction.clickToShow || root.containsMouse || held)
+        sourceComponent: SportsPopup {
+            hoverTarget: root
+        }
+    }
+}
