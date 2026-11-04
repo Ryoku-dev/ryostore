@@ -1,205 +1,184 @@
 import QtQuick
 import QtQuick.Controls
 import ".."
+import "../functions"
 
 Flickable {
     id: root
     maximumFlickVelocity: 3500
+    // "Reduce settings animations" also removes the top/bottom overscroll
+    // bounce: no rubber-banding on drag, wheel overshoot clamps hard to the
+    // bounds and there is nothing left to rebound.
+    readonly property bool bounceEffectsEnabled: !(Config.options?.appearance?.settingsPerformanceMode ?? false)
+    boundsBehavior: bounceEffectsEnabled ? Flickable.DragOverBounds : Flickable.StopAtBounds
 
-    property real touchpadScrollFactor: Config?.options.interactions.scrolling.touchpadScrollFactor ?? 100
-    property real mouseScrollFactor: Config?.options.interactions.scrolling.mouseScrollFactor ?? 50
+    property bool fasterTouchpadScroll: Config?.options.interactions.scrolling.fasterTouchpadScroll ?? false
+    property real touchpadScrollFactor: Config?.options.interactions.scrolling.touchpadScrollFactor ?? 450
+    property real mouseScrollFactor: Config?.options.interactions.scrolling.mouseScrollFactor ?? 120
     property real mouseScrollDeltaThreshold: Config?.options.interactions.scrolling.mouseScrollDeltaThreshold ?? 120
+    // Every wheel step this flickable takes, in px, and whether the device sent a
+    // mouse notch (the scrolling settings' test area shows both)
+    signal wheelScrolled(real step, bool notch)
+    // Accumulated scroll destination so wheel deltas stack while animating
     property real scrollTargetY: 0
-    property bool expressiveScroll: false
-    property real maxOverscroll: 56
+    // Touchpad: the content follows the fingers and glides on after they lift
+    TouchpadKinetic { id: kinetic; flickable: root }
 
-    property bool momentumScroll: false
-    property real momentumFactor: 1.0
-    property real momentumMinVelocity: 40
-    property real _lastWheelTime: 0
-    property real _scrollVelocity: 0
+    readonly property real minY: root.originY - root.topMargin
+    readonly property real maxY: Math.max(minY, root.originY + root.contentHeight - root.height + root.bottomMargin)
+    readonly property real maxBounceOvershoot: Math.min(60, Math.max(30, root.height * 0.12))
+    // Nothing to scroll means the wheel belongs to whatever is behind this:
+    // a nested flickable that grabs it anyway swallows the parent page's
+    // scroll and rubber-bands in place instead.
+    readonly property bool canScrollVertically: root.maxY - root.minY > 1
 
-    boundsBehavior: root.expressiveScroll ? Flickable.OvershootBounds : Flickable.DragOverBounds
+    // The Behavior below must smooth wheel jumps only. Left unguarded it also
+    // intercepts the contentY that Flickable writes on every drag and flick
+    // frame, which fights its own physics and makes long pages feel like they
+    // stutter under the cursor.
+    property bool _wheelScrolling: false
 
     ScrollBar.vertical: StyledScrollBar {}
 
-    MouseArea {
-        visible: !root.expressiveScroll && !root.momentumScroll && Config?.options.interactions.scrolling.fasterTouchpadScroll
-        enabled: visible
-        anchors.fill: parent
-        acceptedButtons: Qt.NoButton
-        onWheel: function(wheelEvent) {
-            programmaticScroll.stop();
-            const delta = wheelEvent.angleDelta.y / root.mouseScrollDeltaThreshold;
-            var scrollFactor = Math.abs(wheelEvent.angleDelta.y) >= root.mouseScrollDeltaThreshold ? root.mouseScrollFactor : root.touchpadScrollFactor;
+    function triggerBounceRebound(targetBound) {
+        bounceAnim.stop();
+        bounceAnim.to = targetBound;
+        root.scrollTargetY = targetBound;
+        bounceAnim.start();
+    }
 
-            const maxY = Math.max(0, root.contentHeight - root.height);
-            const base = scrollAnim.running ? root.scrollTargetY : root.contentY;
-            var targetY = Math.max(0, Math.min(base - delta * scrollFactor, maxY));
-
-            root.scrollTargetY = targetY;
-            root.contentY = targetY;
-            wheelEvent.accepted = true;
+    Timer {
+        id: reboundTimer
+        interval: 90
+        repeat: false
+        onTriggered: {
+            if (root.dragging || root.flicking)
+                return;
+            if (root.contentY < root.minY) {
+                root.triggerBounceRebound(root.minY);
+            } else if (root.contentY > root.maxY) {
+                root.triggerBounceRebound(root.maxY);
+            }
         }
     }
 
-    function scrollToY(y) {
-        const maxY = Math.max(0, root.contentHeight - root.height);
-        const target = Math.max(0, Math.min(y, maxY));
-        settleAnim.stop();
-        bounceAnim.stop();
-        programmaticScroll.stop();
-        root.scrollTargetY = target;
-        programmaticScroll.from = root.contentY;
-        programmaticScroll.to = target;
-        programmaticScroll.start();
-    }
     NumberAnimation {
-        id: programmaticScroll
+        id: bounceAnim
         target: root
         property: "contentY"
-        duration: Appearance.animation.scroll.duration
-        easing.type: Appearance.animation.scroll.type
-        easing.bezierCurve: Appearance.animation.scroll.bezierCurve
+        duration: Math.round(350 * Appearance.animMultiplier)
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Appearance.animationCurves.expressiveDefaultSpatial
+        onStopped: {
+            root._wheelScrolling = false;
+            root.scrollTargetY = root.contentY;
+        }
     }
-    onMovementStarted: programmaticScroll.stop()
+
+    /**
+     * One wheel step, as the WheelHandler below takes it. Public so an item that has to
+     * swallow the wheel (a preview that takes no input) can hand it on to the page.
+     */
+    function scrollByWheel(wheelEvent) {
+        const angle = wheelEvent.angleDelta.y;
+
+        if (!ScrollWheel.isNotch(angle, root, wheelEvent.phase)) {
+            const px = ScrollWheel.touchpadStep(angle, wheelEvent.pixelDelta.y, root);
+            // The lift (ScrollEnd) carries no delta: no step to show
+            if (px !== 0)
+                root.wheelScrolled(px, false);
+            scrollAnim.stop();
+            bounceAnim.stop();
+            root._wheelScrolling = false;
+            kinetic.feed(px, wheelEvent.phase);
+            wheelEvent.accepted = true;
+            return;
+        }
+
+        kinetic.stop();
+        const step = ScrollWheel.notchStep(angle, root);
+        root.wheelScrolled(step, true);
+        bounceAnim.stop();
+
+        const currentPos = (scrollAnim.running || bounceAnim.running) ? root.scrollTargetY : root.contentY;
+        const rawTarget = currentPos - step;
+        var targetY = rawTarget;
+        var isOvershooting = false;
+
+        if (rawTarget < root.minY) {
+            isOvershooting = true;
+            const currentOvershoot = Math.max(0, root.minY - currentPos);
+            const resistance = Math.max(0.1, 0.45 * (1.0 - (currentOvershoot / root.maxBounceOvershoot)));
+            const effectiveStep = (currentPos <= root.minY) ? (step * resistance) : ((step - (currentPos - root.minY)) * resistance);
+            const newOvershoot = Math.min(root.maxBounceOvershoot, currentOvershoot + effectiveStep);
+            targetY = root.minY - newOvershoot;
+        } else if (rawTarget > root.maxY) {
+            isOvershooting = true;
+            const stepDown = -step;
+            const currentOvershoot = Math.max(0, currentPos - root.maxY);
+            const resistance = Math.max(0.1, 0.45 * (1.0 - (currentOvershoot / root.maxBounceOvershoot)));
+            const effectiveStep = (currentPos >= root.maxY) ? (stepDown * resistance) : ((stepDown - (root.maxY - currentPos)) * resistance);
+            const newOvershoot = Math.min(root.maxBounceOvershoot, currentOvershoot + effectiveStep);
+            targetY = root.maxY + newOvershoot;
+        }
+
+        if (!root.bounceEffectsEnabled) {
+            // No rubber-banding: clamp hard to the bounds, no rebound.
+            targetY = Math.max(root.minY, Math.min(root.maxY, rawTarget));
+            isOvershooting = false;
+        }
+
+        root.scrollTargetY = targetY;
+        root._wheelScrolling = true;
+        root.contentY = targetY;
+        wheelEvent.accepted = true;
+
+        if (isOvershooting || targetY < root.minY || targetY > root.maxY) {
+            reboundTimer.restart();
+        } else {
+            reboundTimer.stop();
+        }
+    }
+
+    // Do not overlay the content with a MouseArea: that would replace every
+    // delegate's pointer cursor with the default arrow while scrolling is on.
+    WheelHandler {
+        enabled: root.interactive && root.canScrollVertically
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        onWheel: wheelEvent => root.scrollByWheel(wheelEvent)
+    }
+
     Behavior on contentY {
-        enabled: !root.expressiveScroll && !root.momentumScroll
+        enabled: root._wheelScrolling && !bounceAnim.running && !root.dragging && !root.flicking
         NumberAnimation {
             id: scrollAnim
             duration: Appearance.animation.scroll.duration
             easing.type: Appearance.animation.scroll.type
             easing.bezierCurve: Appearance.animation.scroll.bezierCurve
+            onStopped: {
+                if (root.contentY < root.minY || root.contentY > root.maxY) {
+                    reboundTimer.restart();
+                } else {
+                    root._wheelScrolling = false;
+                }
+            }
         }
     }
 
+    onDraggingChanged: {
+        if (root.dragging) {
+            kinetic.stop();
+            bounceAnim.stop();
+            reboundTimer.stop();
+            root._wheelScrolling = false;
+        }
+    }
+
+    // Keep target synced when not animating (e.g., drag/flick or programmatic changes)
     onContentYChanged: {
-        if (!scrollAnim.running && !root.expressiveScroll) {
+        if (!scrollAnim.running && !bounceAnim.running) {
             root.scrollTargetY = root.contentY;
         }
     }
 
-    MouseArea {
-        visible: root.expressiveScroll
-        enabled: visible
-        anchors.fill: parent
-        acceptedButtons: Qt.NoButton
-        onWheel: function(wheelEvent) {
-            programmaticScroll.stop();
-            const maxY = Math.max(0, root.contentHeight - root.height);
-            var scrollFactor = Math.abs(wheelEvent.angleDelta.y) >= root.mouseScrollDeltaThreshold ? root.mouseScrollFactor : root.touchpadScrollFactor;
-            const delta = wheelEvent.angleDelta.y / root.mouseScrollDeltaThreshold;
-
-            const anchoredY = (settleAnim.running || bounceAnim.running) ? root.scrollTargetY : root.contentY;
-            const raw = anchoredY - delta * scrollFactor;
-            const scrollingDown = raw > anchoredY;
-            const atBottom = anchoredY >= maxY - 0.5;
-            const atTop = anchoredY <= 0.5;
-
-            if ((scrollingDown && atBottom) || (!scrollingDown && atTop)) {
-                const bound = scrollingDown ? maxY : 0;
-                const overshoot = Math.min(Math.abs(raw - bound) * 0.35, root.maxOverscroll);
-                root.scrollTargetY = bound;
-                settleAnim.stop();
-                bounceAnim.overshootY = bound + (scrollingDown ? overshoot : -overshoot);
-                bounceAnim.boundY = bound;
-                bounceAnim.restart();
-            } else {
-                const target = Math.max(0, Math.min(raw, maxY));
-                root.scrollTargetY = target;
-                bounceAnim.stop();
-                settleAnim.stop();
-                settleAnim.to = target;
-                settleAnim.start();
-            }
-            wheelEvent.accepted = true;
-        }
-    }
-
-    NumberAnimation {
-        id: settleAnim
-        target: root
-        property: "contentY"
-        duration: Appearance.animation.elementMoveSmall.duration
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: Appearance.animation.elementMoveSmall.bezierCurve
-    }
-
-    SequentialAnimation {
-        id: bounceAnim
-        property real overshootY: 0
-        property real boundY: 0
-        NumberAnimation {
-            target: root; property: "contentY"; to: bounceAnim.overshootY
-            duration: Appearance.animation.scale(Appearance.animationCurves.expressiveEffectsDuration)
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
-        }
-        NumberAnimation {
-            target: root; property: "contentY"; to: bounceAnim.boundY
-            duration: Appearance.animation.elementMove.duration
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: Appearance.animation.elementMove.bezierCurve
-        }
-    }
-
-    WheelHandler {
-        id: momentumWheel
-        enabled: root.momentumScroll
-        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-        onWheel: function(wheelEvent) {
-            programmaticScroll.stop();
-            const maxY = Math.max(0, root.contentHeight - root.height);
-            const px = wheelEvent.pixelDelta.y;
-            const ang = wheelEvent.angleDelta.y;
-
-            if (px === 0 && ang === 0) {
-                var vEnd = root._scrollVelocity;
-                root._scrollVelocity = 0;
-                root._lastWheelTime = 0;
-                if (Math.abs(vEnd) >= root.momentumMinVelocity) {
-                    vEnd = Math.max(-root.maximumFlickVelocity, Math.min(vEnd, root.maximumFlickVelocity));
-                    root.flick(0, vEnd);
-                }
-                wheelEvent.accepted = true;
-                return;
-            }
-
-            if (px === 0) {
-                root.cancelFlick();
-                const step = ang / 120 * root.mouseScrollFactor;
-                root.contentY = Math.max(0, Math.min(root.contentY - step, maxY));
-                root._scrollVelocity = 0;
-                wheelEvent.accepted = true;
-                return;
-            }
-
-            const now = Date.now();
-            var dt = (now - root._lastWheelTime) / 1000;
-            root._lastWheelTime = now;
-            if (dt <= 0 || dt > 0.1) dt = 0.016;
-
-            root.cancelFlick();
-            const move = px * root.momentumFactor;
-            root.contentY = Math.max(0, Math.min(root.contentY - move, maxY));
-
-            const instant = move / dt;
-            root._scrollVelocity = 0.6 * root._scrollVelocity + 0.4 * instant;
-            momentumEndTimer.restart();
-            wheelEvent.accepted = true;
-        }
-    }
-
-    Timer {
-        id: momentumEndTimer
-        interval: 60
-        onTriggered: {
-            var v = root._scrollVelocity;
-            root._scrollVelocity = 0;
-            if (Math.abs(v) < root.momentumMinVelocity)
-                return;
-            v = Math.max(-root.maximumFlickVelocity, Math.min(v, root.maximumFlickVelocity));
-            root.flick(0, v);
-        }
-    }
 }

@@ -6,22 +6,18 @@ Loader {
     id: root
     property bool shown: true
     property alias fade: opacityBehavior.enabled
-
-    property int enterDuration: Appearance.animation.elementMoveFast.duration
-    property var enterEasingCurve: Appearance.animation.elementMoveFast.bezierCurve
-    property int exitDuration: Appearance.animation.elementMoveFast.duration
-    property var exitEasingCurve: Appearance.animation.elementMoveFast.bezierCurve
-
+    property alias animation: opacityBehavior.animation
+    // When keepAlive is false, the loader destroys its content when shown goes
+    // false instead of keeping it resident at opacity 0. Use this for heavy
+    // content that is only needed in specific modes (e.g. edit mode drawers)
+    // to avoid holding objects in memory while they are never visible.
+    property bool keepAlive: true
     opacity: shown ? 1 : 0
     visible: opacity > 0
-    active: opacity > 0
+    active: keepAlive ? true : shown
 
     Behavior on opacity {
         id: opacityBehavior
-        NumberAnimation {
-            duration: root.shown ? root.enterDuration : root.exitDuration
-            easing.type: Easing.BezierSpline
-            easing.bezierCurve: root.shown ? root.enterEasingCurve : root.exitEasingCurve
-        }
+        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
     }
 }

@@ -1,0 +1,451 @@
+pragma ComponentBehavior: Bound
+import "../../.."
+import "../../../services"
+import "../../common"
+import "../../common/media"
+import "../../common/widgets"
+import "../../common/functions"
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
+import Quickshell.Services.Mpris
+import Quickshell.Wayland
+import "../bar" as Bar
+import "../bar/widgets/media"
+
+Scope {
+    id: root
+    property bool visible: false
+    readonly property MprisPlayer activePlayer: MprisController.activePlayer
+    readonly property var realPlayers: MprisController.players
+    readonly property var meaningfulPlayers: filterDuplicatePlayers(realPlayers)
+    readonly property real osdWidth: Appearance.sizes.osdWidth
+    readonly property real widgetWidth: Appearance.sizes.mediaControlsWidth
+    readonly property real widgetHeight: Appearance.sizes.mediaControlsHeight
+    property real popupRounding: Appearance.rounding.screenRounding - Appearance.sizes.hyprlandGapsOut + 1
+    property list<real> visualizerPoints: mediaControlsLoader.active ? CavaService.visualizerPoints : []
+    readonly property bool targetHovered: GlobalStates.mediaWidgetHovered
+    property bool popupHovered: false
+    property bool stickyActive: false
+    property bool openedViaHover: false
+    property bool _openingFromHover: false
+    readonly property bool hoverOpens: BarInteraction.enablePopups && !BarInteraction.clickToShow
+
+    // Same open debounce as StyledPopup: a pointer crossing the widget does not
+    // flash the popup.
+    Timer {
+        id: hoverOpenDebounce
+        interval: 60
+        repeat: false
+        onTriggered: {
+            if (!root.targetHovered || !root.hoverOpens || GlobalStates.mediaControlsOpen)
+                return;
+            // Set before opening: the Loader may build the window before the
+            // Connections below run, and the window picks its grab from this.
+            root._openingFromHover = true;
+            root.openedViaHover = true;
+            GlobalStates.mediaControlsOpen = true;
+            root._openingFromHover = false;
+        }
+    }
+
+    Timer {
+        id: hoverGraceTimer
+        interval: 100 + Math.max(0, Config.options?.bar?.tooltips?.closeDelay ?? 0)
+        repeat: false
+        onTriggered: {
+            if (!GlobalStates.mediaControlsPinned && !GlobalStates.isBarPopupOpen("media") && !root.targetHovered && !root.popupHovered) {
+                root.stickyActive = false;
+                GlobalStates.mediaControlsOpen = false;
+            }
+        }
+    }
+
+    function evaluateHoverState() {
+        if (!root.openedViaHover || GlobalStates.mediaControlsPinned || GlobalStates.isBarPopupOpen("media"))
+            return;
+        if (root.targetHovered || root.popupHovered) {
+            root.stickyActive = true;
+            hoverGraceTimer.stop();
+        } else if (root.stickyActive && !hoverGraceTimer.running) {
+            hoverGraceTimer.start();
+        }
+    }
+
+    onTargetHoveredChanged: {
+        if (root.targetHovered && root.hoverOpens)
+            hoverOpenDebounce.restart();
+        else
+            hoverOpenDebounce.stop();
+        evaluateHoverState();
+    }
+    onPopupHoveredChanged: evaluateHoverState()
+
+    Connections {
+        target: GlobalStates
+        function onMediaControlsOpenChanged() {
+            if (GlobalStates.mediaControlsOpen) {
+                root.openedViaHover = root._openingFromHover;
+                if (root.openedViaHover) {
+                    root.stickyActive = true;
+                    root.evaluateHoverState();
+                }
+            } else {
+                root.openedViaHover = false;
+                root.stickyActive = false;
+                hoverGraceTimer.stop();
+            }
+        }
+        function onMediaControlsPinnedChanged() {
+            if (!GlobalStates.mediaControlsPinned)
+                root.evaluateHoverState();
+        }
+    }
+
+    function filterDuplicatePlayers(players) {
+        let filtered = [];
+        let used = new Set();
+
+        for (let i = 0; i < players.length; ++i) {
+            if (used.has(i))
+                continue;
+            let p1 = players[i];
+            let group = [i];
+
+            // Find duplicates by trackTitle prefix
+            for (let j = i + 1; j < players.length; ++j) {
+                let p2 = players[j];
+                if (p1.trackTitle && p2.trackTitle && (p1.trackTitle.includes(p2.trackTitle) || p2.trackTitle.includes(p1.trackTitle)) || (p1.position - p2.position <= 2 && p1.length - p2.length <= 2)) {
+                    group.push(j);
+                }
+            }
+
+            // Pick the one with non-empty trackArtUrl, or fallback to the first
+            let chosenIdx = group.find(idx => players[idx].trackArtUrl && players[idx].trackArtUrl.length > 0);
+            if (chosenIdx === undefined)
+                chosenIdx = group[0];
+
+            filtered.push(players[chosenIdx]);
+            group.forEach(idx => used.add(idx));
+        }
+        return filtered;
+    }
+
+
+
+    // Click-away catcher; hover on the widget or popout unmaps it.
+    Loader {
+        active: GlobalStates.mediaControlsOpen && !root.targetHovered && !root.popupHovered
+
+        sourceComponent: PanelWindow {
+            exclusionMode: ExclusionMode.Ignore
+            exclusiveZone: 0
+            color: "transparent"
+            WlrLayershell.namespace: "imi-media-dismiss"
+            WlrLayershell.layer: WlrLayer.Top
+            anchors.top: true
+            anchors.bottom: true
+            anchors.left: true
+            anchors.right: true
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    if (!GlobalStates.mediaControlsPinned)
+                        GlobalStates.mediaControlsOpen = false;
+                }
+            }
+        }
+    }
+
+    Loader {
+        id: mediaControlsLoader
+        active: GlobalStates.mediaControlsOpen
+        onActiveChanged: {
+            if (!mediaControlsLoader.active) {
+                hoverGraceTimer.stop();
+                root.popupHovered = false;
+                root.stickyActive = false;
+            }
+            if (!mediaControlsLoader.active && root.realPlayers.length === 0) {
+                GlobalStates.mediaControlsOpen = false;
+            }
+        }
+
+        sourceComponent: PanelWindow {
+            id: panelWindow
+            visible: true
+            exclusionMode: ExclusionMode.Ignore
+            exclusiveZone: 0
+            implicitWidth: playerColumnLayout.implicitWidth * panelWindow.layoutScale
+            implicitHeight: playerColumnLayout.implicitHeight * panelWindow.layoutScale
+            color: "transparent"
+            WlrLayershell.namespace: "quickshell:mediaControls"
+            WlrLayershell.layer: WlrLayer.Overlay
+
+            readonly property var rect: GlobalStates.mediaPopupRect
+            readonly property real barThickness: {
+                if (BarPlacement.vertical) {
+                    return Appearance.sizes.verticalBarWidth;
+                } else {
+                    return Appearance.sizes.barHeight;
+                }
+            }
+            readonly property real layoutScale: {
+                if (!screen || screen.height <= 0)
+                    return 1.0;
+                var baseScale = Math.max(0.75, Math.min(1.5, screen.height / 1080.0));
+                var userMultiplier = Config.options?.bar?.tooltips?.popupScaleMultiplier ?? 1.0;
+                var scale = baseScale * userMultiplier;
+                var safeHeight = screen.height - barThickness - Appearance.sizes.elevationMargin * 2 - 40;
+                var safeWidth = screen.width * 0.9;
+                var contentHeight = playerColumnLayout.implicitHeight + 20;
+                var contentWidth = playerColumnLayout.implicitWidth + 20;
+                if (contentHeight > 0 && contentHeight * scale > safeHeight)
+                    scale = Math.min(scale, Math.max(0.5, safeHeight / contentHeight));
+                if (contentWidth > 0 && contentWidth * scale > safeWidth)
+                    scale = Math.min(scale, Math.max(0.5, safeWidth / contentWidth));
+                return scale;
+            }
+            anchors {
+                top: true
+                left: !BarPlacement.vertical || !BarPlacement.bottom
+                right: BarPlacement.vertical && BarPlacement.bottom
+            }
+            margins {
+                top: {
+                    if (BarPlacement.vertical) {
+                        if (rect.height === 0)
+                            return Math.max(0, (screen.height - panelWindow.implicitHeight) / 2);
+                        let targetY = rect.y + (rect.height / 2) - (panelWindow.implicitHeight / 2);
+                        return Math.max(0, Math.min(targetY, screen.height - panelWindow.implicitHeight));
+                    } else {
+                        if (!BarPlacement.bottom) {
+                            return barThickness + 2;
+                        } else {
+                            return screen.height - barThickness - panelWindow.implicitHeight - 2;
+                        }
+                    }
+                }
+                left: {
+                    if (BarPlacement.vertical) {
+                        if (!BarPlacement.bottom) {
+                            return barThickness + 2;
+                        }
+                        return 0;
+                    } else {
+                        if (rect.width === 0)
+                            return Math.max(0, (screen.width - panelWindow.implicitWidth) / 2);
+                        let targetX = rect.x + (rect.width / 2) - (panelWindow.implicitWidth / 2);
+                        return Math.max(0, Math.min(targetX, screen.width - panelWindow.implicitWidth));
+                    }
+                }
+                right: {
+                    if (BarPlacement.vertical && BarPlacement.bottom) {
+                        return barThickness + 2;
+                    }
+                    return 0;
+                }
+            }
+
+            mask: Region {
+                item: scaledContent
+            }
+
+            // Hover-opened, it behaves like a StyledPopup in hover mode: it only joins
+            // the shared grab as persistent, so input still reaches it over an open
+            // sidebar. Starting a dismissable grab here took the pointer away from the
+            // bar (TopLayerPanel is not a grab member), the widget saw a leave, the
+            // grace closed the popup, the grab ended, the pointer re-entered the bar
+            // and the popup reopened — over and over while hovering.
+            // Opened any other way (click, shortcut, IPC, dock) it keeps closing on an
+            // outside press through the dismissable grab.
+            readonly property bool dismissable: !root.openedViaHover
+
+            function updateGrabMembership() {
+                if (panelWindow.dismissable) {
+                    GlobalFocusGrab.removePersistent(panelWindow);
+                    GlobalFocusGrab.addDismissable(panelWindow);
+                } else {
+                    GlobalFocusGrab.removeDismissable(panelWindow);
+                    GlobalFocusGrab.addPersistent(panelWindow);
+                }
+            }
+
+            onDismissableChanged: updateGrabMembership()
+            Component.onCompleted: updateGrabMembership()
+            Component.onDestruction: {
+                GlobalFocusGrab.removeDismissable(panelWindow);
+                GlobalFocusGrab.removePersistent(panelWindow);
+            }
+            Connections {
+                target: GlobalFocusGrab
+                function onDismissed() {
+                    if (!GlobalStates.mediaControlsPinned && !GlobalStates.isBarPopupOpen("media")) {
+                        GlobalStates.mediaControlsOpen = false;
+                    }
+                }
+            }
+
+            Item {
+                id: scaledContent
+                anchors.centerIn: parent
+                width: playerColumnLayout.implicitWidth * panelWindow.layoutScale
+                height: playerColumnLayout.implicitHeight * panelWindow.layoutScale
+                scale: 1.0
+
+                HoverHandler {
+                    onHoveredChanged: root.popupHovered = hovered
+                }
+
+                ColumnLayout {
+                    id: playerColumnLayout
+                    anchors.centerIn: parent
+                    width: implicitWidth
+                    height: implicitHeight
+                    scale: panelWindow.layoutScale
+                    // Positive gap: each card carries its own shadow (StyledRectangularShadow
+                    // bleeding past the card bounds), and a negative spacing here made the
+                    // card surfaces themselves overlap when two or more players are open.
+                    spacing: Appearance.sizes.elevationMargin
+
+                Repeater {
+                    model: ScriptModel {
+                        values: root.meaningfulPlayers
+                    }
+                    delegate: Loader {
+                        id: delegateLoader
+                        required property MprisPlayer modelData
+
+                        sourceComponent: {
+                            switch (Config.options.bar.mediaPlayer.popupStyle) {
+                            case "expressive": return expressiveComp;
+                            case "android": return androidComp;
+                            default: return standardComp;
+                            }
+                        }
+
+                        Component {
+                            id: expressiveComp
+                            ExpressiveMediaCard {
+                                player: delegateLoader.modelData
+                            }
+                        }
+
+                        Component {
+                            id: androidComp
+                            AndroidMediaPopup {
+                                player: delegateLoader.modelData
+                                visualizerPoints: root.visualizerPoints
+                                implicitWidth: root.widgetWidth
+                                implicitHeight: root.widgetHeight
+                            }
+                        }
+
+                        Component {
+                            id: standardComp
+                            PlayerControl {
+                                player: delegateLoader.modelData
+                                visualizerPoints: root.visualizerPoints
+                                implicitWidth: root.widgetWidth
+                                implicitHeight: root.widgetHeight
+                                radius: root.popupRounding
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    // No player placeholder
+                    Layout.alignment: {
+                        if (panelWindow.anchors.left)
+                            return Qt.AlignLeft;
+                        if (panelWindow.anchors.right)
+                            return Qt.AlignRight;
+                        return Qt.AlignHCenter;
+                    }
+                    Layout.leftMargin: Appearance.sizes.hyprlandGapsOut
+                    Layout.rightMargin: Appearance.sizes.hyprlandGapsOut
+                    visible: root.meaningfulPlayers.length === 0
+                    implicitWidth: placeholderBackground.implicitWidth + Appearance.sizes.elevationMargin
+                    implicitHeight: placeholderBackground.implicitHeight + Appearance.sizes.elevationMargin
+
+                    StyledRectangularShadow {
+                        target: placeholderBackground
+                    }
+
+                    Rectangle {
+                        id: placeholderBackground
+                        anchors.centerIn: parent
+                        color: Appearance.colors.colLayer0
+                        radius: root.popupRounding
+                        property real padding: 20
+                        implicitWidth: placeholderLayout.implicitWidth + padding * 2
+                        implicitHeight: placeholderLayout.implicitHeight + padding * 2
+
+                        ColumnLayout {
+                            id: placeholderLayout
+                            anchors.centerIn: parent
+
+                            StyledText {
+                                text: Translation.tr("No active player")
+                                font.pixelSize: Appearance.font.pixelSize.large
+                            }
+                            StyledText {
+                                color: Appearance.colors.colSubtext
+                                text: Translation.tr("Make sure your player has MPRIS support\nor try turning off duplicate player filtering")
+                                font.pixelSize: Appearance.font.pixelSize.small
+                            }
+                        }
+                    }
+                }
+                }
+            }
+        }
+    }
+
+    IpcHandler {
+        target: "mediaControls"
+
+        function toggle(): void {
+            GlobalStates.toggleBarPopup("media");
+            if (mediaControlsLoader.active)
+                Notifications.timeoutAll();
+        }
+
+        function close(): void {
+            GlobalStates.closeBarPopup("media");
+        }
+
+        function open(): void {
+            GlobalStates.openBarPopup("media");
+            Notifications.timeoutAll();
+        }
+    }
+
+    GlobalShortcut {
+        name: "mediaControlsToggle"
+        description: "Toggles media controls on press"
+
+        onPressed: {
+            GlobalStates.mediaControlsOpen = !GlobalStates.mediaControlsOpen;
+        }
+    }
+    GlobalShortcut {
+        name: "mediaControlsOpen"
+        description: "Opens media controls on press"
+
+        onPressed: {
+            GlobalStates.mediaControlsOpen = true;
+        }
+    }
+    GlobalShortcut {
+        name: "mediaControlsClose"
+        description: "Closes media controls on press"
+
+        onPressed: {
+            GlobalStates.mediaControlsOpen = false;
+        }
+    }
+
+}

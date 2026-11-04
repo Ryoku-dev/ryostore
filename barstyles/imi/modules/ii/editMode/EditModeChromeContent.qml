@@ -1,0 +1,539 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import "../../.."
+import "../../../services"
+import "../../common"
+import "../../common/widgets"
+import "../../common/functions"
+import Quickshell.Widgets
+
+/**
+ * Edit Mode's chrome: the toolbar above the shrunk desktop.
+ *
+ * Everything is placed off `card`, the rectangle the desktop is drawn at -
+ * the same arithmetic the desktop's own transform is built out of - so the
+ * chrome cannot be a pixel off the thing it frames. That also gives the motion
+ * for free and gives it the right shape: `card` is a function of the mode's
+ * progress, so the toolbar rises out of the top band exactly as fast as the
+ * desktop shrinks away from it. Nothing here carries a Behavior of its own, and
+ * must not: a Behavior whose target moves every frame restarts every frame
+ * and never ticks.
+ *
+ * The catalogue opens on the right, into room the geometry has already taken
+ * out of the desktop's width.
+ */
+Item {
+    id: root
+
+    // The desktop's rectangle on screen. Defaults to the whole item, so an
+    // unconnected instance parks its chrome off the edge rather than somewhere
+    // arbitrary.
+    property rect card: Qt.rect(0, 0, root.width, root.height)
+    // The screen minus what the bar and the dock occupy, interpolated on the
+    // same progress as `card`. The toolbar clamps itself to this area and to
+    // the card's top edge.
+    property rect area: Qt.rect(0, 0, root.width, root.height)
+    // The toolbar belongs to the card, not to the empty band above it.  Keep a
+    // small clearance from the usable edge and from the drawer when a narrow
+    // monitor leaves very little room for the chrome.
+    readonly property real toolbarGap: Math.max(4, Math.min(
+        Appearance.sizes.editModeEdgeMargin,
+        Appearance.rounding.small))
+    readonly property real toolbarLeftLimit: root.area.x + root.toolbarGap
+    readonly property real toolbarRightLimit: Math.max(root.toolbarLeftLimit,
+        (root.drawer.width > 0 ? root.drawer.x : root.area.x + root.area.width)
+        - root.toolbarGap)
+    readonly property real toolbarAvailableWidth: Math.max(1,
+        root.toolbarRightLimit - root.toolbarLeftLimit)
+    readonly property real toolbarScale: toolbar.implicitWidth > 0
+        ? Math.min(1, root.toolbarAvailableWidth / toolbar.implicitWidth) : 1
+    readonly property real toolbarVisualWidth: toolbar.implicitWidth * root.toolbarScale
+    readonly property real toolbarVisualHeight: toolbar.implicitHeight * root.toolbarScale
+    readonly property real toolbarX: Math.max(root.toolbarLeftLimit,
+        Math.min(root.toolbarRightLimit - root.toolbarVisualWidth,
+            root.card.x + (root.card.width - root.toolbarVisualWidth) / 2))
+    readonly property real toolbarTopLimit: root.area.y + root.toolbarGap
+    readonly property real toolbarBottomLimit: Math.max(root.toolbarTopLimit,
+        root.area.y + root.area.height - root.toolbarVisualHeight - root.toolbarGap)
+    readonly property real toolbarYFromCard: root.card.y
+        - root.toolbarVisualHeight - root.toolbarGap
+    readonly property real toolbarY: Math.max(root.toolbarTopLimit,
+        Math.min(root.toolbarBottomLimit, root.toolbarYFromCard))
+
+    signal doneRequested()
+    signal undoRequested()
+    signal redoRequested()
+    signal drawerToggleRequested()
+    // The toolbar's second way into the panel: the bar's own quick settings,
+    // which are a page of the catalogue rather than a panel of their own.
+    signal drawerPageRequested(string section, string page)
+    // The drawer's gestures, relayed: the surface owns the geometry and every write.
+    signal drawerBarPlaceRequested(string componentId, string bucket)
+    signal drawerBarRemoveRequested(string componentId)
+    signal drawerBarDragMoved(string componentId, real x, real y)
+    signal drawerBarDropRequested(string componentId, real x, real y)
+    signal drawerBarDragCancelled()
+    signal drawerDockToggleRequested(string appId)
+    // "bar" or "dock": that surface back to the shell's defaults, as one
+    // history entry.
+    signal drawerResetRequested(string what)
+
+    // The drawer's reveal, from the same geometry the card is: its width is
+    // the drawer's on the drawer's scalar, so the panel slides out of the
+    // card's right edge exactly as fast as the desktop makes room for it.
+    property rect drawer: Qt.rect(root.width, 0, 0, 0)
+    readonly property alias drawerItem: drawerReveal
+    // Whether the catalogue's search field holds the keyboard: the surface
+    // takes focus for it and gives it straight back.
+    readonly property bool drawerSearchFocused: drawerLoader.item ? drawerLoader.item.searchFocused : false
+    property string drawerScreenName: ""
+
+    // Published for the surface's input mask: the only pixels of a
+    // screen-sized layer surface that may take a click.
+    // The layer-shell Region must receive an untransformed item.  The visual
+    // toolbar may be scaled on a narrow monitor, but handing that transformed
+    // item to Region can make the overlay claim a much larger area and swallow
+    // the bar's drag surface.
+    readonly property alias toolbarItem: toolbarFrame
+    // The guide's card is the other one, while a guided session is on.
+    readonly property alias guideItem: guide.cardItem
+
+    // The toolbar's rectangle, for a surface that is not this one. The
+    // Welcome's collapsed pill parks beside the toolbar and has no other way
+    // to know where it ended up.
+    readonly property rect toolbarRect: Qt.rect(root.toolbarX, root.toolbarY,
+        root.toolbarVisualWidth, root.toolbarVisualHeight)
+    // The chrome only exists on the screen the mode is on, so there is never a
+    // second one racing this write.
+    onToolbarRectChanged: GlobalStates.editToolbarRect = root.toolbarRect
+
+    // ── The toolbar's cascade ────────────────────────────────────────────────
+    // The pill rises out of the band as one piece (its `y` is a function of
+    // `card`), and its contents used to arrive with it in a single flat frame:
+    // eight controls appearing at once, which reads as a screenshot rather than
+    // as a toolbar being handed to you.
+    //
+    // Derived from `editProgress` rather than animated here, and that is the
+    // whole trick. That scalar already carries the mode's clock - one Behavior,
+    // in GlobalStates - so a piece's own reveal is arithmetic on it: the piece
+    // at slot N waits `N * staggerStep` of the entry and then takes
+    // `revealSpan` to arrive. Nothing here holds a timer, nothing restarts, and
+    // the cascade plays BACKWARDS on the way out for free, because the same
+    // scalar runs back down to zero. An animation of its own could do none of
+    // that, and a declarative one whose target moves every frame restarts
+    // every frame and never ticks at all (b710ef731).
+    // One height for the whole row, from the toolbar's own token: every group
+    // and button sits `inset` inside the pill, every chip `inset` inside its
+    // group, so the corners nest concentrically.
+    readonly property real barHeight: Appearance.sizes.editModeToolbarHeight
+    readonly property real inset: 6
+    readonly property real controlHeight: root.barHeight - root.inset * 2
+    readonly property real chipHeight: root.controlHeight - root.inset
+
+    readonly property real staggerStep: 0.06
+    readonly property real revealSpan: 0.5
+
+    function slotReveal(slot) {
+        const t = (GlobalStates.editProgress - slot * root.staggerStep) / root.revealSpan;
+        return Math.max(0, Math.min(1, t));
+    }
+
+    // Scale rather than an offset: a `y` translate would take the control
+    // outside the pill it is arriving into, and the pill does not clip.
+    function slotScale(slot) {
+        return 0.72 + 0.28 * root.slotReveal(slot);
+    }
+
+    // The toolbar's cursor, resolved here rather than by each button.
+    //
+    // The buttons ask for the hand themselves (RippleButton, ToolbarButton),
+    // and on this surface they never got it: the pointer stayed the arrow
+    // over every control. So one MouseArea over the whole pill owns the
+    // cursor - above everything, taking no buttons and no hover, so every
+    // click, hover and tooltip still lands where it did - and a passive
+    // HoverHandler says whether the pointer is over something clickable,
+    // found by walking `childAt` down from the toolbar.
+    property bool _pointerOverControl: false
+
+    function _controlAt(x, y) {
+        let item = toolbarFrame;
+        let px = x;
+        let py = y;
+        for (let depth = 0; item && depth < 16; depth++) {
+            const child = item.childAt(px, py);
+            if (!child)
+                break;
+            const p = item.mapToItem(child, px, py);
+            px = p.x;
+            py = p.y;
+            // RippleButton, and everything built on it (toolbar buttons, tabs).
+            if (child.pointingHandCursor !== undefined && typeof child.clicked === "function")
+                return child.enabled && child.pointingHandCursor;
+            item = child;
+        }
+        return false;
+    }
+
+    MouseArea {
+        x: root.toolbarX
+        y: root.toolbarY
+        width: root.toolbarVisualWidth
+        height: root.toolbarVisualHeight
+        z: 100
+        acceptedButtons: Qt.NoButton
+        hoverEnabled: false
+        cursorShape: root._pointerOverControl ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
+
+    Item {
+        id: toolbarFrame
+        x: root.toolbarX
+        y: root.toolbarY
+        width: root.toolbarVisualWidth
+        height: root.toolbarVisualHeight
+
+        HoverHandler {
+            id: toolbarHover
+            onPointChanged: root._pointerOverControl = toolbarHover.hovered
+                && root._controlAt(toolbarHover.point.position.x, toolbarHover.point.position.y)
+            onHoveredChanged: {
+                if (!toolbarHover.hovered)
+                    root._pointerOverControl = false;
+            }
+        }
+
+        // The pill, drawn here instead of by Toolbar so it can carry its
+        // ornament: a large scalloped shape parked off the right end, clipped
+        // by the pill, at ornament strength - the decoration the design
+        // reference asks for, under Done where the eye ends up anyway.
+        Item {
+            id: toolbarSurface
+            width: toolbar.implicitWidth
+            height: toolbar.implicitHeight
+            scale: root.toolbarScale
+            transformOrigin: Item.TopLeft
+
+            StyledRectangularShadow {
+                target: toolbarPill
+            }
+
+            ClippingRectangle {
+                id: toolbarPill
+                anchors.fill: parent
+                radius: Config.options.appearance.sharpMode ? Appearance.rounding.full : height / 2
+                color: Appearance.m3colors.m3surfaceContainer
+
+                MaterialShape {
+                    readonly property real size: toolbarPill.height * 1.9
+                    width: size
+                    height: size
+                    x: toolbarPill.width - size * 0.62
+                    y: (toolbarPill.height - size) / 2
+                    shape: MaterialShape.Shape.Cookie12Sided
+                    color: Appearance.colors.colPrimary
+                    opacity: 0.09
+                }
+                MaterialShape {
+                    readonly property real size: toolbarPill.height * 1.3
+                    width: size
+                    height: size
+                    x: -size * 0.45
+                    y: toolbarPill.height - size * 0.55
+                    shape: MaterialShape.Shape.Flower
+                    color: Appearance.colors.colTertiary
+                    opacity: 0.07
+                }
+            }
+        }
+
+        Toolbar {
+            id: toolbar
+            // Stay attached to the card's top edge.  The old placement used
+            // a fraction of the whole top band, which left a large dead gap
+            // on tall monitors and made the toolbar appear centred between
+            // the bar and the wallpaper instead of belonging to the wallpaper.
+            x: 0
+            y: 0
+            width: implicitWidth
+            height: implicitHeight
+            scale: root.toolbarScale
+            transformOrigin: Item.TopLeft
+            spacing: 8
+            padding: root.inset
+            enableShadow: false
+            colBackground: "transparent"
+            implicitHeight: root.barHeight
+
+            // The mode's mark: what this row is, before what it does. A shape
+            // that is a shape on purpose - it morphs when the panel opens,
+            // the toolbar's one moving part.
+            MaterialShapeWrappedMaterialSymbol {
+                opacity: root.slotReveal(0)
+                scale: root.slotScale(0)
+                Layout.alignment: Qt.AlignVCenter
+                Layout.leftMargin: 2
+                implicitSize: root.controlHeight
+                iconSize: 22
+                padding: 0
+                text: "edit"
+                fill: 1
+                shape: GlobalStates.editDrawerOpen ? MaterialShape.Shape.Cookie9Sided : MaterialShape.Shape.SoftBurst
+                // Tinted from the primary rather than its container: under a
+                // scheme whose containers are all one grey it still reads as
+                // the accent that Done closes the row with.
+                color: ColorUtils.transparentize(Appearance.colors.colPrimary, 0.82)
+                colSymbol: Appearance.colors.colPrimary
+            }
+
+            // Which screen the mode is on, with more than one: a click moves the
+        // mode to the next. Named by the screen's own name - the only name
+        // the user has for it in the compositor's config too.
+            IconAndTextToolbarButton {
+            id: monitorButton
+            readonly property var screens: Quickshell.screens
+            visible: monitorButton.screens.length > 1
+            opacity: root.slotReveal(0)
+            scale: (monitorButton.down ? 0.92 : 1) * root.slotScale(0)
+            Layout.alignment: Qt.AlignVCenter
+            Layout.leftMargin: 2
+            iconText: "monitor"
+            text: GlobalStates.editModeMonitor
+            onClicked: {
+                const names = Array.from(monitorButton.screens).map(screen => screen.name);
+                if (names.length < 2)
+                    return;
+                const at = names.indexOf(GlobalStates.editModeMonitor);
+                GlobalStates.switchEditMonitor(names[(at + 1) % names.length]);
+            }
+
+            StyledToolTip {
+                requireOverlay: false
+                text: Translation.tr("Edit the next screen")
+            }
+        }
+
+        // The panel's catalogues, as one group of chips: Bar, Dock, Style. The
+        // chips mirror the panel's own tabs one for one, so the toolbar and
+        // the panel can never disagree about what there is to edit; a chip
+        // reads toggled while the panel is open on its catalogue, and a click
+        // on that chip closes the panel again. Bar and Dock open on their
+        // appearance pages - what the panel is for when you already know
+        // which surface you came to change - and Style on its root.
+        //
+        // One group rather than loose buttons because a group with one job
+        // reads as one control: which catalogue.
+            Rectangle {
+            id: sectionGroup
+            opacity: root.slotReveal(1)
+            scale: root.slotScale(1)
+            Layout.alignment: Qt.AlignVCenter
+            implicitWidth: sectionRow.implicitWidth + root.inset
+            implicitHeight: root.controlHeight
+            radius: Config.options.appearance.sharpMode ? Appearance.rounding.full : height / 2
+            color: Appearance.colors.colSurfaceContainerHigh
+
+            component SectionChip: IconAndTextToolbarButton {
+                id: chip
+                required property string section
+                property string page: ""
+                property string tooltip: ""
+                readonly property bool open: GlobalStates.editDrawerOpen && GlobalStates.editDrawerSection === chip.section
+
+                Layout.fillHeight: false
+                implicitHeight: root.chipHeight
+                scale: chip.down ? 0.92 : 1
+                toggled: chip.open
+                iconFill: chip.open
+                labelWeight: chip.open ? Font.DemiBold : Font.Medium
+                onClicked: {
+                    if (chip.open) {
+                        root.drawerToggleRequested();
+                        return;
+                    }
+                    root.drawerPageRequested(chip.section, chip.page);
+                }
+
+                StyledToolTip {
+                    requireOverlay: false
+                    text: chip.tooltip
+                }
+            }
+
+            Row {
+                id: sectionRow
+                anchors.centerIn: parent
+                spacing: 2
+
+                SectionChip {
+                    section: "bar"
+                    page: "appearance"
+                    iconText: "dock_to_bottom"
+                    text: Translation.tr("Bar")
+                    tooltip: Translation.tr("Bar appearance and widgets")
+                }
+                SectionChip {
+                    section: "dock"
+                    page: "appearance"
+                    iconText: PanelFamily.touchFirst ? "dock_to_bottom" : "dock"
+                    text: PanelFamily.touchFirst ? Translation.tr("Taskbar") : Translation.tr("Dock")
+                    tooltip: PanelFamily.touchFirst
+                        ? Translation.tr("Taskbar appearance and apps")
+                        : Translation.tr("Dock appearance and apps")
+                }
+                SectionChip {
+                    section: "style"
+                    iconText: "palette"
+                    text: Translation.tr("Style")
+                    tooltip: Translation.tr("Presets, theme and colours")
+                }
+            }
+        }
+
+        // The two the keyboard already offers, for a pointer that never
+        // reaches for it. Disabled rather than hidden when their stack is
+        // empty: a button that comes and goes moves every other button on the
+        // toolbar with it, and the toolbar is centred on the card, so the whole
+        // row would slide under the pointer on the first edit.
+            // Undo and redo as one group, the same surface the catalogues sit
+            // on: a pair that belongs together reads as one control.
+            Rectangle {
+            id: historyGroup
+            opacity: root.slotReveal(2)
+            scale: root.slotScale(2)
+            Layout.alignment: Qt.AlignVCenter
+            implicitWidth: historyRow.implicitWidth + root.inset
+            implicitHeight: root.controlHeight
+            radius: Config.options.appearance.sharpMode ? Appearance.rounding.full : height / 2
+            color: Appearance.colors.colSurfaceContainerHigh
+
+            Row {
+            id: historyRow
+            anchors.centerIn: parent
+            spacing: 2
+
+            IconToolbarButton {
+            id: undoButton
+            // RippleButton dims a disabled button through this same property,
+            // and an outer binding replaces its rule rather than joining it -
+            // so the dimming is multiplied back in by hand.
+            opacity: undoButton.enabled ? 1 : 0.4
+            scale: undoButton.down ? 0.92 : 1
+            height: root.chipHeight
+            text: "undo"
+            enabled: GlobalStates.editCanUndo
+            onClicked: root.undoRequested()
+
+            StyledToolTip {
+                requireOverlay: false
+                text: Translation.tr("Undo (Ctrl+Z)")
+            }
+        }
+
+            IconToolbarButton {
+            id: redoButton
+            opacity: redoButton.enabled ? 1 : 0.4
+            scale: redoButton.down ? 0.92 : 1
+            height: root.chipHeight
+            text: "redo"
+            enabled: GlobalStates.editCanRedo
+            onClicked: root.redoRequested()
+
+            StyledToolTip {
+                requireOverlay: false
+                text: Translation.tr("Redo (Ctrl+Shift+Z)")
+            }
+        }
+            }
+            }
+
+        // The mode's real way out. It carries its label - a mode the user
+        // cannot see how to leave costs them the whole session, and a checkmark
+        // is not a word - and it is FILLED on the primary role, because
+        // rendered flat beside the title it read as a second label.
+            IconAndTextToolbarButton {
+            id: doneButton
+            opacity: root.slotReveal(3)
+            scale: (doneButton.down ? 0.92 : 1) * root.slotScale(3)
+            Layout.alignment: Qt.AlignVCenter
+            Layout.fillHeight: false
+            implicitHeight: root.controlHeight
+            // Padding, never an implicitWidth: the Control stretches its
+            // contentItem (a Row) to the available width, and a Row lays its
+            // children out from the left - the label sat off-centre.
+            leftPadding: 18
+            rightPadding: 20
+            iconText: "done"
+            iconFill: true
+            labelWeight: Font.DemiBold
+            text: Translation.tr("Done")
+            colBackground: Appearance.colors.colPrimary
+            colBackgroundHover: Appearance.colors.colPrimaryHover
+            colRipple: Appearance.colors.colPrimaryActive
+            colText: Appearance.colors.colOnPrimary
+            onClicked: root.doneRequested()
+        }
+        }
+    }
+
+    // The tour of the toolbar, shown only while a guide is hosting the session.
+    // Above the toolbar in declaration order so its card is never behind the
+    //control it points at.
+    EditModeGuide {
+        id: guide
+        anchors.fill: parent
+        z: 150
+        sectionsTarget: sectionGroup
+        historyTarget: undoButton
+        doneTarget: doneButton
+        drawerTarget: drawerReveal
+    }
+
+    // Clicking anywhere but the field lets the keyboard go. Only this surface
+    // needs the catcher: a click on the desktop lands on another surface, which
+    // takes the keyboard with it and deactivates this window on its own. The
+    // press is declined rather than consumed, so whatever was actually clicked
+    // still gets it.
+    MouseArea {
+        anchors.fill: parent
+        z: 200
+        enabled: root.drawerSearchFocused
+        acceptedButtons: Qt.AllButtons
+        onPressed: mouse => {
+            if (drawerLoader.item && !drawerLoader.item.pointInSearchField(mouse.x, mouse.y))
+                drawerLoader.item.releaseSearchFocus();
+            mouse.accepted = false;
+        }
+    }
+
+    // The reveal: a clip the width of the drawer's animated scalar, with the
+    // full-width panel anchored to its left edge, so the panel slides in from
+    // the card's right edge and its contents never reflow.
+    Item {
+        id: drawerReveal
+        x: root.drawer.x
+        y: root.drawer.y
+        width: root.drawer.width
+        height: root.drawer.height
+        clip: true
+        visible: width > 0
+
+        Loader {
+            id: drawerLoader
+            anchors.fill: parent
+            active: GlobalStates.editDrawerOpen || GlobalStates.editDrawerProgress > 0
+            sourceComponent: EditModeDrawer {
+                anchors.fill: parent
+                ghostParent: root
+                screenName: root.drawerScreenName
+                onResetRequested: what => root.drawerResetRequested(what)
+                onBarPlaceRequested: (componentId, bucket) => root.drawerBarPlaceRequested(componentId, bucket)
+                onBarRemoveRequested: componentId => root.drawerBarRemoveRequested(componentId)
+                onBarDragMoved: (componentId, x, y) => root.drawerBarDragMoved(componentId, x, y)
+                onBarDropRequested: (componentId, x, y) => root.drawerBarDropRequested(componentId, x, y)
+                onBarDragCancelled: root.drawerBarDragCancelled()
+                onDockToggleRequested: appId => root.drawerDockToggleRequested(appId)
+            }
+        }
+    }
+}

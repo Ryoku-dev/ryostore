@@ -1,0 +1,195 @@
+pragma ComponentBehavior: Bound
+import "../shared"
+import ".."
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Effects
+import Quickshell
+import Quickshell.Services.UPower
+import "../../../.."
+import "../../../../services"
+import "../../../common"
+import "../../../common/widgets"
+import "../../../common/functions"
+
+// cornerStyle === 2 — sem rounding, sem margin, sem border
+Item {
+    id: root
+
+    property bool showBarBackground
+    property var  activeTheme
+    property var  leftList
+    property var  centerList
+    property var  rightList
+    // The config's values unless Settings' preview tries others on.
+    property int backgroundStyle: Config.options.bar.barBackgroundStyle
+    property int screenRounding: Config.options.appearance.fakeScreenRounding
+
+    property color actualColor: root.showBarBackground
+        ? (Config.options.bar.amoledBackground ? "#000000"
+            : Config.options.bar.expressiveColors
+            ? root.activeTheme.barBackground
+            : Appearance.colors.colLayer0)
+        : "transparent"
+
+    Behavior on actualColor {
+        animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(root)
+    }
+
+    // With the wrapped frame on, this bar is welded to the frame ring and the
+    // shell casts a single shadow from WrappedFrameVisuals, below every panel.
+    // Keeping a private shadow here would paint it on top of the frame strips,
+    // of the concave corners and of an open Connect sidebar.
+    // When welded, WrappedFrameVisuals already renders the bar plate underneath,
+    // so this background stays transparent to prevent duplicate blending.
+    readonly property bool weldedToFrame: root.screenRounding === 3 && root.backgroundStyle !== 3
+
+    Rectangle {
+        id: barBackground
+        anchors.fill: parent
+        color: root.weldedToFrame ? "transparent" : root.actualColor
+        radius: 0
+
+        layer.enabled: !root.weldedToFrame && Config.options.bar.dropShadow && !ShellModePolicy.barDropShadowBlocked
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.28)
+            shadowVerticalOffset: BarPlacement.bottom ? -4 : 4
+            shadowBlur: 1.0
+        }
+    }
+
+    Item {
+        id: leftStopper
+        anchors { top: parent.top; bottom: parent.bottom; left: parent.left; leftMargin: 4 }
+        width: 1
+    }
+    Item {
+        id: rightStopper
+        anchors { top: parent.top; bottom: parent.bottom; right: parent.right }
+        width: 1
+    }
+
+    RowLayout {
+        id: leftSection
+        anchors { top: parent.top; bottom: parent.bottom; left: leftStopper.right }
+        spacing: 4
+        Repeater {
+            id: leftRepeater
+            model: Config.options.bar.layouts.left
+            delegate: BarComponent {
+                list: leftRepeater.model
+                barSection: 0
+            }
+        }
+    }
+
+    Item {
+        id: middleSection
+        anchors { top: parent.top; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter }
+        // `centerCenter` is centred in here and the two side rows hang off it
+        // with a 4px margin, so the box has to be symmetric around the centre:
+        // whichever side is wider decides the slack, and both fit.
+        //
+        // The old form was `middleLeft + centerCenter + middleRight + 8`, which
+        // charged for those two margins even when the rows they belong to were
+        // empty. In `island` background style that is *always* — BarLayout
+        // forces `centerIdx` to -1 there, so every centre widget lands in
+        // `centerList` and the side rows are zero-wide. The island wraps this
+        // box, so the phantom 4px on each side became visible padding inside
+        // the pill; in every other background style the bar's own full-width
+        // surface hid it, which is why the margins only looked wrong here.
+        readonly property real sideSlack: Math.max(
+            middleLeft.width > 0 ? middleLeft.width + 4 : 0,
+            middleRight.width > 0 ? middleRight.width + 4 : 0)
+        width: centerCenter.width + middleSection.sideSlack * 2
+
+        RowLayout {
+            id: middleLeft
+            anchors { top: parent.top; bottom: parent.bottom; right: centerCenter.left; rightMargin: 4 }
+            Repeater {
+                model: root.leftList
+                delegate: BarComponent {
+                    growthEdge: "trailing"
+                    list: Config.options.bar.layouts.center; barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id)
+                }
+            }
+        }
+        RowLayout {
+            id: centerCenter
+            anchors.centerIn: parent
+            Repeater {
+                model: root.centerList
+                delegate: BarComponent {
+                    list: Config.options.bar.layouts.center; barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id)
+                }
+            }
+        }
+        RowLayout {
+            id: middleRight
+            anchors { top: parent.top; bottom: parent.bottom; left: centerCenter.right; leftMargin: 4 }
+            Repeater {
+                model: root.rightList
+                delegate: BarComponent {
+                    growthEdge: "leading"
+                    list: Config.options.bar.layouts.center; barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id)
+                }
+            }
+        }
+    }
+
+    RowLayout {
+        id: rightSection
+        anchors { top: parent.top; bottom: parent.bottom; right: rightStopper.left; rightMargin: 4 }
+        spacing: 4
+        Repeater {
+            id: rightRepeater
+            model: Config.options.bar.layouts.right
+            delegate: BarComponent {
+                list: rightRepeater.model
+                barSection: 2
+            }
+        }
+    }
+
+    FocusedScrollMouseArea {
+        id: barLeftSideMouseArea
+        z: -1
+        anchors { top: parent.top; bottom: parent.bottom; left: parent.left; right: middleSection.left }
+        implicitHeight: Appearance.sizes.baseBarHeight
+        onScrollDown: if (Config.options.bar.enableBrightnessScroll) Brightness.decreaseBrightness()
+        onScrollUp:   if (Config.options.bar.enableBrightnessScroll) Brightness.increaseBrightness()
+        onMovedAway:  GlobalStates.osdBrightnessOpen = false
+        onPressed: event => { if (event.button === Qt.LeftButton && Config.options.bar.sidebarClickOpen) GlobalStates.toggleLeftSidebar(root.screen?.name); }
+
+        ScrollHint {
+            reveal: barLeftSideMouseArea.hovered && Config.options.bar.enableBrightnessScroll
+            icon: Hyprsunset.gamma === 100 ? "light_mode" : "wb_twilight"
+            tooltipText: Translation.tr("Scroll to change brightness")
+            side: "left"
+            anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
+        }
+    }
+
+    FocusedScrollMouseArea {
+        id: barRightSideMouseArea
+        z: -1
+        anchors { top: parent.top; bottom: parent.bottom; left: middleSection.right; right: parent.right }
+        implicitHeight: Appearance.sizes.baseBarHeight
+        onScrollDown: if (Config.options.bar.enableVolumeScroll) Audio.decrementVolume()
+        onScrollUp:   if (Config.options.bar.enableVolumeScroll) Audio.incrementVolume()
+        onMovedAway:  GlobalStates.osdVolumeOpen = false
+        onPressed: event => { if (event.button === Qt.LeftButton && Config.options.bar.sidebarClickOpen) GlobalStates.toggleRightSidebar(root.screen?.name); }
+
+        ScrollHint {
+            reveal: barRightSideMouseArea.hovered && Config.options.bar.enableVolumeScroll
+            icon: "volume_up"
+            tooltipText: Translation.tr("Scroll to change volume")
+            side: "right"
+            anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter
+        }
+    }
+}

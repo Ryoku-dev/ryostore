@@ -1,0 +1,162 @@
+#pragma ComponentBehavior: Bound
+import "../../../../common"
+import "../../popups/weather"
+import "../../../../common/widgets"
+import "../../../../../services"
+import QtQuick
+import QtQuick.Layouts
+
+MouseArea {
+    id: root
+    property bool hovered: false
+    property bool vertical: BarPlacement.vertical
+    property bool isMaterial: true
+
+    implicitWidth: vertical ? Appearance.sizes.verticalBarWidth : (isMaterial ? materialPill.implicitWidth : defaultRow.implicitWidth + 6)
+    implicitHeight: vertical ? (isMaterial ? materialPillVert.implicitHeight : defaultCol.implicitHeight + 6) : Appearance.sizes.baseBarHeight
+    
+    width: implicitWidth
+    height: implicitHeight
+
+    hoverEnabled: !BarInteraction.clickToShow
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onPressed: Weather.refreshManually()
+    }
+
+    // Default Row (Non-Material)
+    RowLayout {
+        id: defaultRow
+        anchors.centerIn: parent
+        visible: !root.vertical && !root.isMaterial
+        Image {
+            source: WeatherIcons.getWeatherIcon(Weather.data?.wCode ?? 113, false)
+            sourceSize: Qt.size(Appearance.font.pixelSize.large, Appearance.font.pixelSize.large)
+            Layout.alignment: Qt.AlignVCenter
+        }
+        StyledText {
+            font.pixelSize: Appearance.font.pixelSize.small
+            color: Appearance.colors.colOnLayer1
+            text: Weather.data?.temp ?? "--°"
+            Layout.alignment: Qt.AlignVCenter
+        }
+    }
+
+    // Default Col (Non-Material Vertical)
+    ColumnLayout {
+        id: defaultCol
+        anchors.centerIn: parent
+        visible: root.vertical && !root.isMaterial
+        Image {
+            source: WeatherIcons.getWeatherIcon(Weather.data?.wCode ?? 113, false)
+            sourceSize: Qt.size(Appearance.font.pixelSize.large, Appearance.font.pixelSize.large)
+            Layout.alignment: Qt.AlignHCenter
+        }
+        StyledText {
+            font.pixelSize: Appearance.font.pixelSize.smaller
+            color: Appearance.colors.colOnLayer1
+            text: (Weather.data?.temp ?? "--°").replace(/[CF]$/, "")
+            Layout.alignment: Qt.AlignHCenter
+        }
+    }
+
+    BarWidgetPalette {
+        id: palette
+        colorMode: Config.options.bar.weatherWidget.colorMode
+    }
+
+    // Material Pill (Horizontal)
+    Rectangle {
+        id: materialPill
+        visible: !root.vertical && root.isMaterial
+        anchors.centerIn: parent
+        color: root.containsMouse ? palette.colBackgroundHover : palette.colBackground
+        radius: Appearance.rounding.full
+        implicitHeight: Appearance.sizes.baseBarHeight - 8
+        height: implicitHeight
+        implicitWidth: tempText.implicitWidth + iconCircle.width + 20
+        width: implicitWidth
+
+        StyledText {
+            id: tempText
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: 1
+            font.pixelSize: Appearance.font.pixelSize.small
+            color: palette.colOnBackground
+            text: Weather.data?.temp ?? "--°"
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        Rectangle {
+            id: iconCircle
+            anchors.right: parent.right
+            anchors.rightMargin: 4
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.height - 8
+            height: width
+            radius: Appearance.rounding.full
+            color: root.containsMouse ? palette.colBackgroundVariantHover : palette.colBackgroundVariant
+
+            Image {
+                anchors.centerIn: parent
+                source: WeatherIcons.getWeatherIcon(Weather.data?.wCode ?? 113, false)
+                sourceSize: Qt.size(Appearance.font.pixelSize.normal, Appearance.font.pixelSize.normal)
+            }
+        }
+    }
+
+    // Material Pill (Vertical)
+    Rectangle {
+        id: materialPillVert
+        visible: root.vertical && root.isMaterial
+        anchors.centerIn: parent
+        color: root.containsMouse ? palette.colBackgroundHover : palette.colBackground
+        radius: Appearance.rounding.full
+        implicitWidth: Appearance.sizes.verticalBarWidth - 8
+        width: implicitWidth
+        implicitHeight: tempTextVert.implicitHeight + iconCircleVert.height + 16
+        height: implicitHeight
+
+        StyledText {
+            id: tempTextVert
+            anchors.top: parent.top
+            anchors.topMargin: 8
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: Appearance.font.pixelSize.smaller
+            color: palette.colOnBackground
+            text: (Weather.data?.temp ?? "--°").replace(/[CF]$/, "")
+            horizontalAlignment: Text.AlignHCenter
+        }
+
+        Rectangle {
+            id: iconCircleVert
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 2
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width - 4
+            height: width
+            radius: Appearance.rounding.full
+            color: root.containsMouse ? palette.colBackgroundVariantHover : palette.colBackgroundVariant
+
+            Image {
+                anchors.centerIn: parent
+                source: WeatherIcons.getWeatherIcon(Weather.data?.wCode ?? 113, false)
+                sourceSize: Qt.size(Appearance.font.pixelSize.normal, Appearance.font.pixelSize.normal)
+            }
+        }
+    }
+
+    // Lazy: popup controller is only built on approach (same as ExpressiveSports).
+    PopupLoader {
+        active: BarInteraction.enablePopups
+            && (BarInteraction.clickToShow || root.containsMouse || held)
+        sourceComponent: WeatherPopup {
+            compact: Config.options.bar.tooltips.compactPopups
+            hoverTarget: root
+        }
+    }
+}

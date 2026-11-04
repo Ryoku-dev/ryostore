@@ -7,6 +7,11 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell.Widgets
 
+/**
+ * Material 3 slider. See https://m3.material.io/components/sliders/overview
+ * It doesn't exactly match the spec because it does not make sense to have stuff on a computer that fucking huge.
+ * Should be at 3/4 scale...
+ */
 
 Slider {
     id: root
@@ -15,6 +20,7 @@ Slider {
     property list<real> dividerValues: []
     enum Configuration {
         Wavy = 4,
+        X0 = 3,
         XS = 12,
         S = 18,
         M = 30,
@@ -27,27 +33,34 @@ Slider {
     property real handleDefaultWidth: 3
     property real handlePressedWidth: 1.5
     property color highlightColor: Appearance.colors.colPrimary
-    property color trackColor: Appearance.colors.colSecondaryContainer
+    property color trackColor: Config.options.appearance.colorfulScrollbar ? Appearance.colors.colPrimaryContainer : Appearance.colors.colSecondaryContainer
     property color handleColor: Appearance.colors.colPrimary
     property color dotColor: Appearance.m3colors.m3onSecondaryContainer
     property color dotColorHighlighted: Appearance.m3colors.m3onPrimary
     property real unsharpenRadius: Appearance.rounding.unsharpen
     property real trackWidth: configuration
-    property real trackRadius: trackWidth >= StyledSlider.Configuration.XL ? 21
+
+    readonly property bool sharpMode: Config.options.appearance.sharpMode
+    property real trackRadius: sharpMode ? 0 : trackWidth >= StyledSlider.Configuration.XL ? 21
         : trackWidth >= StyledSlider.Configuration.L ? 12
         : trackWidth >= StyledSlider.Configuration.M ? 9
         : trackWidth >= StyledSlider.Configuration.S ? 6
         : height / 2
-    property real handleHeight: (configuration === StyledSlider.Configuration.Wavy) ? 24 : Math.max(33, trackWidth + 9)
-    property real handleWidth: root.pressed ? handlePressedWidth : handleDefaultWidth
-    property real handleMargins: Appearance.spacing.space50
-    property real dividerMargins: Appearance.spacing.space25
+        
+    // The Wavy handle morphs: a circle at rest, the vertical pill while grabbed.
+    // The two handle Behaviors below carry the swap as one smooth move, and the
+    // handle's x centring follows the animated width.
+    property real wavyHandleRestSize: Math.max(12, trackWidth)
+    property real handleHeight: (configuration === StyledSlider.Configuration.Wavy) ? (root.pressed ? 24 : wavyHandleRestSize) : (configuration === StyledSlider.Configuration.X0) ? 14 : Math.max(33, trackWidth + 9)
+    property real handleWidth: root.pressed ? (root.wavy ? handleDefaultWidth : handlePressedWidth) : (root.wavy ? wavyHandleRestSize : handleDefaultWidth)
+    property real handleMargins: 4
+    property real dividerMargins: 2
     property real trackDotSize: 3
     property bool usePercentTooltip: true
     property string tooltipContent: usePercentTooltip ? `${Math.round(((value - from) / (to - from)) * 100)}%` : `${Math.round(value)}`
-    property bool wavy: configuration === StyledSlider.Configuration.Wavy
-    property bool animateWave: true
-    property real waveAmplitudeMultiplier: wavy ? 0.5 : 0
+    property bool wavy: configuration === StyledSlider.Configuration.Wavy // If true, the progress bar will have a wavy fill effect
+    property bool animateWave: false
+    property real waveAmplitudeMultiplier: wavy && animateWave ? 0.35 : 0 // paused: the wave settles into a straight line
     property real waveFrequency: 6
     property real waveFps: 60
 
@@ -59,14 +72,22 @@ Slider {
     from: 0
     to: 1
 
+    property int valueAnimationDuration: 0
+
     Behavior on value {
-        SmoothedAnimation {
-            velocity: Appearance.animation.elementMoveFast.velocity
+        enabled: root.valueAnimationDuration > 0
+        NumberAnimation {
+            duration: root.valueAnimationDuration
+            easing.type: Easing.OutCubic
         }
     }
 
     Behavior on handleMargins {
         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+    }
+
+    Behavior on waveAmplitudeMultiplier {
+        animation: Appearance?.animation.elementMoveFast.numberAnimation.createObject(this)
     }
 
     component TrackDot: Rectangle {
@@ -92,8 +113,8 @@ Slider {
 
     background: Item {
         id: background
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent?.verticalCenter
+        anchors.horizontalCenter: parent?.horizontalCenter
         width: root.width
         implicitHeight: trackWidth
         property var normalized: root.dividerValues.map(v => (v - root.from) / (root.to - root.from))
@@ -103,6 +124,7 @@ Slider {
         property var leftWidths: leftValues.map((v, i, a) => a[i + 1] - v).slice(0, -1)
         property var rightWidths: rightValues.map((v, i, a) => a[i + 1] - v).slice(0, -1)
 
+        // Fill left
         Repeater {
             model: background.leftWidths.length
 
@@ -142,24 +164,17 @@ Slider {
                     frequency: root.waveFrequency
                     fullLength: root.width
                     color: root.highlightColor
-                    amplitudeMultiplier: root.wavy ? 0.5 : 0
+                    lineWidth: Math.max(6, root.trackWidth)
+                    amplitudeMultiplier: root.waveAmplitudeMultiplier
                     width: parent.width
-                    height: root.trackWidth
-                    Connections {
-                        target: root
-                        function onValueChanged() { wavyFill.requestPaint(); }
-                        function onHighlightColorChanged() { wavyFill.requestPaint(); }
-                    }
-                    FrameAnimation {
-                        running: root.animateWave
-                        onTriggered: {
-                            wavyFill.requestPaint()
-                        }
-                    }
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: Math.max(parent.height, root.trackWidth * 2.5)
+                    animateWave: root.animateWave
                 }
             }
         }
 
+        // Fill right
         Repeater {
             model: background.rightWidths.length
 
@@ -179,6 +194,7 @@ Slider {
             }
         }
 
+        // Stop indicators
         Repeater {
             model: root.stopIndicatorValues
             TrackDot {
@@ -194,12 +210,16 @@ Slider {
 
         implicitWidth: root.handleWidth
         implicitHeight: root.handleHeight
-        x: root.leftPadding + (root.visualPosition * root.effectiveDraggingWidth) - (root.handleWidth / 2)
-        anchors.verticalCenter: parent.verticalCenter
+        x: root.leftPadding + (root.visualPosition * root.effectiveDraggingWidth) - (width / 2)
+        anchors.verticalCenter: parent?.verticalCenter
         radius: Appearance.rounding.full
         color: root.handleColor
 
         Behavior on implicitWidth {
+            animation: Appearance?.animation.elementMoveFast.numberAnimation.createObject(this)
+        }
+
+        Behavior on implicitHeight {
             animation: Appearance?.animation.elementMoveFast.numberAnimation.createObject(this)
         }
 

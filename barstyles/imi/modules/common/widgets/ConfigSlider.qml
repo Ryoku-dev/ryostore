@@ -4,52 +4,187 @@ import QtQuick
 import QtQuick.Layouts
 import "../../../services"
 
-RowLayout {
+Rectangle {
     id: root
-    spacing: Appearance.spacing.space150
-    Layout.leftMargin: Appearance.spacing.space100
-    Layout.rightMargin: Appearance.spacing.space100
-
     property string text: ""
     property string buttonIcon: ""
-    property real value: 0
+    property alias value: slider.value
     property alias stopIndicatorValues: slider.stopIndicatorValues
     property bool usePercentTooltip: true
-    property real from: 0
-    property real to: 1
-    signal valueModified(real newValue)
-    property real textWidth: 120
-    property bool showLabel: true
+    property real from: slider.from
+    property real to: slider.to
+    property alias stepSize: slider.stepSize
+    property alias snapMode: slider.snapMode
+    property alias tooltipContent: slider.tooltipContent
+    property alias pressed: slider.pressed
+    signal moved()
+    property real textWidth: 180
+    /// A small pill after the label, for a word about the row. Takes no room while empty.
+    property string badgeText: ""
 
-    RowLayout {
-        id: row
-        visible: root.showLabel
-        spacing: Appearance.spacing.space150
+    Layout.fillWidth: true
+    // A settings row is one tap target. Floor it at the Material minimum on a
+    // touch-first family rather than fixing the height, so rows that are already
+    // taller keep their size.
+    implicitHeight: Math.max(mainLayout.implicitHeight + 16,
+        PanelFamily.touchFirst ? Appearance.sizes.minimumTouchTarget + 12 : 0)
 
-        OptionalMaterialSymbol {
-            id: iconWidget
-            icon: root.buttonIcon
-            iconSize: Appearance.font.pixelSize.larger
-        }
-        StyledText {
-            id: labelWidget
-            Layout.preferredWidth: root.textWidth
-            Layout.maximumWidth: root.textWidth
-            text: root.text
-            elide: Text.ElideRight
-            clip: true
-            color: Appearance.colors.colOnSecondaryContainer
+    color: Appearance.colors.colLayer2
+
+    HoverHandler {
+        id: hoverHandler
+    }
+    property bool hovered: hoverHandler.hovered
+
+    readonly property GroupPosition groupPosition: GroupPosition {
+        item: root
+    }
+    readonly property int itemIndex: groupPosition.index
+
+    readonly property int totalItems: groupPosition.count
+
+    property bool isFirst: itemIndex === 0
+    property bool isLast: itemIndex === totalItems - 1
+
+    readonly property bool isPressed: slider.pressed
+
+    readonly property bool prevIsPressed: groupPosition.previousPressed
+
+    readonly property bool nextIsPressed: groupPosition.nextPressed
+
+    readonly property bool isHorizontalLayout: {
+        var p = parent;
+        if (!p) return false;
+        var pStr = p.toString();
+        return (pStr.indexOf("RowLayout") !== -1 || pStr.indexOf("Row") !== -1) && pStr.indexOf("Column") === -1;
+    }
+
+    readonly property real rFull: Appearance.rounding.scale === 0 ? 0 : Math.min(height / 2, Appearance.rounding.large)
+
+    topLeftRadius: (isPressed || prevIsPressed) ? rFull : (isFirst ? Appearance.rounding.large : Appearance.rounding.verysmall)
+    topRightRadius: (isPressed || prevIsPressed) ? rFull : (isHorizontalLayout ? (isLast ? Appearance.rounding.large : Appearance.rounding.verysmall) : (isFirst ? Appearance.rounding.large : Appearance.rounding.verysmall))
+    bottomLeftRadius: (isPressed || nextIsPressed) ? rFull : (isHorizontalLayout ? (isFirst ? Appearance.rounding.large : Appearance.rounding.verysmall) : (isLast ? Appearance.rounding.large : Appearance.rounding.verysmall))
+    bottomRightRadius: (isPressed || nextIsPressed) ? rFull : (isLast ? Appearance.rounding.large : Appearance.rounding.verysmall)
+
+    Behavior on topLeftRadius {
+        enabled: root.groupPosition.settled
+        NumberAnimation {
+            duration: Appearance.animation.elementMoveFast.duration
+            easing.type: Appearance.animation.elementMoveFast.type
+            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
         }
     }
-    StyledSlider {
-        id: slider
-        Layout.fillWidth: true
-        Layout.minimumWidth: 96
-        configuration: StyledSlider.Configuration.XS
-        usePercentTooltip: root.usePercentTooltip
-        value: root.value
-        from: Math.min(root.from, root.value)
-        to: Math.max(root.to, root.value)
-        onMoved: root.valueModified(slider.valueAt(slider.position))
+    Behavior on topRightRadius {
+        enabled: root.groupPosition.settled
+        NumberAnimation {
+            duration: Appearance.animation.elementMoveFast.duration
+            easing.type: Appearance.animation.elementMoveFast.type
+            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+        }
+    }
+    Behavior on bottomLeftRadius {
+        enabled: root.groupPosition.settled
+        NumberAnimation {
+            duration: Appearance.animation.elementMoveFast.duration
+            easing.type: Appearance.animation.elementMoveFast.type
+            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+        }
+    }
+    Behavior on bottomRightRadius {
+        enabled: root.groupPosition.settled
+        NumberAnimation {
+            duration: Appearance.animation.elementMoveFast.duration
+            easing.type: Appearance.animation.elementMoveFast.type
+            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+        }
+    }
+
+    readonly property string currentSearch: SearchRegistry.currentSearch
+    onCurrentSearchChanged: {
+        if (SearchRegistry.currentSearch.toLowerCase() === root.text.toLowerCase()) {
+            highlightOverlay.startAnimation();
+        }
+    }
+
+    HighlightOverlay {
+        id: highlightOverlay
+        anchors.fill: parent
+        topLeftRadius: root.topLeftRadius
+        topRightRadius: root.topRightRadius
+        bottomLeftRadius: root.bottomLeftRadius
+        bottomRightRadius: root.bottomRightRadius
+        visible: opacity > 0
+    }
+
+    ScrollAnimate {}
+
+    ColumnLayout {
+        id: mainLayout
+        anchors.fill: parent
+        anchors.margins: 8
+        spacing: 4
+
+        RowLayout {
+            id: row
+            spacing: 12
+            Layout.fillWidth: true
+
+            Loader {
+                active: root.buttonIcon && root.buttonIcon.length > 0
+                visible: active
+                Layout.alignment: Qt.AlignVCenter
+                opacity: 1 - highlightOverlay.opacity
+
+                sourceComponent: MaterialShapeWrappedMaterialSymbol {
+                    id: iconWidget
+                    text: root.buttonIcon
+                    shape: slider.pressed ? MaterialShape.Shape.Cookie6Sided : MaterialShape.Shape.Circle
+                    iconSize: 18
+                    padding: 6
+                    color: slider.pressed ? Appearance.colors.colPrimaryContainer : Appearance.colors.colLayer3
+                    colSymbol: slider.pressed ? Appearance.colors.colOnPrimaryContainer : Appearance.colors.colOnLayer3
+
+                    Behavior on color { ColorAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                    Behavior on colSymbol { ColorAnimation { duration: 250; easing.type: Easing.OutQuart } }
+                }
+            }
+
+            StyledText {
+                id: labelWidget
+                opacity: 1 - highlightOverlay.opacity
+                Layout.fillWidth: true
+                text: root.text
+                color: Appearance.colors.colOnLayer2
+                elide: Text.ElideRight
+            }
+
+            Rectangle {
+                visible: root.badgeText.length > 0
+                Layout.alignment: Qt.AlignVCenter
+                implicitHeight: 22
+                implicitWidth: badgeLabel.implicitWidth + 14
+                radius: Appearance.rounding.full
+                color: Appearance.colors.colSecondaryContainer
+
+                StyledText {
+                    id: badgeLabel
+                    anchors.centerIn: parent
+                    text: root.badgeText
+                    font.pixelSize: Appearance.font.pixelSize.smallest
+                    color: Appearance.colors.colOnSecondaryContainer
+                }
+            }
+        }
+
+        StyledSlider {
+            id: slider
+            onMoved: root.moved()
+            configuration: StyledSlider.Configuration.M
+            usePercentTooltip: root.usePercentTooltip
+            value: root.value
+            from: root.from
+            to: root.to
+            Layout.fillWidth: true
+        }
     }
 }

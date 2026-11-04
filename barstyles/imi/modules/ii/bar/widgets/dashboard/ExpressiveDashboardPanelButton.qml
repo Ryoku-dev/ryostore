@@ -1,0 +1,547 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Services.UPower
+import "../../../../.."
+import "../../../../../services"
+import "../../../../common"
+import "../../../../common/widgets"
+import "../../../../common/functions"
+import "icons"
+
+Item {
+    id: root
+    readonly property string screenName: QsWindow.window?.screen?.name ?? ""
+    property bool borderless: Config.options.bar.borderless
+    property bool showDate: Config.options.bar.verbose
+    property bool vertical: BarPlacement.vertical
+    property bool isMaterial: true // Forced expressive
+
+    BarWidgetPalette {
+        id: widgetPalette
+        colorMode: Config.options.bar.dashboardButton.colorMode
+    }
+
+    implicitWidth: vertical ? Appearance.sizes.verticalBarWidth : pill.implicitWidth
+    implicitHeight: vertical ? pill.implicitHeight : Appearance.sizes.baseBarHeight
+
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onPressed: {
+            GlobalStates.toggleRightSidebar(root.screenName);
+        }
+    }
+
+    Canvas {
+        id: pill
+        visible: root.isMaterial
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: root.vertical ? 0 : -0
+
+        property color pillColor: GlobalStates.sidebarRightOpen 
+            ? (mouseArea.containsMouse ? Appearance.colors.colLayer4Hover : "transparent")
+            : (mouseArea.containsMouse ? widgetPalette.colBackgroundHover : widgetPalette.colBackground)
+
+        property color borderColor: GlobalStates.sidebarRightOpen 
+            ? widgetPalette.colBackground
+            : "transparent"
+
+        property real borderWidth: GlobalStates.sidebarRightOpen ? 1.5 : 0
+        property real dashLength: GlobalStates.sidebarRightOpen ? 6 : 0
+        property real gapLength: GlobalStates.sidebarRightOpen ? 4 : 0
+        property real radius: (typeof rootItem !== "undefined" ? rootItem.groupStyle : Config.options.bar.barGroupStyle) === 1 ? Appearance.rounding.windowRounding : Appearance.rounding.full
+        property real dashOffset: 0
+
+        implicitWidth: root.vertical ? Appearance.sizes.verticalBarWidth - 8 : Math.max(0, flow.implicitWidth - flow.itemSpacing) + 10
+        implicitHeight: root.vertical ? Math.max(0, flow.implicitHeight - flow.itemSpacing) + 10 : Appearance.sizes.baseBarHeight - 8
+
+        width: implicitWidth
+        height: implicitHeight
+
+        onPillColorChanged: requestPaint()
+        onBorderColorChanged: requestPaint()
+        onWidthChanged: requestPaint()
+        onHeightChanged: requestPaint()
+        onDashOffsetChanged: requestPaint()
+
+        Behavior on pillColor {
+            ColorAnimation { duration: 150 }
+        }
+
+        onPaint: {
+            if (width <= 0 || height <= 0) return;
+            var ctx = getContext("2d");
+            ctx.clearRect(0, 0, width, height);
+
+            var w = width;
+            var h = height;
+            var bw = borderWidth;
+            var r = Math.min(radius, (w - 2 * bw) / 2, (h - 2 * bw) / 2);
+
+            ctx.save();
+
+            ctx.beginPath();
+            ctx.moveTo(bw + r, bw);
+            ctx.arcTo(w - bw, bw, w - bw, h - bw, r);
+            ctx.arcTo(w - bw, h - bw, bw, h - bw, r);
+            ctx.arcTo(bw, h - bw, bw, bw, r);
+            ctx.arcTo(bw, bw, w - bw, bw, r);
+            ctx.closePath();
+
+            ctx.fillStyle = pillColor;
+            ctx.fill();
+
+            if (bw > 0) {
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = bw;
+                ctx.setLineDash([dashLength, gapLength]);
+                ctx.lineDashOffset = dashOffset;
+                ctx.stroke();
+            }
+
+            ctx.restore();
+        }
+    }
+
+    NumberAnimation {
+        id: dashSlideAnim
+        target: pill
+        property: "dashOffset"
+        from: 0
+        to: 20
+        duration: 800
+        easing.type: Easing.OutCubic
+    }
+
+    Connections {
+        target: GlobalStates
+        function onSidebarRightOpenChanged() {
+            if (GlobalStates.sidebarRightOpen) {
+                dashSlideAnim.restart();
+            } else {
+                pill.dashOffset = 0;
+            }
+        }
+    }
+
+    // Appearance.font is a QtObject assigned during Appearance's own setup, so
+    // the first evaluation of a binding that reaches into it can land before it
+    // exists. Reading it through a guarded property keeps that from reaching a
+    // typed `real` as undefined.
+    readonly property real iconPixelSize: {
+        const size = Appearance.font.pixelSize.larger;
+        return (typeof size === "number" && size > 0) ? size : 18;
+    }
+
+    // All three dashboard buttons share one state → cue mapping.
+    DashboardIconDriver {
+        id: iconDriver
+        wifiIcon: wifiRev.registeredIcon
+        ethernetIcon: wifiRev.loadedContent?.ethernetRef ?? null
+        hotspotIcon: wifiRev.loadedContent?.hotspotRef ?? null
+        bluetoothIcon: bluetoothRev.registeredIcon
+        volumeIcon: volumeRev.registeredIcon
+        micIcon: micRev.registeredIcon
+        notificationIcon: notificationRev.registeredIcon
+        caffeineIcon: caffeineRev.registeredIcon
+        vpnIcon: vpnRev.registeredIcon
+        tailscaleIcon: tailscaleRev.registeredIcon
+        pomodoroIcon: pomodoroRev.registeredIcon
+        stopwatchIcon: stopwatchRev.registeredIcon
+        easyEffectsIcon: easyEffectsRev.registeredIcon
+        dnsIcon: dnsRev.registeredIcon
+        gameModeIcon: gameModeRev.registeredIcon
+        powerProfileIcon: powerProfileRev.registeredIcon
+        songRecIcon: songRecRev.registeredIcon
+        alarmIcon: alarmRev.registeredIcon
+        countdownIcon: countdownRev.registeredIcon
+    }
+
+    Grid {
+        id: flow
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: root.vertical ? 0 : 0
+        flow: root.vertical ? Grid.TopToBottom : Grid.LeftToRight
+        columns: root.vertical ? 1 : Math.max(1, flow.visibleChildren.length)
+        property real itemSpacing: isMaterial ? 6 : 10
+        spacing: 0
+
+        DashboardIconRevealer {
+            id: caffeineRev
+            reveal: Config.options.bar.dashboardButton.showCaffeine && (Idle.inhibit ?? false)
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: caffeineWrapper
+                    property alias iconRef: caffeineIcon
+                    vertical: root.vertical
+                    CoffeeIcon {
+                        id: caffeineIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: caffeineWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        active: Idle.inhibit ?? false
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: volumeRev
+            reveal: Config.options.bar.dashboardButton.showVolume
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: volumeWrapper
+                    property alias iconRef: volumeIcon
+                    vertical: root.vertical
+                    VolumeIcon {
+                        id: volumeIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: volumeWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: micRev
+            reveal: Config.options.bar.dashboardButton.showMic && (Audio.source?.audio?.muted ?? false)
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: micWrapper
+                    property alias iconRef: micIcon
+                    vertical: root.vertical
+                    MicIcon {
+                        id: micIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: micWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        muted: iconDriver.sourceMuted
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: wifiRev
+            reveal: Config.options.bar.dashboardButton.showNetwork
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: netWrapper
+                    property alias iconRef: wifiIcon
+                    property alias ethernetRef: ethernetIcon
+                    property alias hotspotRef: hotspotIcon
+                    vertical: root.vertical
+    
+                    EthernetIcon {
+                        id: ethernetIcon
+                        anchors.centerIn: parent
+                        visible: iconDriver.shownNetworkKind === "ethernet"
+                        iconSize: root.iconPixelSize
+                        color: netWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        linked: Network.ethernet
+                    }
+
+                    HotspotIcon {
+                        id: hotspotIcon
+                        anchors.centerIn: parent
+                        visible: iconDriver.shownNetworkKind === "hotspot"
+                        iconSize: root.iconPixelSize
+                        color: netWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        active: NetworkState.accessPointMode
+                    }
+    
+                    WifiIcon {
+                        id: wifiIcon
+                        anchors.centerIn: parent
+                        visible: iconDriver.shownNetworkKind === "wifi"
+                        iconSize: root.iconPixelSize
+                        color: netWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        bars: {
+                            if (!Network.ready || Network.wifiStatus !== "connected")
+                                return 0;
+                            const strength = Number(Network.networkStrength);
+                            if (isNaN(strength))
+                                return 1;
+                            return strength > 67 ? 3 : strength > 33 ? 2 : 1;
+                        }
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: bluetoothRev
+            reveal: Config.options.bar.dashboardButton.showBluetooth && BluetoothStatus.available
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: btWrapper
+                    property alias iconRef: bluetoothIcon
+                    vertical: root.vertical
+                    BluetoothIcon {
+                        id: bluetoothIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: btWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        connected: BluetoothStatus.connected
+                        poweredOff: !BluetoothStatus.enabled
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: vpnRev
+            reveal: Config.options.bar.dashboardButton.showVpn && VpnService.active
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: vpnWrapper
+                    property alias iconRef: vpnIcon
+                    vertical: root.vertical
+                    VpnKeyIcon {
+                        id: vpnIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: vpnWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        connected: VpnService.active
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: tailscaleRev
+            reveal: Config.options.bar.dashboardButton.showTailscale && TailscaleService.active
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: tailscaleWrapper
+                    property alias iconRef: tailscaleIcon
+                    vertical: root.vertical
+                    TailscaleIcon {
+                        id: tailscaleIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: tailscaleWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        connected: TailscaleService.active
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: pomodoroRev
+            reveal: Config.options.bar.dashboardButton.showPomodoro && TimerService.pomodoroRunning
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: pomodoroWrapper
+                    property alias iconRef: pomodoroIcon
+                    vertical: root.vertical
+                    TimerIcon {
+                        id: pomodoroIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: pomodoroWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        running: TimerService.pomodoroRunning
+                        onBreak: TimerService.pomodoroBreak
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: stopwatchRev
+            reveal: Config.options.bar.dashboardButton.showStopwatch && TimerService.stopwatchRunning
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: stopwatchWrapper
+                    property alias iconRef: stopwatchIcon
+                    vertical: root.vertical
+                    StopwatchIcon {
+                        id: stopwatchIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: stopwatchWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        running: TimerService.stopwatchRunning
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: countdownRev
+            reveal: Config.options.bar.dashboardButton.showCountdowns && iconDriver.countdownVisible
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: countdownWrapper
+                    property alias iconRef: countdownIcon
+                    vertical: root.vertical
+                    HourglassIcon {
+                        id: countdownIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: countdownWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        running: iconDriver.countdownRunning
+                        paused: iconDriver.countdownPaused
+                        finished: iconDriver.countdownFinished
+                        progress: iconDriver.countdownProgress
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: easyEffectsRev
+            reveal: Config.options.bar.dashboardButton.showEasyEffects && EasyEffects.active
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: easyEffectsWrapper
+                    property alias iconRef: easyEffectsIcon
+                    vertical: root.vertical
+                    EqualizerIcon {
+                        id: easyEffectsIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: easyEffectsWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        active: EasyEffects.active
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: dnsRev
+            reveal: Config.options.bar.dashboardButton.showDns && DnsOverTls.active
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: dnsWrapper
+                    property alias iconRef: dnsIcon
+                    vertical: root.vertical
+                    EncryptedDnsIcon {
+                        id: dnsIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: dnsWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        active: DnsOverTls.active
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: powerProfileRev
+            reveal: Config.options.bar.dashboardButton.showPowerProfile && iconDriver.powerProfileActive
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: powerProfileWrapper
+                    property alias iconRef: powerProfileIcon
+                    vertical: root.vertical
+                    PowerProfileIcon {
+                        id: powerProfileIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: powerProfileWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        profile: iconDriver.powerProfileName
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: gameModeRev
+            reveal: Config.options.bar.dashboardButton.showGameMode && iconDriver.gameModeOn
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: gameModeWrapper
+                    property alias iconRef: gameModeIcon
+                    vertical: root.vertical
+                    GamepadIcon {
+                        id: gameModeIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: gameModeWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        active: iconDriver.gameModeOn
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: songRecRev
+            reveal: Config.options.bar.dashboardButton.showMusicRecognition && SongRec.running
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: songRecWrapper
+                    property alias iconRef: songRecIcon
+                    vertical: root.vertical
+                    MusicRecognitionIcon {
+                        id: songRecIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: songRecWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        listening: SongRec.running
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: alarmRev
+            reveal: Config.options.bar.dashboardButton.showAlarms && iconDriver.alarmVisible
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: alarmWrapper
+                    property alias iconRef: alarmIcon
+                    vertical: root.vertical
+                    AlarmIcon {
+                        id: alarmIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: alarmWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        scheduled: iconDriver.alarmCount > 0
+                        ringing: iconDriver.alarmRinging
+                    }
+                }
+            }
+        }
+        DashboardIconRevealer {
+            id: notificationRev
+            reveal: Config.options.bar.dashboardButton.showNotifications && (Notifications.silent || Notifications.unread > 0)
+            vertical: root.vertical
+            layoutSpacing: flow.itemSpacing
+            deferredContent: Component {
+                ExpressiveIconWrapper {
+                    id: notifWrapper
+                    property alias iconRef: notificationIcon
+                    vertical: root.vertical
+                    BellWithBadge {
+                        id: notificationIcon
+                        anchors.centerIn: parent
+                        iconSize: root.iconPixelSize
+                        color: notifWrapper.toggled ? widgetPalette.colBackground : Appearance.colors.colOnLayer0
+                        silent: Notifications.silent
+                    }
+                }
+            }
+        }
+    }
+}

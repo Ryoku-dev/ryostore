@@ -1,0 +1,1705 @@
+import "../../.."
+import "../../../services"
+import "../../common"
+import "../../common/animations"
+import "../../common/widgets"
+import "../../common/functions"
+import "../bar" as Bar
+import "../bar/shared"
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Window
+import QtQuick.Layouts
+import QtQuick.Effects
+import Quickshell
+import Quickshell.Bluetooth
+import Qt5Compat.GraphicalEffects
+
+import "../../common/quickToggles"
+import "../../common/quickToggles/classicStyle"
+
+import "../../common/quickToggleDialogs/bluetoothDevices"
+import "../../common/quickToggleDialogs/nightLight"
+import "../../common/quickToggleDialogs/volumeMixer"
+import "../../common/quickToggleDialogs/wifiNetworks"
+import "../../common/quickToggleDialogs/darkMode"
+import "../../common/quickToggleDialogs/localSend"
+import "../../common/quickToggleDialogs/vpn"
+import "../../common/quickToggleDialogs/tailscale"
+import "../../common/quickToggleDialogs/kdeConnect"
+import "../../common/quickToggleDialogs/dnsOverTls"
+import "../../common/quickToggleDialogs/easyEffects"
+import "../../common/quickToggleDialogs/idleInhibitor"
+import "../../common/quickToggleDialogs/screenShader"
+import "../../common/quickToggleDialogs/smartDevices"
+import "modes"
+import "../../tablet/sidebarDashboard"
+import "../../common/functions/SpaceArbitration.js" as SpaceArbitration
+import "SidebarPerformancePolicy.js" as PerformancePolicy
+
+Item {
+    id: root
+    property int sidebarWidth: Appearance.sizes.sidebarWidth
+    property int sidebarPadding: 10
+    // When the outer dashboard tree is retained, preheat its async children
+    // while hidden so the next open does not compete with the width animation.
+    property bool keepWarm: false
+    property bool showAudioOutputDialog: false
+    property bool showAudioInputDialog: false
+    property bool showBluetoothDialog: false
+    property bool showNightLightDialog: false
+    property bool showWifiDialog: false
+    property bool showDarkModeDialog: false
+    property bool showLocalSendDialog: false
+    property bool showVpnDialog: false
+    property bool showTailscaleDialog: false
+    property bool showKdeConnectDialog: false
+    property bool showDnsOverTlsDialog: false
+    property bool showIdleInhibitorDialog: false
+    property bool showScreenShaderDialog: false
+    property bool showModesDialog: false
+    property bool showEasyEffectsDialog: false
+    property bool showSmartDevicesDialog: false
+    property bool showTrayDialog: false
+    property bool wifiDialogStatePublished: false
+    property bool bluetoothDialogStatePublished: false
+
+    readonly property bool keyboardContextOpen: root.visible
+        && (root.isLoadedOnLeft ? GlobalStates.sidebarLeftOpen : GlobalStates.sidebarRightOpen)
+    onKeyboardContextOpenChanged: {
+        if (root.keyboardContextOpen) Qt.callLater(root.focusDashboardOnOpen);
+    }
+    function focusDashboardOnOpen() {
+        if (root.keyboardContextOpen && !root.anyDialogVisible && !pomodoroTimePicker.opened)
+            root.forceActiveFocus(Qt.OtherFocusReason);
+    }
+
+    Keys.onPressed: event => {
+        if (root.systemShortcutsEnabled())
+            root.systemHintsVisible = event.key === Qt.Key_Control
+                || !!(event.modifiers & Qt.ControlModifier);
+        event.accepted = root.handleBottomKey(event) || root.handleSystemKey(event);
+    }
+    Keys.onReleased: event => {
+        root.releaseBottomKey(event);
+        event.accepted = false;
+    }
+
+    function handleBottomKey(event) {
+        if (pomodoroTimePicker.opened) return pomodoroTimePicker.handleKey(event);
+        if (root.editMode || root.anyDialogVisible || !bottomGroup.visible)
+            return false;
+        return bottomGroup.handleKey(event);
+    }
+
+    function releaseBottomKey(event) {
+        root.releaseSystemKey(event);
+        bottomGroup.releaseKey(event);
+        pomodoroTimePicker.releaseKey(event);
+    }
+    function systemShortcutsEnabled() {
+        return !root.anyDialogVisible && !pomodoroTimePicker.opened
+            && (root.isLoadedOnLeft ? GlobalStates.sidebarLeftOpen : GlobalStates.sidebarRightOpen);
+    }
+
+    function releaseSystemKey(event) {
+        if (event.key === Qt.Key_Control || !(event.modifiers & Qt.ControlModifier))
+            root.systemHintsVisible = false;
+    }
+
+    function handleSystemKey(event) {
+        if (!root.systemShortcutsEnabled()) return false;
+        root.systemHintsVisible = event.key === Qt.Key_Control
+            || !!(event.modifiers & Qt.ControlModifier);
+        if (event.modifiers !== (Qt.ControlModifier | Qt.ShiftModifier)) return false;
+        if (event.key === Qt.Key_E) {
+            if (!event.isAutoRepeat) root.editMode = !root.editMode;
+            return true;
+        }
+        if (root.editMode) return false;
+        switch (event.key) {
+        case Qt.Key_B:
+            if (!event.isAutoRepeat) bottomGroup.setCollapsed(!bottomGroup.effectivelyCollapsed);
+            return true;
+        case Qt.Key_R:
+            if (!event.isAutoRepeat) {
+                Quickshell.execDetached(["hyprctl", "reload"]);
+                Quickshell.reload(true);
+            }
+            return true;
+        case Qt.Key_S:
+            if (!event.isAutoRepeat) root.showSettings();
+            return true;
+        case Qt.Key_M:
+            if (!event.isAutoRepeat) GlobalStates.sessionOpen = true;
+            return true;
+        }
+        return false;
+    }
+
+    property bool systemHintsVisible: false
+    readonly property bool systemHintsActive: root.systemHintsVisible && root.systemShortcutsEnabled()
+        && (root.Window.window?.active ?? false)
+    onSystemHintsActiveChanged: { if (!root.systemHintsActive) root.systemHintsVisible = false; }
+    Connections {
+        target: root.Window.window
+        function onActiveChanged() { root.systemHintsVisible = false; }
+    }
+
+    function showSettings() {
+        root.systemHintsVisible = false;
+        GlobalStates.sidebarRightOpen = false;
+        GlobalStates.sidebarLeftOpen = false;
+        GlobalStates.toggleSettings();
+    }
+
+    function publishWifiDialogState(open: bool): void {
+        if (root.wifiDialogStatePublished === open)
+            return;
+        root.wifiDialogStatePublished = open;
+        GlobalStates.adjustDashboardWifiDialogOpenCount(open ? 1 : -1);
+    }
+
+    function publishBluetoothDialogState(open: bool): void {
+        if (root.bluetoothDialogStatePublished === open)
+            return;
+        root.bluetoothDialogStatePublished = open;
+        GlobalStates.adjustDashboardBluetoothDialogOpenCount(open ? 1 : -1);
+    }
+
+    // Search's "Send with LocalSend" queues the file and leaves this flag for
+    // whichever dashboard is on screen once the sidebar is open.
+    function consumeLocalSendRequest(): void {
+        const hostOpen = root.isLoadedOnLeft ? GlobalStates.sidebarLeftOpen : GlobalStates.sidebarRightOpen;
+        if (!GlobalStates.localSendDialogPending || !hostOpen)
+            return;
+        GlobalStates.localSendDialogPending = false;
+        root.showLocalSendDialog = true;
+    }
+
+    onShowWifiDialogChanged: root.publishWifiDialogState(root.showWifiDialog)
+    onShowBluetoothDialogChanged: root.publishBluetoothDialogState(root.showBluetoothDialog)
+    readonly property bool anyDialogVisible: showAudioOutputDialog || showAudioInputDialog || showBluetoothDialog || showNightLightDialog || showWifiDialog || showDarkModeDialog || showLocalSendDialog || showVpnDialog || showTailscaleDialog || showKdeConnectDialog || showDnsOverTlsDialog || showIdleInhibitorDialog || showScreenShaderDialog || showModesDialog || showEasyEffectsDialog || showSmartDevicesDialog || showTrayDialog
+    property bool editMode: false
+    property bool isLoadedOnLeft: false
+    readonly property bool dashboardSidebarAnimating: isLoadedOnLeft
+        ? GlobalStates.leftSidebarAnimating
+        : GlobalStates.rightSidebarAnimating
+    readonly property bool entranceAnimationsEnabled: Config.options.sidebar.dashboardEntranceAnimations
+    property int entranceTrigger: -1
+    property bool entrancePending: false
+
+    function queueContentEntrance() {
+        if (!PerformancePolicy.shouldQueueEntranceAnimations(
+                root.entranceAnimationsEnabled, GlobalStates.sidebarRightOpen))
+            return;
+        root.entrancePending = true;
+        root.activateDeferredContent();
+        root.triggerContentEntranceIfReady();
+    }
+
+    function triggerContentEntranceIfReady() {
+        if (!PerformancePolicy.canTriggerEntranceAnimations(
+                root.entrancePending,
+                root.entranceAnimationsEnabled,
+                GlobalStates.sidebarRightOpen,
+                root.dashboardSidebarAnimating
+            ))
+            return;
+        root.activateDeferredContent();
+        root.entrancePending = false;
+        root.entranceTrigger++;
+    }
+
+    onEntranceAnimationsEnabledChanged: {
+        if (entranceAnimationsEnabled)
+            root.queueContentEntrance();
+        else
+            root.entrancePending = false;
+    }
+
+    // Compact-space arbitration is runtime-only. When the height that the
+    // notification center would receive with the bottom group expanded falls
+    // below its useful minimum, exactly one of the two groups stays expanded.
+    // Notifications win when compact mode first activates; a manual expansion
+    // request from the bottom group hands the space to it until it is collapsed.
+    property bool compactBottomRequestedExpanded: false
+    readonly property real expandedNotificationsHeightBudget: SpaceArbitration.expandedCenterBudget(
+        adaptiveGroups.availableHeight,
+        bottomGroup.expandedHeight,
+        sidebarPadding
+    )
+    readonly property real minimumExpandedNotificationsHeight: centerGroup.item?.minimumExpandedHeight ?? 0
+    readonly property bool compactModeRequired: SpaceArbitration.requiresCompactMode(
+        expandedNotificationsHeightBudget,
+        minimumExpandedNotificationsHeight,
+        !editMode && centerGroup.visible && bottomGroup.visible && adaptiveGroups.availableHeight > 0
+    )
+    readonly property var compactSpaceResolution: SpaceArbitration.resolve(
+        compactModeRequired,
+        compactBottomRequestedExpanded,
+        bottomGroup.collapsed,
+        editMode
+    )
+    readonly property bool notificationsCollapsed: compactSpaceResolution.notificationsCollapsed
+    readonly property bool bottomForceCollapsed: compactSpaceResolution.bottomForcedCollapsed
+
+    onCompactModeRequiredChanged: compactBottomRequestedExpanded = false
+
+    // Retained dashboards preheat heavy delegates while hidden. Cold dashboards
+    // start their asynchronous Loaders at the open request, regardless of the
+    // optional decorative entrance choreography.
+    property bool deferredContentReady: false
+    function activateDeferredContent() {
+        deferredContentReady = PerformancePolicy.nextDeferredContentReady(
+            deferredContentReady,
+            GlobalStates.sidebarRightOpen,
+            root.keepWarm
+        );
+    }
+
+    onDashboardSidebarAnimatingChanged: {
+        if (!dashboardSidebarAnimating) {
+            root.activateDeferredContent();
+            root.triggerContentEntranceIfReady();
+        }
+    }
+
+    readonly property bool isDynamicIslandTop: !BarPlacement.vertical && !BarPlacement.bottom && BarInteraction.cornerStyle === 3
+    readonly property bool isDynamicIslandBottom: !BarPlacement.vertical && BarPlacement.bottom && BarInteraction.cornerStyle === 3
+
+    Component.onCompleted: {
+        Qt.callLater(root.focusDashboardOnOpen);
+        if (GlobalStates.requestVolumeDialog) {
+            root.showAudioOutputDialog = true;
+            GlobalStates.requestVolumeDialog = false;
+        }
+        root.consumeLocalSendRequest();
+        root.activateDeferredContent();
+        if (GlobalStates.sidebarRightOpen)
+            root.queueContentEntrance();
+    }
+
+    Component.onDestruction: {
+        root.publishWifiDialogState(false);
+        root.publishBluetoothDialogState(false);
+    }
+
+    Connections {
+        target: GlobalStates
+        function onLocalSendDialogPendingChanged() {
+            root.consumeLocalSendRequest();
+        }
+        function onSidebarRightOpenChanged() {
+            if (GlobalStates.sidebarRightOpen) {
+                root.consumeLocalSendRequest();
+                root.activateDeferredContent();
+                root.queueContentEntrance();
+            } else {
+                root.entrancePending = false;
+                root.showWifiDialog = false;
+                root.showBluetoothDialog = false;
+                root.showAudioOutputDialog = false;
+                root.showAudioInputDialog = false;
+                root.showDarkModeDialog = false;
+                root.showLocalSendDialog = false;
+                root.showVpnDialog = false;
+                root.showTailscaleDialog = false;
+                root.showKdeConnectDialog = false;
+                root.showDnsOverTlsDialog = false;
+                root.showIdleInhibitorDialog = false;
+                root.showScreenShaderDialog = false;
+                root.showModesDialog = false;
+                root.showEasyEffectsDialog = false;
+                root.showTrayDialog = false;
+                pomodoroTimePicker.close();
+                // In connect mode the SidebarDashboardContent lives inside the always-present
+                // topPanel, so the Loader is never torn down automatically when the sidebar
+                // closes. Explicitly release the heavy centerGroup (NotificationList) by
+                // resetting deferredContentReady — it will be rebuilt asynchronously on the
+                // next open, just like a cold dashboard. Only do this when keepWarm is false
+                // (user opted out of keeping the sidebar resident) to avoid thrashing when
+                // keep-loaded is on.
+                if (GlobalStates.connectModeActive && !root.keepWarm) {
+                    root.deferredContentReady = false;
+                }
+            }
+        }
+    }
+
+    Connections {
+        target: GlobalStates
+        function onRequestVolumeDialogChanged() {
+            if (GlobalStates.requestVolumeDialog) {
+                root.showAudioOutputDialog = true;
+                GlobalStates.requestVolumeDialog = false;
+            }
+        }
+    }
+
+    BarThemes {
+        id: barThemes
+    }
+    readonly property var activeTheme: barThemes.getTheme(Config.options.bar.expressiveColorTheme)
+
+    implicitHeight: sidebarRightBackground.implicitHeight
+    implicitWidth: sidebarRightBackground.implicitWidth
+
+    // Edit mode grows the quick panel by a tray of every toggle that is not on a
+    // page, which has no natural cap and runs straight past the bottom of the
+    // sidebar. Hand the panel the height the column can actually give it, so it
+    // can cap and scroll that tray itself.
+    readonly property real quickPanelMaxHeight: {
+        let available = mainColumn.height;
+        const fixedHeights = [
+            sidebarBanner.visible ? sidebarBanner.Layout.preferredHeight : -1,
+            headerRow.visible ? headerRow.implicitHeight + headerRow.Layout.topMargin : -1,
+            centerGroup.visible ? centerGroup.implicitHeight : -1,
+            bottomGroup.visible
+                ? (bottomGroup.effectivelyCollapsed
+                    ? bottomGroup.collapsedHeight
+                    : bottomGroup.expandedHeight)
+                : -1
+        ];
+        for (let i = 0; i < fixedHeights.length; i++) {
+            if (fixedHeights[i] < 0)
+                continue;
+            available -= fixedHeights[i] + mainColumn.spacing;
+        }
+        return Math.max(0, available);
+    }
+
+    Loader {
+        id: sidebarRightShadowLoader
+        active: (!GlobalStates.connectModeActive || GlobalStates.connectSidebarsSeparate || root.isDynamicIslandTop || root.isDynamicIslandBottom) && !root.anyDialogVisible
+        sourceComponent: Component {
+            StyledRectangularShadow {
+                target: sidebarRightBackground
+                radius: sidebarRightBackground.radius
+            }
+        }
+    }
+    Rectangle {
+        id: sidebarRightBackground
+
+        anchors.fill: parent
+        clip: true
+        implicitHeight: Math.max(0, parent.height - Appearance.sizes.hyprlandGapsOut * 2)
+        implicitWidth: sidebarWidth - Appearance.sizes.hyprlandGapsOut * 2
+        color: (GlobalStates.connectModeActive && !GlobalStates.connectSidebarsSeparate) ? "transparent" : (Config.options.bar.expressiveColors ? activeTheme.barBackground : Appearance.colors.colLayer0)
+        readonly property bool isConnectDynamicIslandTop: GlobalStates.connectModeActive && !GlobalStates.connectSidebarsSeparate && root.isDynamicIslandTop
+        readonly property bool isConnectDynamicIslandBottom: GlobalStates.connectModeActive && !GlobalStates.connectSidebarsSeparate && root.isDynamicIslandBottom
+        readonly property real defaultRadius: (GlobalStates.connectModeActive && !GlobalStates.connectSidebarsSeparate && !root.isDynamicIslandTop && !root.isDynamicIslandBottom) ? 0 : Appearance.rounding.screenRounding - Appearance.sizes.hyprlandGapsOut + 1
+        radius: isConnectDynamicIslandTop ? 0 : defaultRadius
+        topRightRadius: ((isConnectDynamicIslandTop && !root.isLoadedOnLeft) || (isConnectDynamicIslandBottom && root.isLoadedOnLeft)) ? 0 : defaultRadius
+        topLeftRadius: ((isConnectDynamicIslandTop && root.isLoadedOnLeft) || (isConnectDynamicIslandBottom && !root.isLoadedOnLeft)) ? 0 : defaultRadius
+        bottomRightRadius: (GlobalStates.connectModeActive && !GlobalStates.connectSidebarsSeparate && !isConnectDynamicIslandBottom) ? 0 : ((isConnectDynamicIslandBottom && !root.isLoadedOnLeft) ? 0 : defaultRadius)
+        bottomLeftRadius: (GlobalStates.connectModeActive && !GlobalStates.connectSidebarsSeparate && !isConnectDynamicIslandBottom) ? 0 : ((isConnectDynamicIslandBottom && root.isLoadedOnLeft) ? 0 : defaultRadius)
+
+        property real dialogBlurProgress: root.anyDialogVisible ? 1.0 : 0.0
+        Behavior on dialogBlurProgress {
+            NumberAnimation { duration: 320; easing.type: Easing.OutCubic }
+        }
+
+        ColumnLayout {
+            id: mainColumn
+            anchors.fill: parent
+            anchors.margins: sidebarPadding
+            spacing: sidebarPadding
+
+            // Dialog scrim blur: the layer FBO is allocated lazily only while a dialog
+            // is animating in/out (dialogBlurProgress above the threshold) and released
+            // as soon as the close animation settles back to zero. The 0.05 threshold
+            // avoids allocating the full-column FBO during the first frames of the
+            // opening animation.
+            layer.enabled: sidebarRightBackground.dialogBlurProgress > 0.05
+            layer.effect: MultiEffect {
+                blurEnabled: true
+                blurMax: 32
+                blur: sidebarRightBackground.dialogBlurProgress
+            }
+
+            // SIDEBAR BANNER
+            // Banner and header are exclusive; only the configured one is built.
+            Loader {
+                id: sidebarBanner
+                Layout.fillWidth: true
+                Layout.preferredHeight: 220
+                active: Config.options.sidebar.enableBanner
+                visible: active
+                sourceComponent: SidebarBanner {
+                    editMode: root.editMode
+                    systemHintsVisible: root.systemHintsActive
+                    onEditModeToggled: (newEditMode) => root.editMode = newEditMode
+                }
+            }
+
+            // DEFAULT
+            Loader {
+                id: headerRow
+                Layout.fillHeight: false
+                Layout.fillWidth: true
+                // Layout.margins: 10
+                Layout.topMargin: 5
+                Layout.bottomMargin: 0
+                active: !Config.options.sidebar.enableBanner
+                visible: active
+                sourceComponent: SystemButtonRow {
+                    entranceTrigger: root.entranceTrigger
+                    editMode: root.editMode
+                    systemHintsVisible: root.systemHintsActive
+                    onEditModeToggled: (newEditMode) => root.editMode = newEditMode
+                }
+            }
+
+            LoaderedQuickPanelImplementation {
+                id: classicQuickPanelLoader
+                styleName: "classic"
+                sourceComponent: ClassicQuickPanel {
+                    editMode: root.editMode
+                    onOpenVpnDialog: root.showVpnDialog = true
+                    onOpenTailscaleDialog: root.showTailscaleDialog = true
+                    onOpenKdeConnectDialog: root.showKdeConnectDialog = true
+                }
+            }
+
+            LoaderedQuickPanelImplementation {
+                id: androidQuickPanelLoader
+                styleName: "android"
+                sourceComponent: AndroidQuickPanel {
+                    editMode: root.editMode
+                    maxContentHeight: root.quickPanelMaxHeight
+                    entranceTrigger: root.entranceTrigger
+                    onOpenVpnDialog: root.showVpnDialog = true
+                    onOpenTailscaleDialog: root.showTailscaleDialog = true
+                    onOpenKdeConnectDialog: root.showKdeConnectDialog = true
+                    onOpenDnsOverTlsDialog: root.showDnsOverTlsDialog = true
+                    onOpenScreenShaderDialog: root.showScreenShaderDialog = true
+                }
+            }
+
+            Item {
+                id: adaptiveGroups
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                property real takeoverProgress: root.notificationsCollapsed ? 1.0 : 0.0
+
+                Behavior on takeoverProgress {
+                    SidebarGroupAnimation {
+                        animationSpec: Appearance.animation.elementMove
+                    }
+                }
+
+                // This boundary lies inside the dashboard's rounded silhouette
+                // and contains Bottom overshoot without clipping unrelated
+                // header/quick-toggle shadows or allocating an FBO.
+                clip: true
+                readonly property real availableHeight: Math.max(0, mainColumn.height - y)
+                readonly property real packedTakeoverHeight: SpaceArbitration.packedGroupsMinimumHeight(
+                        bottomGroup.expandedHeight,
+                        centerGroup.collapsedHeight,
+                        targetSpacing
+                    )
+                readonly property real takeoverExtraHeight: Math.max(0, packedTakeoverHeight - availableHeight) * takeoverProgress
+                Layout.minimumHeight: takeoverExtraHeight > 0 ? (availableHeight + takeoverExtraHeight) : 0
+                readonly property real targetSpacing: SpaceArbitration.dashboardSpacing(
+                    root.notificationsCollapsed,
+                    root.sidebarPadding
+                )
+                readonly property real targetBottomHeight: bottomGroup.effectivelyCollapsed
+                    ? bottomGroup.collapsedHeight
+                    : root.notificationsCollapsed
+                        ? SpaceArbitration.expandedBottomFillHeight(
+                            availableHeight,
+                            bottomGroup.expandedHeight,
+                            centerGroup.collapsedHeight,
+                            targetSpacing
+                        )
+                        : bottomGroup.expandedHeight
+                readonly property real expandedCenterTargetHeight: Math.max(
+                    0,
+                    availableHeight - animatedBottomHeight - targetSpacing
+                )
+                property real groupSpacing: targetSpacing
+                property real animatedBottomHeight: targetBottomHeight
+
+                Behavior on groupSpacing {
+                    SidebarGroupAnimation {
+                        animationSpec: Appearance.animation.elementMove
+                    }
+                }
+
+                Behavior on animatedBottomHeight {
+                    SidebarGroupAnimation {
+                        animationSpec: Appearance.animation.elementMove
+                    }
+                }
+
+                Loader {
+                    id: centerGroup
+                    // Notifications remain backed by their global service; only the
+                    // heavy visual center group is incubated after the sidebar
+                    // slide and then kept warm for this dashboard instance.
+                    active: root.deferredContentReady
+                    asynchronous: true
+                    sourceComponent: CenterWidgetGroup {
+                        collapsed: root.notificationsCollapsed
+                        entranceTrigger: root.entranceTrigger
+                    }
+                    readonly property real collapsedHeight: item?.collapsedHeight ?? 0
+                    property real animatedHeight: (collapsedHeight * adaptiveGroups.takeoverProgress)
+                        + (adaptiveGroups.expandedCenterTargetHeight * (1.0 - adaptiveGroups.takeoverProgress))
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: bottomGroup.top
+                    anchors.bottomMargin: adaptiveGroups.groupSpacing
+                    height: animatedHeight
+                    visible: !root.editMode
+                }
+
+                BottomWidgetGroup {
+                    id: bottomGroup
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    height: adaptiveGroups.animatedBottomHeight
+                    forceCollapsed: root.bottomForceCollapsed
+                    keepWarm: root.keepWarm
+                    chromeHintsVisible: root.systemHintsActive && !root.editMode
+                    keyboardEnabled: !root.editMode && !root.anyDialogVisible && !pomodoroTimePicker.opened
+                        && (root.isLoadedOnLeft ? GlobalStates.sidebarLeftOpen : GlobalStates.sidebarRightOpen)
+                    outerSidebarAnimating: root.dashboardSidebarAnimating
+                    entranceTrigger: root.entranceTrigger
+                    onCollapseRequested: shouldCollapse => {
+                        if (root.compactModeRequired)
+                            root.compactBottomRequestedExpanded = !shouldCollapse;
+                    }
+                }
+            }
+        }
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showAudioOutputDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: VolumeDialog {
+            isSink: true
+        }
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showAudioInputDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: VolumeDialog {
+            isSink: false
+        }
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showBluetoothDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: BluetoothDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showNightLightDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: NightLightDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showWifiDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: WifiDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showDarkModeDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: DarkModeDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showLocalSendDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: LocalSendDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showVpnDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: VpnDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showTailscaleDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: TailscaleDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showKdeConnectDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: KdeConnectDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showDnsOverTlsDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: DnsOverTlsDialog {}
+    }
+
+    ToggleDialog {
+        shownPropertyString: "showIdleInhibitorDialog"
+        dialog: IdleInhibitorDialog {}
+    }
+
+    ToggleDialog {
+        shownPropertyString: "showScreenShaderDialog"
+        dialog: ScreenShaderDialog {}
+    }
+
+    ToggleDialog {
+        shownPropertyString: "showModesDialog"
+        dialog: ModesDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showEasyEffectsDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: EasyEffectsDialog {}
+    }
+
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showSmartDevicesDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: SmartDevicesDialog {}
+    }
+
+    // The tray tile (trayWidget) asks for this: the island shows the same dialog as a
+    // page over its grid, the tablet's shade hosts it over its dashboard, and here it is
+    // one more sidebar dialog. Activating an app closes it and leaves the sidebar.
+    DialogHostLoader {
+        owner: root
+        shownPropertyString: "showTrayDialog"
+        dialogRadius: sidebarRightBackground.defaultRadius
+        dialog: TabletTrayDialog {
+            onItemActivated: root.showTrayDialog = false
+        }
+    }
+
+    // The picker is only ever opened by the pomodoro tab: it is built on request and
+    // dropped once its close animation has finished, instead of living in every
+    // retained dashboard.
+    Loader {
+        id: pomodoroTimePicker
+        anchors.fill: parent
+        z: 999
+        active: false
+        readonly property bool opened: item?.opened ?? false
+        function open(startHour, startMinute, titleText) {
+            active = true;
+            item.open(startHour, startMinute, titleText);
+        }
+        function close() {
+            item?.close();
+        }
+        function handleKey(event) {
+            return item ? item.handleKey(event) : false;
+        }
+        function releaseKey(event) {
+            item?.releaseKey(event);
+        }
+        sourceComponent: TimePickerPopup {
+            keyboardShortcutsEnabled: true
+            onAccepted: (pickedHour, pickedMinute) => {
+                TimerService.setPomodoroTime(pickedHour, pickedMinute);
+            }
+            onVisibleChanged: {
+                if (!visible && !opened)
+                    Qt.callLater(() => {
+                        if (pomodoroTimePicker.item && !pomodoroTimePicker.item.visible)
+                            pomodoroTimePicker.active = false;
+                    });
+            }
+        }
+    }
+
+    Connections {
+        target: TimerService
+        function onCustomTimeRequested(currentHour, currentMinute, title) {
+            pomodoroTimePicker.open(currentHour, currentMinute, title);
+        }
+    }
+
+    component SidebarBanner: Item {
+        id: headerRoot
+        property bool editMode: false
+        property bool systemHintsVisible: false
+        signal editModeToggled(bool newEditMode)
+        implicitHeight: 220
+
+        BannerImagePicker {
+            id: bannerPicker
+        }
+
+        UserProfileImagePicker {
+            id: profileImagePicker
+        }
+
+
+        Rectangle {
+            id: bannerBackground
+            anchors.fill: parent
+            radius: 15
+            color: Appearance.colors.colLayer1
+
+            // wallpaper section (top 70%)
+            Item {
+                id: wallpaperArea
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                    right: parent.right
+                }
+                height: parent.height * 0.7
+
+                readonly property string rawBannerSource: {
+                    if (Config.options.sidebar.useCustomBanner) {
+                        return Config.options.sidebar.bannerImage || `${Directories.assetsPath}/images/default_wallpaper.png`;
+                    }
+                    return Config.options.background.wallpaperPath || "";
+                }
+
+                readonly property string cleanBannerSource: {
+                    let p = wallpaperArea.rawBannerSource;
+                    if (!p) return "";
+                    const qIdx = p.indexOf("?");
+                    if (qIdx !== -1) p = p.substring(0, qIdx);
+                    return p.startsWith("file://") ? p : ("file://" + p);
+                }
+
+                readonly property bool isBannerAnimated: {
+                    const lower = wallpaperArea.cleanBannerSource.toLowerCase();
+                    return lower.includes(".gif") || lower.includes(".webp");
+                }
+
+                readonly property bool shouldPlayBanner: {
+                    return GlobalStates.dashboardPanelOpen && wallpaperArea.isBannerAnimated;
+                }
+
+                // Cache a cropped banner at the physical resolution that the
+                // scene graph needs. A static metadata load establishes the
+                // source aspect ratio before the QMovie is created.
+                readonly property size animatedDecodeBox: {
+                    const target = bannerImage.decodeBox;
+                    const naturalWidth = bannerAnimatedMetadata.implicitWidth;
+                    const naturalHeight = bannerAnimatedMetadata.implicitHeight;
+                    if (target.width <= 0 || target.height <= 0 || naturalWidth <= 0 || naturalHeight <= 0)
+                        return Qt.size(0, 0);
+
+                    const sourceAspect = naturalWidth / naturalHeight;
+                    const targetAspect = target.width / target.height;
+                    if (sourceAspect >= targetAspect)
+                        return Qt.size(Math.ceil(target.height * sourceAspect), target.height);
+                    return Qt.size(target.width, Math.ceil(target.width / sourceAspect));
+                }
+                
+                Rectangle {
+                    id: imageMask
+                    anchors.fill: parent
+                    radius: 15
+                    visible: false
+                }
+
+                // Read the first GIF frame solely to obtain its native aspect
+                // ratio. AnimatedImage must never be created with a 0×0
+                // sourceSize, as QMovie cannot produce that first frame.
+                Image {
+                    id: bannerAnimatedMetadata
+                    source: wallpaperArea.isBannerAnimated ? wallpaperArea.cleanBannerSource : ""
+                    asynchronous: true
+                    cache: false
+                    visible: false
+                }
+
+                // Static Image Banner (zero QMovie overhead)
+                Image {
+                    id: bannerImage
+                    anchors.fill: parent
+                    readonly property real windowDpr: (QsWindow.window as QsWindow)?.devicePixelRatio ?? 0
+                    property size decodeBox: Qt.size(0, 0)
+                    onWindowDprChanged: bannerImage.growDecodeBox()
+                    onWidthChanged: bannerImage.growDecodeBox()
+                    onHeightChanged: bannerImage.growDecodeBox()
+                    function growDecodeBox() {
+                        if (bannerImage.windowDpr <= 0 || bannerImage.width <= 0 || bannerImage.height <= 0)
+                            return;
+                        const boxWidth = Math.ceil(bannerImage.width * bannerImage.windowDpr);
+                        const boxHeight = Math.ceil(bannerImage.height * bannerImage.windowDpr);
+                        if (boxWidth <= bannerImage.decodeBox.width && boxHeight <= bannerImage.decodeBox.height)
+                            return;
+                        bannerImage.decodeBox = Qt.size(Math.max(boxWidth, bannerImage.decodeBox.width),
+                            Math.max(boxHeight, bannerImage.decodeBox.height));
+                    }
+
+                    source: (!wallpaperArea.isBannerAnimated && bannerImage.decodeBox.width > 0)
+                        ? wallpaperArea.cleanBannerSource
+                        : ""
+                    sourceSize: bannerImage.decodeBox
+                    fillMode: Image.PreserveAspectCrop
+                    cache: false
+                    asynchronous: true
+                    visible: !wallpaperArea.isBannerAnimated
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: imageMask
+                    }
+                }
+
+                // Animated GIF Banner (only active when isBannerAnimated is true, paused when sidebar is closed)
+                AnimatedImage {
+                    id: bannerAnimatedImage
+                    anchors.fill: parent
+                    source: (wallpaperArea.isBannerAnimated && wallpaperArea.animatedDecodeBox.width > 0
+                             && bannerAnimatedImage.keepMovie)
+                        ? wallpaperArea.cleanBannerSource
+                        : ""
+                    sourceSize: wallpaperArea.animatedDecodeBox
+                    fillMode: Image.PreserveAspectCrop
+                    playing: wallpaperArea.shouldPlayBanner
+                    // Never toggle `cache` on a live movie: turning it off runs
+                    // QQuickAnimatedImage::clearCache() (qDeleteAll of the frame
+                    // pixmaps) mid-playback, and from then on every frame deletes
+                    // and recreates its pixmap through the global pixmap cache.
+                    // Under Qt 6.12 that path segfaults (memcpy in QtGui) when the
+                    // dashboard closes for the overview/lock screen. Frames are
+                    // released instead by unloading the movie once it is closed.
+                    cache: true
+                    asynchronous: true
+                    property bool keepMovie: wallpaperArea.shouldPlayBanner
+                    Connections {
+                        target: wallpaperArea
+                        function onShouldPlayBannerChanged() {
+                            if (wallpaperArea.shouldPlayBanner) {
+                                bannerMovieRelease.stop();
+                                bannerAnimatedImage.keepMovie = true;
+                            } else {
+                                bannerMovieRelease.restart();
+                            }
+                        }
+                    }
+                    // Keep the paused last frame through the close animation.
+                    Timer {
+                        id: bannerMovieRelease
+                        interval: 2000
+                        onTriggered: bannerAnimatedImage.keepMovie = false
+                    }
+                    visible: wallpaperArea.isBannerAnimated && status === Image.Ready
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: imageMask
+                    }
+                }
+
+                // Edit mode overlay and button for banner image
+                Item {
+                    id: bannerEditContainer
+                    anchors.fill: parent
+                    visible: headerRoot.editMode
+                    opacity: headerRoot.editMode ? 1.0 : 0.0
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: Appearance.animation.elementMoveFast.duration
+                            easing.type: Appearance.animation.elementMoveFast.type
+                            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                        }
+                    }
+
+                    Rectangle {
+                        id: bannerEditScrim
+                        anchors.fill: parent
+                        color: wallpaperMouseArea.containsMouse
+                            ? ColorUtils.transparentize(Appearance.colors.colLayer0, 0.45)
+                            : ColorUtils.transparentize(Appearance.colors.colLayer0, 0.65)
+                        layer.enabled: true
+                        layer.effect: OpacityMask {
+                            maskSource: imageMask
+                        }
+
+                        Behavior on color {
+                            ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
+                        }
+                    }
+
+                    Rectangle {
+                        id: bannerEditBadge
+                        anchors.centerIn: parent
+                        radius: Appearance.rounding.full
+                        color: wallpaperMouseArea.containsMouse
+                            ? Appearance.colors.colPrimaryContainerHover
+                            : Appearance.colors.colPrimaryContainer
+                        implicitHeight: 34
+                        implicitWidth: bannerEditRow.implicitWidth + 24
+
+                        Behavior on color {
+                            ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
+                        }
+
+                        Row {
+                            id: bannerEditRow
+                            anchors.centerIn: parent
+                            spacing: 8
+
+                            MaterialSymbol {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "wallpaper"
+                                iconSize: 18
+                                color: Appearance.colors.colOnPrimaryContainer
+                            }
+
+                            StyledText {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: Translation.tr("Change banner")
+                                color: Appearance.colors.colOnPrimaryContainer
+                                font.pixelSize: Appearance.font.pixelSize.smaller
+                                font.weight: Font.DemiBold
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: wallpaperMouseArea
+                        anchors.fill: parent
+                        enabled: headerRoot.editMode
+                        cursorShape: headerRoot.editMode ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        hoverEnabled: headerRoot.editMode
+                        onClicked: bannerPicker.pick()
+
+                        StyledToolTip {
+                            extraVisibleCondition: headerRoot.editMode && wallpaperMouseArea.containsMouse
+                            text: Translation.tr("Select banner image")
+                        }
+                    }
+                }
+            }
+
+            // Button section
+            Rectangle {
+                id: buttonArea
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    bottom: parent.bottom
+                }
+
+                height: parent.height * 0.3
+                color: Appearance.colors.colLayer1
+                bottomLeftRadius: bannerBackground.bottomLeftRadius
+                bottomRightRadius: bannerBackground.bottomRightRadius
+            }
+
+            // pfp overlaps both sections
+            Item {
+                id: profilePicContainer
+                z: 2
+
+                anchors {
+                    left: parent.left
+                    bottom: buttonArea.bottom
+
+                    leftMargin: 16
+                    bottomMargin: 55
+                }
+
+                width: 70
+                height: 70
+                visible: Config.options.sidebar.dashboardHeader.profileImageType !== "none"
+
+                // DISTRO ICON
+                Loader {
+                    anchors.fill: parent
+                    active: Config.options.sidebar.dashboardHeader.profileImageType === "distro"
+                    sourceComponent: CustomIcon {
+                        anchors.centerIn: parent
+                        width: parent.width - 8
+                        height: parent.height - 8
+                        source: SystemInfo.distroIcon
+                        colorize: true
+                        color: Appearance.colors.colOnLayer1
+                    }
+                }
+
+                // USER PROFILE
+                UserProfileAvatar {
+                    anchors.fill: parent
+                    active: GlobalStates.dashboardPanelOpen && headerRoot.visible
+                    visible: Config.options.sidebar.dashboardHeader.profileImageType === "user_profile"
+                    avatarShape: Config.options.sidebar.dashboardHeader.avatarShape
+                    fontPixelSize: 32
+                    fontWeight: Font.Black
+                    borderWidth: 4
+                    borderColor: Appearance.colors.colLayer1
+                }
+
+                Rectangle {
+                    id: pfpEditBadge
+                    anchors {
+                        right: parent.right
+                        bottom: parent.bottom
+                    }
+                    width: 24
+                    height: 24
+                    radius: Appearance.rounding.full
+                    color: profilePicMouseArea.containsMouse
+                        ? Appearance.colors.colPrimaryContainerHover
+                        : Appearance.colors.colPrimaryContainer
+                    visible: headerRoot.editMode
+                    opacity: headerRoot.editMode ? 1.0 : 0.0
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: Appearance.animation.elementMoveFast.duration
+                            easing.type: Appearance.animation.elementMoveFast.type
+                            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                        }
+                    }
+
+                    Behavior on color {
+                        ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
+                    }
+
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "edit"
+                        iconSize: 14
+                        color: Appearance.colors.colOnPrimaryContainer
+                    }
+                }
+
+                MouseArea {
+                    id: profilePicMouseArea
+                    anchors.fill: parent
+                    enabled: headerRoot.editMode
+                    cursorShape: headerRoot.editMode ? Qt.PointingHandCursor : Qt.ArrowCursor
+                    hoverEnabled: headerRoot.editMode
+                    onClicked: {
+                        Config.options.sidebar.dashboardHeader.profileImageType = "user_profile";
+                        Config.options.userProfile.imageStyle = "custom";
+                        profileImagePicker.pick();
+                    }
+
+                    StyledToolTip {
+                        extraVisibleCondition: headerRoot.editMode && profilePicMouseArea.containsMouse
+                        text: Translation.tr("Change profile picture")
+                    }
+                }
+            }
+
+            // sidebar banner text
+            Column {
+                id: greetingTextColumn
+                anchors {
+                    left: parent.left
+                    leftMargin: 20   // matches systemButtonsRow's rightMargin
+                    verticalCenter: buttonArea.verticalCenter
+                }
+                spacing: 2
+
+                // greeting text
+                Text {
+                    id: greetingText
+                    color: Appearance.colors.colOnLayer0
+                    font.pixelSize: 14
+                    font.weight: Font.Normal
+                    horizontalAlignment: Text.AlignLeft
+                    width: 210
+                    elide: Text.ElideRight
+
+                    text: {
+                        const mode = Config.options.sidebar.dashboardHeader.textMode;
+                        const hour = (DateTime.clock?.date ?? new Date()).getHours();
+                        const timeGreeting = hour < 5 ? Translation.tr("Good Night,")
+                            : hour < 12 ? Translation.tr("Good Morning,")
+                                : hour < 18 ? Translation.tr("Good Afternoon,")
+                                    : hour < 22 ? Translation.tr("Good Evening,")
+                                        : Translation.tr("Good Night,");
+                        return mode === "username"
+                            ? (Config.options.userProfile.customGreeting !== "" ? Config.options.userProfile.customGreeting : timeGreeting) + " " + (Config.options.userProfile.customName !== "" ? Config.options.userProfile.customName : SystemInfo.username.charAt(0).toUpperCase() + SystemInfo.username.slice(1))
+                            : mode === "uptime"
+                                ? Translation.tr("Uptime") + ": " + DateTime.uptime
+                                : mode === "custom"
+                                    ? Config.options.sidebar.dashboardHeader.customText
+                                    : "";
+                    }
+                }
+
+                // subtext under greeting
+                Text {
+                    id: greetingSubtextText
+                    color: "#888888"
+                    font.pixelSize: 12
+                    font.weight: Font.Normal
+                    horizontalAlignment: Text.AlignLeft
+                    width: 220
+                    elide: Text.ElideRight
+
+                    visible: Config.options.sidebar.dashboardSubHeader.greetingSubtextMode !== "none"
+                    text: {
+                        const mode = Config.options.sidebar.dashboardSubHeader.greetingSubtextMode;
+                        return mode === "uptime"
+                            ? Translation.tr("Up • ") + DateTime.uptime
+                            : mode === "custom"
+                                ? Config.options.sidebar.dashboardSubHeader.customText
+                                : "";
+                    }
+                }
+            }
+        }
+
+        // sidebar banner buttons
+        Item {
+            anchors {
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+                bottomMargin: 10
+            }
+
+            height: systemButtonsRow.implicitHeight
+
+            ButtonGroup {
+                id: systemButtonsRow
+                readonly property bool isCircles: Config.options.sidebar.dashboardHeader.buttonsDesign === "circles"
+                anchors {
+                    right: parent.right
+                    rightMargin: 10
+                    verticalCenter: parent.verticalCenter
+                }
+                color: Appearance.colors.colLayer1
+                padding: isCircles ? 4 : 4
+                spacing: isCircles ? 4 : 5
+
+                QuickToggleButton {
+                    id: editButton
+                    toggled: headerRoot.editMode
+                    buttonRadius: systemButtonsRow.isCircles ? (baseHeight / 2) : ((altAction && toggled) ? Appearance?.rounding.normal : sharpMode ? 0 : Math.min(baseHeight, baseWidth) / 2)
+                    buttonRadiusPressed: systemButtonsRow.isCircles ? (baseHeight / 2) : Appearance?.rounding?.small
+                    clickedWidth: systemButtonsRow.isCircles ? baseWidth : baseWidth + (isAtSide ? 10 : 20)
+                    bounce: !systemButtonsRow.isCircles
+
+                    visible:
+                        Config.options.sidebar.quickToggles.style === "android"
+
+                    buttonIcon: "edit"
+                    contentItem: TaskShortcutContent {
+                        symbol: "edit"
+                        shortcut: "Ctrl\n⇧E"
+                        showHint: headerRoot.systemHintsVisible
+                        iconSize: 22
+                        fill: headerRoot.editMode ? 1 : 0
+                        color: headerRoot.editMode ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer1
+                    }
+                    StyledToolTip { text: Translation.tr("Edit quick toggles") + " (Ctrl+Shift+E)" }
+                    onClicked: root.editMode = !root.editMode
+                }
+
+                QuickToggleButton {
+                    buttonIcon: "restart_alt"
+                    buttonRadius: systemButtonsRow.isCircles ? (baseHeight / 2) : ((altAction && toggled) ? Appearance?.rounding.normal : sharpMode ? 0 : Math.min(baseHeight, baseWidth) / 2)
+                    buttonRadiusPressed: systemButtonsRow.isCircles ? (baseHeight / 2) : Appearance?.rounding?.small
+                    clickedWidth: systemButtonsRow.isCircles ? baseWidth : baseWidth + (isAtSide ? 10 : 20)
+                    bounce: !systemButtonsRow.isCircles
+                    contentItem: TaskShortcutContent {
+                        symbol: "restart_alt"
+                        shortcut: "Ctrl\n⇧R"
+                        showHint: headerRoot.systemHintsVisible && !headerRoot.editMode
+                        iconSize: 22
+                        color: Appearance.colors.colOnLayer1
+                    }
+                    StyledToolTip { text: Translation.tr("Ryoku") + " (Ctrl+Shift+R)" }
+                    onClicked: {
+                      Quickshell.execDetached(["ryoku", "reload"]);
+                    }
+                }
+
+                QuickToggleButton {
+                    buttonIcon: "settings"
+                    buttonRadius: systemButtonsRow.isCircles ? (baseHeight / 2) : ((altAction && toggled) ? Appearance?.rounding.normal : sharpMode ? 0 : Math.min(baseHeight, baseWidth) / 2)
+                    buttonRadiusPressed: systemButtonsRow.isCircles ? (baseHeight / 2) : Appearance?.rounding?.small
+                    clickedWidth: systemButtonsRow.isCircles ? baseWidth : baseWidth + (isAtSide ? 10 : 20)
+                    bounce: !systemButtonsRow.isCircles
+                    colBackground: systemButtonsRow.isCircles ? Appearance.colors.colSecondaryContainer : "transparent"
+                    colBackgroundHover: systemButtonsRow.isCircles ? Appearance.colors.colSecondaryContainerHover : Appearance.colors.colLayer1Hover
+                    colBackgroundActive: systemButtonsRow.isCircles ? Appearance.colors.colSecondaryContainerActive : Appearance.colors.colLayer1Active
+                    contentItem: TaskShortcutContent {
+                        symbol: "settings"
+                        shortcut: "Ctrl\n⇧S"
+                        showHint: headerRoot.systemHintsVisible && !headerRoot.editMode
+                        iconSize: 22
+                        color: systemButtonsRow.isCircles ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1
+                        badgeColor: systemButtonsRow.isCircles ? Appearance.colors.colSecondary : Appearance.colors.colPrimary
+                        badgeTextColor: systemButtonsRow.isCircles ? Appearance.colors.colOnSecondary : Appearance.colors.colOnPrimary
+                    }
+                    StyledToolTip { text: Translation.tr("Settings") + " (Ctrl+Shift+S)" }
+                    onClicked: root.showSettings()
+                }
+
+                QuickToggleButton {
+                    buttonIcon: "power_settings_new"
+                    buttonRadius: systemButtonsRow.isCircles ? (baseHeight / 2) : ((altAction && toggled) ? Appearance?.rounding.normal : sharpMode ? 0 : Math.min(baseHeight, baseWidth) / 2)
+                    buttonRadiusPressed: systemButtonsRow.isCircles ? (baseHeight / 2) : Appearance?.rounding?.small
+                    clickedWidth: systemButtonsRow.isCircles ? baseWidth : baseWidth + (isAtSide ? 10 : 20)
+                    bounce: !systemButtonsRow.isCircles
+                    colBackground: systemButtonsRow.isCircles ? Appearance.colors.colErrorContainer : "transparent"
+                    colBackgroundHover: systemButtonsRow.isCircles ? Appearance.colors.colErrorContainerHover : Appearance.colors.colLayer1Hover
+                    colBackgroundActive: systemButtonsRow.isCircles ? Appearance.colors.colErrorContainerActive : Appearance.colors.colLayer1Active
+                    contentItem: TaskShortcutContent {
+                        symbol: "power_settings_new"
+                        shortcut: "Ctrl\n⇧M"
+                        showHint: headerRoot.systemHintsVisible && !headerRoot.editMode
+                        iconSize: 22
+                        color: systemButtonsRow.isCircles ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnLayer1
+                        badgeColor: systemButtonsRow.isCircles ? Appearance.colors.colError : Appearance.colors.colPrimary
+                        badgeTextColor: systemButtonsRow.isCircles ? Appearance.colors.colOnError : Appearance.colors.colOnPrimary
+                    }
+                    StyledToolTip { text: Translation.tr("Session") + " (Ctrl+Shift+M)" }
+                    onClicked: {
+                        GlobalStates.sessionOpen = true
+                    }
+                }
+            }
+        }
+    }
+
+    component ToggleDialog: Loader {
+        id: toggleDialogLoader
+        required property string shownPropertyString
+        property alias dialog: toggleDialogLoader.sourceComponent
+        readonly property bool shown: root[shownPropertyString]
+        anchors.fill: parent
+
+        // active is managed imperatively only — NO declarative `active: shown` binding.
+        // A declarative binding would destroy the item the moment `shown` goes false,
+        // aborting any exit animation before it plays. Instead:
+        //   • onShownChanged(true)  → build the loader and show the dialog
+        //   • onVisibleChanged(false) → tear down AFTER the exit animation finishes
+        active: false
+
+        onShownChanged: {
+            if (shown) {
+                // Build on demand when first opened.
+                toggleDialogLoader.active = true;
+            } else if (item) {
+                // Tell the dialog to animate out; onVisibleChanged will do the teardown.
+                item.show = false;
+            }
+        }
+
+        onActiveChanged: {
+            if (active && item) {
+                item.show = true;
+                item.forceActiveFocus();
+            }
+        }
+        onLoaded: {
+            if (item) {
+                if (item.hasOwnProperty("radius")) {
+                    item.radius = sidebarRightBackground.defaultRadius;
+                }
+                item.show = true;
+                item.forceActiveFocus();
+            }
+        }
+        Connections {
+            target: toggleDialogLoader.item
+            function onDismiss() {
+                // Dialog wants to close: clear the shown flag (triggers onShownChanged above).
+                root[toggleDialogLoader.shownPropertyString] = false;
+            }
+            function onVisibleChanged() {
+                // Only tear down once the item is fully invisible (post-animation) and
+                // the shown flag is already false (i.e. we're in the closing path).
+                if (!toggleDialogLoader.item.visible && !root[toggleDialogLoader.shownPropertyString])
+                    toggleDialogLoader.active = false;
+            }
+        }
+    }
+
+    component LoaderedQuickPanelImplementation: Loader {
+        id: quickPanelImplLoader
+        required property string styleName
+        Layout.alignment: (item && item.Layout.alignment !== undefined && item.Layout.alignment !== 0) ? item.Layout.alignment : Qt.AlignHCenter
+        Layout.fillWidth: item?.Layout.fillWidth ?? false
+        Layout.preferredHeight: animatedPanelHeight
+        visible: active
+        active: Config.options.sidebar.quickToggles.style === styleName
+        clip: true
+        property real animatedPanelHeight: item?.implicitHeight ?? 0
+
+        // Animate the panel at its single layout boundary. Animating nested
+        // heights makes the outer target move on every frame and stretches the
+        // perceived transition beyond the configured duration.
+        Behavior on animatedPanelHeight {
+            SidebarGroupAnimation {
+                animationSpec: Appearance.animation.elementMove
+            }
+        }
+
+        Connections {
+            target: quickPanelImplLoader.item
+            function onOpenAudioOutputDialog() {
+                root.showAudioOutputDialog = true;
+            }
+            function onOpenAudioInputDialog() {
+                root.showAudioInputDialog = true;
+            }
+            function onOpenBluetoothDialog() {
+                root.showBluetoothDialog = true;
+            }
+            function onOpenNightLightDialog() {
+                root.showNightLightDialog = true;
+            }
+            function onOpenWifiDialog() {
+                root.showWifiDialog = true;
+            }
+            function onOpenDarkModeDialog() {
+                root.showDarkModeDialog = true;
+            }
+            function onOpenLocalSendDialog() {
+                root.showLocalSendDialog = true;
+            }
+            function onOpenIdleInhibitorDialog() {
+                root.showIdleInhibitorDialog = true;
+            }
+            function onOpenModesDialog() {
+                root.showModesDialog = true;
+            }
+            function onOpenEasyEffectsDialog() {
+                root.showEasyEffectsDialog = true;
+            }
+            function onOpenSmartDevicesDialog() {
+                root.showSmartDevicesDialog = true;
+            }
+            function onOpenTrayDialog() {
+                root.showTrayDialog = true;
+            }
+        }
+    }
+
+    component SystemButtonRow: Item {
+        id: systemButtonRowRoot
+        implicitHeight: Math.max(uptimeContainer.implicitHeight, systemButtonsRow.implicitHeight)
+        property int entranceTrigger: -1
+        property bool editMode: false
+        property bool systemHintsVisible: false
+        signal editModeToggled(bool newEditMode)
+        readonly property bool hintVisible: systemHintsVisible && (root.Window.window?.active ?? false)
+
+        UserProfileImagePicker {
+            id: profileImagePicker
+        }
+
+
+        DashboardEntranceProgress {
+            id: headerEntranceProgress
+            animationSpec: Appearance.animation.elementMove
+            animationsEnabled: Config.options.sidebar.dashboardEntranceAnimations
+            trigger: systemButtonRowRoot.entranceTrigger
+        }
+
+        Rectangle {
+            id: uptimeContainer
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                left: parent.left
+            }
+            color: Appearance.colors.colLayer1
+            opacity: headerEntranceProgress.progress
+            transform: Translate {
+                x: -30 * (1 - headerEntranceProgress.progress)
+                y: -15 * (1 - headerEntranceProgress.progress)
+            }
+            readonly property int fullRadius: Config.options.appearance.sharpMode ? Appearance.rounding.full : height / 2
+            radius: fullRadius
+
+            visible: Config.options.sidebar.dashboardHeader.profileImageType !== "none" || Config.options.sidebar.dashboardHeader.textMode !== "none"
+
+            property int rowLeftMargin: Config.options.sidebar.dashboardHeader.profileImageType === "user_profile" ? 6 : 14
+            readonly property bool _hasText: Config.options.sidebar.dashboardHeader.textMode !== "none"
+            readonly property int rowRightMargin: _hasText ? 14 : rowLeftMargin
+
+            implicitWidth: uptimeRow.implicitWidth + rowLeftMargin + rowRightMargin
+            implicitHeight: Math.max(32, uptimeRow.implicitHeight + (Config.options.sidebar.dashboardHeader.profileImageType === "user_profile" ? 4 : 12))
+
+            Row {
+                id: uptimeRow
+                anchors {
+                    left: parent.left
+                    verticalCenter: parent.verticalCenter
+                    leftMargin: uptimeContainer.rowLeftMargin
+                }
+                spacing: 8
+
+                // PROFILE PICTURE
+                Item {
+                    id: profilePicContainer
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Config.options.sidebar.dashboardHeader.profileImageType === "distro" ? 24 : 40
+                    height: Config.options.sidebar.dashboardHeader.profileImageType === "distro" ? 24 : 40
+                    visible: Config.options.sidebar.dashboardHeader.profileImageType !== "none"
+
+                    Loader {
+                        anchors.fill: parent
+                        active: Config.options.sidebar.dashboardHeader.profileImageType === "distro"
+                        sourceComponent: CustomIcon {
+                            anchors.centerIn: parent
+                            width: 24
+                            height: 24
+                            source: SystemInfo.distroIcon
+                            colorize: true
+                            color: Appearance.colors.colOnLayer1
+                        }
+                    }
+
+                    UserProfileAvatar {
+                        anchors.fill: parent
+                        active: GlobalStates.dashboardPanelOpen && systemButtonRowRoot.visible
+                        visible: Config.options.sidebar.dashboardHeader.profileImageType === "user_profile"
+                        avatarShape: Config.options.sidebar.dashboardHeader.avatarShape
+                    }
+
+                    Rectangle {
+                        id: pfpEditBadge
+                        anchors {
+                            right: parent.right
+                            bottom: parent.bottom
+                            rightMargin: -2
+                            bottomMargin: -2
+                        }
+                        width: 18
+                        height: 18
+                        radius: Appearance.rounding.full
+                        color: profilePicMouseArea.containsMouse
+                            ? Appearance.colors.colPrimaryContainerHover
+                            : Appearance.colors.colPrimaryContainer
+                        visible: systemButtonRowRoot.editMode
+                        opacity: systemButtonRowRoot.editMode ? 1.0 : 0.0
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: Appearance.animation.elementMoveFast.duration
+                                easing.type: Appearance.animation.elementMoveFast.type
+                                easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                            }
+                        }
+
+                        Behavior on color {
+                            ColorAnimation { duration: Appearance.animation.elementMoveFast.duration }
+                        }
+
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            text: "edit"
+                            iconSize: 11
+                            color: Appearance.colors.colOnPrimaryContainer
+                        }
+                    }
+
+                    MouseArea {
+                        id: profilePicMouseArea
+                        anchors.fill: parent
+                        enabled: systemButtonRowRoot.editMode
+                        cursorShape: systemButtonRowRoot.editMode ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        hoverEnabled: systemButtonRowRoot.editMode
+                        onClicked: {
+                            Config.options.sidebar.dashboardHeader.profileImageType = "user_profile";
+                            Config.options.userProfile.imageStyle = "custom";
+                            profileImagePicker.pick();
+                        }
+
+                        StyledToolTip {
+                            extraVisibleCondition: systemButtonRowRoot.editMode && profilePicMouseArea.containsMouse
+                            text: Translation.tr("Change profile picture")
+                        }
+                    }
+                }
+
+                ColumnLayout {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 0
+                    visible: Config.options.sidebar.dashboardHeader.textMode !== "none"
+
+                    StyledText {
+                        font.pixelSize: Appearance.font.pixelSize.smallie
+                        color: Appearance.colors.colOnLayer0
+                        text: {
+                            const mode = Config.options.sidebar.dashboardHeader.textMode;
+                            if (mode === "username") {
+                                const greeting = Config.options.userProfile.customGreeting;
+                                return (greeting !== "" ? greeting : Translation.tr("Hello,")) + " " + (Config.options.userProfile.customName !== "" ? Config.options.userProfile.customName : SystemInfo.username);
+                            }
+                            if (mode === "uptime")
+                                return Translation.tr("Uptime") + ": " + DateTime.uptime;
+                            if (mode === "custom")
+                                return Config.options.sidebar.dashboardHeader.customText;
+                            return "";
+                        }
+                        font.bold: true
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                    }
+                    StyledText {
+                        font.pixelSize: Appearance.font.pixelSize.smaller
+                        color: Appearance.colors.colOnLayer1
+                        text: Config.options.userProfile.customBio
+                        visible: Config.options.sidebar.dashboardHeader.textMode === "username" && text !== ""
+                        Layout.fillWidth: true
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+        }
+
+        ButtonGroup {
+            id: systemButtonsRow
+            readonly property bool isCircles: Config.options.sidebar.dashboardHeader.buttonsDesign === "circles"
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                right: parent.right
+            }
+            color: Appearance.colors.colLayer1
+            padding: isCircles ? 4 : 4
+            spacing: isCircles ? 4 : 5
+            opacity: headerEntranceProgress.progress
+            transform: Translate {
+                x: 30 * (1 - headerEntranceProgress.progress)
+                y: -15 * (1 - headerEntranceProgress.progress)
+            }
+
+            QuickToggleButton {
+                id: editButton
+                rotation: -180 * (1 - headerEntranceProgress.progress)
+                toggled: systemButtonRowRoot.editMode
+                buttonIcon: "edit"
+                buttonRadius: systemButtonsRow.isCircles ? (baseHeight / 2) : ((altAction && toggled) ? Appearance?.rounding.normal : sharpMode ? 0 : Math.min(baseHeight, baseWidth) / 2)
+                buttonRadiusPressed: systemButtonsRow.isCircles ? (baseHeight / 2) : Appearance?.rounding?.small
+                clickedWidth: systemButtonsRow.isCircles ? baseWidth : baseWidth + (isAtSide ? 10 : 20)
+                bounce: !systemButtonsRow.isCircles
+                contentItem: TaskShortcutContent {
+                    symbol: "edit"
+                    shortcut: "Ctrl\n⇧E"
+                    showHint: systemButtonRowRoot.hintVisible
+                    iconSize: 22
+                    fill: systemButtonRowRoot.editMode ? 1 : 0
+                    color: systemButtonRowRoot.editMode ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer1
+                }
+                onClicked: root.editMode = !root.editMode
+                StyledToolTip {
+                    text: Translation.tr("Edit quick toggles") + " (Ctrl+Shift+E)"
+                }
+            }
+            QuickToggleButton {
+                id: reloadButton
+                rotation: -360 * (1 - headerEntranceProgress.progress)
+                toggled: false
+                buttonIcon: "restart_alt"
+                buttonRadius: systemButtonsRow.isCircles ? (baseHeight / 2) : ((altAction && toggled) ? Appearance?.rounding.normal : sharpMode ? 0 : Math.min(baseHeight, baseWidth) / 2)
+                buttonRadiusPressed: systemButtonsRow.isCircles ? (baseHeight / 2) : Appearance?.rounding?.small
+                clickedWidth: systemButtonsRow.isCircles ? baseWidth : baseWidth + (isAtSide ? 10 : 20)
+                bounce: !systemButtonsRow.isCircles
+                contentItem: TaskShortcutContent {
+                    symbol: "restart_alt"
+                    shortcut: "Ctrl\n⇧R"
+                    showHint: systemButtonRowRoot.hintVisible && !systemButtonRowRoot.editMode
+                    iconSize: 22
+                    color: Appearance.colors.colOnLayer1
+                }
+                onClicked: {
+                    Quickshell.execDetached(["hyprctl", "reload"]);
+                    Quickshell.reload(true);
+                }
+                StyledToolTip {
+                    text: Translation.tr("Reload Ryoku") + " (Ctrl+Shift+R)"
+                }
+
+            }
+            QuickToggleButton {
+                id: settingsButton
+                rotation: 90 * (1 - headerEntranceProgress.progress)
+                toggled: false
+                buttonIcon: "settings"
+                buttonRadius: systemButtonsRow.isCircles ? (baseHeight / 2) : ((altAction && toggled) ? Appearance?.rounding.normal : sharpMode ? 0 : Math.min(baseHeight, baseWidth) / 2)
+                buttonRadiusPressed: systemButtonsRow.isCircles ? (baseHeight / 2) : Appearance?.rounding?.small
+                clickedWidth: systemButtonsRow.isCircles ? baseWidth : baseWidth + (isAtSide ? 10 : 20)
+                bounce: !systemButtonsRow.isCircles
+                colBackground: systemButtonsRow.isCircles ? Appearance.colors.colSecondaryContainer : "transparent"
+                colBackgroundHover: systemButtonsRow.isCircles ? Appearance.colors.colSecondaryContainerHover : Appearance.colors.colLayer1Hover
+                colBackgroundActive: systemButtonsRow.isCircles ? Appearance.colors.colSecondaryContainerActive : Appearance.colors.colLayer1Active
+                contentItem: TaskShortcutContent {
+                    symbol: "settings"
+                    shortcut: "Ctrl\n⇧S"
+                    showHint: systemButtonRowRoot.hintVisible && !systemButtonRowRoot.editMode
+                    iconSize: 22
+                    color: systemButtonsRow.isCircles ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer1
+                    badgeColor: systemButtonsRow.isCircles ? Appearance.colors.colSecondary : Appearance.colors.colPrimary
+                    badgeTextColor: systemButtonsRow.isCircles ? Appearance.colors.colOnSecondary : Appearance.colors.colOnPrimary
+                }
+                onClicked: root.showSettings()
+                StyledToolTip {
+                    text: Translation.tr("Settings") + " (Ctrl+Shift+S)"
+                }
+            }
+
+            QuickToggleButton {
+                id: powerButton
+                rotation: -90 * (1 - headerEntranceProgress.progress)
+                toggled: false
+                buttonIcon: "power_settings_new"
+                buttonRadius: systemButtonsRow.isCircles ? (baseHeight / 2) : ((altAction && toggled) ? Appearance?.rounding.normal : sharpMode ? 0 : Math.min(baseHeight, baseWidth) / 2)
+                buttonRadiusPressed: systemButtonsRow.isCircles ? (baseHeight / 2) : Appearance?.rounding?.small
+                clickedWidth: systemButtonsRow.isCircles ? baseWidth : baseWidth + (isAtSide ? 10 : 20)
+                bounce: !systemButtonsRow.isCircles
+                colBackground: systemButtonsRow.isCircles ? Appearance.colors.colErrorContainer : "transparent"
+                colBackgroundHover: systemButtonsRow.isCircles ? Appearance.colors.colErrorContainerHover : Appearance.colors.colLayer1Hover
+                colBackgroundActive: systemButtonsRow.isCircles ? Appearance.colors.colErrorContainerActive : Appearance.colors.colLayer1Active
+                contentItem: TaskShortcutContent {
+                    symbol: "power_settings_new"
+                    shortcut: "Ctrl\n⇧M"
+                    showHint: systemButtonRowRoot.hintVisible && !systemButtonRowRoot.editMode
+                    iconSize: 22
+                    color: systemButtonsRow.isCircles ? Appearance.colors.colOnErrorContainer : Appearance.colors.colOnLayer1
+                    badgeColor: systemButtonsRow.isCircles ? Appearance.colors.colError : Appearance.colors.colPrimary
+                    badgeTextColor: systemButtonsRow.isCircles ? Appearance.colors.colOnError : Appearance.colors.colOnPrimary
+                }
+                onClicked: {
+                    GlobalStates.sessionOpen = true;
+                }
+                StyledToolTip {
+                    text: Translation.tr("Session") + " (Ctrl+Shift+M)"
+                }
+
+            }
+        }
+    }
+
+}
