@@ -3,16 +3,22 @@ import QtQuick.Layouts
 import ".."
 import "."
 
+/**
+ * Material 3 expressive style toolbar.
+ * https://m3.material.io/components/toolbars
+ */
 Item {
     id: root
 
     property bool enableShadow: true
-    property real padding: Appearance.spacing.space100
+    property real padding: 3
     property alias colBackground: background.color
     property alias spacing: toolbarLayout.spacing
-    default property alias data: toolbarLayout.data
+    default property alias toolbarData: toolbarLayout.data
     implicitWidth: background.implicitWidth
     implicitHeight: background.implicitHeight
+    width: implicitWidth
+    height: implicitHeight
     property alias radius: background.radius
 
     Loader {
@@ -30,11 +36,12 @@ Item {
         color: Appearance.m3colors.m3surfaceContainer
         implicitHeight: Appearance.sizes.toolbarHeight
         implicitWidth: toolbarLayout.implicitWidth + root.padding * 2
-        radius: height / 2
+        readonly property int fullRadius: Config.options.appearance.sharpMode ? Appearance.rounding.full : height / 2
+        radius: fullRadius
 
         RowLayout {
             id: toolbarLayout
-            spacing: Appearance.spacing.space50
+            spacing: 4
             anchors {
                 fill: parent
                 margins: root.padding

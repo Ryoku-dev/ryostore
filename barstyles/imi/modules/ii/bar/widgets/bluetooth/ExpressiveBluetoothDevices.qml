@@ -1,0 +1,195 @@
+import "../../../../common"
+import "../../../../common/functions"
+import "../../../../common/widgets"
+import "../../../../../services"
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+
+MouseArea {
+    id: root
+    property bool vertical: false
+    property bool isMaterial: true // Forced expressive
+
+    BarWidgetPalette {
+        id: palette
+        colorMode: Config.options.bar.bluetooth.colorMode
+    }
+
+    readonly property var activeDevices: BluetoothStatus.connectedDevices
+    property int deviceIndex: 0
+    readonly property var primaryDevice: activeDevices.length > 0 ? activeDevices[deviceIndex % activeDevices.length] : null
+    readonly property bool hasDevices: activeDevices.length > 0
+    implicitWidth: hasDevices ? (vertical ? Appearance.sizes.verticalBarWidth : layout.implicitWidth + 8) : 0
+    implicitHeight: hasDevices ? (vertical ? layoutVert.implicitHeight + 8 : Appearance.sizes.baseBarHeight) : 0
+    width: implicitWidth
+    height: implicitHeight
+    visible: hasDevices
+    hoverEnabled: !BarInteraction.clickToShow
+
+    // Click-to-show gives the left click to the popup; cycling moves to the right button.
+    readonly property bool rightClickCycles: BarInteraction.cycleOnRightClick
+    acceptedButtons: rightClickCycles ? (Qt.LeftButton | Qt.RightButton) : Qt.LeftButton
+    cursorShape: Qt.PointingHandCursor
+
+    onHasDevicesChanged: {
+        if (typeof rootItem !== "undefined" && typeof rootItem.toggleVisible === "function")
+            rootItem.toggleVisible(hasDevices);
+    }
+
+    Connections {
+        target: BluetoothStatus
+        function onConnectedDevicesChanged() {
+            if (typeof rootItem !== "undefined" && typeof rootItem.toggleVisible === "function")
+                rootItem.toggleVisible(BluetoothStatus.connectedDevices.length > 0);
+        }
+    }
+
+    Component.onCompleted: {
+        if (typeof rootItem !== "undefined" && typeof rootItem.toggleVisible === "function")
+            rootItem.toggleVisible(hasDevices);
+    }
+
+    onClicked: mouse => {
+        if (mouse.button !== (rightClickCycles ? Qt.RightButton : Qt.LeftButton))
+            return;
+        if (activeDevices.length > 1) {
+            deviceIndex = (deviceIndex + 1) % activeDevices.length
+        }
+    }
+
+    RowLayout {
+        id: layout
+        anchors.centerIn: parent
+        spacing: 4
+        visible: !root.vertical && root.hasDevices
+
+        MaterialShape {
+            shapeString: "Cookie7Sided"
+            color: palette.colBackgroundVariant
+            implicitSize: Appearance.sizes.baseBarHeight - 8
+            MaterialSymbol {
+                anchors.centerIn: parent
+                iconSize: Appearance.font.pixelSize.normal
+                text: root.hasDevices ? Icons.getBluetoothDeviceMaterialSymbol(root.primaryDevice.icon) : "bluetooth"
+                color: palette.colOnBackgroundVariant
+            }
+        }
+
+        Rectangle {
+            color: palette.colBackground
+            radius: (typeof rootItem !== "undefined" ? rootItem.groupStyle : Config.options.bar.barGroupStyle) === 1 ? Appearance.rounding.windowRounding : Appearance.rounding.full
+            implicitWidth: content.implicitWidth + 24
+            implicitHeight: Appearance.sizes.baseBarHeight - 8
+            
+            RowLayout {
+                id: content
+                anchors.centerIn: parent
+                spacing: 10
+                
+                StyledText {
+                    text: root.primaryDevice ? root.primaryDevice.name : ""
+                    font.pixelSize: 10
+                    font.weight: Font.Black
+                    color: palette.colOnBackground
+                    Layout.maximumWidth: 60
+                    elide: Text.ElideRight
+                }
+
+                // Progress Bar (Battery)
+                StyledProgressBar {
+                    id: batteryContainer
+                    visible: root.primaryDevice ? root.primaryDevice.batteryAvailable : false
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredHeight: 8
+                    Layout.preferredWidth: 42
+                    valueBarWidth: 42
+                    valueBarHeight: 8
+                    from: 0
+                    to: 1
+                    value: root.primaryDevice?.battery ?? 0
+                    highlightColor: {
+                        if (!root.primaryDevice) return palette.colOnBackground;
+                        if (root.primaryDevice.battery <= 0.15) return Appearance.colors.colError;
+                        return palette.colOnBackground;
+                    }
+                    trackColor: ColorUtils.transparentize(palette.colOnBackground, 0.7)
+                }
+            }
+        }
+    }
+
+    ColumnLayout {
+        id: layoutVert
+        anchors.centerIn: parent
+        spacing: 4
+        visible: root.vertical && root.hasDevices
+
+        MaterialShape {
+            Layout.alignment: Qt.AlignHCenter
+            shapeString: "Cookie7Sided"
+            color: palette.colBackgroundVariant
+            implicitSize: Appearance.sizes.verticalBarWidth - 8
+            MaterialSymbol {
+                anchors.centerIn: parent
+                iconSize: Appearance.font.pixelSize.normal
+                text: root.hasDevices ? Icons.getBluetoothDeviceMaterialSymbol(root.primaryDevice.icon) : "bluetooth"
+                color: palette.colOnBackgroundVariant
+            }
+        }
+
+        Rectangle {
+            Layout.alignment: Qt.AlignHCenter
+            color: palette.colBackground
+            radius: Appearance.rounding.small
+            implicitWidth: Appearance.sizes.verticalBarWidth - 8
+            implicitHeight: contentVert.implicitHeight + 14
+            
+            ColumnLayout {
+                id: contentVert
+                anchors.centerIn: parent
+                spacing: 6
+                
+                StyledText {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: root.primaryDevice ? root.primaryDevice.name.slice(0, 2).toUpperCase() : ""
+                    font.pixelSize: 9
+                    font.weight: Font.Black
+                    color: palette.colOnBackground
+                }
+
+                Rectangle {
+                    Layout.alignment: Qt.AlignHCenter
+                    visible: root.primaryDevice && root.primaryDevice.batteryAvailable
+                    Layout.preferredWidth: 8
+                    Layout.preferredHeight: 32
+                    radius: Appearance.rounding.full
+                    color: ColorUtils.transparentize(palette.colOnBackground, 0.7)
+                    
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: parent.height * (root.primaryDevice ? root.primaryDevice.battery : 0)
+                        radius: Appearance.rounding.full
+                        color: {
+                            if (!root.primaryDevice) return palette.colOnBackground;
+                            if (root.primaryDevice.battery <= 0.15) return Appearance.colors.colError;
+                            return palette.colOnBackground;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    PopupLoader {
+        id: popupLoader
+        // Lazy: popup controller is only built on approach (same as ExpressiveSports).
+        active: BarInteraction.enablePopups
+            && (BarInteraction.clickToShow || root.containsMouse || held)
+        source: Config.options.bar.bluetoothDevicesLayout === "expressive" ? "../../popups/bluetooth/ExpressiveBluetoothDevicesPopup.qml" : "../../popups/bluetooth/BluetoothDevicesPopup.qml"
+        onLoaded: {
+            item.hoverTarget = root;
+        }
+    }
+}

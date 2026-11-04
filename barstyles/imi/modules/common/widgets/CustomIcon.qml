@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Widgets
 import Qt5Compat.GraphicalEffects
+import ".."
 
 Item {
     id: root
@@ -9,7 +10,7 @@ Item {
     property bool colorize: false
     property color color
     property string source: ""
-    property string iconFolder: Qt.resolvedUrl("../../../assets/icons")
+    property string iconFolder: Qt.resolvedUrl(Directories.shellPath("assets/icons"))  // The folder to check first
     width: 30
     height: 30
     
@@ -17,8 +18,10 @@ Item {
         id: iconImage
         anchors.fill: parent
         source: {
-            if (!root.source) return "";
-            if (iconFolder) return iconFolder + "/" + root.source;
+            const fullPathWhenSourceIsIconName = iconFolder + "/" + root.source;
+            if (iconFolder && fullPathWhenSourceIsIconName) {
+                return fullPathWhenSourceIsIconName
+            }
             return root.source
         }
         implicitSize: root.height

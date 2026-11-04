@@ -1,5 +1,10 @@
+import ".."
+import "../../../services"
 import QtQuick
 
+/**
+ * A convenience MouseArea for handling drag events.
+ */
 MouseArea {
     id: root
     hoverEnabled: true
@@ -11,6 +16,8 @@ MouseArea {
     readonly property real dragDiffY: _dragDiffY
     property real startX: 0
     property real startY: 0
+    property real minimumX: -Infinity
+    property real maximumX: Infinity
     property real regionTopLeftX: Math.min(startX, startX + _dragDiffX)
     property real regionTopLeftY: Math.min(startY, startY + _dragDiffY)
     property real regionWidth: Math.abs(_dragDiffX)
@@ -55,8 +62,12 @@ MouseArea {
             return;
         }
         if (mouse.buttons & Qt.LeftButton) {
-            root._dragDiffX = mouse.x - startX
+            let dx = mouse.x - startX
+            if (dx < root.minimumX) dx = root.minimumX
+            if (dx > root.maximumX) dx = root.maximumX
+            root._dragDiffX = dx
             root._dragDiffY = mouse.y - startY
+            const dist = Math.sqrt(root._dragDiffX * root._dragDiffX + root._dragDiffY * root._dragDiffY);
             root.dragPressed(_dragDiffX, _dragDiffY);
             root.dragging = true;
         }

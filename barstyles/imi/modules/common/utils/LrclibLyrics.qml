@@ -1,0 +1,696 @@
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import Quickshell.Io
+import ".."
+import "../functions"
+
+/*
+ * Originally from this PR in the original illogical-impulse repo by user SMANahian: https://github.com/end-4/dots-hyprland/pull/2709
+ * Couldn't find any license info, so assuming MIT like the rest of the repo.
+ * And I couldn't contact the author of the PR, so I ended up copying it here.
+*/
+
+Item {
+    id: root
+    visible: false
+
+    property bool enabled: false
+    property string title: ""
+    property string artist: ""
+    property real duration: 0
+    property real position: 0
+    property int selectedId: 0
+
+    property bool loading: false
+    property string error: ""
+    property bool instrumental: false
+    // Lines as returned by LRCLib.
+    property var fetchedLines: []
+    // A hand-written .lrc for this track always wins over the fetched result.
+    property string overrideLyrics: ""
+    property var overrideLines: []
+    readonly property bool hasOverride: root.overrideLines.length > 0
+    property var lines: root.hasOverride ? root.overrideLines : root.fetchedLines
+    property string plainLyricsText: ""  // plain (unsynced) lyrics from LRCLib as fallback
+    property var _cache: ({})
+
+    property string loadedKey: ""
+    property string requestKey: ""
+    property int requestId: 0
+    property int attempt: 0
+    property bool startPending: false
+
+    readonly property string queryTitle: normalizeTitle(title)
+    readonly property string queryArtist: normalizeArtist(artist)
+    readonly property int queryDuration: Math.round(duration ?? 0)
+    readonly property string queryKey: `${queryTitle}||${queryArtist}||${queryDuration}`
+    readonly property string fetchKey: `${queryKey}||${selectedId}`
+
+    readonly property int currentIndex: syncedLyricIndexForPosition(position)
+    readonly property string currentLineText: currentIndex >= 0 ? (root.lines[currentIndex]?.text ?? "") : ""
+    readonly property int prevIndex: prevNonEmptyIndex(currentIndex)
+    readonly property string prevLineText: prevIndex >= 0 ? (root.lines[prevIndex]?.text ?? "") : ""
+    readonly property int nextIndex: nextNonEmptyIndex(currentIndex)
+    readonly property string nextLineText: nextIndex >= 0 ? (root.lines[nextIndex]?.text ?? "") : ""
+    readonly property string displayText: {
+        if (!root.enabled)
+            return "";
+        if (root.hasOverride)
+            return root.currentLineText && root.currentLineText.length > 0 ? root.currentLineText : "♪";
+        if (root.loading)
+            return "Fetching lyrics…";
+        if (root.instrumental)
+            return "Instrumental";
+        if (root.error && root.error.length > 0)
+            return root.error;
+        return root.currentLineText && root.currentLineText.length > 0 ? root.currentLineText : "♪";
+    }
+
+    function normalizeTitle(rawTitle) {
+        if (!rawTitle)
+            return "";
+
+        let cleaned = StringUtils.cleanMusicTitle(rawTitle);
+
+        // Keep trailing suffixes like "Remix", "Version", "Edit" (e.g. "Title - Remix").
+        const parts = cleaned.split(" - ");
+        let main = parts[0].trim();
+        let suffix = parts.slice(1).join(" - ").trim();
+        if (suffix && /\b(remix|version|edit|mix|rework)\b/i.test(suffix))
+            cleaned = `${main} ${suffix}`;
+        else
+            cleaned = main;
+
+        // Remove parenthetical content except keep featuring info (feat/ft/featuring).
+        cleaned = cleaned.replace(/\s*[\(\[\{]([^\)\]\}]*)[\)\]\}]\s*/g, function(_, inner) {
+            if (/(?:feat\.?|ft\.?|featuring)/i.test(inner)) {
+                const m = inner.replace(/^(?:feat\.?|ft\.?|featuring)\s*/i, '').trim();
+                return m ? ` feat. ${m} ` : ' ';
+            }
+            return ' ';
+        }).replace(/\s+/g, " ").trim();
+
+        return cleaned;
+    }
+
+    function normalizeArtist(rawArtist) {
+        if (!rawArtist)
+            return "";
+
+        let cleaned = rawArtist.trim();
+        cleaned = cleaned.split(",")[0];
+        cleaned = cleaned.split(/ feat\.? /i)[0];
+        cleaned = cleaned.split(/ ft\.? /i)[0];
+        cleaned = cleaned.split(/ featuring /i)[0];
+        cleaned = cleaned.split(/ & /)[0];
+        cleaned = cleaned.split(/ x /i)[0];
+        return cleaned.trim();
+    }
+
+    onOverrideLyricsChanged: {
+        root.overrideLines = root.parseSyncedLyrics(root.overrideLyrics);
+    }
+
+    function parseTtmlTime(timeStr) {
+        if (!timeStr)
+            return 0;
+        timeStr = timeStr.trim();
+        if (timeStr.endsWith("ms"))
+            return parseFloat(timeStr.slice(0, -2)) / 1000;
+        if (timeStr.endsWith("s"))
+            return parseFloat(timeStr.slice(0, -1));
+        if (timeStr.endsWith("m"))
+            return parseFloat(timeStr.slice(0, -1)) * 60;
+        if (timeStr.endsWith("h"))
+            return parseFloat(timeStr.slice(0, -1)) * 3600;
+
+        const parts = timeStr.split(":");
+        if (parts.length === 3) {
+            const h = parseFloat(parts[0]) || 0;
+            const m = parseFloat(parts[1]) || 0;
+            const s = parseFloat(parts[2].replace(",", ".")) || 0;
+            return h * 3600 + m * 60 + s;
+        } else if (parts.length === 2) {
+            const m = parseFloat(parts[0]) || 0;
+            const s = parseFloat(parts[1].replace(",", ".")) || 0;
+            return m * 60 + s;
+        } else if (parts.length === 1) {
+            return parseFloat(parts[0]) || 0;
+        }
+        return 0;
+    }
+
+    function decodeXmlEntities(text) {
+        if (!text)
+            return "";
+        return text
+            .replace(/&quot;/g, '"')
+            .replace(/&apos;/g, "'")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&amp;/g, "&")
+            .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
+            .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+    }
+
+    function parseTtmlLyrics(ttmlText) {
+        if (!ttmlText)
+            return [];
+
+        const parsed = [];
+        const pRegex = /<p\b([^>]*)>([\s\S]*?)<\/p>/gi;
+        let match;
+
+        while ((match = pRegex.exec(ttmlText)) !== null) {
+            const attrs = match[1];
+            const content = match[2];
+
+            const beginMatch = /\bbegin=["']([^"']+)["']/i.exec(attrs);
+            if (!beginMatch) {
+                const spanRegex = /<span\b([^>]*)>([\s\S]*?)<\/span>/gi;
+                let spanMatch;
+                let foundSpan = false;
+                while ((spanMatch = spanRegex.exec(content)) !== null) {
+                    const spanAttrs = spanMatch[1];
+                    const spanContent = spanMatch[2];
+                    const spanBegin = /\bbegin=["']([^"']+)["']/i.exec(spanAttrs);
+                    if (spanBegin) {
+                        foundSpan = true;
+                        const t = parseTtmlTime(spanBegin[1]);
+                        const text = decodeXmlEntities(spanContent.replace(/<[^>]+>/g, "")).trim();
+                        if (text)
+                            parsed.push({ time: t, text });
+                    }
+                }
+                if (foundSpan)
+                    continue;
+            }
+
+            const time = beginMatch ? parseTtmlTime(beginMatch[1]) : 0;
+            const text = decodeXmlEntities(content.replace(/<br\s*\/?>/gi, " ").replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
+
+            if (text) {
+                parsed.push({
+                    time,
+                    text
+                });
+            }
+        }
+
+        if (parsed.length === 0) {
+            const spanRegex = /<span\b([^>]*)>([\s\S]*?)<\/span>/gi;
+            while ((match = spanRegex.exec(ttmlText)) !== null) {
+                const attrs = match[1];
+                const content = match[2];
+                const beginMatch = /\bbegin=["']([^"']+)["']/i.exec(attrs);
+                if (beginMatch) {
+                    const time = parseTtmlTime(beginMatch[1]);
+                    const text = decodeXmlEntities(content.replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
+                    if (text)
+                        parsed.push({ time, text });
+                }
+            }
+        }
+
+        parsed.sort((a, b) => a.time - b.time);
+        return parsed;
+    }
+
+    function parseSyncedLyrics(lrcText) {
+        if (!lrcText)
+            return [];
+
+        if (lrcText.indexOf("<tt") !== -1 || (lrcText.indexOf("<p ") !== -1 && lrcText.indexOf("begin=") !== -1))
+            return root.parseTtmlLyrics(lrcText);
+
+        const parsed = [];
+        const rawLines = lrcText.split(/\r?\n/);
+        const timeTag = /\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g;
+
+        for (const rawLine of rawLines) {
+            if (!rawLine)
+                continue;
+
+            timeTag.lastIndex = 0;
+            const times = [];
+            let match;
+            while ((match = timeTag.exec(rawLine)) !== null) {
+                const minutes = parseInt(match[1], 10);
+                const seconds = parseInt(match[2], 10);
+                const fraction = match[3];
+                let millis = 0;
+                if (fraction !== undefined) {
+                    if (fraction.length === 1)
+                        millis = parseInt(fraction, 10) * 100;
+                    else if (fraction.length === 2)
+                        millis = parseInt(fraction, 10) * 10;
+                    else
+                        millis = parseInt(fraction.padEnd(3, "0"), 10);
+                }
+                times.push(minutes * 60 + seconds + millis / 1000);
+            }
+
+            if (times.length === 0)
+                continue;
+
+            const text = rawLine.replace(timeTag, "").trim();
+            for (const t of times) {
+                parsed.push({
+                    time: t,
+                    text
+                });
+            }
+        }
+
+        parsed.sort((a, b) => a.time - b.time);
+        return parsed;
+    }
+
+    function syncedLyricIndexForPosition(positionSeconds) {
+        if (!root.lines || root.lines.length === 0)
+            return -1;
+
+        if (isNaN(positionSeconds) || positionSeconds < 0)
+            positionSeconds = 0;
+
+        let lo = 0;
+        let hi = root.lines.length - 1;
+        let idx = -1;
+        while (lo <= hi) {
+            const mid = (lo + hi) >> 1;
+            if (root.lines[mid].time <= positionSeconds) {
+                idx = mid;
+                lo = mid + 1;
+            } else {
+                hi = mid - 1;
+            }
+        }
+
+        for (let i = idx; i >= 0; --i) {
+            const text = root.lines[i].text;
+            if (text && text.length > 0)
+                return i;
+        }
+
+        return -1;
+    }
+
+    function nextNonEmptyIndex(fromIndex) {
+        if (!root.lines || root.lines.length === 0)
+            return -1;
+
+        let startIndex = fromIndex;
+        if (startIndex < -1)
+            startIndex = -1;
+
+        for (let i = startIndex + 1; i < root.lines.length; ++i) {
+            const text = root.lines[i].text;
+            if (text && text.length > 0)
+                return i;
+        }
+
+        return -1;
+    }
+
+    function prevNonEmptyIndex(fromIndex) {
+        if (!root.lines || root.lines.length === 0)
+            return -1;
+
+        if (fromIndex <= 0)
+            return -1;
+
+        for (let i = fromIndex - 1; i >= 0; --i) {
+            const text = root.lines[i].text;
+            if (text && text.length > 0)
+                return i;
+        }
+
+        return -1;
+    }
+
+    function buildLyricsSearchUrl(attempt) {
+        const baseSearch = "https://lrclib.net/api/search";
+        const baseGet = "https://lrclib.net/api/get";
+        const title = root.queryTitle;
+        const artist = root.queryArtist;
+        const duration = root.queryDuration;
+
+        if (!title || !artist)
+            return "";
+
+        if (root.selectedId > 0 && attempt === 0)
+            return `${baseGet}/${root.selectedId}`;
+
+        if (root.selectedId > 0)
+            attempt -= 1;
+
+        if (attempt === 0) {
+            let url = `${baseGet}?track_name=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(artist)}`;
+            if (duration > 0)
+                url += `&duration=${duration}`;
+            return url;
+        }
+
+        if (attempt === 1) {
+            let url = `${baseSearch}?track_name=${encodeURIComponent(title)}&artist_name=${encodeURIComponent(artist)}`;
+            if (duration > 0)
+                url += `&duration=${duration}`;
+            return url;
+        }
+
+        if (attempt === 2) {
+            return `${baseSearch}?q=${encodeURIComponent(`${title} ${artist}`)}`;
+        }
+
+        if (attempt === 3) {
+            return `${baseSearch}?q=${encodeURIComponent(title)}`;
+        }
+
+        return "";
+    }
+
+    function pickBestLyricsResult(results) {
+        if (!Array.isArray(results) || results.length === 0)
+            return null;
+
+        const titleLower = root.queryTitle.toLowerCase();
+        const artistLower = root.queryArtist.toLowerCase();
+        const duration = root.queryDuration;
+
+        let best = null;
+        let bestScore = -Infinity;
+
+        for (const item of results) {
+            const syncedLyrics = item?.syncedLyrics ?? "";
+            if (!syncedLyrics || syncedLyrics.length === 0)
+                continue;
+
+            let score = 0;
+            const itemTitle = (item?.trackName ?? item?.name ?? "").toLowerCase();
+            const itemArtist = (item?.artistName ?? "").toLowerCase();
+
+            if (itemArtist && itemArtist === artistLower)
+                score += 100;
+            if (itemTitle && itemTitle === titleLower)
+                score += 50;
+
+            if (duration > 0 && typeof item?.duration === "number") {
+                const diff = Math.abs(item.duration - duration);
+                if (diff <= 2)
+                    score += 25;
+                else if (diff <= 5)
+                    score += 10;
+                else
+                    score -= Math.min(diff, 30);
+            }
+
+            if (item?.instrumental)
+                score -= 1000;
+
+            if (syncedLyrics.length < 32)
+                score -= 60;
+
+            score += Math.min(syncedLyrics.length, 4000) / 20;
+
+            if (score > bestScore) {
+                bestScore = score;
+                best = item;
+            }
+        }
+
+        return best;
+    }
+
+    function resetState() {
+        root.loading = false;
+        root.error = "";
+        root.instrumental = false;
+        root.fetchedLines = [];
+        root.plainLyricsText = "";
+        root.loadedKey = "";
+        root.requestKey = "";
+        root.attempt = 0;
+        root.startPending = false;
+    }
+
+    // Explicit user retry: drop the cached answer for this track so the request
+    // actually leaves the machine again instead of replaying the stored miss.
+    function retryFetch() {
+        const key = `${root.queryTitle}||${root.queryArtist}||${root.queryDuration}`;
+        if (root._cache[key]) {
+            const next = Object.assign({}, root._cache);
+            delete next[key];
+            root._cache = next;
+            root.saveCache();
+        }
+
+        root.resetState();
+        if (root.enabled)
+            root.ensureFetched();
+    }
+
+    function ensureFetched() {
+        if (!root.enabled)
+            return;
+
+        if (!root.queryTitle || !root.queryArtist) {
+            root.error = "No track info";
+            return;
+        }
+
+        if (root.loadedKey === root.fetchKey)
+            return;
+
+        if (root.loading && root.requestKey === root.fetchKey)
+            return;
+
+        if (fetcher.running && fetcher.requestKey === root.fetchKey)
+            return;
+
+        root.requestId += 1;
+        root.attempt = 0;
+        root.requestKey = root.fetchKey;
+        root.loading = true;
+        root.error = "";
+        root.instrumental = false;
+        root.fetchedLines = [];
+
+        if (fetcher.running) {
+            root.startPending = true;
+            return;
+        }
+
+        root.fetchAttempt(root.requestId);
+    }
+
+    function fetchAttempt(requestId) {
+        if (requestId !== root.requestId)
+            return;
+        if (root.requestKey !== root.fetchKey)
+            return;
+
+        const url = root.buildLyricsSearchUrl(root.attempt);
+        if (!url) {
+            root.loading = false;
+            root.error = "No synced lyrics";
+            return;
+        }
+
+        fetcher.requestId = requestId;
+        fetcher.requestKey = root.requestKey;
+        fetcher.attempt = root.attempt;
+        fetcher.command = ["curl", "-sL", url];
+        fetcher.running = true;
+    }
+
+    Timer {
+        id: fetchDebounce
+        interval: 250
+        repeat: false
+        onTriggered: root.ensureFetched()
+    }
+
+    onFetchKeyChanged: {
+        root.resetState();
+
+        if (lyricFileView.isInitialLoad) {
+            fetchDebounce.restart();
+            return;
+        }
+        
+        const cached = getCached(root.queryTitle, root.queryArtist, root.queryDuration);
+        if (cached) {
+            root.instrumental = cached.instrumental || false;
+            root.fetchedLines = cached.lines || [];
+            root.plainLyricsText = cached.plainLyrics || "";
+            root.loading = false;
+            root.error = "";
+            root.loadedKey = root.fetchKey;
+        } else if (root.enabled) {
+            fetchDebounce.restart();
+        }
+    }
+
+
+    function getCached(track, artist, duration) {
+        const key = `${track}||${artist}||${duration}`;
+        return root._cache[key] || null;
+    }
+
+    function setCache(track, artist, duration, data) {
+        const key = `${track}||${artist}||${duration}`;
+        root._cache[key] = data;
+        saveCache();
+    }
+
+    function applyPlainLyrics(plain) {
+        if (plain && plain.trim().length > 0) {
+            root.plainLyricsText = plain.trim();
+        }
+    }
+
+    function saveCache() {
+        // console.log("[Lyrics] Sacing, total songs:", Object.keys(root._cache).length);
+        lyricFileView.setText(JSON.stringify(root._cache, null, 2)); 
+    }
+
+    FileView {
+        id: lyricFileView
+        path: Directories.lyricsPath
+        property bool isInitialLoad: true
+        
+        onLoaded: {
+            if (isInitialLoad) {
+                try {
+                    const loaded = JSON.parse(lyricFileView.text() || "{}");
+                    root._cache = loaded;
+                    // console.log("[Cache] Loaded, total songs:", Object.keys(loaded).length);
+                } catch (e) {
+                    root._cache = {};
+                }
+                isInitialLoad = false;
+                
+                // Cache yüklendikten sonra tekrar kontrol et
+                if (root.fetchKey) {
+                    const cached = getCached(root.queryTitle, root.queryArtist, root.queryDuration);
+                    if (cached) {
+                        root.instrumental = cached.instrumental || false;
+                        root.fetchedLines = cached.lines || [];
+                        root.plainLyricsText = cached.plainLyrics || "";
+                        root.loading = false;
+                        root.error = "";
+                        root.loadedKey = root.fetchKey;
+                    }
+                }
+            }
+        }
+    }
+
+
+    onSelectedIdChanged: {
+        root.resetState();
+        if (root.enabled)
+            fetchDebounce.restart();
+    }
+
+    onEnabledChanged: {
+        if (root.enabled)
+            fetchDebounce.restart();
+        else {
+            root.loading = false;
+            root.startPending = false;
+        }
+    }
+
+    Process {
+        id: fetcher
+        property int requestId: 0
+        property string requestKey: ""
+        property int attempt: 0
+        running: false
+        command: ["curl", "-sL", "https://lrclib.net/api/search?q="]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const requestId = fetcher.requestId;
+                const requestKey = fetcher.requestKey;
+
+                if (requestKey !== root.fetchKey) {
+                    if (root.startPending) {
+                        root.startPending = false;
+                        if (root.enabled)
+                            root.fetchAttempt(root.requestId);
+                    }
+                    return;
+                }
+
+                if (text.length === 0) {
+                    root.attempt += 1;
+                    root.fetchAttempt(requestId);
+                    return;
+                }
+
+                try {
+                    const parsed = JSON.parse(text);
+                    let results = [];
+                    
+                    if (Array.isArray(parsed)) {
+                        results = parsed;
+                    } else if (parsed && typeof parsed === "object" && !parsed.code && !parsed.error) {
+                        results = [parsed];
+                    }
+
+                    let filtered = results;
+
+                    if (fetcher.attempt === 3 && root.queryArtist) {
+                        const artistLower = root.queryArtist.toLowerCase();
+                        filtered = results.filter(item => (item?.artistName ?? "").toLowerCase() === artistLower);
+                    }
+
+                    const best = root.pickBestLyricsResult(filtered);
+                    if (!best) {
+                        root.attempt += 1;
+                        root.fetchAttempt(requestId);
+                        return;
+                    }
+
+                    root.instrumental = best.instrumental ?? false;
+                    root.fetchedLines = root.parseSyncedLyrics(best.syncedLyrics ?? "");
+
+                    if (root.lines.length === 0 && !root.instrumental) {
+                        root.attempt += 1;
+                        root.fetchAttempt(requestId);
+                        return;
+                    }
+
+                    root.loading = false;
+                    root.error = root.lines.length === 0 && root.instrumental ? "Instrumental" : "";
+                    root.loadedKey = requestKey;
+
+                    root.instrumental = best.instrumental ?? false;
+                    root.fetchedLines = root.parseSyncedLyrics(best.syncedLyrics ?? "");
+
+                    if (root.lines.length === 0 && !root.instrumental) {
+                        root.attempt += 1;
+                        root.fetchAttempt(requestId);
+                        return;
+                    }
+
+                    root.setCache(root.queryTitle, root.queryArtist, root.queryDuration, {
+                        instrumental: root.instrumental,
+                        lines: root.lines,
+                        plainLyrics: (best.plainLyrics ?? "").trim()
+                    });
+                    root.applyPlainLyrics(best.plainLyrics ?? "");
+
+                    root.loading = false;
+                    root.error = root.lines.length === 0 && root.instrumental ? "Instrumental" : "";
+                    root.loadedKey = requestKey;
+                } catch (e) {
+                    root.attempt += 1;
+                    root.fetchAttempt(requestId);
+                }
+            }
+        }
+    }
+}

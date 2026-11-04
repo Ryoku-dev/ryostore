@@ -1,0 +1,6 @@
+module qs.modules.settings.configs.island
+IslandActivityTile 1.0 IslandActivityTile.qml
+IslandModeCard 1.0 IslandModeCard.qml
+IslandPreviewStage 1.0 IslandPreviewStage.qml
+IslandSegmentedToggle 1.0 IslandSegmentedToggle.qml
+IslandShapePicker 1.0 IslandShapePicker.qml

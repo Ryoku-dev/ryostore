@@ -1,3 +1,0 @@
-module qs.modules.common.plugins.designsystem.services
-singleton CavaService 1.0 CavaService.qml
-CavaRef 1.0 CavaRef.qml

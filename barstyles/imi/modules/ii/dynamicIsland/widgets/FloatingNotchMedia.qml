@@ -1,0 +1,1684 @@
+// Contract animation v3: removed Behavior conflicts (forced reload 2026-07-13-18:30)
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Effects
+import Quickshell
+import Quickshell.Widgets
+import Quickshell.Io
+import Quickshell.Services.Mpris
+import "../../../.."
+import "../../../common"
+import "../../../common/widgets"
+import "../../../common/functions"
+import "../../../common/models"
+import "../../../../services"
+import Qt5Compat.GraphicalEffects
+
+Item {
+    id: root
+    anchors.fill: parent
+    transformOrigin: Item.Center
+
+    readonly property MprisPlayer player: MprisController.activePlayer
+    readonly property bool playing: player ? player.playbackState === MprisPlaybackState.Playing : false
+    readonly property string artUrl: MprisController.artUrl
+    readonly property string title: (MprisController.activeTrack && MprisController.activeTrack.title) ? MprisController.activeTrack.title : "No title"
+    readonly property string artist: (MprisController.activeTrack && MprisController.activeTrack.artist) ? MprisController.activeTrack.artist : "Unknown Artist"
+    readonly property string identity: player ? (player.identity ?? "") : ""
+    readonly property var activeTrackRef: MprisController.activeTrack
+
+    property bool isExpanded: false
+    /**
+     * The seekbar's position, read only while the expanded layout can be seen.
+     *
+     * Collapsed, that layout stays visible at opacity 0 (the expand and contract
+     * animations drive it), so a seekbar bound to the track kept following every
+     * `positionChanged()` any media widget in the shell sent - a full-screen frame of
+     * the island each time, for a bar nobody could see. Held, it waits where it was;
+     * expanding reads the live value before the layout fades in, and the seekbar draws
+     * that jump without animating.
+     */
+    readonly property bool seekLive: root.isExpanded || expandedLayout.opacity > 0
+    property real heldTrackProgress: 0
+    readonly property real trackProgress: root.seekLive ? MprisController.trackProgressOf(root.player) : root.heldTrackProgress
+    onTrackProgressChanged: if (root.seekLive) root.heldTrackProgress = root.trackProgress
+    /** The album art, grown from the bubble's cover (see AuxiliaryBubble's hero). */
+    readonly property var heroItems: (root.inBubbleCard || root.isExpanded) ? [expandedBg] : []
+    /**
+     * Set by a bubble hosting this as its card. The bubble grows the card and fades it in
+     * itself, so the face opens already expanded: its own 500 ms swap from the contracted
+     * layout ran beside the bubble's, a second album art fading out next to the one
+     * growing from the cover.
+     */
+    property bool inBubbleCard: false
+    property real expandContractRatio: 1.4
+
+    onInBubbleCardChanged: {
+        if (root.inBubbleCard)
+            root.snapExpanded();
+    }
+
+    function snapExpanded() {
+        if (!root.inBubbleCard)
+            return;
+        expandAnim.stop();
+        contractAnim.stop();
+        contractedLayout.opacity = 0;
+        contractedLayout.scale = 0.95;
+        expandedBg.opacity = 1;
+        expandedBg.scale = 1;
+        expandedLayout.opacity = 1;
+        expandedLayout.scale = 1;
+        root._contractScale = 1;
+    }
+
+    // Drives the whole-widget scale-down during contract. Independent from the
+    // individual layout scales so the size change is always visible even if
+    // Behavior on scale is dormant on child items.
+    property real _contractScale: 1.0
+    scale: _contractScale
+
+    readonly property Item widgetBg: {
+        var p = root.parent;
+        if (p && p.parent) {
+            return p.parent;
+        }
+        return root;
+    }
+
+    readonly property real notchBottomRadius: {
+        var p = root.parent;
+        while (p) {
+            if (p.notchBackground && p.notchBackground.bottomRadius !== undefined)
+                return p.notchBackground.bottomRadius;
+            p = p.parent;
+        }
+        return Appearance.rounding.windowRounding;
+    }
+
+    readonly property int elementHeight: Math.max(20, Math.min(42, root.height - 10))
+    readonly property int barWidth: Math.max(4, Math.min(8, elementHeight / 5))
+
+    property string displayTitle: ""
+    property string displayArtist: ""
+    property real titleOpacity: 1.0
+    property real titleYOffset: 0.0
+
+    property string activeLyricText: ""
+    property real lyricOpacity: 1.0
+    property real lyricYOffset: 0.0
+
+    property string currentArtUrl: ""
+    property string previousArtUrl: ""
+    property string pendingArtUrl: ""
+    property bool awaitingImageLoad: false
+    property bool artTransitioning: false
+    property int artCacheBuster: 0
+    property bool _initialized: false
+
+    property real artOutgoingBlur: 0
+    property real artOutgoingScale: 1.0
+    property real artIncomingBlur: 0
+    property real artIncomingScale: 1.0
+    property real artVignetteBlur: root.playing ? 50 : 90
+    property real artVignetteInner: 0.2
+    property real artVignetteOuter: 0.85
+
+    readonly property color containerFillColor: root.useDynamicColors ? ColorUtils.mix(Appearance.m3colors.m3primaryContainer,
+        root.artDominantColor, 0.85) : Appearance.m3colors.m3primaryContainer
+    // The fade toward the bottom edge (and the paused dim) goes toward the island's own background:
+    // black in dark mode, white in light mode, where darkening would sink the dark text into it
+    readonly property color artDimColor: Appearance.m3colors.darkmode ? "black" : "white"
+    readonly property color containerContentColor: Appearance.m3colors.m3onPrimaryContainer
+    // The played part of the seek wave. In dark mode it is lifted halfway to the text colour: the
+    // cover's primary alone can be a mid tone (pink on a red cover) that no patch can rescue.
+    readonly property color seekColor: {
+        const primary = root.useDynamicColors ? root.blendedColors.colPrimary : Appearance.colors.colPrimary;
+        return Appearance.m3colors.darkmode ? ColorUtils.mix(Appearance.colors.colOnSurface, primary, 0.5) : primary;
+    }
+    readonly property color lightTrackColor: root.useDynamicColors ? root.blendedColors.colLayer1 : Appearance.colors.colSurfaceContainer
+    readonly property color lightVizColor: root.useDynamicColors ? root.blendedColors.colPrimary : Appearance.colors.colOnSurface
+
+
+    readonly property string localArtFilePath: CoverArt.localPath(root.artUrl)
+
+    readonly property string resolvedArtPath: root.localArtFilePath !== "" ? Qt.resolvedUrl(root.localArtFilePath) : ""
+
+    readonly property bool useDynamicColors: Config.options.media.dynamicAlbumColors && root.localArtFilePath !== ""
+
+    ColorQuantizer {
+        id: colorQuantizer
+        source: root.resolvedArtPath
+        depth: 0
+        rescaleSize: 1
+    }
+
+    property color artDominantColor: ColorUtils.mix(
+        (colorQuantizer?.colors[0] ?? Appearance.colors.colPrimary),
+        Appearance.colors.colPrimaryContainer, 0.8
+    ) || Appearance.m3colors.m3secondaryContainer
+
+    property QtObject blendedColors: AdaptedMaterialScheme {
+        color: root.artDominantColor
+    }
+
+    readonly property string currentArtSource: {
+        if (!root.currentArtUrl || root.currentArtUrl === "")
+            return "";
+        if (root.currentArtUrl.startsWith("file://") || root.currentArtUrl.startsWith("/"))
+            return root.currentArtUrl;
+        return CoverArt.source(root.currentArtUrl) || root.effectiveSource(root.currentArtUrl);
+    }
+
+    readonly property string previousArtSource: {
+        if (!root.previousArtUrl || root.previousArtUrl === "")
+            return "";
+        if (root.previousArtUrl.startsWith("file://") || root.previousArtUrl.startsWith("/"))
+            return root.previousArtUrl;
+        return root.effectiveSource(root.previousArtUrl);
+    }
+
+    function effectiveSource(url) {
+        if (!url || url === "")
+            return "";
+        if (url.startsWith("file://") || url.startsWith("/"))
+            return url;
+        return url + "?v=" + artCacheBuster;
+    }
+
+    function snapToArt(newUrl) {
+        previousArtUrl = "";
+        currentArtUrl = newUrl;
+        pendingArtUrl = "";
+        awaitingImageLoad = false;
+        artTransitioning = false;
+        preloadFallbackTimer.stop();
+        artOutgoingBlur = 0;
+        artOutgoingScale = 1.0;
+        artIncomingBlur = 0;
+        artIncomingScale = 1.0;
+    }
+
+    function requestArtChange(newUrl) {
+        if (newUrl === currentArtUrl && artCacheBuster > 0 && !artTransitioning && !awaitingImageLoad && currentArtUrl !== "") {
+            pendingArtUrl = newUrl;
+            artCacheBuster++;
+            awaitingImageLoad = true;
+            preloadFallbackTimer.restart();
+            return;
+        }
+
+        if (newUrl === "" || currentArtUrl === "") {
+            snapToArt(newUrl);
+            return;
+        }
+
+        if (artTransitioning || awaitingImageLoad) {
+            if (pendingArtUrl !== newUrl)
+                pendingArtUrl = newUrl;
+            return;
+        }
+
+        pendingArtUrl = newUrl;
+        artCacheBuster++;
+        awaitingImageLoad = true;
+        preloadFallbackTimer.restart();
+    }
+
+    function startOutgoingPhase() {
+        if (pendingArtUrl === "")
+            return;
+        awaitingImageLoad = false;
+        preloadFallbackTimer.stop();
+
+        previousArtUrl = currentArtUrl;
+        currentArtUrl = pendingArtUrl;
+        pendingArtUrl = "";
+
+        artOutgoingBlur = 0;
+        artOutgoingScale = 1.0;
+        artOutgoingAnimation.restart();
+    }
+
+    Behavior on artVignetteBlur {
+        NumberAnimation {
+            duration: 500
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    onPlayingChanged: {
+        artVignetteBlur = root.playing ? 50 : 90;
+    }
+
+    function imageLoadFailed() {
+        if (!awaitingImageLoad)
+            return;
+        awaitingImageLoad = false;
+        preloadFallbackTimer.stop();
+        snapToArt(pendingArtUrl);
+    }
+
+    readonly property string displaySongText: {
+        if (LyricsService.hasSyncedLines && LyricsService.statusText !== "") {
+            return LyricsService.statusText;
+        }
+        return root.title;
+    }
+
+    onDisplaySongTextChanged: {
+        if (root.isExpanded) {
+            lyricTransitionAnimation.stop();
+            lyricTransitionAnimation.start();
+        } else {
+            root.activeLyricText = root.displaySongText;
+        }
+    }
+
+    // Cached widget widths to compute a meaningful expand/contract ratio.
+    // expandedBg.width and root.width are both equal when expanded (no useful ratio),
+    // so we track the actual expanded and contracted widths separately across
+    // hover cycles to derive the real size ratio for the contract animation.
+    property real _lastExpandedWidth: 0
+    property real _lastContractedWidth: 0
+    readonly property real _effectiveExpandContractRatio: {
+        if (root._lastExpandedWidth > 0 && root._lastContractedWidth > 0) {
+            return Math.max(1.0, root._lastExpandedWidth / root._lastContractedWidth);
+        }
+        return root.expandContractRatio;
+    }
+
+    // Waits for the container's Behavior on width (500ms) to settle, then samples
+    // root.width and stores it in the appropriate bucket for the ratio computation.
+    Timer {
+        id: widthCaptureTimer
+        interval: 600
+        repeat: false
+        onTriggered: {
+            if (root.width <= 0)
+                return;
+            if (root.isExpanded)
+                root._lastExpandedWidth = root.width;
+            else
+                root._lastContractedWidth = root.width;
+            if (root._lastExpandedWidth > 0 && root._lastContractedWidth > 0) {
+                root.expandContractRatio = Math.max(1.0, root._lastExpandedWidth / root._lastContractedWidth);
+            }
+        }
+    }
+
+    onIsExpandedChanged: {
+        if (root.isExpanded) {
+            LyricsService.initiliazeLyrics();
+            root.activeLyricText = root.displaySongText;
+            contractAnim.stop();
+            if (root.inBubbleCard)
+                root.snapExpanded();
+            else
+                expandAnim.restart();
+        } else {
+            expandAnim.stop();
+            if (!root.inBubbleCard)
+                contractAnim.restart();
+        }
+        // Sample the settled width after the container's 500ms width Behavior
+        widthCaptureTimer.restart();
+    }
+
+    ParallelAnimation {
+        id: expandAnim
+        NumberAnimation { target: contractedLayout; property: "opacity"; to: 0.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+        NumberAnimation { target: contractedLayout; property: "scale"; to: 0.95; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+        NumberAnimation { target: expandedBg; property: "opacity"; to: 1.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+        NumberAnimation { target: expandedBg; property: "scale"; to: 1.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+        NumberAnimation { target: expandedLayout; property: "opacity"; to: 1.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+        NumberAnimation { target: expandedLayout; property: "scale"; to: 1.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+        NumberAnimation { target: root; property: "_contractScale"; to: 1.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+    }
+
+    SequentialAnimation {
+        id: contractAnim
+        // Initial state: contractedLayout invisible, whole widget scaled up to expanded size.
+        // Both layouts stay loaded during the animation; the whole-widget scale on root
+        // gives a visible "scale together" effect independent of child Behavior fallbacks.
+        PropertyAction { target: contractedLayout; property: "scale"; value: root._effectiveExpandContractRatio }
+        PropertyAction { target: contractedLayout; property: "opacity"; value: 0.0 }
+        PropertyAction { target: expandedBg; property: "scale"; value: 1.0 }
+        PropertyAction { target: expandedBg; property: "opacity"; value: 1.0 }
+        PropertyAction { target: expandedLayout; property: "opacity"; value: 1.0 }
+        PropertyAction { target: expandedLayout; property: "scale"; value: 1.0 }
+        PropertyAction { target: root; property: "_contractScale"; value: root._effectiveExpandContractRatio }
+        // 500ms cross-fade + whole-widget scale matching the dynamic island's container animation.
+        // expanded scales down + fades out, contracted scales down + fades in, root shrinks.
+        ParallelAnimation {
+            NumberAnimation { target: expandedBg; property: "opacity"; to: 0.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+            NumberAnimation { target: expandedBg; property: "scale"; to: 1.0 / root._effectiveExpandContractRatio; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+            NumberAnimation { target: expandedLayout; property: "opacity"; to: 0.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+            NumberAnimation { target: expandedLayout; property: "scale"; to: 0.95; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+            NumberAnimation { target: contractedLayout; property: "opacity"; to: 1.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+            NumberAnimation { target: contractedLayout; property: "scale"; to: 1.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+            NumberAnimation { target: root; property: "_contractScale"; to: 1.0; duration: 500; easing.type: Easing.OutBack; easing.overshoot: 0.5 }
+        }
+    }
+
+    SequentialAnimation {
+        id: lyricTransitionAnimation
+        NumberAnimation {
+            target: root
+            property: "lyricOpacity"
+            to: 0.0
+            duration: 120
+            easing.type: Easing.OutQuad
+        }
+        PropertyAction {
+            target: root
+            property: "activeLyricText"
+            value: root.displaySongText
+        }
+        NumberAnimation {
+            target: root
+            property: "lyricYOffset"
+            from: 15
+            to: 0.0
+            duration: 180
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            target: root
+            property: "lyricOpacity"
+            to: 1.0
+            duration: 180
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    SequentialAnimation {
+        id: artOutgoingAnimation
+        onFinished: {
+            root.previousArtUrl = "";
+            root.artIncomingBlur = 30;
+            root.artIncomingScale = 0.95;
+            root.artTransitioning = true;
+            artIncomingAnimation.restart();
+        }
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "artOutgoingBlur"
+                to: 30
+                duration: 300
+                easing.type: Easing.OutQuad
+            }
+            NumberAnimation {
+                target: root
+                property: "artOutgoingScale"
+                to: 1.05
+                duration: 300
+                easing.type: Easing.OutQuad
+            }
+        }
+    }
+
+    SequentialAnimation {
+        id: artIncomingAnimation
+        onFinished: {
+            root.artTransitioning = false;
+            if (root.pendingArtUrl !== "" && root.pendingArtUrl !== root.currentArtUrl) {
+                const next = root.pendingArtUrl;
+                root.pendingArtUrl = "";
+                root.requestArtChange(next);
+            }
+        }
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "artIncomingBlur"
+                to: 0
+                duration: 400
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                target: root
+                property: "artIncomingScale"
+                to: 1.0
+                duration: 400
+                easing.type: Easing.OutExpo
+            }
+        }
+    }
+
+    Image {
+        id: artPreload
+        source: root.awaitingImageLoad ? (CoverArt.source(root.pendingArtUrl) || root.effectiveSource(root.pendingArtUrl)) : ""
+        visible: false
+        asynchronous: true
+        width: 16
+        height: 16
+        smooth: false
+        mipmap: false
+        onStatusChanged: {
+            if (status === Image.Ready) {
+                if (root.awaitingImageLoad)
+                    root.startOutgoingPhase();
+            } else if (status === Image.Error) {
+                if (root.awaitingImageLoad)
+                    root.imageLoadFailed();
+            }
+        }
+    }
+
+    Timer {
+        id: preloadFallbackTimer
+        interval: 200
+        repeat: false
+        onTriggered: {
+            if (root.awaitingImageLoad)
+                root.startOutgoingPhase();
+        }
+    }
+
+    onArtUrlChanged: {
+        if (!root._initialized)
+            return;
+        if (root.artUrl === root.currentArtUrl && root.currentArtUrl !== "")
+            return;
+        root.requestArtChange(root.artUrl);
+    }
+
+    onActiveTrackRefChanged: {
+        if (!root._initialized)
+            return;
+        if (root.activeTrackRef === null || root.activeTrackRef === undefined)
+            return;
+        root.requestArtChange(root.artUrl);
+    }
+
+    Connections {
+        target: MprisController
+        function onTrackChanged(reverse) {
+            root.displayTitle = root.title;
+            root.displayArtist = root.artist;
+            root.activeLyricText = root.displaySongText;
+            if (!root._initialized)
+                return;
+            Qt.callLater(function() {
+                root.requestArtChange(root.artUrl);
+            });
+        }
+    }
+
+    // Trigger animation on title OR identity (player source) change
+    onTitleChanged: {
+        if (displayTitle === "") {
+            displayTitle = root.title;
+            displayArtist = root.artist;
+        } else {
+            songSwitchAnimation.stop();
+            songSwitchAnimation.start();
+        }
+    }
+
+    onIdentityChanged: {
+        if (displayTitle !== "") {
+            songSwitchAnimation.stop();
+            songSwitchAnimation.start();
+        }
+    }
+
+    SequentialAnimation {
+        id: songSwitchAnimation
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "titleOpacity"
+                to: 0.0
+                duration: 150
+                easing.type: Easing.OutQuad
+            }
+            NumberAnimation {
+                target: root
+                property: "titleYOffset"
+                to: -24
+                duration: 150
+                easing.type: Easing.OutQuad
+            }
+        }
+        PropertyAction {
+            target: root
+            property: "displayTitle"
+            value: root.title
+        }
+        PropertyAction {
+            target: root
+            property: "displayArtist"
+            value: root.artist
+        }
+        PropertyAction {
+            target: root
+            property: "titleYOffset"
+            value: 24
+        }
+        ParallelAnimation {
+            NumberAnimation {
+                target: root
+                property: "titleOpacity"
+                to: 1.0
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                target: root
+                property: "titleYOffset"
+                to: 0.0
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+        }
+    }
+
+    Timer {
+        running: root.isExpanded && root.playing
+        interval: 1000
+        repeat: true
+        onTriggered: {
+            if (root.player) {
+                root.player.positionChanged();
+            }
+        }
+    }
+
+    function formatTime(seconds) {
+        if (isNaN(seconds) || seconds < 0)
+            return "0:00";
+        let mins = Math.floor(seconds / 60);
+        let secs = Math.floor(seconds % 60);
+        return mins + ":" + (secs < 10 ? "0" : "") + secs;
+    }
+
+    // Real Cava Visualizer integration
+    property var visualizerPoints: CavaService.visualizerPoints
+
+    readonly property real bar0Val: visualizerPoints.length > 5 ? visualizerPoints[3] / 1000.0 : 0
+    readonly property real bar1Val: visualizerPoints.length > 11 ? visualizerPoints[9] / 1000.0 : 0
+    readonly property real bar2Val: visualizerPoints.length > 18 ? visualizerPoints[16] / 1000.0 : 0
+    readonly property real bar3Val: visualizerPoints.length > 28 ? visualizerPoints[25] / 1000.0 : 0
+
+    function getBarHeight(index) {
+        let minH = barWidth;
+        if (!root.playing)
+            return minH; // Reset to perfect circle when paused
+        let val = 0;
+        if (index === 0)
+            val = bar0Val;
+        else if (index === 1)
+            val = bar1Val;
+        else if (index === 2)
+            val = bar2Val;
+        else if (index === 3)
+            val = bar3Val;
+
+        let norm = Math.min(1.0, Math.max(0.0, val * 2.0));
+        let maxH = elementHeight - 10;
+        return minH + norm * (maxH - minH);
+    }
+
+    function getBarAmplitude(index) {
+        if (!root.playing)
+            return 0.0;
+        let val = 0;
+        if (index === 0)
+            val = bar0Val;
+        else if (index === 1)
+            val = bar1Val;
+        else if (index === 2)
+            val = bar2Val;
+        else if (index === 3)
+            val = bar3Val;
+        return Math.min(1.0, Math.max(0.0, val * 2.0));
+    }
+
+    Component.onCompleted: {
+        LyricsService.initiliazeLyrics();
+        root.displayTitle = root.title;
+        root.displayArtist = root.artist;
+        root.activeLyricText = root.displaySongText;
+        if (root.artUrl !== "" && root.currentArtUrl === "")
+            root.snapToArt(root.artUrl);
+        if (root.inBubbleCard)
+            root.snapExpanded();
+        root._initialized = true;
+    }
+
+    // ==========================================
+    // 1. CONTRACTED MODE (album-art full background)
+    // ==========================================
+    Item {
+        id: contractedLayout
+        anchors.fill: parent
+        visible: true
+        opacity: 1.0
+        scale: 1.0
+
+        // No Behavior on opacity/scale: contractAnim/expandAnim are the sole drivers.
+        // Previous Behaviors had identical 500ms OutBack overshoot 0.5 easing that
+        // conflicted with contractAnim, causing the expanded art to "snap" out and
+        // the contracted scale to bounce back to its binding value (1.0).
+
+        // OpacityMask to clip album art to rounded corners
+        Rectangle {
+            id: contractedMaskRect
+            anchors.fill: parent
+            radius: Math.max(0, root.notchBottomRadius - 4)
+            visible: false
+        }
+
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: contractedMaskRect
+        }
+
+        Item {
+            anchors.fill: parent
+
+            Item {
+                anchors.fill: parent
+                visible: root.previousArtUrl !== ""
+
+                Image {
+                    anchors.fill: parent
+                    source: root.previousArtSource
+                    fillMode: Image.PreserveAspectCrop
+                    smooth: true
+                    asynchronous: true
+                    layer.enabled: root.artVignetteBlur > 0
+                    layer.effect: MultiEffect {
+                        blurEnabled: root.artVignetteBlur > 0
+                        blurMax: 128
+                        blur: root.artVignetteBlur / 128
+                    }
+                }
+
+                Item {
+                    id: contractedArtHost1
+                    anchors.fill: parent
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: Rectangle {
+                            width: contractedArtHost1.width
+                            height: contractedArtHost1.height
+                            color: "transparent"
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0.0; color: "transparent" }
+                                GradientStop { position: 0.08; color: "transparent" }
+                                GradientStop { position: 0.2; color: Qt.rgba(1, 1, 1, 0.3) }
+                                GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.7) }
+                                GradientStop { position: 0.45; color: "white" }
+                                GradientStop { position: 0.55; color: "white" }
+                                GradientStop { position: 0.65; color: Qt.rgba(1, 1, 1, 0.7) }
+                                GradientStop { position: 0.8; color: Qt.rgba(1, 1, 1, 0.3) }
+                                GradientStop { position: 0.92; color: "transparent" }
+                                GradientStop { position: 1.0; color: "transparent" }
+                            }
+                        }
+                    }
+
+                    Item {
+                        anchors.fill: parent
+                        layer.enabled: true
+                        layer.effect: OpacityMask {
+                            maskSource: Rectangle {
+                                width: contractedArtHost1.width
+                                height: contractedArtHost1.height
+                                color: "transparent"
+                                gradient: Gradient {
+                                    orientation: Gradient.Vertical
+                                    GradientStop { position: 0.0; color: "transparent" }
+                                    GradientStop { position: 0.15; color: Qt.rgba(1, 1, 1, 0.3) }
+                                    GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.7) }
+                                    GradientStop { position: 0.5; color: "white" }
+                                    GradientStop { position: 0.65; color: Qt.rgba(1, 1, 1, 0.7) }
+                                    GradientStop { position: 0.85; color: Qt.rgba(1, 1, 1, 0.3) }
+                                    GradientStop { position: 1.0; color: "transparent" }
+                                }
+                            }
+                        }
+
+                        Image {
+                            id: contractedArtOutgoing
+                            anchors.centerIn: parent
+                            width: parent.width * root.artOutgoingScale
+                            height: parent.height * root.artOutgoingScale
+                            source: root.previousArtSource
+                            fillMode: Image.PreserveAspectCrop
+                            smooth: true
+                            asynchronous: true
+                            layer.enabled: root.artOutgoingBlur > 0
+                            layer.effect: MultiEffect {
+                                blurEnabled: root.artOutgoingBlur > 0
+                                blurMax: 128
+                                blur: root.artOutgoingBlur / 128
+                            }
+                        }
+                    }
+                }
+            }
+
+            Item {
+                anchors.fill: parent
+                visible: root.currentArtUrl !== ""
+
+                Image {
+                    anchors.fill: parent
+                    source: root.currentArtSource
+                    fillMode: Image.PreserveAspectCrop
+                    smooth: true
+                    asynchronous: true
+                    layer.enabled: root.artVignetteBlur > 0
+                    layer.effect: MultiEffect {
+                        blurEnabled: root.artVignetteBlur > 0
+                        blurMax: 128
+                        blur: root.artVignetteBlur / 128
+                    }
+                }
+
+                Item {
+                    id: contractedArtHost2
+                    anchors.fill: parent
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: Rectangle {
+                            width: contractedArtHost2.width
+                            height: contractedArtHost2.height
+                            color: "transparent"
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0.0; color: "transparent" }
+                                GradientStop { position: 0.08; color: "transparent" }
+                                GradientStop { position: 0.2; color: Qt.rgba(1, 1, 1, 0.3) }
+                                GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.7) }
+                                GradientStop { position: 0.45; color: "white" }
+                                GradientStop { position: 0.55; color: "white" }
+                                GradientStop { position: 0.65; color: Qt.rgba(1, 1, 1, 0.7) }
+                                GradientStop { position: 0.8; color: Qt.rgba(1, 1, 1, 0.3) }
+                                GradientStop { position: 0.92; color: "transparent" }
+                                GradientStop { position: 1.0; color: "transparent" }
+                            }
+                        }
+                    }
+
+                    Item {
+                        anchors.fill: parent
+                        layer.enabled: true
+                        layer.effect: OpacityMask {
+                            maskSource: Rectangle {
+                                width: contractedArtHost2.width
+                                height: contractedArtHost2.height
+                                color: "transparent"
+                                gradient: Gradient {
+                                    orientation: Gradient.Vertical
+                                    GradientStop { position: 0.0; color: "transparent" }
+                                    GradientStop { position: 0.15; color: Qt.rgba(1, 1, 1, 0.3) }
+                                    GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.7) }
+                                    GradientStop { position: 0.5; color: "white" }
+                                    GradientStop { position: 0.65; color: Qt.rgba(1, 1, 1, 0.7) }
+                                    GradientStop { position: 0.85; color: Qt.rgba(1, 1, 1, 0.3) }
+                                    GradientStop { position: 1.0; color: "transparent" }
+                                }
+                            }
+                        }
+
+                        Image {
+                            id: contractedArtIncoming
+                            anchors.centerIn: parent
+                            width: parent.width * root.artIncomingScale
+                            height: parent.height * root.artIncomingScale
+                            source: root.currentArtSource
+                            fillMode: Image.PreserveAspectCrop
+                            smooth: true
+                            asynchronous: true
+                            layer.enabled: root.artIncomingBlur > 0
+                            layer.effect: MultiEffect {
+                                blurEnabled: root.artIncomingBlur > 0
+                                blurMax: 128
+                                blur: root.artIncomingBlur / 128
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Fallback gradient when no art
+        Rectangle {
+            anchors.fill: parent
+            visible: root.currentArtUrl === ""
+            gradient: Gradient {
+                orientation: Gradient.Horizontal
+                GradientStop {
+                    position: 0.0
+                    color: Appearance.colors.colSurfaceContainerHighest
+                }
+                GradientStop {
+                    position: 1.0
+                    color: Appearance.colors.colSurfaceContainer
+                }
+            }
+        }
+
+        // Music note icon centered when no art
+        MaterialSymbol {
+            anchors.centerIn: parent
+            visible: root.currentArtUrl === ""
+            text: "music_note"
+            iconSize: Appearance.font.pixelSize.large
+            color: Appearance.colors.colOnSurface
+            opacity: 0.5
+        }
+
+        // ── Radial gradient dimming overlay ──────────────────────────────────
+        Item {
+            anchors.fill: parent
+            opacity: root.playing ? 0.7 : 0.85
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 400
+                    easing.type: Easing.OutQuad
+                }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: ColorUtils.applyAlpha(root.artDimColor, 0.0) }
+                    GradientStop { position: 0.5; color: ColorUtils.applyAlpha(root.artDimColor, 0.05) }
+                    GradientStop { position: 0.8; color: ColorUtils.applyAlpha(root.artDimColor, 0.25) }
+                    GradientStop { position: 1.0; color: ColorUtils.applyAlpha(root.artDimColor, 0.45) }
+                }
+            }
+
+            // Extra dim layer when paused
+            Rectangle {
+                anchors.fill: parent
+                color: ColorUtils.applyAlpha(root.artDimColor, 0.3)
+                opacity: root.playing ? 0.0 : 0.5
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 500
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            }
+        }
+
+    }
+
+    // ── Contracted content row (text + visualizer) ───────────────────────────
+    // Kept OUTSIDE contractedLayout's masked layer so the 30 Hz visualizer no
+    // longer forces the whole album-art FBO + OpacityMask to re-render on every
+    // Cava sample (the steady-state cost the 2026-09-10 pass traced to the media
+    // visualizer). Mirrors contractedLayout's opacity/scale/visibility so it
+    // still fades and scales with the expand/contract animation; at rest
+    // (opacity 1, scale 1) the split renders identically to the old nesting.
+    Item {
+        anchors.fill: parent
+        visible: contractedLayout.visible
+        opacity: contractedLayout.opacity
+        scale: contractedLayout.scale
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            spacing: 8
+
+            // Left: metadata always visible
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                spacing: 1
+
+                StyledText {
+                    id: contractedTitleText
+
+                    Layout.fillWidth: true
+                    font.pixelSize: Appearance.font.pixelSize.smaller
+                    font.weight: Font.Black
+                    font.styleName: "Rounded"
+                    font.hintingPreference: Font.PreferNoHinting
+                    color: Appearance.colors.colOnSurface
+                    text: root.displayTitle
+                    maximumLineCount: 1
+                    elide: Text.ElideRight
+                    opacity: root.titleOpacity
+                    transform: Translate {
+                        y: root.titleYOffset
+                    }
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                StyledText {
+                    id: contractedArtistText
+
+                    Layout.fillWidth: true
+                    font.pixelSize: Appearance.font.pixelSize.smallest
+                    color: Appearance.colors.colOnSurfaceVariant
+                    text: root.displayArtist
+                    maximumLineCount: 1
+                    elide: Text.ElideRight
+                    opacity: root.titleOpacity
+                    transform: Translate {
+                        y: root.titleYOffset
+                    }
+                }
+            }
+
+            // Right: visualizer bars
+            Item {
+                id: contractedViz
+                Layout.alignment: Qt.AlignVCenter
+                implicitWidth: root.barWidth * 4 + 2 * 3
+                implicitHeight: root.elementHeight
+
+                Row {
+                    anchors.centerIn: parent
+                    height: parent.height
+                    spacing: 2
+
+                    Repeater {
+                        model: 4
+                        ModernVisualizerBar {
+                            required property int index
+                            anchors.verticalCenter: parent.verticalCenter
+                            barWidth: root.barWidth
+                            maxHeight: root.elementHeight - 10
+                            minHeight: root.barWidth
+                            amplitude: root.getBarAmplitude(index)
+                            bgAmplitude: root.getBarAmplitude((index + 1) % 4)
+                            color: root.lightVizColor
+                            fgColor: root.useDynamicColors ? root.blendedColors.colTertiary : Appearance.colors.colTertiary
+                            glowColor: root.useDynamicColors ? root.blendedColors.colOnPrimary : "#FFFFFF"
+                            playing: root.playing
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ==========================================
+    // 2. EXPANDED MODE (Premium Spotify-like layout)
+    // ==========================================
+
+    // Background Album Art Overlay
+    Item {
+        id: expandedBg
+
+        /** Handed over under the card's text, not over it (see AuxiliaryBubble's hero). */
+        readonly property bool heroBackdrop: true
+        readonly property bool isMultiWidget: {
+            var p = root.parent;
+            while (p && !p.hasOwnProperty("activeWidgetsList")) {
+                p = p.parent;
+            }
+            return (p && p.activeWidgetsList.length > 1);
+        }
+
+        x: root.inBubbleCard ? 0 : -(root.widgetBg.width - root.width) / 2
+        y: root.inBubbleCard ? 0 : -(root.widgetBg.height - root.height) / 2
+        width: root.inBubbleCard ? root.width : root.widgetBg.width
+        height: root.inBubbleCard ? root.height : root.widgetBg.height
+        visible: true
+        opacity: 0.0
+        scale: 0.95
+
+        // No Behavior on opacity/scale: contractAnim/expandAnim are the sole drivers.
+        // See note on contractedLayout above for rationale.
+
+        // Mask shape defining the rounded sections
+        Rectangle {
+            id: maskRect
+            anchors.fill: parent
+            radius: Math.max(0, root.notchBottomRadius - 4)
+            visible: false
+        }
+
+        // Not in a bubble's card: the bubble masks it to the card's own outline, and a
+        // layer's effect is drawn beside its item, so it stayed on screen over the art the
+        // bubble hands over while the item itself was hidden for it.
+        layer.enabled: !root.inBubbleCard
+        layer.effect: OpacityMask {
+            maskSource: maskRect
+        }
+
+        Item {
+            anchors.fill: parent
+
+            Item {
+                anchors.fill: parent
+                visible: root.previousArtUrl !== ""
+
+                Image {
+                    anchors.fill: parent
+                    source: root.previousArtSource
+                    fillMode: Image.PreserveAspectCrop
+                    opacity: 0.85
+                    smooth: true
+                    asynchronous: true
+                    layer.enabled: root.artVignetteBlur > 0
+                    layer.effect: MultiEffect {
+                        blurEnabled: root.artVignetteBlur > 0
+                        blurMax: 128
+                        blur: root.artVignetteBlur / 128
+                    }
+                }
+
+                Item {
+                    id: expandedArtHost1
+                    anchors.fill: parent
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: Rectangle {
+                            width: expandedArtHost1.width
+                            height: expandedArtHost1.height
+                            color: "transparent"
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0.0; color: "transparent" }
+                                GradientStop { position: 0.08; color: "transparent" }
+                                GradientStop { position: 0.2; color: Qt.rgba(1, 1, 1, 0.3) }
+                                GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.7) }
+                                GradientStop { position: 0.45; color: "white" }
+                                GradientStop { position: 0.55; color: "white" }
+                                GradientStop { position: 0.65; color: Qt.rgba(1, 1, 1, 0.7) }
+                                GradientStop { position: 0.8; color: Qt.rgba(1, 1, 1, 0.3) }
+                                GradientStop { position: 0.92; color: "transparent" }
+                                GradientStop { position: 1.0; color: "transparent" }
+                            }
+                        }
+                    }
+
+                    Item {
+                        anchors.fill: parent
+                        layer.enabled: true
+                        layer.effect: OpacityMask {
+                            maskSource: Rectangle {
+                                width: expandedArtHost1.width
+                                height: expandedArtHost1.height
+                                color: "transparent"
+                                gradient: Gradient {
+                                    orientation: Gradient.Vertical
+                                    GradientStop { position: 0.0; color: "transparent" }
+                                    GradientStop { position: 0.15; color: Qt.rgba(1, 1, 1, 0.3) }
+                                    GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.7) }
+                                    GradientStop { position: 0.5; color: "white" }
+                                    GradientStop { position: 0.65; color: Qt.rgba(1, 1, 1, 0.7) }
+                                    GradientStop { position: 0.85; color: Qt.rgba(1, 1, 1, 0.3) }
+                                    GradientStop { position: 1.0; color: "transparent" }
+                                }
+                            }
+                        }
+
+                        Image {
+                            id: expandedArtOutgoing
+                            anchors.centerIn: parent
+                            width: parent.width * root.artOutgoingScale
+                            height: parent.height * root.artOutgoingScale
+                            source: root.previousArtSource
+                            fillMode: Image.PreserveAspectCrop
+                            opacity: 0.85
+                            smooth: true
+                            asynchronous: true
+                            layer.enabled: root.artOutgoingBlur > 0
+                            layer.effect: MultiEffect {
+                                blurEnabled: root.artOutgoingBlur > 0
+                                blurMax: 128
+                                blur: root.artOutgoingBlur / 128
+                            }
+                        }
+                    }
+                }
+            }
+
+            Item {
+                anchors.fill: parent
+                visible: root.currentArtUrl !== ""
+
+                Image {
+                    anchors.fill: parent
+                    source: root.currentArtSource
+                    fillMode: Image.PreserveAspectCrop
+                    opacity: 0.85
+                    smooth: true
+                    asynchronous: true
+                    layer.enabled: root.artVignetteBlur > 0
+                    layer.effect: MultiEffect {
+                        blurEnabled: root.artVignetteBlur > 0
+                        blurMax: 128
+                        blur: root.artVignetteBlur / 128
+                    }
+                }
+
+                Item {
+                    id: expandedArtHost2
+                    anchors.fill: parent
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: Rectangle {
+                            width: expandedArtHost2.width
+                            height: expandedArtHost2.height
+                            color: "transparent"
+                            gradient: Gradient {
+                                orientation: Gradient.Horizontal
+                                GradientStop { position: 0.0; color: "transparent" }
+                                GradientStop { position: 0.08; color: "transparent" }
+                                GradientStop { position: 0.2; color: Qt.rgba(1, 1, 1, 0.3) }
+                                GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.7) }
+                                GradientStop { position: 0.45; color: "white" }
+                                GradientStop { position: 0.55; color: "white" }
+                                GradientStop { position: 0.65; color: Qt.rgba(1, 1, 1, 0.7) }
+                                GradientStop { position: 0.8; color: Qt.rgba(1, 1, 1, 0.3) }
+                                GradientStop { position: 0.92; color: "transparent" }
+                                GradientStop { position: 1.0; color: "transparent" }
+                            }
+                        }
+                    }
+
+                    Item {
+                        anchors.fill: parent
+                        layer.enabled: true
+                        layer.effect: OpacityMask {
+                            maskSource: Rectangle {
+                                width: expandedArtHost2.width
+                                height: expandedArtHost2.height
+                                color: "transparent"
+                                gradient: Gradient {
+                                    orientation: Gradient.Vertical
+                                    GradientStop { position: 0.0; color: "transparent" }
+                                    GradientStop { position: 0.15; color: Qt.rgba(1, 1, 1, 0.3) }
+                                    GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.7) }
+                                    GradientStop { position: 0.5; color: "white" }
+                                    GradientStop { position: 0.65; color: Qt.rgba(1, 1, 1, 0.7) }
+                                    GradientStop { position: 0.85; color: Qt.rgba(1, 1, 1, 0.3) }
+                                    GradientStop { position: 1.0; color: "transparent" }
+                                }
+                            }
+                        }
+
+                        Image {
+                            id: expandedArtIncoming
+                            anchors.centerIn: parent
+                            width: parent.width * root.artIncomingScale
+                            height: parent.height * root.artIncomingScale
+                            source: root.currentArtSource
+                            fillMode: Image.PreserveAspectCrop
+                            opacity: 0.85
+                            smooth: true
+                            asynchronous: true
+                            layer.enabled: root.artIncomingBlur > 0
+                            layer.effect: MultiEffect {
+                                blurEnabled: root.artIncomingBlur > 0
+                                blurMax: 128
+                                blur: root.artIncomingBlur / 128
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Radial gradient dimming overlay
+        Item {
+            anchors.fill: parent
+            opacity: root.playing ? 0.55 : 0.75
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 400
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: ColorUtils.applyAlpha(root.artDimColor, 0.0) }
+                    GradientStop { position: 0.5; color: ColorUtils.applyAlpha(root.artDimColor, 0.05) }
+                    GradientStop { position: 0.8; color: ColorUtils.applyAlpha(root.artDimColor, 0.25) }
+                    GradientStop { position: 1.0; color: ColorUtils.applyAlpha(root.artDimColor, 0.45) }
+                }
+            }
+
+            // Extra dim layer when paused
+            Rectangle {
+                anchors.fill: parent
+                color: ColorUtils.applyAlpha(root.artDimColor, 0.3)
+                opacity: root.playing ? 0.0 : 0.5
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 500
+                        easing.type: Easing.OutCubic
+                    }
+                }
+            }
+        }
+    }
+
+    ColumnLayout {
+        id: expandedLayout
+        anchors.fill: parent
+        anchors.leftMargin: {
+            var p = root.parent;
+            while (p && !p.hasOwnProperty("activeWidgetsList")) {
+                p = p.parent;
+            }
+            return (p && p.activeWidgetsList.length > 1) ? 8 : 12;
+        }
+        anchors.rightMargin: anchors.leftMargin
+        anchors.topMargin: anchors.leftMargin
+        anchors.bottomMargin: {
+            var p = root.parent;
+            while (p && !p.hasOwnProperty("activeWidgetsList")) {
+                p = p.parent;
+            }
+            return (p && p.activeWidgetsList.length > 1) ? 4 : 8;
+        }
+        spacing: 6
+        visible: true
+        opacity: 0.0
+        scale: 0.95
+
+        // No Behavior on opacity/scale: contractAnim/expandAnim are the sole drivers.
+        // See note on contractedLayout above for rationale.
+
+        // Top Row: Brand Icon (left) + Audio Output Device (right)
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 24
+
+            // App program source icon
+            MaterialShape {
+                id: appIconShape
+                implicitWidth: 24
+                implicitHeight: 24
+                shapeString: "Cookie12Sided"
+                color: "transparent"
+                Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+
+                Loader {
+                    id: appIconLoader
+                    anchors.fill: parent
+                    active: root.player && root.player.desktopEntry !== ""
+                    sourceComponent: IconImage {
+                        implicitSize: Appearance.font.pixelSize.huge
+                        // desktopEntry is the entry id (com.msob7y.namida), not an icon name
+                        source: Quickshell.iconPath(DesktopEntries.byId(root.player?.desktopEntry ?? "")?.icon
+                            || (root.player?.desktopEntry ?? ""), "audio-x-generic")
+                    }
+                }
+
+                Loader {
+                    anchors.fill: parent
+                    active: !appIconLoader.active
+                    sourceComponent: MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: "music_note"
+                        iconSize: Appearance.font.pixelSize.smallest
+                        color: Appearance.colors.colOnSurface
+                    }
+                }
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+
+            // Audio output device pill (headphones/speaker)
+            RippleButton {
+                id: audioPill
+                implicitHeight: 24
+                leftPadding: 8
+                rightPadding: 8
+                Layout.alignment: Qt.AlignTop
+                colBackground: root.containerFillColor
+                colBackgroundHover: ColorUtils.mix(root.containerFillColor, root.containerContentColor, 0.9)
+                colBackgroundActive: ColorUtils.mix(root.containerFillColor, root.containerContentColor, 0.8)
+                colRipple: ColorUtils.applyAlpha(root.containerContentColor, 0.2)
+
+                buttonRadius: Appearance.rounding.full
+
+                readonly property string activeAudioDeviceName: Audio.sink ? (Audio.sink.description || "") : ""
+                readonly property string audioDeviceIcon: {
+                    let desc = activeAudioDeviceName.toLowerCase();
+                    if (desc.includes("headphone") || desc.includes("headset") || desc.includes("wired")) {
+                        return "headphones";
+                    }
+                    return "volume_up";
+                }
+
+                onClicked: GlobalStates.openAudioOutputSettings()
+
+                contentItem: RowLayout {
+                    id: audioPillLayout
+                    spacing: 4
+
+                    MaterialSymbol {
+                        text: audioPill.audioDeviceIcon
+                        iconSize: Appearance.font.pixelSize.smallest
+                        color: root.containerContentColor
+                    }
+
+                    StyledText {
+                        text: audioPill.activeAudioDeviceName !== "" ? audioPill.activeAudioDeviceName : Translation.tr("Wired headphones")
+                        font.pixelSize: Appearance.font.pixelSize.smallest
+                        font.bold: true
+                        color: root.containerContentColor
+                        Layout.maximumWidth: 100
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+        }
+
+        // Middle Row: Metadata/Lyrics (left) + Large Play/Pause (right)
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 16
+
+            // Left Side: Metadata column (Song title/Lyrics on top, artist below)
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                spacing: 2
+
+                Item {
+                    id: expandedTitleArea
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+
+                    Column {
+                        id: expandedLyricsContainer
+                        width: parent.width
+                        spacing: 0
+                        y: expandedLyricsContainer.baseY - expandedLyricsContainer.rowHeight - expandedLyricsContainer.scrollOffset
+                        visible: LyricsService.hasSyncedLines
+
+                        readonly property int rowHeight: Math.floor(parent.height / 2.5)
+                        readonly property real baseY: (parent.height - rowHeight) / 2
+                        readonly property int targetCurrentIndex: LyricsService.hasSyncedLines ? LyricsService.currentIndex : -1
+                        property int lastIndex: -1
+                        property bool isMovingForward: true
+                        property real scrollOffset: 0
+                        readonly property real animProgress: rowHeight > 0 ? Math.abs(scrollOffset) / rowHeight : 0
+
+                        onTargetCurrentIndexChanged: {
+                            if (targetCurrentIndex !== lastIndex && LyricsService.hasSyncedLines) {
+                                isMovingForward = targetCurrentIndex > lastIndex;
+                                lastIndex = targetCurrentIndex;
+                                expandedScrollAnim.stop();
+                                scrollOffset = isMovingForward ? -rowHeight : rowHeight;
+                                expandedScrollAnim.start();
+                            }
+                        }
+
+                        NumberAnimation {
+                            id: expandedScrollAnim
+                            target: expandedLyricsContainer
+                            property: "scrollOffset"
+                            to: 0
+                            duration: 400
+                            easing.type: Easing.OutQuart
+                        }
+
+                        Repeater {
+                            model: 3
+
+                            Item {
+                                required property int index
+                                property int lineOffset: index - 1
+                                property int actualIndex: expandedLyricsContainer.targetCurrentIndex + lineOffset
+                                property bool isValidLine: LyricsService.hasSyncedLines && actualIndex >= 0 && actualIndex < LyricsService.syncedLines.length
+
+                                width: parent.width
+                                height: expandedLyricsContainer.rowHeight
+
+                                property int oldLineOffset: expandedLyricsContainer.isMovingForward ? lineOffset + 1 : lineOffset - 1
+
+                                    function getOpacityForOffset(offset) {
+                                        let dist = Math.abs(offset);
+                                        if (dist === 0) return 1.0;
+                                        if (dist === 1) return 0.35;
+                                        return 0.1;
+                                    }
+                                property real targetOpacity: getOpacityForOffset(lineOffset)
+                                property real startOpacity: getOpacityForOffset(oldLineOffset)
+                                opacity: startOpacity + (targetOpacity - startOpacity) * (1.0 - expandedLyricsContainer.animProgress)
+
+                                function getScaleForOffset(offset) {
+                                    return Math.abs(offset) === 0 ? 1.0 : 0.9;
+                                }
+                                property real targetScale: getScaleForOffset(lineOffset)
+                                property real startScale: getScaleForOffset(oldLineOffset)
+                                scale: startScale + (targetScale - startScale) * (1.0 - expandedLyricsContainer.animProgress)
+
+                                transformOrigin: Item.Center
+
+                                StyledText {
+                                    anchors.fill: parent
+                                    font.family: Appearance.font.family.main
+                                    font.pixelSize: Appearance.font.pixelSize.large
+                                    font.weight: Math.abs(lineOffset) === 0 ? Font.Black : Font.Medium
+                                    font.styleName: Math.abs(lineOffset) === 0 ? "Rounded" : "Regular"
+                                    font.hintingPreference: Font.PreferNoHinting
+                                    color: Appearance.colors.colOnSurface
+                                    text: isValidLine ? LyricsService.syncedLines[actualIndex].text : ""
+                                    horizontalAlignment: Text.AlignLeft
+                                    verticalAlignment: Text.AlignVCenter
+                                    elide: Text.ElideRight
+                                    wrapMode: Text.WordWrap
+                                    maximumLineCount: 2
+                                }
+                            }
+                        }
+                    }
+
+                    StyledText {
+                        id: expandedTitleText
+
+                        visible: !LyricsService.hasSyncedLines
+                        anchors.fill: parent
+                        font.family: Appearance.font.family.main
+                        font.pixelSize: Appearance.font.pixelSize.large
+                        font.weight: Font.Black
+                        font.styleName: "Rounded"
+                        color: Appearance.colors.colOnSurface
+                        text: root.displaySongText
+                        maximumLineCount: 2
+                        wrapMode: Text.WordWrap
+                        elide: Text.ElideRight
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                StyledText {
+                    id: expandedArtistText
+
+                    Layout.fillWidth: true
+                    font.family: Appearance.font.family.main
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    color: Appearance.colors.colOnSurfaceVariant
+                    text: root.displayArtist
+                    maximumLineCount: 1
+                    elide: Text.ElideRight
+                    opacity: root.titleOpacity
+                    transform: Translate {
+                        y: root.titleYOffset
+                    }
+                }
+            }
+
+            // Right Side: Large Play/Pause Button
+            RippleButton {
+                id: playBtn
+                implicitWidth: 52
+                implicitHeight: 52
+                buttonRadius: 18
+                colBackground: root.containerFillColor
+                colBackgroundHover: ColorUtils.mix(root.containerFillColor, root.containerContentColor, 0.9)
+                colBackgroundActive: ColorUtils.mix(root.containerFillColor, root.containerContentColor, 0.8)
+                colRipple: ColorUtils.applyAlpha(root.containerContentColor, 0.2)
+
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+
+                onClicked: {
+                    if (root.player) {
+                        if (root.playing)
+                            root.player.pause();
+                        else
+                            root.player.play();
+                    }
+                }
+
+                contentItem: Item {
+                    implicitWidth: 52
+                    implicitHeight: 52
+                    MaterialSymbol {
+                        anchors.centerIn: parent
+                        text: root.playing ? "pause" : "play_arrow"
+                        iconSize: Appearance.font.pixelSize.hugeass
+                        color: root.containerContentColor
+                        fill: 1
+                    }
+                }
+            }
+        }
+
+        // Bottom Row: Prev Button + Progress Bar + Next Button
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 24
+            spacing: 12
+            Layout.alignment: Qt.AlignBottom
+
+            // Previous Button
+            RippleButton {
+                id: prevBtn
+                implicitWidth: 24
+                implicitHeight: 24
+                buttonRadius: 12
+                colBackground: "transparent"
+                colBackgroundHover: "transparent"
+                colRipple: root.useDynamicColors ? root.blendedColors.colPrimaryContainer : Appearance.colors.colPrimaryContainer
+
+                onClicked: {
+                    if (root.player)
+                        root.player.previous();
+                }
+
+                    contentItem: Item {
+                        implicitWidth: 24
+                        implicitHeight: 24
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            text: "skip_previous"
+                            iconSize: Appearance.font.pixelSize.normal
+                            fill: 1
+                            color: {
+                                if (!root.player || !root.player.canGoPrevious) {
+                                    return Appearance.colors.colOnSurfaceVariant;
+                                }
+                                return Appearance.colors.colOnSurface;
+                            }
+                            opacity: root.player && root.player.canGoPrevious ? 1.0 : 0.4
+                        }
+                    }
+            }
+
+            // Progress Slider
+            Item {
+                id: progressArea
+                Layout.fillWidth: true
+                Layout.preferredHeight: 16
+                Layout.alignment: Qt.AlignVCenter
+
+                Loader {
+                    id: sliderLoader
+                    anchors.fill: parent
+                    active: root.player?.canSeek ?? false
+                    sourceComponent: StyledSlider {
+                        configuration: StyledSlider.Configuration.Wavy
+                        animateWave: root.playing && root.seekLive
+                        highlightColor: root.seekColor
+                        trackColor: root.lightTrackColor
+                        handleColor: root.seekColor
+                        value: root.trackProgress
+                        // Nothing to seek to while the player publishes no length.
+                        enabled: MprisController.hasTrackLength(root.player)
+                        onMoved: MprisController.seekFraction(root.player, value)
+                        // QQuickSlider writes `value` itself while the user drags, which destroys
+                        // the binding below it. Without this the bar froze where the drag left it
+                        // and never followed the track again.
+                        onPressedChanged: if (!pressed)
+                            value = Qt.binding(() => root.trackProgress)
+                    }
+                }
+
+                Loader {
+                    id: progressBarLoader
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        left: parent.left
+                        right: parent.right
+                    }
+                    active: !!root.player && !sliderLoader.active
+                    sourceComponent: StyledProgressBar {
+                        wavy: root.player ? root.playing : false
+                        animateWave: root.playing && root.seekLive
+                        highlightColor: root.seekColor
+                        trackColor: root.lightTrackColor
+                        value: MprisController.trackProgressOf(root.player)
+                    }
+                }
+            }
+
+            // Next Button
+            RippleButton {
+                id: nextBtn
+                implicitWidth: 24
+                implicitHeight: 24
+                buttonRadius: 12
+                colBackground: "transparent"
+                colBackgroundHover: "transparent"
+                colRipple: root.useDynamicColors ? root.blendedColors.colPrimaryContainer : Appearance.colors.colPrimaryContainer
+
+                onClicked: {
+                    if (root.player)
+                        root.player.next();
+                }
+
+                    contentItem: Item {
+                        implicitWidth: 24
+                        implicitHeight: 24
+                        MaterialSymbol {
+                            anchors.centerIn: parent
+                            text: "skip_next"
+                            iconSize: Appearance.font.pixelSize.normal
+                            fill: 1
+                            color: {
+                                if (!root.player || !root.player.canGoNext) {
+                                    return Appearance.colors.colOnSurfaceVariant;
+                                }
+                                return Appearance.colors.colOnSurface;
+                            }
+                            opacity: root.player && root.player.canGoNext ? 1.0 : 0.4
+                        }
+                    }
+            }
+        }
+    }
+}

@@ -6,6 +6,9 @@ import "."
 import Quickshell;
 import QtQuick;
 
+/**
+ * A service for interacting with various booru APIs.
+ */
 Singleton {
     id: root
     property Component booruResponseDataComponent: BooruResponseData {}
@@ -102,7 +105,7 @@ Singleton {
                         "height": item.height,
                         "aspect_ratio": item.width / item.height,
                         "tags": item.tags.join(" "),
-                        "rating": "safe",
+                        "rating": "safe", // Zerochan doesn't have nsfw
                         "is_nsfw": false,
                         "md5": item.md5,
                         "preview_url": item.thumbnail,
@@ -187,21 +190,21 @@ Singleton {
         "waifu.im": {
             "name": "waifu.im",
             "url": "https://waifu.im",
-            "api": "https://api.waifu.im/images",
+            "api": "https://api.waifu.im/search",
             "description": Translation.tr("Waifus only | Excellent quality, limited quantity"),
             "mapFunc": (response) => {
-                response = response.items
+                response = response.images
                 return response.map(item => {
                     return {
-                        "id": item.id,
+                        "id": item.image_id,
                         "width": item.width,
                         "height": item.height,
                         "aspect_ratio": item.width / item.height,
                         "tags": item.tags.map(tag => {return tag.name}).join(" "),
-                        "rating": item.isNsfw ? "e" : "s",
-                        "is_nsfw": item.isNsfw,
+                        "rating": item.is_nsfw ? "e" : "s",
+                        "is_nsfw": item.is_nsfw,
                         "md5": item.md5,
-                        "preview_url": item.sample_url ?? item.url,
+                        "preview_url": item.sample_url ?? item.url, // preview_url just says access denied (maybe i fucked up and sent too many requests idk)
                         "sample_url": item.url,
                         "file_url": item.url,
                         "file_ext": item.extension,
@@ -209,9 +212,10 @@ Singleton {
                     }
                 })
             },
-            "tagSearchTemplate": "https://api.waifu.im/tags?Name={{query}}",
+            "tagSearchTemplate": "https://api.waifu.im/tags",
             "tagMapFunc": (response) => {
-                return response.items.map(item => {return {"name": item.name}})
+                return [...response.versatile.map(item => {return {"name": item}}), 
+                    ...response.nsfw.map(item => {return {"name": item}})]
             }
         },
         "t.alcy.cc": {
@@ -246,10 +250,12 @@ Singleton {
                 },
             ],
             "manualParseFunc": (responseText) => {
+                // Alcy just returns image links, each on a new line
                 const lines = responseText.trim().split('\n');
                 return lines.map(line => {
                     return {
                         "id": Qt.md5(line),
+                        // Alcy doesn't provide dimensions and images are often of god resolution
                         "width": 1000,
                         "height": 1000,
                         "aspect_ratio": 1,
@@ -270,7 +276,7 @@ Singleton {
     property var currentProvider: Persistent.states.booru.provider
 
     function getWorkingImageSource(url) {
-        if (url?.includes('pximg.net')) {
+        if (url.includes('pximg.net')) {
             return `https://www.pixiv.net/en/artworks/${url.substring(url.lastIndexOf('/') + 1).replace(/_p\d+\.(png|jpg|jpeg|gif)$/, '')}`;
         }
         return url;
@@ -313,8 +319,9 @@ Singleton {
                 tagString += " rating:safe";
         }
         var params = []
+        // Tags & limit
         if (currentProvider === "zerochan") {
-            params.push("c=" + tagString)
+            params.push("c=" + tagString) // zerochan doesn't have search in api, so we use color
             params.push("l=" + limit)
             params.push("s=" + "fav")
             params.push("t=" + 1)
@@ -323,10 +330,10 @@ Singleton {
         else if (currentProvider === "waifu.im") {
             var tagsArray = tagString.split(" ");
             tagsArray.forEach(tag => {
-                params.push("IncludedTags=" + encodeURIComponent(tag.toLowerCase()));
+                params.push("included_tags=" + encodeURIComponent(tag));
             });
-            params.push("PageSize=" + Math.min(limit, 30))
-            params.push("IsNsfw=" + (nsfw ? "All" : "False"))
+            params.push("limit=" + Math.min(limit, 30)) // Only admin can do > 30
+            params.push("is_nsfw=" + (nsfw ? "null" : "false")) // null is random
         }
         else if (currentProvider === "t.alcy.cc") {
             url += tagString
@@ -368,6 +375,7 @@ Singleton {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 try {
+                    // console.log("[Booru] Raw response: " + xhr.responseText)
                     const provider = providers[currentProvider]
                     let response;
                     if (provider.manualParseFunc) {
@@ -376,6 +384,7 @@ Singleton {
                         response = JSON.parse(xhr.responseText)
                         response = provider.mapFunc(response)
                     }
+                    // console.log("[Booru] Mapped response: " + JSON.stringify(response))
                     newResponse.images = response
                     newResponse.message = response.length > 0 ? "" : root.failMessage
                     
@@ -397,7 +406,8 @@ Singleton {
         }
 
         try {
-            if (["danbooru", "konachan"].includes(currentProvider)) {
+            // Required for danbooru
+            if (currentProvider == "danbooru") {
                 xhr.setRequestHeader("User-Agent", defaultUserAgent)
             }
             else if (currentProvider == "zerochan") {
@@ -433,8 +443,10 @@ Singleton {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 currentTagRequest = null
                 try {
+                    // console.log("[Booru] Raw response: " + xhr.responseText)
                     var response = JSON.parse(xhr.responseText)
                     response = provider.tagMapFunc(response)
+                    // console.log("[Booru] Mapped response: " + JSON.stringify(response))
                     root.tagSuggestion(query, response)
                 } catch (e) {
                     console.log("[Booru] Failed to parse response: " + e)
@@ -446,7 +458,8 @@ Singleton {
         }
 
         try {
-            if (["danbooru", "konachan"].includes(currentProvider)) {
+            // Required for danbooru
+            if (currentProvider == "danbooru") {
                 xhr.setRequestHeader("User-Agent", defaultUserAgent)
             }
             xhr.send()
@@ -455,3 +468,4 @@ Singleton {
         } 
     }
 }
+

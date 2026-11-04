@@ -1,0 +1,326 @@
+pragma ComponentBehavior: Bound
+import "../../common"
+import "../../common/models"
+import "../../common/widgets"
+import "../../.."
+import "../../../services"
+import "../../common/functions"
+import Qt5Compat.GraphicalEffects
+import QtQuick
+import QtQuick.Effects
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
+import Quickshell.Services.Mpris
+
+Item { // Player instance
+    id: root
+    required property MprisPlayer player
+    property var artUrl: player?.trackArtUrl ?? ""
+    property color artDominantColor: ColorUtils.mix((colorQuantizer?.colors[0] ?? Appearance.colors.colPrimary), Appearance.colors.colPrimaryContainer, 0.8) || Appearance.m3colors.m3secondaryContainer
+    property list<real> visualizerPoints: []
+    property real maxVisualizerValue: 1000 // Max value in the data points
+    property int visualizerSmoothing: 2 // Number of points to average for smoothing
+    property real radius
+
+    // Some players (e.g. Deezer) stop reporting position on track change, so the locally
+    // extrapolated position keeps running past the end of the track. Clamp it.
+    readonly property real trackLength: MprisController.trackLengthOf(root.player)
+    readonly property real trackPosition: Math.min(Math.max(0, root.player?.position ?? 0), root.trackLength > 0 ? root.trackLength : Infinity)
+    readonly property real trackProgress: root.trackLength > 0 ? root.trackPosition / root.trackLength : 0
+
+    // Compact mode properties for embedding in widgets/quick toggles
+    property bool compactMode: false
+    property real elevationMargin: compactMode ? 0 : Appearance.sizes.elevationMargin
+    property real contentMargins: compactMode ? 8 : 13
+    property bool showPinButton: !compactMode
+    property real playPauseButtonSize: compactMode ? 32 : 44
+    property real trackChangeButtonSize: compactMode ? 18 : 24
+
+    readonly property string displayedArtFilePath: CoverArt.source(root.artUrl)
+    readonly property bool downloaded: root.displayedArtFilePath !== ""
+
+    component TrackChangeButton: RippleButton {
+        id: button
+        property int buttonSize: 24
+        property bool fill: true
+
+        implicitWidth: buttonSize
+        implicitHeight: buttonSize
+
+        property var iconName
+        colBackground: ColorUtils.transparentize(blendedColors.colSecondaryContainer, 1)
+        colBackgroundHover: blendedColors.colSecondaryContainerHover
+        colRipple: blendedColors.colSecondaryContainerActive
+
+        contentItem: MaterialSymbol {
+            iconSize: buttonSize
+            fill: button.fill ? 1 : 0
+            horizontalAlignment: Text.AlignHCenter
+            color: blendedColors.colSecondary
+            text: iconName
+
+            Behavior on color {
+                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+            }
+        }
+    }
+
+    Timer { // Force update for revision
+        running: root.player?.playbackState == MprisPlaybackState.Playing
+        interval: Config.options.resources.updateInterval
+        repeat: true
+        onTriggered: {
+            root.player.positionChanged();
+        }
+    }
+
+    onArtUrlChanged: {
+        if (root.artUrl.length == 0)
+            root.artDominantColor = Appearance.m3colors.m3secondaryContainer;
+    }
+
+    ColorQuantizer {
+        id: colorQuantizer
+        source: root.displayedArtFilePath
+        depth: 0 // 2^0 = 1 color
+        rescaleSize: 1 // Rescale to 1x1 pixel for faster processing
+    }
+
+    property QtObject blendedColors: AdaptedMaterialScheme {
+        color: artDominantColor
+    }
+
+    StyledRectangularShadow {
+        target: background
+        visible: !root.compactMode
+    }
+    Rectangle { // Background
+        id: background
+        anchors.fill: parent
+        anchors.margins: root.elevationMargin
+        color: ColorUtils.applyAlpha(blendedColors.colLayer0, 1)
+        radius: root.radius
+
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: Rectangle {
+                width: background.width
+                height: background.height
+                radius: background.radius
+            }
+        }
+
+        StyledImage {
+            id: blurredArt
+            anchors.fill: parent
+            source: root.displayedArtFilePath
+            fillMode: Image.PreserveAspectCrop
+            cache: false
+            antialiasing: true
+            asynchronous: true
+
+            layer.enabled: true
+            layer.effect: StyledBlurEffect {
+                source: blurredArt
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                color: ColorUtils.transparentize(blendedColors.colLayer0, 0.3)
+                radius: root.radius
+            }
+        }
+
+        WaveVisualizer {
+            id: visualizerCanvas
+            anchors.fill: parent
+            live: root.player?.isPlaying
+            points: root.visualizerPoints
+            maxVisualizerValue: root.maxVisualizerValue
+            smoothing: root.visualizerSmoothing
+            color: blendedColors.colPrimary
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: root.contentMargins
+            spacing: root.compactMode ? 10 : 15
+
+            Rectangle { // Art background
+                id: artBackground
+                Layout.preferredHeight: background.height - root.contentMargins * 2
+                Layout.preferredWidth: Layout.preferredHeight
+                radius: Appearance.rounding.normal
+                color: ColorUtils.transparentize(blendedColors.colLayer1, 0.5)
+
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: Rectangle {
+                        width: artBackground.width
+                        height: artBackground.height
+                        radius: artBackground.radius
+                    }
+                }
+
+                StyledImage { // Art image
+                    id: mediaArt
+                    property int size: parent.height
+                    anchors.fill: parent
+
+                    source: root.displayedArtFilePath
+                    fillMode: Image.PreserveAspectCrop
+                    cache: false
+                    antialiasing: true
+
+                    width: size
+                    height: size
+                }
+            }
+
+            ColumnLayout { // Info & controls
+                Layout.preferredHeight: background.height - root.contentMargins * 2
+                spacing: root.compactMode ? 1 : 2
+
+                StyledText {
+                    id: trackTitle
+                    Layout.fillWidth: true
+                    font.pixelSize: root.compactMode ? Appearance.font.pixelSize.small : Appearance.font.pixelSize.large
+                    color: blendedColors.colOnLayer0
+                    elide: Text.ElideRight
+                    text: StringUtils.cleanMusicTitle(root.player?.trackTitle) || "Untitled"
+                    animateChange: true
+                    animationDistanceX: 6
+                    animationDistanceY: 0
+                }
+                StyledText {
+                    id: trackArtist
+                    Layout.fillWidth: true
+                    font.pixelSize: root.compactMode ? Appearance.font.pixelSize.smallest : Appearance.font.pixelSize.smaller
+                    color: blendedColors.colSubtext
+                    elide: Text.ElideRight
+                    text: root.player?.trackArtist
+                    animateChange: true
+                    animationDistanceX: 6
+                    animationDistanceY: 0
+                }
+                Item {
+                    Layout.fillHeight: true
+                }
+                Item {
+                    Layout.fillWidth: true
+                    implicitHeight: Math.max(playPauseButton.height, trackTime.implicitHeight) + (root.compactMode ? 1 : 5) + sliderRow.implicitHeight
+
+                    StyledText {
+                        id: trackTime
+                        anchors.bottom: sliderRow.top
+                        anchors.bottomMargin: root.compactMode ? 1 : 5
+                        anchors.left: parent.left
+                        font.pixelSize: root.compactMode ? Appearance.font.pixelSize.smallest : Appearance.font.pixelSize.small
+                        color: blendedColors.colSubtext
+                        elide: Text.ElideRight
+                        text: `${StringUtils.friendlyTimeForSeconds(root.trackPosition)} / ${root.trackLength > 0 ? StringUtils.friendlyTimeForSeconds(root.trackLength) : "\u2013\u2013:\u2013\u2013"}`
+                    }
+                    RowLayout {
+                        id: sliderRow
+                        anchors {
+                            bottom: parent.bottom
+                            left: parent.left
+                            right: parent.right
+                        }
+                        TrackChangeButton {
+                            iconName: "skip_previous"
+                            buttonSize: root.trackChangeButtonSize
+                            downAction: () => root.player?.previous()
+                        }
+                        Item {
+                            id: progressBarContainer
+                            Layout.fillWidth: true
+                            implicitHeight: Math.max(sliderLoader.implicitHeight, progressBarLoader.implicitHeight)
+
+                            Loader {
+                                id: sliderLoader
+                                anchors.fill: parent
+                                active: root.player?.canSeek ?? false
+                                sourceComponent: StyledSlider {
+                                    configuration: StyledSlider.Configuration.Wavy
+                                    animateWave: (root.player?.isPlaying ?? false) && root.visible
+                                    highlightColor: blendedColors.colPrimary
+                                    trackColor: blendedColors.colSecondaryContainer
+                                    handleColor: blendedColors.colPrimary
+                                    value: root.trackProgress
+                                    // Nothing to seek to while the player publishes no length.
+                                    enabled: MprisController.hasTrackLength(root.player)
+                                    onMoved: MprisController.seekFraction(root.player, value)
+                                    // QQuickSlider writes `value` itself while the user drags, which destroys
+                                    // the binding below it. Without this the bar froze where the drag left it
+                                    // and never followed the track again.
+                                    onPressedChanged: if (!pressed)
+                                        value = Qt.binding(() => root.trackProgress)
+                                }
+                            }
+
+                            Loader {
+                                id: progressBarLoader
+                                anchors {
+                                    verticalCenter: parent.verticalCenter
+                                    left: parent.left
+                                    right: parent.right
+                                }
+                                active: !!root.player && !sliderLoader.active
+                                sourceComponent: StyledProgressBar {
+                                    wavy: root.player?.isPlaying
+                                    animateWave: (root.player?.isPlaying ?? false) && root.visible
+                                    highlightColor: blendedColors.colPrimary
+                                    trackColor: blendedColors.colSecondaryContainer
+                                    value: root.trackProgress
+                                }
+                            }
+                        }
+                        TrackChangeButton {
+                            iconName: "skip_next"
+                            buttonSize: root.trackChangeButtonSize
+                            downAction: () => root.player?.next()
+                        }
+
+                        TrackChangeButton {
+                            visible: root.showPinButton
+                            iconName: "keep"
+                            buttonSize: 18
+                            fill: GlobalStates.mediaControlsPinned
+                            downAction: () => GlobalStates.mediaControlsPinned = !GlobalStates.mediaControlsPinned
+                        }
+                    }
+
+                    RippleButton {
+                        id: playPauseButton
+                        anchors.right: parent.right
+                        anchors.bottom: sliderRow.top
+                        anchors.bottomMargin: root.compactMode ? 1 : 5
+                        property real size: root.playPauseButtonSize
+                        implicitWidth: size
+                        implicitHeight: size
+                        downAction: () => root.player.togglePlaying()
+
+                        buttonRadius: root.player?.isPlaying ? Appearance?.rounding.normal : size / 2
+                        colBackground: root.player?.isPlaying ? blendedColors.colPrimary : blendedColors.colSecondaryContainer
+                        colBackgroundHover: root.player?.isPlaying ? blendedColors.colPrimaryHover : blendedColors.colSecondaryContainerHover
+                        colRipple: root.player?.isPlaying ? blendedColors.colPrimaryActive : blendedColors.colSecondaryContainerActive
+
+                        contentItem: MaterialSymbol {
+                            iconSize: Appearance.font.pixelSize.huge
+                            fill: 1
+                            horizontalAlignment: Text.AlignHCenter
+                            color: root.player?.isPlaying ? blendedColors.colOnPrimary : blendedColors.colOnSecondaryContainer
+                            text: root.player?.isPlaying ? "pause" : "play_arrow"
+
+                            Behavior on color {
+                                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
