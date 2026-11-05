@@ -1239,6 +1239,35 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-11-01"
+    },
+    {
+      "id": "medkit-guide",
+      "name": "MedKit Guide",
+      "version": "1.0.0",
+      "path": "plugins/medkit-guide",
+      "author": "Hatem <hatem@users.noreply.github.com>",
+      "summary": "Medicine guide for MedKit: detailed info, interactions, side effects, and food warnings from OpenFDA.",
+      "description": "Medicine guide for MedKit: detailed info, interactions, side effects, and food warnings from OpenFDA. Click any medicine to see full prescribing details.",
+      "tags": [
+        "bar-widget",
+        "health",
+        "medicine",
+        "medkit"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "",
+      "screenshots": [],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "f269575748925ff6023f925efe15aa2e6e20d179ce197b35d0393f00a25349f7",
+      "official": false,
+      "tagline": "Medicine guide for MedKit: detailed info, interactions, side effects, and food warnings from OpenFDA.",
+      "icon": "pill",
+      "hosts": [
+        "topbarGlyph",
+        "framePopout"
+      ],
+      "lastUpdated": "2026-11-03"
     }
   ]
 }

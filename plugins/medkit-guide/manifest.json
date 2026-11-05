@@ -1,0 +1,51 @@
+{
+  "id": "medkit-guide",
+  "name": "MedKit Guide",
+  "version": "1.0.0",
+  "author": "Hatem <hatem@users.noreply.github.com>",
+  "description": "Medicine guide for MedKit: detailed info, interactions, side effects, and food warnings from OpenFDA. Click any medicine to see full prescribing details.",
+  "license": "MIT",
+  "tags": ["bar-widget", "health", "medicine", "medkit"],
+  "official": false,
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "files": [],
+  "capabilities": {
+    "densities": ["glyph", "compact"]
+  },
+  "hosts": ["topbarGlyph", "framePopout"],
+  "dependencies": {
+    "commands": ["python3", "mkdir"]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "bar": { "section": "right" },
+    "icon": "pill",
+    "label": "MedGuide"
+  },
+  "panel": { "width": 480 },
+  "metadata": {
+    "settings": [
+      {
+        "key": "autoRefresh",
+        "type": "bool",
+        "label": "Auto-refresh medicine details",
+        "group": "MedKit Guide",
+        "default": true
+      },
+      {
+        "key": "cacheDays",
+        "type": "int",
+        "label": "Cache duration (days)",
+        "group": "MedKit Guide",
+        "default": 7,
+        "min": 1,
+        "max": 30,
+        "step": 1
+      }
+    ]
+  }
+}
