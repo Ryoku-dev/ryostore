@@ -17,9 +17,9 @@ Item {
     property bool active: false
 
     readonly property var svc: pluginApi ? pluginApi.mainInstance : null
-    readonly property bool busy: svc ? svc.busy : false
-    readonly property var files: svc ? svc.files : []
-    readonly property var result: svc ? svc.result : null
+    readonly property bool busy: svc ? !!svc.busy : false
+    readonly property var files: (svc && svc.files) ? svc.files : []
+    readonly property var result: (svc && svc.result) ? svc.result : null
     property bool customizing: false
 
     implicitWidth: root.widthBudget
@@ -167,14 +167,14 @@ Item {
                 y: 8 * root.s
                 width: parent.width - 16 * root.s
                 spacing: 4 * root.s
-                Body { width: parent.width; text: root.svc ? root.svc.doctorError : "" }
+                Body { width: parent.width; text: root.svc ? (root.svc.doctorError || "") : "" }
                 TextEdit {
                     width: parent.width
                     visible: text.length > 0
                     readOnly: true
                     selectByMouse: true
                     wrapMode: TextEdit.Wrap
-                    text: root.svc ? root.svc.doctorFix : ""
+                    text: root.svc ? (root.svc.doctorFix || "") : ""
                     color: Theme.dim
                     font.family: Theme.mono
                     font.pixelSize: 11 * root.s
@@ -226,9 +226,9 @@ Item {
         }
 
         Body {
-            visible: !!root.svc && root.svc.filesError.length > 0
+            visible: !!root.svc && String(root.svc.filesError || "").length > 0
             color: Theme.sun
-            text: root.svc ? root.svc.filesError : ""
+            text: root.svc ? (root.svc.filesError || "") : ""
         }
 
         // the files
@@ -241,15 +241,15 @@ Item {
             maximumLineCount: 2
         }
         Body {
-            visible: !!root.svc && root.svc.loadingActions
+            visible: !!root.svc && !!root.svc.loadingActions
             color: Theme.dim
             text: "Reading files…"
         }
         Body {
-            visible: !!root.svc && root.svc.skipped.length > 0
+            visible: !!root.svc && (root.svc.skipped || []).length > 0
             color: Theme.dim
             font.pixelSize: 11 * root.s
-            text: root.svc ? "Skipped " + root.svc.skipped.length + " (another kind, or not a file)" : ""
+            text: root.svc ? "Skipped " + (root.svc.skipped || []).length + " (another kind, or not a file)" : ""
         }
 
         // actions
@@ -263,9 +263,9 @@ Item {
                 id: section
                 required property var modelData
                 readonly property var items: !root.svc ? []
-                    : section.modelData.key === "convert" ? root.svc.convertActions
-                    : section.modelData.key === "tools" ? root.svc.toolActions
-                    : root.svc.editorActions
+                    : section.modelData.key === "convert" ? (root.svc.convertActions || [])
+                    : section.modelData.key === "tools" ? (root.svc.toolActions || [])
+                    : (root.svc.editorActions || [])
                 visible: items.length > 0
                 width: col.width
                 spacing: 6 * root.s
@@ -301,7 +301,7 @@ Item {
                 width: implicitWidth
                 anchors.verticalCenter: parent.verticalCenter
                 color: Theme.accent
-                text: root.svc ? root.svc.busyLabel : ""
+                text: root.svc ? (root.svc.busyLabel || "") : ""
             }
             Chip { label: "Cancel"; onClicked: root.svc.cancel() }
         }
@@ -345,10 +345,10 @@ Item {
         }
 
         Body {
-            visible: !!root.svc && root.svc.notice.length > 0
+            visible: !!root.svc && String(root.svc.notice || "").length > 0
             color: Theme.dim
             font.pixelSize: 12 * root.s
-            text: root.svc ? root.svc.notice : ""
+            text: root.svc ? (root.svc.notice || "") : ""
         }
         }
     }

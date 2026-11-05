@@ -121,7 +121,7 @@ Column {
         Chip {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            visible: !!page.svc && page.svc.hidden.length > 0
+            visible: !!page.svc && (page.svc.hidden || []).length > 0
             label: "Turn all back on"
             onClicked: page.svc.showAll()
         }
@@ -149,7 +149,7 @@ Column {
                     delegate: Chip {
                         required property var modelData
                         label: modelData.label
-                        off: !!page.svc && page.svc.hidden.indexOf(modelData.key) !== -1
+                        off: !!page.svc && (page.svc.hidden || []).indexOf(modelData.key) !== -1
                         onClicked: page.svc.setHidden(modelData.key, !off)
                     }
                 }

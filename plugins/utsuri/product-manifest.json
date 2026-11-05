@@ -48,17 +48,17 @@
     {
       "source": "content/Customize.qml",
       "destination": "content/Customize.qml",
-      "sha256": "e4176dac9b45c41c0baad4227b9eee8452c3ccdc7bc6c174f1b1195bcf4ce6a9",
+      "sha256": "c23537eff5ccdc11f1f00d25668ceaea44b07b406ce570e4cc193d3389bc8d82",
       "mode": "0644",
-      "size": 5707,
+      "size": 5723,
       "install": true
     },
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "d9aa3bf2ed375c8595abcb231e305dd089ab25769a56cc6e3b768da43b8a9a35",
+      "sha256": "fffe8602d9f3611778206102d15dc1ac0769fd388d9dea76f56ed47d64627bdb",
       "mode": "0644",
-      "size": 13299,
+      "size": 13442,
       "install": true
     },
     {

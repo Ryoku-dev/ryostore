@@ -1227,7 +1227,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "a9056d1305b3b37ccb1ff13705290817abe6f4c4ee1fa5fe614d9d233b3a2df7",
+      "manifestSha256": "5c6f42c3784656a1fa74efdeb56984f46efce843d060c387468d93212299149a",
       "official": false,
       "tagline": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit ...",
       "icon": "swap_horiz",
