@@ -93,6 +93,8 @@ Singleton {
     // null entries ("Cannot append Notif(...) to a QML list").
     property list<QtObject> list: []
     property var _livePopups: []
+    property var _mirrored: []
+    property bool _releasingHostPopups: false
     // The sidebar covering the bar holds the banners back, exactly as the
     // upstream popups were never armed while it was open.
     readonly property var popupList: root.popupInhibited ? [] : root._livePopups
@@ -128,6 +130,7 @@ Singleton {
             if (!wrapper)
                 return null;
             root._serverWrappers[key] = wrapper;
+            raw.closed.connect(function() { root.forgetPopup(raw.id); });
             root._handleShellNotification(wrapper);
         }
         return wrapper;
@@ -169,6 +172,10 @@ Singleton {
             if (notif && !notif.internal)
                 alive[String(notif.notificationId)] = true;
         });
+        root._mirrored.forEach((notif) => {
+            if (notif && !notif.internal)
+                alive[String(notif.notificationId)] = true;
+        });
         for (const id in root._serverWrappers) {
             if (!alive[id]) {
                 const gone = root._serverWrappers[id];
@@ -180,32 +187,81 @@ Singleton {
 
     function rebuildPopups() {
         const popups = HostServices.Notifs.popups ?? [];
-        const out = [];
         for (let i = 0; i < popups.length; i++) {
-            if (!popups[i])
+            const raw = popups[i];
+            if (!raw)
                 continue;
-            const wrapper = root.ensureWrapper(popups[i]);
+            const wrapper = root.ensureWrapper(raw);
             if (!wrapper)
                 continue;
+            for (const entry of root._mirrored) {
+                if (entry && entry !== wrapper && entry.popup && root.sameContent(entry.notification ?? {}, raw)) {
+                    root.stopTimeout(entry);
+                    entry.popup = false;
+                }
+            }
+            if (root._mirrored.indexOf(wrapper) === -1)
+                root._mirrored = root._mirrored.concat([wrapper]);
             wrapper.popup = true;
-            out.push(wrapper);
+            root.armNotificationTimeout(wrapper);
             // Count each popup once, no matter how often the host re-fronts it.
-            const key = String(popups[i].id);
+            const key = String(raw.id);
             if (!(key in root._countedPopupIds)) {
                 root._countedPopupIds[key] = true;
                 root.unread++;
             }
         }
+
+        const out = root._mirrored.filter(entry => entry && entry.popup);
+        root._mirrored = out.filter(entry => !entry.internal);
         for (let j = 0; j < root._internalList.length; j++) {
             if (root._internalList[j].popup)
                 out.push(root._internalList[j]);
         }
+        out.sort((a, b) => (b?.time ?? 0) - (a?.time ?? 0));
         root._livePopups = out;
         for (const id in root._serverWrappers) {
             const wrapper = root._serverWrappers[id];
             if (wrapper.popup && out.indexOf(wrapper) === -1)
                 wrapper.popup = false;
         }
+
+        // The host banner window draws from this list.
+        if (!root._releasingHostPopups) {
+            root._releasingHostPopups = true;
+            for (let k = 0; k < popups.length; k++) {
+                if (popups[k])
+                    HostServices.Notifs.removePopup(popups[k]);
+            }
+            root._releasingHostPopups = false;
+        }
+    }
+
+    function stopTimeout(notifObject) {
+        if (!notifObject)
+            return;
+        const timer = notifObject.timer ?? null;
+        notifObject.timer = null;
+        if (timer) {
+            timer.stop();
+            timer.destroy();
+        }
+    }
+
+    function sameContent(a, b) {
+        return (a?.appName || "") === (b?.appName || "")
+            && (a?.summary || "") === (b?.summary || "")
+            && (a?.body || "") === (b?.body || "");
+    }
+
+    function forgetPopup(id) {
+        const wrapper = root._serverWrappers[String(id)];
+        if (!wrapper || !wrapper.popup)
+            return;
+        root.stopTimeout(wrapper);
+        wrapper.popup = false;
+        root._mirrored = root._mirrored.filter(entry => entry !== wrapper);
+        root.rebuildPopups();
     }
 
     function releaseNotificationObject(notifObject) {
@@ -308,14 +364,23 @@ Singleton {
     }
 
     function armNotificationTimeout(notifObject) {
-        if (root.popupInhibited)
+        if (notifObject.internal && root.popupInhibited)
             return;
-        const expireTimeout = notifObject.internalExpireTimeout;
+        const fallback = Config?.options.notifications.timeout ?? 7000;
+        let expireTimeout;
+        if (notifObject.internal) {
+            expireTimeout = notifObject.internalExpireTimeout;
+        } else {
+            const raw = notifObject.notification;
+            if (!raw)
+                return;
+            expireTimeout = raw.urgency === NotificationUrgency.Critical ? 0 : raw.expireTimeout;
+        }
         if (expireTimeout === 0)
             return;
         const interval = expireTimeout < 0
-            ? (Config?.options.notifications.timeout ?? 7000)
-            : expireTimeout;
+            ? fallback
+            : (notifObject.internal ? expireTimeout : Math.min(fallback, expireTimeout));
         notifObject.popup = true;
         if (notifObject.timer) {
             notifObject.timer.interval = interval;
@@ -407,6 +472,8 @@ Singleton {
         const internals = root._internalList.slice();
         root._internalList = [];
         internals.forEach(notif => root.releaseNotificationObject(notif));
+        root._mirrored.forEach(notif => root.stopTimeout(notif));
+        root._mirrored = [];
         // History items first (the host marks them seen), then whatever
         // transient popups are still up - they never entered history.
         HostServices.Notifs.clearAll();
@@ -421,24 +488,28 @@ Singleton {
 
     function cancelTimeout(id) {
         const wrapper = root.findNotification(id);
-        if (wrapper && wrapper.internal) {
-            // The timer is gone once it has fired.
-            wrapper.timer?.stop();
-        } else {
-            HostServices.Notifs.cancelPopupTimeout(id);
+        if (!wrapper)
+            return;
+        // The timer is gone once it has fired.
+        if (wrapper.timer) {
+            wrapper.timer.stop();
+            wrapper.timer.destroy();
+            wrapper.timer = null;
         }
+        if (!wrapper.internal)
+            HostServices.Notifs.cancelPopupTimeout(id);
     }
 
     function timeoutNotification(id) {
         const wrapper = root.findNotification(id);
         if (!wrapper)
             return;
-        if (wrapper.internal) {
-            wrapper.popup = false;
-        } else if (wrapper.notification) {
+        root.stopTimeout(wrapper);
+        wrapper.popup = false;
+        if (!wrapper.internal && wrapper.notification)
             HostServices.Notifs.removePopup(wrapper.notification);
-            wrapper.popup = false;
-        }
+        root._mirrored = root._mirrored.filter(entry => entry !== wrapper);
+        root.rebuildPopups();
         root.timeout(id);
     }
 
