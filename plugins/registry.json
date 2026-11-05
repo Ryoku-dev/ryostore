@@ -250,6 +250,7 @@
       ],
       "lastUpdated": "2026-08-12"
     },
+
     {
       "id": "obsidian",
       "name": "Obsidian",
@@ -313,6 +314,39 @@
         "desktopWidget"
       ],
       "lastUpdated": "2026-06-27"
+    },
+    {
+      "id": "smart-brightness",
+      "name": "Smart Brightness",
+      "version": "0.2.2",
+      "path": "plugins/smart-brightness",
+      "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
+      "upstream": "https://github.com/visnudeva/ryostore/tree/main/plugins/smart-brightness",
+      "summary": "Max the backlight for fullscreen media, then restore.",
+      "description": "Max the backlight for fullscreen media, then restore. Runs from a desktop widget (or the bar) — no QS Bar required.",
+      "tags": [
+        "brightness",
+        "media",
+        "fullscreen",
+        "desktop-widget",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "995e29b0a825c2cf068a72b5c33d4c5de0e87f350d2880448c4aa60225d0b7d8",
+      "official": false,
+      "tagline": "Max the backlight for fullscreen media, then restore.",
+      "icon": "brightness_auto",
+      "hosts": [
+        "desktopWidget",
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-02"
     },
     {
       "id": "stargate",
@@ -387,12 +421,12 @@
     },
     {
       "id": "public-ip",
-      "name": "IP Pública",
+      "name": "IP P\u00fablica",
       "version": "0.1.0",
       "path": "plugins/public-ip",
       "author": "vampirejsv <vampirejsv@local>",
-      "summary": "Muestra la IP pública actual (consultando https://checkip.",
-      "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
+      "summary": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
+      "description": "Muestra la IP p\u00fablica actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
       "tags": [
         "bar-widget"
       ],
@@ -405,7 +439,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "eced7c39a65f038744a15ea4577d65648243e948521fa46d80b1f107eb9b2cc0",
       "official": false,
-      "tagline": "Muestra la IP pública actual (consultando https://checkip.",
+      "tagline": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
       "icon": "public",
       "hosts": [
         "topbarGlyph"
@@ -930,47 +964,6 @@
       "lastUpdated": "2026-10-08"
     },
     {
-      "id": "dragshift",
-      "name": "DragShift",
-      "version": "0.5.1",
-      "path": "plugins/dragshift",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/dragshift",
-      "author": "CratusGod <nghiabigg652@gmail.com>",
-      "summary": "DragShift on Wayland: start dragging files, folders or highlighted text, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
-      "description": "DragShift on Wayland: start dragging files, folders or highlighted text, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Dragged text gets Copy, and Translate through the Oumu app. Results land next to the originals, which are never changed.",
-      "tags": [
-        "files",
-        "convert",
-        "images",
-        "pdf",
-        "compress",
-        "dragshift",
-        "folders",
-        "zip",
-        "video",
-        "ocr",
-        "pdf-tools",
-        "bar-widget",
-        "text",
-        "translate"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "92e1438846f5ee8c9a70dd85f9f2362277dc35b40ccb1c54e5ac006a4396e5f6",
-      "official": false,
-      "tagline": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
-      "icon": "swap_horiz",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-30"
-    },
-    {
       "id": "kbd-layouts",
       "name": "Keyboard Layouts",
       "version": "0.1.0",
@@ -1156,6 +1149,96 @@
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/radio-atlas"
     },
     {
+      "id": "dragshift",
+      "name": "DragShift",
+      "version": "0.5.1",
+      "path": "plugins/dragshift",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/dragshift",
+      "author": "CratusGod <nghiabigg652@gmail.com>",
+      "summary": "DragShift on Wayland: start dragging files, folders or highlighted text, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
+      "description": "DragShift on Wayland: start dragging files, folders or highlighted text, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Dragged text gets Copy, and Translate through the Oumu app. Results land next to the originals, which are never changed.",
+      "tags": [
+        "files",
+        "convert",
+        "images",
+        "pdf",
+        "compress",
+        "dragshift",
+        "folders",
+        "zip",
+        "video",
+        "ocr",
+        "pdf-tools",
+        "bar-widget",
+        "text",
+        "translate"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "92e1438846f5ee8c9a70dd85f9f2362277dc35b40ccb1c54e5ac006a4396e5f6",
+      "downloadPaused": true,
+      "downloadPauseReason": "Replaced by Utsuri. Existing installs remain removable.",
+      "official": false,
+      "tagline": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
+      "icon": "swap_horiz",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-05",
+      "windowManager": "hyprland",
+      "windowManagerReason": "Shift-drag activation uses Hyprland's input bindings."
+    },
+    {
+      "id": "utsuri",
+      "name": "Utsuri",
+      "version": "1.0.0",
+      "path": "plugins/utsuri",
+      "author": "CratusGod",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/utsuri",
+      "summary": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit ...",
+      "description": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Results land next to the originals, which are never changed. The Ryoku front end for the Utsuri app. Nine themes (Transparent, Matugen that follows your wallpaper, and seven colours) and every option can be turned off, from a Customize window on Super+Shift+U.",
+      "tags": [
+        "files",
+        "convert",
+        "images",
+        "pdf",
+        "compress",
+        "utsuri",
+        "folders",
+        "zip",
+        "video",
+        "ocr",
+        "pdf-tools",
+        "bar-widget",
+        "themes",
+        "matugen",
+        "text",
+        "translate"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "5c6f42c3784656a1fa74efdeb56984f46efce843d060c387468d93212299149a",
+      "official": false,
+      "tagline": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit ...",
+      "icon": "swap_horiz",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-31",
+      "windowManager": "hyprland",
+      "windowManagerReason": "Shift-drag activation uses Hyprland's input bindings."
+    },
+    {
       "id": "native-switcher",
       "name": "Native Switcher",
       "version": "0.2.9",
@@ -1182,6 +1265,94 @@
       ],
       "lastUpdated": "2026-10-31",
       "upstream": "https://github.com/wolf1999h/native-switcher"
+    },
+    {
+      "id": "pia-vpn",
+      "name": "PIA VPN",
+      "version": "0.1.0",
+      "path": "plugins/pia-vpn",
+      "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+      "summary": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "description": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "02d4c356c60023ea58f47318c46672b251e8d0380c0c5a60f48ee3aa9ec7c788",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/pia-vpn",
+      "official": false,
+      "tagline": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-04"
+    },
+    {
+      "id": "removable-drives",
+      "name": "Removable Drives",
+      "version": "0.1.0",
+      "path": "plugins/removable-drives",
+      "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+      "summary": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "description": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png",
+        "assets/mounted-devices.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7a053360ae0ce1301041f9947e6f50159fc022f0486195b5cb6b99d24ee0a246",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/removable-drives",
+      "official": false,
+      "tagline": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-01"
+    },
+    {
+      "id": "medkit-guide",
+      "name": "MedKit Guide",
+      "version": "1.0.0",
+      "path": "plugins/medkit-guide",
+      "author": "Hatem <hatem@users.noreply.github.com>",
+      "summary": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
+      "description": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
+      "tags": [
+        "bar-widget",
+        "health",
+        "medicine",
+        "medkit"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "4159ef052976d77afc2678ded634560ef9eb572183a9cb84efbd1873e51b3bc6",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/medkit-guide",
+      "official": false,
+      "tagline": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
+      "icon": "pill",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-05"
     }
   ]
 }
