@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "imi",
   "category": "barstyles",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/barstyles/imi",
   "files": [
     {
@@ -66,7 +66,7 @@
       "destination": "VERSION",
       "mode": "0644",
       "size": 6,
-      "sha256": "c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624",
+      "sha256": "fe840f52fb5578d3f77eb497115eb02c6036601c3a53e60df7995c7276baa77a",
       "install": true
     },
     {
@@ -12770,7 +12770,7 @@
       "destination": "modules/settings/configs/AboutConfig.qml",
       "mode": "0644",
       "size": 31950,
-      "sha256": "ee016658e0614ed502566f028c06ffce5aa8e41f15010de0bfe751fc8ffa7d97",
+      "sha256": "f2dc2dee7f54adb471d883f6001bcec7b61f69d17de8a3f1cf09cea7fd188960",
       "install": true
     },
     {

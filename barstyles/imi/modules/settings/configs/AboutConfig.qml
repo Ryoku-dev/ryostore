@@ -566,7 +566,7 @@ Item {
 
             StyledText {
                 Layout.fillWidth: true
-                text: "Imi 2.0.0 - maintained by Dodo986"
+                text: "Imi 2.0.1 - maintained by Dodo986"
                 color: Appearance.colors.colSubtext
                 font.pixelSize: Appearance.font.pixelSize.small
             }
