@@ -1,80 +1,99 @@
 import ".."
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 
+/**
+ * Material 3 switch. See https://m3.material.io/components/switch/overview
+ */
 Switch {
     id: root
-    property real scale: 0.75
-    implicitHeight: 30 * root.scale
-    implicitWidth: 52 * root.scale
+    // The M3 default is oversized for a pointer, hence the 0.75. But this control is
+    // dragged directly, not only tapped, so a finger needs the spec size back.
+    property real sizeScale: PanelFamily.touchFirst ? 1.0 : 0.75
+    implicitHeight: 32 * root.sizeScale
+    implicitWidth: 52 * root.sizeScale
+    property color activeColor: Appearance?.colors.colPrimary ?? "#685496"
+    property color inactiveColor: Appearance?.colors.colSurfaceContainerHighest ?? "#45464F"
+    property color activeThumbColor: Appearance.m3colors.m3onPrimary
+    property color inactiveThumbColor: Appearance.m3colors.m3outline
 
-    property color activeColor: Appearance?.colors.colPrimaryContainer ?? "#cbc4cb"
-    property color inactiveColor: Appearance?.m3colors.m3surfaceBright ?? "#3a3939"
+    property bool isPressed: root.pressed || root.down
+    scale: (isPressed && enabled) ? 0.95 : 1.0
+    Behavior on scale {
+        NumberAnimation {
+            duration: 150
+            easing.type: Easing.OutQuad
+        }
+    }
 
     PointingHandInteraction {}
 
+    // Custom track styling
     background: Rectangle {
         width: parent.width
         height: parent.height
         radius: Appearance?.rounding.full ?? 9999
         color: root.checked ? root.activeColor : root.inactiveColor
 
-        Rectangle {
-            anchors.fill: parent
-            radius: parent.radius
-            color: "transparent"
-            border.width: Appearance.borderWidth.standard
-            border.color: Qt.rgba(1, 1, 1, 0.06)
-        }
-
         Behavior on color {
             animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
         }
     }
 
+    // Custom thumb styling
     indicator: Rectangle {
-        readonly property real thumbSize: 26 * root.scale
-        readonly property real pad: 2 * root.scale
-        readonly property real stretchExtra: 4 * root.scale
-
-        width: (root.pressed || root.down)
-            ? thumbSize + stretchExtra
-            : thumbSize
-        height: thumbSize
+        width: (root.pressed || root.down) ? (28 * root.sizeScale) : (24 * root.sizeScale)
+        height: (root.pressed || root.down) ? (28 * root.sizeScale) : (24 * root.sizeScale)
         radius: Appearance.rounding.full
-
-        color: Appearance.colors.colPrimary
-
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: Qt.rgba(0, 0, 0, 0.55)
-            shadowVerticalOffset: 2
-            shadowHorizontalOffset: 0
-            shadowBlur: 0.4
-        }
-
+        color: root.checked ? root.activeThumbColor : root.inactiveThumbColor
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: root.checked
-            ? ((root.pressed || root.down)
-                ? parent.width - width - pad - stretchExtra
-                : parent.width - width - pad)
-            : pad
+        anchors.leftMargin: root.checked ? ((root.pressed || root.down) ? (22 * root.sizeScale) : (24 * root.sizeScale)) : ((root.pressed || root.down) ? (2 * root.sizeScale) : (4 * root.sizeScale))
 
         Behavior on anchors.leftMargin {
             NumberAnimation {
-                duration: 320
+                duration: Appearance.animationCurves.expressiveFastSpatialDuration
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: [0.42, 1.5, 0.28, 0.95, 1, 1]
+                easing.bezierCurve: Appearance.animationCurves.expressiveFastSpatial
             }
         }
         Behavior on width {
             NumberAnimation {
-                duration: 160
+                duration: Appearance.animationCurves.expressiveFastSpatialDuration
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: [0.42, 1.5, 0.28, 0.95, 1, 1]
+                easing.bezierCurve: Appearance.animationCurves.expressiveFastSpatial
+            }
+        }
+        Behavior on height {
+            NumberAnimation {
+                duration: Appearance.animationCurves.expressiveFastSpatialDuration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animationCurves.expressiveFastSpatial
+            }
+        }
+        Behavior on color {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+        }
+
+        MaterialSymbol {
+            width: 18 * root.sizeScale
+            height: 18 * root.sizeScale
+            anchors.centerIn: parent
+            text: root.checked ? "check" : "close"
+            iconSize: 18 * root.sizeScale
+            color: root.checked ? root.activeColor : root.inactiveColor
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            Behavior on iconSize {
+                NumberAnimation {
+                    duration: Appearance.animationCurves.expressiveFastSpatialDuration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: Appearance.animationCurves.expressiveFastSpatial
+                }
+            }
+            Behavior on color {
+                animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
             }
         }
     }

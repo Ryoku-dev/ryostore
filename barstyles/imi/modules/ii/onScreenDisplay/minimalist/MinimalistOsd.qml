@@ -1,0 +1,328 @@
+import "../../../.."
+import "../../../../services"
+import "../../../common"
+import "../../../common/widgets"
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
+import Quickshell.Wayland
+
+Scope {
+    id: root
+    property string protectionMessage: ""
+    property var focusedScreen: Quickshell.screens.find(s => s.name === (HyprlandData.focusedMonitor ? HyprlandData.focusedMonitor.name : "")) || Quickshell.screens[0] || null
+
+    property bool isStartup: true
+    Timer {
+        running: true
+        interval: 2000
+        onTriggered: root.isStartup = false
+    }
+
+    property string currentIndicator: "volume"
+    property var indicators: [
+        {
+            id: "volume",
+            sourceUrl: "../indicators/VolumeIndicator.qml"
+        },
+        {
+            id: "brightness",
+            sourceUrl: "../indicators/BrightnessIndicator.qml"
+        },
+        {
+            id: "playerVolume",
+            sourceUrl: "../indicators/PlayerVolumeIndicator.qml"
+        },
+        {
+            id: "gamma",
+            sourceUrl: "../indicators/GammaIndicator.qml"
+        },
+        {
+            id: "keyboardBrightness",
+            sourceUrl: "../indicators/KeyboardBrightnessIndicator.qml"
+        },
+    ]
+
+    function triggerOsd() {
+        if (!root.currentIndicator)
+            root.currentIndicator = "volume";
+        if (!Config.osdIndicatorEnabled(root.currentIndicator))
+            return;
+        if (Config.ready && Config.options.osd && Config.options.osd.hideWhenFullscreen && Notifications.focusedWindowFullscreen)
+            return;
+        GlobalStates.osdVolumeOpen = true;
+        osdTimeout.restart();
+    }
+
+    Timer {
+        id: osdTimeout
+        interval: Config.options.osd.timeout
+        repeat: false
+        running: false
+        onTriggered: {
+            GlobalStates.osdVolumeOpen = false;
+            root.protectionMessage = "";
+        }
+    }
+
+    Connections {
+        target: GlobalStates
+        ignoreUnknownSignals: true
+        function onOsdInteraction() {
+            root.triggerOsd();
+        }
+    }
+
+    Connections {
+        target: Brightness
+        function onBrightnessChanged() {
+            root.protectionMessage = "";
+            root.currentIndicator = "brightness";
+            root.triggerOsd();
+        }
+    }
+
+    Connections {
+        target: Hyprsunset
+        function onGammaChangeAttempt() {
+            root.protectionMessage = "";
+            root.currentIndicator = "gamma";
+            root.triggerOsd();
+        }
+    }
+
+    Connections {
+        target: Audio.sink?.audio ?? null
+        function onVolumeChanged() {
+            if (!Audio.ready || root.isStartup)
+                return;
+            root.currentIndicator = "volume";
+            root.triggerOsd();
+        }
+        function onMutedChanged() {
+            if (!Audio.ready || root.isStartup)
+                return;
+            root.currentIndicator = "volume";
+            root.triggerOsd();
+        }
+    }
+
+    Connections {
+        target: Audio
+        function onSinkProtectionTriggered(reason) {
+            root.protectionMessage = reason;
+            root.currentIndicator = "volume";
+            root.triggerOsd();
+        }
+    }
+
+    Connections {
+        target: MprisController.activePlayer ?? null
+        function onVolumeChanged() {
+            if (MprisController.canChangeVolume) {
+                root.currentIndicator = "playerVolume";
+                root.triggerOsd();
+            }
+        }
+    }
+
+    Connections {
+        target: KeyboardBacklight
+        function onPercentageChanged() {
+            if (KeyboardBacklight.suppressOsd)
+                return;
+            root.currentIndicator = "keyboardBrightness";
+            root.triggerOsd();
+        }
+    }
+
+    // Same latch as the classic OSD (OnScreenDisplay.qml): the window stays loaded for the
+    // fade-out, and `active` changes only in the handler (open) or the timer (after the fade),
+    // never in the close notification itself, or the window is destroyed before it fades.
+    property bool osdWindowAlive: false
+    Component.onCompleted: root.osdWindowAlive = GlobalStates.osdVolumeOpen
+
+    Timer {
+        id: osdCloseTimer
+        // The fade is 200 ms (the Tuner's card); a little longer so it always lands.
+        interval: 250
+        onTriggered: root.osdWindowAlive = false
+    }
+
+    Connections {
+        target: GlobalStates
+        function onOsdVolumeOpenChanged() {
+            if (GlobalStates.osdVolumeOpen) {
+                osdCloseTimer.stop();
+                root.osdWindowAlive = true;
+            } else {
+                osdCloseTimer.restart();
+            }
+        }
+    }
+
+    Loader {
+        id: osdLoader
+        active: root.osdWindowAlive
+
+        sourceComponent: PanelWindow {
+            id: osdRoot
+            color: "transparent"
+
+            // The Tuner's popup motion (TunerOsdWindow's card): the window is created with
+            // `appeared` false, so the fade and grow run on the first frame too.
+            property bool appeared: false
+            readonly property bool revealed: osdRoot.appeared && GlobalStates.osdVolumeOpen
+            Component.onCompleted: osdRoot.appeared = true
+
+            Connections {
+                target: root
+                function onFocusedScreenChanged() {
+                    osdRoot.screen = root.focusedScreen;
+                }
+            }
+
+            WlrLayershell.namespace: "quickshell:onScreenDisplay"
+            WlrLayershell.layer: WlrLayer.Overlay
+            anchors {
+                top: !BarPlacement.bottom
+                bottom: BarPlacement.bottom
+            }
+            mask: Region {
+                item: osdValuesWrapper
+            }
+
+            exclusionMode: ExclusionMode.Ignore
+            exclusiveZone: 0
+            margins {
+                top: Appearance.sizes.barHeight
+                bottom: Appearance.sizes.barHeight
+            }
+
+            implicitWidth: columnLayout.implicitWidth
+            implicitHeight: columnLayout.implicitHeight
+            visible: Quickshell.screens.length > 0 && osdLoader.active
+
+            ColumnLayout {
+                id: columnLayout
+                anchors.horizontalCenter: parent.horizontalCenter
+                opacity: osdRoot.revealed ? 1 : 0
+                scale: osdRoot.revealed ? 1 : 0.9
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
+                Item {
+                    id: osdValuesWrapper
+                    implicitHeight: contentColumnLayout.implicitHeight
+                    implicitWidth: contentColumnLayout.implicitWidth
+                    clip: true
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onEntered: GlobalStates.osdVolumeOpen = false
+                    }
+
+                    Column {
+                        id: contentColumnLayout
+                        anchors {
+                            top: parent.top
+                            left: parent.left
+                            right: parent.right
+                        }
+                        spacing: 0
+
+                        Loader {
+                            id: osdIndicatorLoader
+                            source: root.indicators.find(i => i.id === root.currentIndicator)?.sourceUrl
+                        }
+
+                        Item {
+                            id: protectionMessageWrapper
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            implicitHeight: protectionMessageBackground.implicitHeight
+                            implicitWidth: protectionMessageBackground.implicitWidth
+                            opacity: root.protectionMessage !== "" ? 1 : 0
+
+                            StyledRectangularShadow {
+                                target: protectionMessageBackground
+                            }
+                            Rectangle {
+                                id: protectionMessageBackground
+                                anchors.centerIn: parent
+                                color: Appearance.m3colors.m3error
+                                property real padding: 10
+                                implicitHeight: protectionMessageRowLayout.implicitHeight + padding * 2
+                                implicitWidth: protectionMessageRowLayout.implicitWidth + padding * 2
+                                radius: Appearance.rounding.normal
+
+                                RowLayout {
+                                    id: protectionMessageRowLayout
+                                    anchors.centerIn: parent
+                                    MaterialSymbol {
+                                        id: protectionMessageIcon
+                                        text: "dangerous"
+                                        iconSize: Appearance.font.pixelSize.hugeass
+                                        color: Appearance.m3colors.m3onError
+                                    }
+                                    StyledText {
+                                        id: protectionMessageTextWidget
+                                        horizontalAlignment: Text.AlignHCenter
+                                        color: Appearance.m3colors.m3onError
+                                        wrapMode: Text.Wrap
+                                        text: root.protectionMessage
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    IpcHandler {
+        target: "osdVolume"
+
+        function trigger() {
+            root.triggerOsd();
+        }
+
+        function hide() {
+            GlobalStates.osdVolumeOpen = false;
+        }
+
+        function toggle() {
+            GlobalStates.osdVolumeOpen = !GlobalStates.osdVolumeOpen;
+        }
+    }
+    GlobalShortcut {
+        name: "osdVolumeTrigger"
+        description: "Triggers volume OSD on press"
+
+        onPressed: {
+            root.triggerOsd();
+        }
+    }
+    GlobalShortcut {
+        name: "osdVolumeHide"
+        description: "Hides volume OSD on press"
+
+        onPressed: {
+            GlobalStates.osdVolumeOpen = false;
+        }
+    }
+}

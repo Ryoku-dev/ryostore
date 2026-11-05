@@ -1,53 +1,51 @@
+import "../../../services"
 import ".."
-import "../functions" as Functions
+import "../functions"
 import QtQuick
 import QtQuick.Layouts
 
-RippleButton {
+RippleButton { // Expand button
     id: root
     required property int count
     required property bool expanded
-    property bool isRestart: false
-    property real fontSize: Appearance.font.pixelSize.smaller
-    property real iconSize: Appearance.font.pixelSize.normal
-    implicitHeight: fontSize + (4 * 2) * Appearance.effectiveScale
-    implicitWidth: Math.max(contentContainerItem.implicitWidth + (5 * 2) * Appearance.effectiveScale, 30 * Appearance.effectiveScale)
+    property real zoom: 1.0
+    property real fontSize: Appearance?.font.pixelSize.small ?? 12
+    property real iconSize: Appearance?.font.pixelSize.normal ?? 16
+    property var animationSpec: Appearance.animation.elementMoveFast
+    implicitHeight: fontSize + 4 * 2 * zoom
+    implicitWidth: Math.max(contentItem.implicitWidth + 5 * 2 * zoom, 30 * zoom)
     Layout.alignment: Qt.AlignVCenter
     Layout.fillHeight: false
 
     buttonRadius: Appearance.rounding.full
-    colBackground: isRestart ? 
-        Functions.ColorUtils.applyAlpha(Appearance.colors.colOnWarningContainer, 0.1) :
-        Functions.ColorUtils.mix(Appearance.colors.colLayer2, Appearance.colors.colLayer2Hover, 0.5)
-    colBackgroundHover: isRestart ? 
-        Functions.ColorUtils.applyAlpha(Appearance.colors.colOnWarningContainer, 0.2) :
-        Appearance.colors.colLayer2Hover
-    colRipple: isRestart ? 
-        Functions.ColorUtils.applyAlpha(Appearance.colors.colOnWarningContainer, 0.3) :
-        Appearance.colors.colLayer2Active
+    colBackground: ColorUtils.mix(Appearance?.colors.colLayer2, Appearance?.colors.colLayer2Hover, 0.5)
+    colBackgroundHover: Appearance?.colors.colLayer2Hover ?? "#E5DFED"
+    colRipple: Appearance?.colors.colLayer2Active ?? "#D6CEE2"
 
     contentItem: Item {
-        id: contentContainerItem
         anchors.centerIn: parent
         implicitWidth: contentRow.implicitWidth
         RowLayout {
             id: contentRow
             anchors.centerIn: parent
-            spacing: 3 * Appearance.effectiveScale
+            spacing: 3 * root.zoom
             StyledText {
-                Layout.leftMargin: 4 * Appearance.effectiveScale
+                Layout.leftMargin: 4 * root.zoom
                 visible: root.count > 1
                 text: root.count
-                font.pixelSize: Math.round(root.fontSize)
-                color: isRestart ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer2
+                font.pixelSize: root.fontSize
             }
             MaterialSymbol {
                 text: "keyboard_arrow_down"
                 iconSize: root.iconSize
-                color: isRestart ? Appearance.colors.colOnWarningContainer : Appearance.colors.colOnLayer2
+                color: Appearance.colors.colOnLayer2
                 rotation: expanded ? 180 : 0
                 Behavior on rotation {
-                    animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                    NumberAnimation {
+                        duration: root.animationSpec.duration
+                        easing.type: root.animationSpec.type
+                        easing.bezierCurve: root.animationSpec.bezierCurve
+                    }
                 }
             }
         }

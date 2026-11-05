@@ -1,23 +1,63 @@
 import QtQuick
 import QtQuick.Layouts
-import "../../../services"
 import ".."
 import "."
-import "../functions"
 
-RowLayout {
+Flow {
     id: root
-    property string text: ""
-    property string icon: ""
+    Layout.fillWidth: true
+    Layout.leftMargin: 4
+    Layout.rightMargin: 4
+
+    ScrollAnimate {}
+
+    property int clickIndex: -1
+    property real calculatedWidth: 0
+    property bool _widthUpdateScheduled: false
+
+    function updateWidth() {
+        if (!repeater) return;
+        let w = 0;
+        for (let i = 0; i < repeater.count; ++i) {
+            let child = repeater.itemAt(i);
+            if (child && child.visible) {
+                w += child.implicitWidth + root.spacing;
+            }
+        }
+        root.calculatedWidth = Math.max(0, w - root.spacing);
+    }
+
+    function scheduleWidthUpdate() {
+        if (root._widthUpdateScheduled) return;
+        root._widthUpdateScheduled = true;
+        Qt.callLater(() => {
+            root._widthUpdateScheduled = false;
+            root.updateWidth();
+        });
+    }
+
+    Layout.preferredWidth: calculatedWidth
+
+    property color colBackground: Appearance.colors.colSecondaryContainer
+    property color colBackgroundHover: Appearance.colors.colSecondaryContainerHover
+    property color colBackgroundActive: Appearance.colors.colSecondaryContainerActive
+
+    spacing: 2
     property list<var> options: [
         {
             "displayName": "Option 1",
             "icon": "check",
+            "shape": "Arch", // Optional (for material shape)
+            "symbol": "google-gemini-symbolic", // Optional (for custom icons)
+            "color": "red", // Optional (for custom shape color)
             "value": 1
         },
         {
             "displayName": "Option 2",
             "icon": "close",
+            "shape": "Circle", // Optional (for material shape)
+            "symbol": "mistral-symbolic", // Optional (for custom icons)
+            "color": "blue", // Optional (for custom shape color)
             "value": 2
         },
     ]
@@ -25,56 +65,69 @@ RowLayout {
 
     signal selected(var newValue)
 
-    spacing: Appearance.spacing.space150
-    Layout.leftMargin: Appearance.spacing.space100
-    Layout.rightMargin: Appearance.spacing.space100
+    Repeater {
+        id: repeater
+        model: root.options
+        delegate: SelectionGroupButton {
+            id: paletteButton
+            required property var modelData
+            required property int index
+            
+            readonly property bool isOptionEnabled: modelData.enabled !== undefined ? modelData.enabled : true
+            opacity: isOptionEnabled ? 1.0 : 0.5
+            mouseArea.cursorShape: isOptionEnabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+            
+            onImplicitWidthChanged: root.scheduleWidthUpdate()
+            Component.onCompleted: root.scheduleWidthUpdate()
+            
+            color: isOptionEnabled ? (toggled ? 
+                (down ? colBackgroundToggledActive : 
+                    hovered ? colBackgroundToggledHover : 
+                    colBackgroundToggled) :
+                (down ? colBackgroundActive : 
+                    hovered ? colBackgroundHover : 
+                    colBackground)) : colBackground
 
-    RowLayout {
-        spacing: Appearance.spacing.space150
-        visible: root.text !== ""
-        OptionalMaterialSymbol {
-            icon: root.icon
-            opacity: root.enabled ? 1 : 0.4
-        }
-        StyledText {
-            id: labelWidget
-            Layout.fillWidth: true
-            text: root.text
-            color: Appearance.colors.colOnSecondaryContainer
-            opacity: root.enabled ? 1 : 0.4
-        }
-    }
-
-    Flow {
-        id: buttonsFlow
-        Layout.fillWidth: !root.text
-        Layout.alignment: Qt.AlignRight
-        spacing: Appearance.spacing.space25
-
-        Repeater {
-            model: root.options
-            delegate: SelectionGroupButton {
-                id: paletteButton
-                required property var modelData
-                required property int index
-                onYChanged: {
-                    if (index === 0) {
-                        paletteButton.leftmost = true
-                    } else {
-                        var prev = buttonsFlow.children[index - 1]
-                        var thisIsOnNewLine = prev && prev.y !== paletteButton.y
-                        paletteButton.leftmost = thisIsOnNewLine
-                        prev.rightmost = thisIsOnNewLine
+            onYChanged: {
+                if (index === 0) {
+                    paletteButton.leftmost = true
+                } else {
+                    for (var i = index - 1; i >= 0; i--) {
+                        var prev = repeater.itemAt(i)
+                        if (prev) {
+                            var thisIsOnNewLine = prev.y !== paletteButton.y
+                            paletteButton.leftmost = thisIsOnNewLine
+                            prev.rightmost = thisIsOnNewLine
+                            break
+                        }
                     }
                 }
-                leftmost: index === 0
-                rightmost: index === root.options.length - 1
-                buttonIcon: modelData.icon || ""
-                buttonText: modelData.displayName
-                toggled: root.currentValue == modelData.value
-                enabled: root.enabled && !(modelData.disabled ?? false)
-                onClicked: {
+            }
+            leftmost: index === 0
+            rightmost: index === root.options.length - 1
+            buttonIcon: modelData.icon || ""
+            buttonShape: modelData.shape || ""
+            buttonSymbol: modelData.symbol || ""
+            buttonColor: modelData.color || ""
+            buttonText: modelData.displayName
+            toggled: root.currentValue == modelData.value
+            releaseAction: modelData.releaseAction || ""
+
+            colBackground: root.colBackground
+            colBackgroundHover: root.colBackgroundHover
+            colBackgroundActive: root.colBackgroundActive
+
+            onClicked: {
+                if (isOptionEnabled) {
                     root.selected(modelData.value);
+                }
+            }
+
+            Loader {
+                active: paletteButton.modelData.tooltip !== undefined && paletteButton.modelData.tooltip !== ""
+                sourceComponent: StyledToolTip {
+                    parent: paletteButton
+                    text: paletteButton.modelData.tooltip ?? ""
                 }
             }
         }

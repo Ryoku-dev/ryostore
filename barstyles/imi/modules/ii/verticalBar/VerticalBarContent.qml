@@ -1,0 +1,622 @@
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Effects
+import Quickshell
+import Quickshell.Bluetooth
+import Quickshell.Services.UPower
+import "../../.."
+import "../../../services"
+import "../../common"
+import "../../common/widgets"
+import "../../common/functions"
+import "../bar" as Bar
+import "../bar/shared"
+
+Item { // Bar content region
+    id: root
+
+    property var screen: root.QsWindow.window?.screen
+    property int monitorIndex
+
+    // ── Edit Mode ─────────────────────────────────────────────────────────────
+    property var barEditController: editController
+    Bar.BarEditController {
+        id: editController
+        anchors.fill: parent
+        z: 100
+        vertical: true
+    }
+    property var brightnessMonitor: Brightness.getMonitorForScreen(screen)
+    property bool hasActiveWindows: false
+    property bool showBarBackground: root.hasActiveWindows && Config.options.bar.barBackgroundStyle === 2 || Config.options.bar.barBackgroundStyle === 1 || Config.options.bar.barBackgroundStyle === 3
+
+    Connections {
+        enabled: Config.options.bar.barBackgroundStyle === 2 || Config.options.bar.barBackgroundStyle === 3
+        target: HyprlandData
+        function onWindowListChanged() {
+            const monitorName = root.screen ? root.screen.name : "";
+            const monitor = monitorName ? HyprlandData.monitors.find(m => m.name === monitorName) : null;
+            const wsId = monitor?.activeWorkspace?.id;
+
+            const hasWindow = wsId ? HyprlandData.windowList.some(w => w.workspace.id === wsId && !w.floating) : false;
+
+            root.hasActiveWindows = hasWindow;
+        }
+    }
+
+    component HorizontalBarSeparator: Rectangle {
+        Layout.leftMargin: Appearance.sizes.baseBarHeight / 3
+        Layout.rightMargin: Appearance.sizes.baseBarHeight / 3
+        Layout.fillWidth: true
+        implicitHeight: 1
+        color: Appearance.colors.colOutlineVariant
+    }
+
+    ////// Definning places of center modules //////
+    // Use a single stable empty array reference so the binding tracker
+    // doesn't see a "new" array on every re-evaluation when Config.options
+    // transiently reloads. A fresh `[]` literal each frame creates a
+    // chain reaction through leftList/centerList/rightList, which the
+    // QML binding tracker reports as a binding loop.
+    readonly property var _emptyLayout: ([])
+    readonly property var fullModel: Config.options.bar.layouts.center || root._emptyLayout
+    readonly property int centerIdx: fullModel.findIndex(item => item.centered)
+    readonly property var leftList: centerIdx === -1 ? root._emptyLayout : fullModel.slice(0, centerIdx)
+    readonly property var centerList: centerIdx === -1 ? fullModel.slice() : [fullModel[centerIdx]]
+    readonly property var rightList: centerIdx === -1 ? root._emptyLayout : fullModel.slice(centerIdx + 1)
+
+    BarThemes {
+        id: barThemes
+    }
+    property var activeTheme: barThemes.getTheme(Config.options.bar.expressiveColorTheme)
+
+    readonly property bool isIslandMode: Config.options.bar.barBackgroundStyle === 3
+    readonly property bool isDynamicIsland: BarInteraction.cornerStyle === 3
+    readonly property bool isHugIslandMode: root.isIslandMode && BarInteraction.cornerStyle === 0
+
+    // Float + Connect: an open sidebar card is fused with the bar, and the top layer
+    // paints the two as one shape with one shadow, so the bar's own pill steps aside.
+    property bool fusedToSidebar: false
+
+    // Hug/Rect vertical bars are welded to the wrapped frame ring, so the shell
+    // shadow is generated once in WrappedFrameVisuals, underneath every panel.
+    // Float and Dynamic Island bars keep their own shadow: they really do float
+    // above the frame surface.
+    readonly property bool weldedToFrame: Config.options.appearance.fakeScreenRounding === 3
+        && (BarInteraction.cornerStyle === 0 || BarInteraction.cornerStyle === 2)
+        && Config.options.bar.barBackgroundStyle !== 3
+    readonly property string barEdge: Config.options.bar.bottom ? "right" : "left"
+    readonly property real frameThickness: Config.options.appearance.fakeScreenRounding === 3 ? Config.options.appearance.wrappedFrameThickness : 0
+
+    // What the Dynamic Island pill takes of the edge: its height and the concave fillet
+    // it flares into the screen edge above and below. Read by the bar window, which
+    // publishes it for the dock (GlobalStates.barIslands).
+    readonly property real islandExtent: root.isDynamicIsland ? barBackground.height + 2 * barBackground.islandRadius : 0
+
+    property color islandFillColor: Config.options.bar.amoledBackground ? "#000000" : Config.options.bar.expressiveColors ? root.activeTheme.barBackground : Appearance.colors.colLayer0
+
+    // Background
+    Rectangle {
+        id: barBackground
+        z: -10
+        anchors {
+            fill: root.isDynamicIsland ? undefined : parent
+            verticalCenter: root.isDynamicIsland ? parent.verticalCenter : undefined
+            left: root.isDynamicIsland ? (!Config.options.bar.bottom ? parent.left : undefined) : undefined
+            right: root.isDynamicIsland ? (Config.options.bar.bottom ? parent.right : undefined) : undefined
+            leftMargin: root.isDynamicIsland ? (!Config.options.bar.bottom ? root.frameThickness : 0) : ((BarInteraction.cornerStyle === 1) ? Appearance.sizes.hyprlandGapsOut : 0)
+            rightMargin: root.isDynamicIsland ? (Config.options.bar.bottom ? root.frameThickness : 0) : ((BarInteraction.cornerStyle === 1) ? Appearance.sizes.hyprlandGapsOut : 0)
+            topMargin: (BarInteraction.cornerStyle === 1) ? Appearance.sizes.hyprlandGapsOut : 0
+            bottomMargin: (BarInteraction.cornerStyle === 1) ? Appearance.sizes.hyprlandGapsOut : 0
+        }
+
+        property color actualColor: root.showBarBackground ? (Config.options.bar.amoledBackground ? "#000000" : Config.options.bar.expressiveColors ? activeTheme.barBackground : Appearance.colors.colLayer0) : "transparent"
+        Behavior on actualColor {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(barBackground)
+        }
+
+        opacity: 1.0
+
+        readonly property int islandSectionSpacing: {
+            const screenHeight = root.screen ? root.screen.height : 1080;
+            const frameThick = root.frameThickness;
+            const maxAllowedHeight = screenHeight - 2 * frameThick - 64; // 32px padding on top/bottom
+
+            const topH = topSectionLayout.implicitHeight;
+            const centerH = centerSectionLayout.implicitHeight;
+            const bottomH = bottomSectionLayout.implicitHeight;
+
+            const remaining = maxAllowedHeight - 24 - topH - centerH - bottomH;
+
+            if (Config.options.bar.dynamicIslandLoadBalance) {
+                return Math.min(60, Math.max(8, Math.floor(remaining / 2)));
+            } else {
+                const preferred = Config.options.bar.dynamicIslandSpacingVertical ?? 16;
+                const maxSpacing = Math.max(8, Math.floor(remaining / 2));
+                return Math.min(preferred, maxSpacing);
+            }
+        }
+
+        width: root.isDynamicIsland ? Math.max(0, parent.width - root.frameThickness) : parent.width
+        height: root.isDynamicIsland ? (Math.max(islandSections.implicitHeight + 24, 200)) : parent.height
+
+        color: (root.isIslandMode || root.weldedToFrame || root.fusedToSidebar) ? "transparent" : barBackground.actualColor
+        readonly property real availablePillExtension: Math.max(0, width)
+        readonly property real islandRadius: Math.min(Appearance.rounding.screenRounding, Math.floor(availablePillExtension / 2))
+        property real baseRadius: root.isDynamicIsland ? islandRadius : (BarInteraction.cornerStyle === 1 || Config.options.appearance.fakeScreenRounding === 4 ? Appearance.rounding.full : 0)
+
+        // In vertical mode (Left/Right), the edges touching the screen are left/right.
+        // For Left bar (bottom: false): left edges are 0.
+        // For Right bar (bottom: true): right edges are 0.
+        topLeftRadius: (!Config.options.bar.bottom && (root.isDynamicIsland || Config.options.appearance.fakeScreenRounding === 4)) ? 0 : baseRadius
+        bottomLeftRadius: (!Config.options.bar.bottom && (root.isDynamicIsland || Config.options.appearance.fakeScreenRounding === 4)) ? 0 : baseRadius
+        topRightRadius: (Config.options.bar.bottom && (root.isDynamicIsland || Config.options.appearance.fakeScreenRounding === 4)) ? 0 : baseRadius
+        bottomRightRadius: (Config.options.bar.bottom && (root.isDynamicIsland || Config.options.appearance.fakeScreenRounding === 4)) ? 0 : baseRadius
+
+        border.width: 0
+        border.color: "transparent"
+
+        Behavior on height {
+            enabled: !root.isDynamicIsland
+            NumberAnimation {
+                duration: 450
+                easing.type: Easing.OutExpo
+            }
+        }
+
+        layer.enabled: !root.isIslandMode && !root.weldedToFrame && !root.fusedToSidebar && Config.options.bar.dropShadow && !ShellModePolicy.barDropShadowBlocked
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.28)
+            shadowHorizontalOffset: Config.options.bar.bottom ? -4 : 4
+            shadowVerticalOffset: 0
+            shadowBlur: 1.0
+        }
+    }
+
+    // Concave Corners (HUD Mode)
+    RoundCorner {
+        anchors.bottom: barBackground.top
+        anchors.left: Config.options.bar.bottom ? undefined : barBackground.left
+        anchors.right: Config.options.bar.bottom ? barBackground.right : undefined
+        implicitSize: barBackground.islandRadius
+        color: barBackground.color
+        corner: Config.options.bar.bottom ? RoundCorner.CornerEnum.BottomRight : RoundCorner.CornerEnum.BottomLeft
+        visible: root.isDynamicIsland && root.showBarBackground
+        anchors.leftMargin: 0
+        anchors.rightMargin: 0
+    }
+    RoundCorner {
+        anchors.top: barBackground.bottom
+        anchors.left: Config.options.bar.bottom ? undefined : barBackground.left
+        anchors.right: Config.options.bar.bottom ? barBackground.right : undefined
+        implicitSize: barBackground.islandRadius
+        color: barBackground.color
+        corner: Config.options.bar.bottom ? RoundCorner.CornerEnum.TopRight : RoundCorner.CornerEnum.TopLeft
+        visible: root.isDynamicIsland && root.showBarBackground
+        anchors.leftMargin: 0
+        anchors.rightMargin: 0
+    }
+
+
+    // ── Islands (barBackgroundStyle === 3) ────────────────────────────────────
+    // Pill islands for Float/Rect styles.
+    Rectangle {
+        id: topIsland
+        z: -9
+        visible: root.isIslandMode && !root.isHugIslandMode && (Config.options.bar.layouts.left || []).length > 0
+        anchors {
+            left: parent.left
+            leftMargin: 4
+            right: parent.right
+            rightMargin: 4
+            top: topSection.top
+            topMargin: -6
+            bottom: topSection.bottom
+            bottomMargin: -6
+        }
+        color: root.islandFillColor
+        radius: Appearance.rounding.full
+
+        // GPU: only allocate FBO when island is actually visible (no widgets = invisible = no shadow needed)
+        layer.enabled: topIsland.visible && Config.options.bar.dropShadow && !ShellModePolicy.barDropShadowBlocked
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.28)
+            shadowHorizontalOffset: Config.options.bar.bottom ? -4 : 4
+            shadowBlur: 1.0
+        }
+
+        Behavior on color {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(topIsland)
+        }
+    }
+
+    Rectangle {
+        id: middleIsland
+        z: -9
+        visible: root.isIslandMode && !root.isHugIslandMode && (root.leftList.length > 0 || root.centerList.length > 0 || root.rightList.length > 0)
+        anchors {
+            left: parent.left
+            leftMargin: 4
+            right: parent.right
+            rightMargin: 4
+            top: middleSection.top
+            topMargin: -6
+            bottom: middleSection.bottom
+            bottomMargin: -6
+        }
+        color: root.islandFillColor
+        radius: Appearance.rounding.full
+
+        // GPU: only allocate FBO when island is actually visible
+        layer.enabled: middleIsland.visible && Config.options.bar.dropShadow && !ShellModePolicy.barDropShadowBlocked
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.28)
+            shadowHorizontalOffset: Config.options.bar.bottom ? -4 : 4
+            shadowBlur: 1.0
+        }
+
+        Behavior on color {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(middleIsland)
+        }
+    }
+
+    Rectangle {
+        id: bottomIsland
+        z: -9
+        visible: root.isIslandMode && !root.isHugIslandMode && (Config.options.bar.layouts.right || []).length > 0
+        anchors {
+            left: parent.left
+            leftMargin: 4
+            right: parent.right
+            rightMargin: 4
+            top: bottomSection.top
+            topMargin: -6
+            bottom: bottomSection.bottom
+            bottomMargin: -6
+        }
+        color: root.islandFillColor
+        radius: Appearance.rounding.full
+
+        // GPU: only allocate FBO when island is actually visible
+        layer.enabled: bottomIsland.visible && Config.options.bar.dropShadow && !ShellModePolicy.barDropShadowBlocked
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.28)
+            shadowHorizontalOffset: Config.options.bar.bottom ? -4 : 4
+            shadowBlur: 1.0
+        }
+
+        Behavior on color {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(bottomIsland)
+        }
+    }
+
+    // Hug-style islands: connected to the screen edge with concave transitions.
+    HugIslandGroup {
+        id: topHugIsland
+        z: -9
+        visible: root.isHugIslandMode && (Config.options.bar.layouts.left || []).length > 0
+        edge: root.barEdge
+        role: "first"
+        fillColor: barBackground.actualColor
+
+        layer.enabled: root.isHugIslandMode && Config.options.bar.dropShadow && !ShellModePolicy.barDropShadowBlocked
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.28)
+            shadowHorizontalOffset: Config.options.bar.bottom ? -4 : 4
+            shadowBlur: 1.0
+        }
+
+        anchors {
+            top: parent.top
+            bottom: topSection.bottom
+            bottomMargin: -6
+            left: parent.left
+            right: parent.right
+        }
+    }
+
+    HugIslandGroup {
+        id: middleHugIsland
+        z: -9
+        visible: root.isHugIslandMode && (root.leftList.length > 0 || root.centerList.length > 0 || root.rightList.length > 0)
+        edge: root.barEdge
+        role: "middle"
+        fillColor: barBackground.actualColor
+
+        layer.enabled: root.isHugIslandMode && Config.options.bar.dropShadow && !ShellModePolicy.barDropShadowBlocked
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.28)
+            shadowHorizontalOffset: Config.options.bar.bottom ? -4 : 4
+            shadowBlur: 1.0
+        }
+
+        anchors {
+            top: middleSection.top
+            topMargin: -6
+            bottom: middleSection.bottom
+            bottomMargin: -6
+            left: parent.left
+            right: parent.right
+        }
+    }
+
+    HugIslandGroup {
+        id: bottomHugIsland
+        z: -9
+        visible: root.isHugIslandMode && (Config.options.bar.layouts.right || []).length > 0
+        edge: root.barEdge
+        role: "last"
+        fillColor: barBackground.actualColor
+
+        layer.enabled: root.isHugIslandMode && Config.options.bar.dropShadow && !ShellModePolicy.barDropShadowBlocked
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: Qt.rgba(0, 0, 0, 0.28)
+            shadowHorizontalOffset: Config.options.bar.bottom ? -4 : 4
+            shadowBlur: 1.0
+        }
+
+        anchors {
+            top: bottomSection.top
+            topMargin: -6
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+    }
+
+    ColumnLayout { // Combined Island section
+        id: islandSections
+        visible: root.isDynamicIsland
+        anchors.centerIn: parent
+        spacing: 0
+
+        ColumnLayout { // Top items
+            id: topSectionLayout
+            spacing: 4
+            Repeater {
+                // Delegates are instantiated even when this tree is invisible,
+                // so the model is empty outside island mode: without this gate
+                // EVERY bar widget existed twice (here and in the sections
+                // below), which is where the vertical bar's ~80 MB went.
+                model: root.isDynamicIsland ? Config.options.bar.layouts.left : root._emptyLayout
+                delegate: Bar.BarComponent {
+                    vertical: true
+                    list: Config.options.bar.layouts.left
+                    barSection: 0
+                }
+            }
+        }
+
+        Item {
+            Layout.fillHeight: true
+            Layout.preferredHeight: barBackground.islandSectionSpacing
+        }
+
+        ColumnLayout { // Center items
+            id: centerSectionLayout
+            spacing: 4
+            Repeater {
+                model: root.isDynamicIsland ? root.leftList : root._emptyLayout
+                delegate: Bar.BarComponent {
+                    vertical: true
+                    list: Config.options.bar.layouts.center
+                    barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id)
+                }
+            }
+            Repeater {
+                model: root.isDynamicIsland ? root.centerList : root._emptyLayout
+                delegate: Bar.BarComponent {
+                    vertical: true
+                    list: Config.options.bar.layouts.center
+                    barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id)
+                }
+            }
+            Repeater {
+                model: root.isDynamicIsland ? root.rightList : root._emptyLayout
+                delegate: Bar.BarComponent {
+                    vertical: true
+                    list: Config.options.bar.layouts.center
+                    barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id)
+                }
+            }
+        }
+
+        Item {
+            Layout.fillHeight: true
+            Layout.preferredHeight: barBackground.islandSectionSpacing
+        }
+
+        ColumnLayout { // Bottom items
+            id: bottomSectionLayout
+            spacing: 4
+            Repeater {
+                model: root.isDynamicIsland ? Config.options.bar.layouts.right : root._emptyLayout
+                delegate: Bar.BarComponent {
+                    vertical: true
+                    list: Config.options.bar.layouts.right
+                    barSection: 2
+                }
+            }
+        }
+    }
+
+    FocusedScrollMouseArea { // Top section | scroll to change brightness
+        id: barTopSectionMouseArea
+        visible: !root.isDynamicIsland
+        anchors {
+            top: parent.top
+            bottom: middleSection.top
+            left: parent.left
+            right: parent.right
+        }
+        implicitWidth: Appearance.sizes.baseVerticalBarWidth
+        height: (root.height - middleSection.height) / 2
+        width: Appearance.sizes.verticalBarWindowWidth
+
+        onScrollDown: if (Config.options.bar.enableBrightnessScroll)
+            Brightness.decreaseBrightness()
+        onScrollUp: if (Config.options.bar.enableBrightnessScroll)
+            Brightness.increaseBrightness()
+        onMovedAway: GlobalStates.osdBrightnessOpen = false
+        onPressed: event => {
+            if (event.button === Qt.LeftButton && Config.options.bar.sidebarClickOpen)
+                GlobalStates.toggleLeftSidebar(root.screen?.name);
+        }
+    }
+
+    ColumnLayout { // Top section
+        id: topSection
+        visible: !root.isDynamicIsland
+        anchors {
+            top: barBackground.top
+            topMargin: (BarInteraction.cornerStyle === 1) ? Appearance.sizes.hyprlandGapsOut : Math.ceil(Appearance.rounding.screenRounding / 2.5)
+            horizontalCenter: barBackground.horizontalCenter
+        }
+        spacing: 4
+
+        Repeater {
+            id: leftRepeater
+            // The island tree owns the widgets in Dynamic Island mode; an
+            // invisible twin here would still instantiate every delegate.
+            model: root.isDynamicIsland ? root._emptyLayout : Config.options.bar.layouts.left
+            delegate: Bar.BarComponent {
+                vertical: true
+                list: leftRepeater.model
+                barSection: 0
+            }
+        }
+    }
+
+    Item {
+        id: middleSection
+        visible: !root.isDynamicIsland
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+        }
+        readonly property real middleChildrenHeight: {
+            const ch = centerCenter.implicitHeight;
+            const lh = middleLeftColumn.implicitHeight;
+            const rh = middleRightColumn.implicitHeight;
+            let total = ch;
+            if (lh > 0)
+                total += lh + 4;
+            if (rh > 0)
+                total += rh + 4;
+            return Math.max(1, total);
+        }
+        height: middleChildrenHeight
+
+        ColumnLayout {
+            id: middleLeftColumn
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                bottom: centerCenter.top
+                bottomMargin: 4
+            }
+            Repeater {
+                id: middleLeftRepeater
+                model: root.isDynamicIsland ? root._emptyLayout : root.leftList
+                delegate: Bar.BarComponent {
+                    growthEdge: "trailing"
+                    vertical: true
+                    list: Config.options.bar.layouts.center
+                    barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id) // we have to recalculate the index because repeater.model has changed
+                }
+            }
+        }
+
+        ColumnLayout { //center
+            id: centerCenter
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                verticalCenter: parent.verticalCenter
+            }
+            Repeater {
+                model: root.isDynamicIsland ? root._emptyLayout : root.centerList
+                delegate: Bar.BarComponent {
+                    vertical: true
+                    list: Config.options.bar.layouts.center
+                    barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id)
+                }
+            }
+        }
+
+        ColumnLayout {
+            id: middleRightColumn
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                top: centerCenter.bottom
+                topMargin: 4
+            }
+            Repeater {
+                id: middleRightRepeater
+                model: root.isDynamicIsland ? root._emptyLayout : root.rightList
+                delegate: Bar.BarComponent {
+                    growthEdge: "leading"
+                    vertical: true
+                    list: Config.options.bar.layouts.center
+                    barSection: 1
+                    originalIndex: Config.options.bar.layouts.center.findIndex(e => e.id === modelData.id)
+                }
+            }
+        }
+    }
+
+    ColumnLayout { // Bottom section
+        id: bottomSection
+        visible: !root.isDynamicIsland
+        anchors {
+            horizontalCenter: barBackground.horizontalCenter
+            bottom: barBackground.bottom
+            bottomMargin: (BarInteraction.cornerStyle === 1) ? Appearance.sizes.hyprlandGapsOut : Math.ceil(Appearance.rounding.screenRounding / 2.5)
+        }
+        spacing: 4
+
+        Repeater {
+            id: rightRepeater
+            model: root.isDynamicIsland ? root._emptyLayout : Config.options.bar.layouts.right
+            delegate: Bar.BarComponent {
+                vertical: true
+                list: rightRepeater.model
+                barSection: 2
+            }
+        }
+    }
+
+    FocusedScrollMouseArea { // Bottom section | scroll to change volume
+        id: barBottomSectionMouseArea
+        visible: !root.isDynamicIsland
+
+        z: -1
+        anchors {
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+            top: middleSection.bottom
+        }
+        implicitWidth: Appearance.sizes.baseVerticalBarWidth
+
+        onScrollDown: if (Config.options.bar.enableVolumeScroll)
+            Audio.decrementVolume()
+        onScrollUp: if (Config.options.bar.enableVolumeScroll)
+            Audio.incrementVolume()
+        onMovedAway: GlobalStates.osdVolumeOpen = false
+        onPressed: event => {
+            if (event.button === Qt.LeftButton && Config.options.bar.sidebarClickOpen)
+                GlobalStates.toggleRightSidebar(root.screen?.name);
+        }
+    }
+}

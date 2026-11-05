@@ -4,25 +4,25 @@ import ".."
 
 Item {
     id: root
+
     signal clicked(event: var)
     property alias iconText: fabWidget.iconText
-    property alias baseSize: fabWidget.baseSize
-    property alias colBackground: fabWidget.colBackground
-    property alias colBackgroundHover: fabWidget.colBackgroundHover
-    property alias colRipple: fabWidget.colRipple
-    property alias colOnBackground: fabWidget.colOnBackground
     default property alias fabData: fabWidget.data
     property bool enableShadow: true
 
+    anchors {
+        verticalCenter: parent.verticalCenter
+    }
     implicitWidth: fabWidget.implicitWidth
     implicitHeight: fabWidget.implicitHeight
-
-    StyledRectangularShadow {
-        visible: root.enableShadow
-        target: fabWidget
-        radius: fabWidget.buttonRadius
+    Loader {
+        active: root.enableShadow
+        anchors.fill: parent
+        sourceComponent: StyledRectangularShadow {
+            target: fabWidget
+            radius: fabWidget.buttonRadius
+        }
     }
-
     FloatingActionButton {
         id: fabWidget
         onClicked: e => root.clicked(e)

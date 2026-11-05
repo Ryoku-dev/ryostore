@@ -2,6 +2,9 @@ import QtQuick
 import ".."
 import "../functions"
 
+/**
+ * Material color scheme adapted to a given color. It's incomplete but enough for what we need...
+ */
 QtObject {
     id: root
     required property color color
@@ -12,13 +15,28 @@ QtObject {
     property color colOnLayer0: ColorUtils.mix(Appearance.colors.colOnLayer0, root.color, 0.5)
     property color colOnLayer1: ColorUtils.mix(Appearance.colors.colOnLayer1, root.color, 0.5)
     property color colSubtext: ColorUtils.mix(Appearance.colors.colOnLayer1, root.color, 0.5)
+    
+    
     property color colPrimary: ColorUtils.mix(ColorUtils.adaptToAccent(Appearance.colors.colPrimary, root.color), root.color, 0.5)
-    property color colPrimaryHover: ColorUtils.mix(ColorUtils.adaptToAccent(Appearance.colors.colPrimaryHover, root.color), root.color, 0.3)
     property color colPrimaryActive: ColorUtils.mix(ColorUtils.adaptToAccent(Appearance.colors.colPrimaryActive, root.color), root.color, 0.3)
+    
+    property color colPrimaryContainer: ColorUtils.mix(Appearance.m3colors.m3primaryContainer, root.color, 0.15)
+    property color colPrimaryContainerHover: ColorUtils.mix(Appearance.colors.colPrimaryContainerHover, root.color, 0.3)
+    property color colPrimaryContainerActive: ColorUtils.mix(Appearance.colors.colPrimaryContainerActive, root.color, 0.5)
+    property color colPrimaryHover: ColorUtils.mix(ColorUtils.adaptToAccent(Appearance.colors.colPrimaryHover, root.color), root.color, 0.3)
+    
+
     property color colSecondary: ColorUtils.mix(ColorUtils.adaptToAccent(Appearance.colors.colSecondary, root.color), root.color, 0.5)
     property color colSecondaryContainer: ColorUtils.mix(Appearance.m3colors.m3secondaryContainer, root.color, 0.15)
     property color colSecondaryContainerHover: ColorUtils.mix(Appearance.colors.colSecondaryContainerHover, root.color, 0.3)
     property color colSecondaryContainerActive: ColorUtils.mix(Appearance.colors.colSecondaryContainerActive, root.color, 0.5)
+
+    property color colTertiary: ColorUtils.mix(ColorUtils.adaptToAccent(Appearance.colors.colTertiary, root.color), root.color, 0.5)
+    property color colTertiaryContainer: ColorUtils.mix(Appearance.m3colors.m3tertiaryContainer, root.color, 0.5)
+    property color colTertiaryContainerHover: ColorUtils.mix(Appearance.colors.colTertiaryContainerHover, root.color, 0.3)
+    property color colTertiaryContainerActive: ColorUtils.mix(Appearance.colors.colTertiaryContainerActive, root.color, 0.5)
+
     property color colOnPrimary: ColorUtils.mix(ColorUtils.adaptToAccent(Appearance.m3colors.m3onPrimary, root.color), root.color, 0.5)
+    property color colOnPrimaryContainer: ColorUtils.mix(Appearance.m3colors.m3onPrimaryContainer, root.color, 0.5)
     property color colOnSecondaryContainer: ColorUtils.mix(Appearance.m3colors.m3onSecondaryContainer, root.color, 0.5)
 }

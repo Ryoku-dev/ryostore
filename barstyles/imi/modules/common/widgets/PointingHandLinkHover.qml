@@ -1,10 +1,8 @@
-import ".."
 import QtQuick
 
 MouseArea {
-    id: root
-    
+    anchors.fill: parent
+    acceptedButtons: Qt.NoButton // Only for hover
     hoverEnabled: true
-    acceptedButtons: Qt.NoButton
-    cursorShape: parent.hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+    cursorShape: parent.hoveredLink !== "" ? Qt.PointingHandCursor : Qt.ArrowCursor
 }

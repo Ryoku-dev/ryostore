@@ -1,6 +1,9 @@
 import "../modules/common"
 import QtQuick;
 
+/**
+ * A booru response.
+ */
 QtObject {
     property string provider
     property var tags

@@ -1,0 +1,11 @@
+module qs.modules.settings.configs.bar
+BarBrandPicker 1.0 BarBrandPicker.qml
+BarChoiceCards 1.0 BarChoiceCards.qml
+BarEntryCard 1.0 BarEntryCard.qml
+BarHint 1.0 BarHint.qml
+BarModeToggle 1.0 BarModeToggle.qml
+BarPair 1.0 BarPair.qml
+BarPreviewStage 1.0 BarPreviewStage.qml
+BarRevealPicker 1.0 BarRevealPicker.qml
+BarSizeDial 1.0 BarSizeDial.qml
+BarThemeSwatches 1.0 BarThemeSwatches.qml

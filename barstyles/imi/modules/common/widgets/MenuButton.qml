@@ -11,8 +11,8 @@ RippleButton {
     contentItem: StyledText {
         id: buttonTextWidget
         anchors.fill: parent
-        anchors.leftMargin: Appearance.spacing.space200
-        anchors.rightMargin: Appearance.spacing.space200
+        anchors.leftMargin: 14
+        anchors.rightMargin: 14
         text: root.buttonText
         horizontalAlignment: Text.AlignLeft
         font.pixelSize: Appearance.font.pixelSize.small

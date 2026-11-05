@@ -1,6 +1,25 @@
-module qs.modules.common
 singleton Appearance 1.0 Appearance.qml
+singleton BarComponentRegistry 1.0 BarComponentRegistry.qml
+singleton BarInteraction 1.0 BarInteraction.qml
+singleton BarPlacement 1.0 BarPlacement.qml
 singleton Config 1.0 Config.qml
+singleton DevToolsRegistry 1.0 DevToolsRegistry.qml
 singleton Directories 1.0 Directories.qml
+GlobalShortcut 1.0 GlobalShortcut.qml
 singleton Icons 1.0 Icons.qml
+singleton Images 1.0 Images.qml
+singleton LocalPreferences 1.0 LocalPreferences.qml
+singleton PanelFamily 1.0 PanelFamily.qml
+singleton PanelSchedule 1.0 PanelSchedule.qml
 singleton Persistent 1.0 Persistent.qml
+singleton SearchPanelRegistry 1.0 SearchPanelRegistry.qml
+singleton SearchResultActions 1.0 SearchResultActions.qml
+singleton SearchResultSectionRegistry 1.0 SearchResultSectionRegistry.qml
+singleton SettingsPageRegistry 1.0 SettingsPageRegistry.qml
+singleton ShellActionRegistry 1.0 ShellActionRegistry.qml
+singleton ShellModePolicy 1.0 ShellModePolicy.qml
+singleton TouchGestureActionRegistry 1.0 TouchGestureActionRegistry.qml
+singleton TouchGestureDragRegistry 1.0 TouchGestureDragRegistry.qml
+singleton TransientLayerRegistry 1.0 TransientLayerRegistry.qml
+singleton WeatherIcons 1.0 WeatherIcons.qml
+singleton WindowActionRegistry 1.0 WindowActionRegistry.qml

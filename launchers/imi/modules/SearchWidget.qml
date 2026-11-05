@@ -1,0 +1,3226 @@
+pragma ComponentBehavior: Bound
+
+import Qt5Compat.GraphicalEffects
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
+
+import ".."
+import "../services"
+import "common"
+import "common/widgets"
+import "common/functions"
+
+Item {
+    id: root
+    width: root.hostDrivesSize ? root.hostWidth : implicitWidth
+    height: root.hostDrivesSize
+        ? root.hostHeight
+        : ((root.exiting ? root.exitHeight : searchWidgetContent.height) + (root.hostOwnsSurface ? 0 : Appearance.sizes.elevationMargin * 2))
+    focus: true
+    signal requestToggleActions
+    property bool inNotchMode: false
+
+    /**
+     * The host owns the surface: no background of its own, no shadow, no elevation
+     * margin, and the content fills whatever it is placed in.
+     *
+     * Connect mode has always done this - it is the difference between search *inside*
+     * a surface and a search panel merely floating on top of one. The island needs the
+     * same: with its own background the widget drew a second rounded card over the
+     * island's, so the two read as separate objects stacked together.
+     */
+    readonly property bool hostOwnsSurface: GlobalStates.searchConnectActive || root.inNotchMode
+
+    /**
+     * The host drives the surface, and reads the target it should drive it to.
+     *
+     * Two animators on one size is what made the island tremble: the widget eased its
+     * own `implicitWidth`/`implicitHeight` while the island followed that already-moving
+     * value frame for frame, so the surface was always chasing a target that had not
+     * stopped. `contentTarget*` is the *unanimated* size the content wants - the same
+     * expression the implicit sizes are bound to, read before any easing - so a host can
+     * animate once, toward a value that only changes when the content really changes.
+     *
+     * A host that sets `hostWidth`/`hostHeight` owns the surface size outright: the
+     * widget fills what it is given and stops easing its own, since the surface it is
+     * drawn in is already doing exactly that motion.
+     */
+    property real hostWidth: -1
+    property real hostHeight: -1
+    readonly property bool hostDrivesSize: root.hostOwnsSurface && root.hostWidth > 0 && root.hostHeight > 0
+    readonly property bool animationsDisabled: Config.options.overview.animationStyle === "none"
+    readonly property bool resultsVisible: appResultsSurface.opacity > 0.01
+    readonly property real resultsOpacity: appResultsSurface.opacity
+    // The host owns the actual opening/closing clocks; typing cadence must not
+    // override them when the first key arrives before the surface has settled.
+    property bool surfaceAnimating: false
+    // Set by the per-monitor Overview host so a deep-link is acknowledged by
+    // the monitor that is actually rendering the Search surface.
+    property string surfaceMonitorName: ""
+    property string routedSessionRequestId: ""
+    // File operations are process-backed and must outlive the visible Search
+    // surface. The per-monitor Overview host propagates this through its lazy
+    // loader, keeping the invisible object tree alive until work completes.
+    readonly property bool keepAlive: registeredPanelHostLoader.keepAlive
+    onKeepAliveChanged: {
+        if (!root.keepAlive && !GlobalStates.overviewOpen)
+            Qt.callLater(LauncherSearch.collectReleasedResults);
+    }
+    Component.onDestruction: Qt.callLater(LauncherSearch.collectReleasedResults)
+    readonly property var surfaceScreen: Quickshell.screens.find(screen => screen.name === root.surfaceMonitorName) ?? null
+    // Saved panel preferences are never rewritten when the Search moves to a
+    // smaller monitor. Only the rendered surface is clamped to a safe viewport.
+    readonly property real maximumSurfaceWidth: root.surfaceScreen
+        ? Math.max(320, root.surfaceScreen.width - Appearance.sizes.elevationMargin * 4)
+        : Number.POSITIVE_INFINITY
+    readonly property real maximumSurfaceHeight: root.surfaceScreen
+        ? Math.max(320, root.surfaceScreen.height - Appearance.sizes.elevationMargin * 8)
+        : Number.POSITIVE_INFINITY
+    readonly property real activePanelHeightBudget: Math.max(280,
+        root.maximumSurfaceHeight
+            - (root.isAiMode ? 16 : searchBar.implicitHeight + searchBar.verticalPadding * 2 + 10))
+    // Explicit panel requests come from normal search rows and external
+    // deep-links. The text remains editable as that panel's local filter.
+    property string requestedPanelId: ""
+
+    readonly property string xdgConfigHome: Directories.config
+    readonly property int typingDebounceInterval: 200
+    readonly property int typingResultLimit: {
+        const query = LauncherSearch.query;
+        if (!query)
+            return 15;
+        const isPrefixed = root.searchPrefixValues.some(prefix => query.startsWith(prefix));
+        return isPrefixed ? 500 : 15;
+    }
+    readonly property bool isSearching: false
+    readonly property bool showSkeletons: false
+
+    // One page is what the list can plausibly show plus scroll buffer. The
+    // ListView only builds delegates for visible rows, so the cost of a page is
+    // the ListModel ops, not the delegates.
+    // Inset a result row keeps from the panel's edge. The list's bottom padding
+    // reads as the same edge, so both come from here rather than drifting apart
+    // as two separate literals.
+    readonly property real rowSideMargin: Appearance.sizes.elevationMargin
+    readonly property bool expressiveResults: Config.options.search.appearance.resultsStyle === "expressive"
+    // Expressive groups are panes (`groupSlab` on each delegate): rows sit
+    // `slabPad` inside the pane's edges.
+    readonly property real slabPad: 6
+    readonly property real rowInset: root.expressiveResults ? root.rowSideMargin + root.slabPad : root.rowSideMargin
+    readonly property int resultPageSize: 30
+    // Rows a single section may claim before every other section has had its
+    // turn at the page budget. Its long tail comes back on the second pass.
+    readonly property int sectionPageLimit: 8
+    // `baseHeight` describes the complete normal Search surface, not only its
+    // rows. Reserve the field's own chrome so changing the Settings slider
+    // immediately changes where the regular result list begins scrolling.
+    readonly property real normalSearchChromeHeight: searchBar.implicitHeight + searchBar.verticalPadding * 2
+    readonly property real maxResultsHeight: Math.max(0,
+        (Config.options.search.baseHeight ?? 500) - root.normalSearchChromeHeight)
+    property int loadedResultsCount: root.resultPageSize
+    // Left/Right stays available to edit the query unless the selected row is
+    // one of the Settings controls that can consume a horizontal adjustment.
+    property bool selectedResultHandlesHorizontalNavigation: false
+    property string actionFeedbackText: ""
+
+    onMaxResultsHeightChanged: {
+        if (appResults)
+            appResults.updateMeasuredContentExtent();
+    }
+
+    function showActionFeedback(message) {
+        const text = String(message ?? "").trim();
+        if (text.length === 0)
+            return;
+        root.actionFeedbackText = text;
+        actionFeedbackTimer.restart();
+    }
+
+    Timer {
+        id: actionFeedbackTimer
+        interval: 3200
+        onTriggered: root.actionFeedbackText = ""
+    }
+
+    function getFilteredResultsCount() {
+        const results = LauncherSearch.results;
+        const q = LauncherSearch.query.trim().toLowerCase();
+        const showNowPlaying = Config.options.search.nowPlaying?.enable ?? Config.options.search.showNowPlayingBubble;
+        let count = 0;
+        for (let i = 0; i < results.length; i++) {
+            const item = results[i];
+            if (!item || ((root.inNotchMode || Config.options.search.alwaysListApps || q !== "" || !showNowPlaying) && item.key === "mpris:now-playing"))
+                continue;
+            const sectionId = root.resultSectionId(item);
+            if (sectionId === "continue" && !root.queryHasAnyPrefix && !root.showContinuationRows)
+                continue;
+            if (root.categoryAcceptsSection(sectionId))
+                count++;
+        }
+        return count;
+    }
+
+    function loadMoreResults() {
+        if (!GlobalStates.overviewOpen)
+            return;
+        const total = root.getFilteredResultsCount();
+        if (loadedResultsCount >= total)
+            return;
+        loadedResultsCount = Math.min(total, loadedResultsCount + root.resultPageSize);
+        // Both callers — the scroll position and the cursor nearing the end —
+        // are signals the view emits *while* a diff is mutating the model.
+        // Diffing from inside one would restart the diff halfway through the
+        // previous one, off a key mirror that no longer describes the model.
+        // `restart()` also collapses the burst of both signals into one pass.
+        pageLoadTimer.restart();
+    }
+
+    Timer {
+        id: pageLoadTimer
+        interval: 0
+        repeat: false
+        onTriggered: {
+            if (!GlobalStates.overviewOpen)
+                return;
+            appResults.applyResultDiff(root.processResults(LauncherSearch.results));
+            // A page of extra rows is appended below the cursor; it keeps its row
+            // and only has to be republished against the longer model.
+            appResults.resyncSelection();
+        }
+    }
+
+    Timer {
+        id: categoryApplyTimer
+        interval: 0
+        repeat: false
+        onTriggered: {
+            if (!GlobalStates.overviewOpen || root.isAnySpecialMode)
+                return;
+            appResults.applyResultDiff(root.processResults(LauncherSearch.results));
+            appResults.selectFirst();
+            root.focusSearchInput();
+        }
+    }
+
+    // Keep one authoritative query path. Binding this property directly to
+    // LauncherSearch while also synchronizing it from SearchBar created a
+    // QML binding loop during the AI handoff (the query is intentionally
+    // cleared when the chat surface takes over).
+    property string searchingText: ""
+
+    Connections {
+        target: LauncherSearch
+        function onQueryChanged() {
+            if (root.searchingText !== LauncherSearch.query)
+                root.searchingText = LauncherSearch.query;
+        }
+    }
+    readonly property var resolvedPanel: SearchPanelRegistry.resolve(root.searchingText)
+    readonly property string activePanelId: root.isAiMode ? "ai" : (root.requestedPanelId || root.resolvedPanel?.id || "")
+    readonly property var activePanel: SearchPanelRegistry.byId(root.activePanelId)
+    // Registry-hosted panels have a content gutter independent from the
+    // SearchBar's own inset. Account for it in the outer width so their
+    // declared panel width remains the usable width, not the clipped width.
+    readonly property real hostedPanelSideMargin: Appearance.sizes.elevationMargin
+    /**
+     * The side inset connect mode puts around the whole column (24 px each side; in
+     * notch mode the island already spaces it). It is part of `contentTargetWidth`, so
+     * anything sized from that target must take it back out.
+     */
+    readonly property real connectSideInset: (GlobalStates.searchConnectActive && !root.inNotchMode) ? 24 : 0
+    readonly property bool activePanelUsesHost: root.activePanel?.hosted === true
+    // Panels normally share SearchBar as their local filter. A panel can
+    // explicitly own the primary TextInput (Typing Test) without requiring a
+    // panel-id branch in focus or keyboard routing.
+    readonly property bool activePanelOwnsInput: root.activePanel?.inputOwner === "panel"
+    readonly property bool isClipboardMode: root.activePanelId === "clipboard"
+    readonly property bool isBluetoothMode: root.activePanelId === "bluetooth"
+    readonly property bool isTranslatorMode: root.activePanelId === "translator"
+    readonly property bool isMediaDownloaderMode: root.activePanelId === "mediaDownloader"
+    readonly property bool isMaterialSymbolsMode: root.activePanelId === "materialSymbols"
+    /**
+     * Whether the AI surface owns the search.
+     *
+     * This is state, not a formula. It used to be derived from the query —
+     * and entering AI mode clears the query, which fed straight back into the
+     * formula. Qt saw a binding loop and froze the property, so Escape and
+     * the back button had nothing left to change and the panel could not be
+     * left. Every way in sets the latch; only `exitAiMode()` clears it.
+     */
+    // The AI chat is not part of this port; the flag and its branches stay
+    // but never engage.
+    readonly property bool isAiMode: false
+    // Auto AI recognition: when enabled, a settled query that matches no app,
+    // command or prefix hands the search over to the AI chat. Kept apart from
+    // the latch so the timer cannot fire twice for one query.
+    property bool aiAutoEngaged: false
+    property bool aiModeLocked: false
+    property int searchHistoryIndex: -1
+    property bool applyingSearchHistory: false
+    // Prevents a query that entered AI mode from being copied repeatedly when
+    // the launcher query is cleared or the draft is restored asynchronously.
+    property bool aiDraftHydrated: false
+    readonly property bool aiAutoTriggerEnabled: SearchPanelRegistry.aiPolicyEnabled && (Config.options.search.ai?.trigger ?? "prefix") === "auto"
+    readonly property var searchPrefixValues: SearchPanelRegistry.activePrefixes
+        .concat(LauncherSearch.enabledUtilityPrefixes())
+        .filter((value, index, values) => value && values.indexOf(value) === index)
+    readonly property bool queryHasAnyPrefix: root.searchPrefixValues.some(prefix => root.searchingText.startsWith(prefix))
+    // Results that are actual matches — generic continuation rows never count.
+    // A calculator result does: valid math must not be replaced by auto-AI.
+    readonly property int realResultCount: LauncherSearch.results.filter(r => {
+        const key = String(r?.key ?? "");
+        return r && key !== "cmd:shell" && key !== "web:search" && key !== "ai:ask"
+            && key !== "mpris:now-playing" && !r.isFallback && !key.startsWith("fallback:");
+    }).length
+    readonly property bool isAnySpecialMode: root.activePanelId.length > 0
+    /**
+     * Publish "a panel owns the search" for consumers that live outside any
+     * PanelWindow (the Super shortcut, the workspace grid).
+     *
+     * Only the surface on the active search monitor may publish: a hosted panel
+     * latches through `requestedPanelId`, which is per-surface, so the idle
+     * SearchWidget of a second monitor would otherwise clear the flag the
+     * moment the prefix is stripped out of the shared query.
+     */
+    function publishPanelOwnership() {
+        if (GlobalStates.activeSearchMonitor !== "" && root.surfaceMonitorName !== ""
+                && root.surfaceMonitorName !== GlobalStates.activeSearchMonitor)
+            return;
+        GlobalStates.searchPanelActive = root.isAnySpecialMode || root.isAiMode;
+    }
+
+    onIsAnySpecialModeChanged: root.publishPanelOwnership()
+    readonly property string activePanelQuery: {
+        if (!root.activePanel)
+            return "";
+        const prefix = SearchPanelRegistry.prefixOf(root.activePanel);
+        return prefix.length > 0 && root.searchingText.startsWith(prefix)
+            ? root.searchingText.slice(prefix.length)
+            : root.searchingText;
+    }
+
+    readonly property var activePanelItem: {
+        if (root.activePanelUsesHost)
+            return registeredPanelHostLoader.item?.activeItem ?? null;
+        return null;
+    }
+
+    onActivePanelItemChanged: {
+        if (root.activePanelOwnsInput && root.activePanelItem)
+            Qt.callLater(root.focusPrimaryInput);
+    }
+
+    // Legacy panels previously had bespoke Loaders and signal wiring. Hosted
+    // panels now share one lifecycle, while the active item's optional signals
+    // remain available without coupling SearchWidget to a concrete panel type.
+    Connections {
+        target: root.activePanelItem
+        ignoreUnknownSignals: true
+        function onRequestSetSearchQuery(query) {
+            const activePanel = root.activePanel;
+            const prefix = SearchPanelRegistry.prefixOf(activePanel);
+            const usePrefix = prefix.length > 0 && (root.prefixRoutedPanelId === activePanel?.id || root.searchingText.startsWith(prefix));
+            root.setSearchingText(usePrefix ? (prefix + query) : query);
+        }
+        function onRequestFocusSearchInput() {
+            root.focusSearchInput();
+        }
+    }
+
+    SearchKeyRouter {
+        id: searchKeyRouter
+        activePanelItem: root.activePanelItem
+        resultsList: appResults
+        searchWidget: root
+    }
+
+    // Latch: however AI mode was entered (prefix typed, suggestion row or
+    // auto detection), it stays on until back/Esc — deleting the text must
+    // not yank the panel away mid-conversation.
+
+    function selectSearchHistory(direction) {
+        const entries = Array.from(Persistent.states.search.recentQueries ?? []);
+        if (entries.length === 0)
+            return;
+        root.searchHistoryIndex = Math.max(-1, Math.min(entries.length - 1, root.searchHistoryIndex + direction));
+        root.applyingSearchHistory = true;
+        root.searchingText = root.searchHistoryIndex === -1 ? "" : String(entries[root.searchHistoryIndex]);
+        root.applyingSearchHistory = false;
+    }
+
+    /// Which panel the prefix in the field currently routes to, so a route's one-time setup
+    /// runs when it is entered rather than again on every keystroke inside it.
+    property string prefixRoutedPanelId: ""
+
+    /**
+     * A prefix is a route trigger and it stays in the field.
+     *
+     * Taking it out left a panel on screen whose trigger was invisible, and the rest of the
+     * search reads the query the other way round: both `activePanelQuery` here and
+     * `SearchPanelHost.queryFor` take the prefix off themselves before handing the text to a
+     * panel as its filter. A field that had already lost it was therefore stripped twice, so
+     * typing the prefix again inside its own panel filtered on nothing - and the character
+     * could not be deleted either, because the filter behind it read as empty and Backspace
+     * follows the filter.
+     *
+     * `requestedPanelId` is not latched from here for the same reason: the visible prefix is
+     * what keeps the panel resolved, so there is nothing to hold on its behalf. It stays for
+     * panels opened without one, from the suggestion list or over IPC.
+     *
+     * The AI route has its own draft lifecycle and intentionally stays outside this path.
+     */
+    function routePanelPrefix(): void {
+        const panel = SearchPanelRegistry.resolve(root.searchingText);
+        const routed = (panel?.hosted && SearchPanelRegistry.prefixOf(panel).length > 0) ? panel.id : "";
+        if (routed === root.prefixRoutedPanelId)
+            return;
+        root.prefixRoutedPanelId = routed;
+        if (routed === "fileBrowser")
+            GlobalStates.clearFileBrowserSearchResults();
+    }
+
+    onSearchingTextChanged: {
+        if (!root.applyingSearchHistory)
+            root.searchHistoryIndex = -1;
+        root.routePanelPrefix();
+    }
+
+    Component.onCompleted: {
+        root.searchingText = LauncherSearch.query;
+        root.consumePanelIntent();
+    }
+
+
+    Connections {
+        target: GlobalStates
+        function onOverviewOpenChanged() {
+            if (!GlobalStates.overviewOpen) {
+                root.requestedPanelId = "";
+                root.cancelSearch();
+            }
+        }
+    }
+
+    function consumePanelIntent() {
+        if (!GlobalStates.overviewOpen)
+            return;
+        const requested = GlobalStates.consumePendingSearchPanel();
+        const requestedQuery = GlobalStates.consumePendingSearchPanelQuery();
+        const panel = SearchPanelRegistry.byId(requested);
+        if (panel && panel.enabled()) {
+            root.requestedPanelId = requested;
+            if (requestedQuery.length > 0)
+                root.setSearchingText(requestedQuery);
+            Qt.callLater(root.focusSearchInput);
+        }
+    }
+
+    Connections {
+        target: GlobalStates
+        function onSearchPanelNavigationRequestChanged() {
+            root.consumePanelIntent();
+        }
+        function onOverviewOpenChanged() {
+            if (GlobalStates.overviewOpen)
+                root.consumePanelIntent();
+        }
+    }
+    // Idle Search (empty query, suggestions on) renders through the exact same
+    // ListView as a typed query — LauncherSearch populates `results` with a
+    // curated home screen instead of match rows (see
+    // LauncherSearch._computeIdleSuggestions). This flag is now purely
+    // cosmetic: it widens the field and switches the search icon's shape, the
+    // same way a real query does, before any row has actually loaded.
+    readonly property bool showSuggestionsPanel: !root.inNotchMode && Config.options.search.suggestions.enable && !Config.options.search.alwaysListApps && !root.isAnySpecialMode && root.searchingText === ""
+    readonly property bool alwaysListAppsMode: !root.inNotchMode && Config.options.search.alwaysListApps && !root.isAnySpecialMode
+    readonly property bool showIdleNowPlaying: !root.inNotchMode
+        && searchingText === ""
+        && !isAnySpecialMode
+        && !alwaysListAppsMode
+        && (Config.options.search.nowPlaying?.enable ?? Config.options.search.showNowPlayingBubble)
+        && LauncherSearch.results.some(result => String(result?.key ?? "") === "mpris:now-playing")
+    property bool showResults: searchingText !== "" || isAnySpecialMode || alwaysListAppsMode || showIdleNowPlaying || showSuggestionsPanel
+    property string overviewPosition: (Config.options.bar?.bottom ? "bottom" : (Config.options.overview?.position ?? ""))
+
+    // Re-enable item transitions after panel open animation completes
+    Timer {
+        id: enableTransitionsTimer
+        interval: 400
+        repeat: false
+        onTriggered: root.suppressItemTransitions = false
+    }
+
+    /**
+     * Geometry is held still for the length of the close.
+     *
+     * Closing the overview clears the query and the rows, which collapses this
+     * container from a full result list back to the bare field. That collapse
+     * used to run *while* the window was already sliding out, so closing with
+     * results on screen read as a faster, harsher animation than closing with
+     * an empty field — two motions stacked on one another instead of one. It
+     * also dragged the wrapper's scale origin, which is bound to half the
+     * widget's height, along with it.
+     *
+     * Holding the last size means the widget leaves exactly the way an empty
+     * one does. What it contains is irrelevant by then: the whole thing is
+     * fading out.
+     */
+    property bool exiting: false
+    property real exitWidth: 0
+    property real exitHeight: 0
+
+    Timer {
+        id: exitHoldTimer
+        // Past the overview window's own exit, after which none of this is on
+        // screen and the size stops mattering. A hosting island takes longer to
+        // morph back than the overview takes to leave.
+        interval: root.hostDrivesSize ? 700 : 400
+        repeat: false
+        onTriggered: {
+            root.exiting = false;
+            root.exitWidth = 0;
+            root.exitHeight = 0;
+            resultModel.clear();
+            if (appResults)
+                appResults.rowRefs = [];
+            if (typeof gc === "function")
+                gc();
+        }
+    }
+
+    // Suppress item transitions during panel open/close to avoid flicker
+    property bool suppressItemTransitions: true
+
+    /**
+     * Typing cadence gate.
+     *
+     * A burst of keystrokes wants the list to be *correct* as fast as possible:
+     * every intermediate ordering is thrown away before the eye can read it, so
+     * animating it only spends frames. A deliberate single edit is where the
+     * reorder actually reads as motion, and that is where it stays enabled.
+     *
+     * Measuring the gap between edits picks between the two without a debounce
+     * that would delay the results themselves.
+     */
+    readonly property int burstTypingThreshold: 120
+    property double lastQueryEditTime: 0
+    // Query the cursor was last snapped to the top for. Asynchronous result
+    // sources (file search, app index) refresh the list long after the query
+    // settled; those refreshes must not move the user's selection.
+    property string selectionAnchorQuery: "\u0000"
+
+    /**
+     * A burst keeps every motion at full length and only drops the stagger.
+     *
+     * Durations no longer vary with cadence: a reorder that is 140ms when you
+     * pause and 84ms when you do not is two different animations, and switching
+     * between them mid-word is what made the list look like it could not decide
+     * what it was doing. The stagger is the one thing worth dropping — it is
+     * pure waiting, and a burst has no time for it. `suppressItemTransitions`
+     * stays reserved for the surface opening and closing, where rows must
+     * simply be there.
+     */
+    property bool burstTyping: false
+
+    function noteQueryEdit() {
+        const now = Date.now();
+        // Clearing the query suppresses transitions so the emptied list leaves
+        // at once; the next edit is a new list and must animate again. The
+        // opening window keeps its own suppression until its timer ends.
+        if (!enableTransitionsTimer.running && !root.exiting)
+            root.suppressItemTransitions = false;
+        root.burstTyping = (now - root.lastQueryEditTime) < root.burstTypingThreshold;
+        root.lastQueryEditTime = now;
+        typingSettleTimer.restart();
+    }
+
+    Timer {
+        id: typingSettleTimer
+        interval: root.burstTypingThreshold
+        repeat: false
+        onTriggered: root.burstTyping = false
+    }
+
+    Connections {
+        target: GlobalStates
+        function onOverviewOpenChanged() {
+            if (GlobalStates.overviewOpen) {
+                exitHoldTimer.stop();
+                root.exiting = false;
+                root.resultCategoryId = "all";
+                // Suppress transitions while panel is animating open
+                root.suppressItemTransitions = true;
+                // Wipe stale results immediately so panel opens empty (no ghost expansion)
+                resultModel.clear();
+                if (appResults)
+                    appResults.rowRefs = [];
+                root.loadedResultsCount = root.resultPageSize;
+                if (resultModel.count === 0 && (root.alwaysListAppsMode || root.showIdleNowPlaying || root.showSuggestionsPanel)) {
+                    Qt.callLater(() => {
+                        if (!GlobalStates.overviewOpen)
+                            return;
+                        appResults.applyResultDiff(root.processResults(LauncherSearch.results));
+                        root.focusFirstItem();
+                    });
+                }
+                // Re-enable transitions after open animation
+                enableTransitionsTimer.restart();
+            } else {
+                // Freeze the size *before* anything below can shrink it
+                if (!GlobalStates.searchConnectActive) {
+                    root.exitWidth = searchWidgetContent.width;
+                    root.exitHeight = searchWidgetContent.height;
+                    root.exiting = true;
+                    exitHoldTimer.restart();
+                }
+                // Suppress transitions on exit
+                root.suppressItemTransitions = true;
+                pageLoadTimer.stop();
+                categoryApplyTimer.stop();
+                typingSettleTimer.stop();
+                actionFeedbackTimer.stop();
+                // A host that owns the surface is still showing these rows while it
+                // morphs away; wiping them here emptied the panel in the first frame of
+                // the close. The exit hold clears them once nothing is on screen.
+                if (!root.hostDrivesSize) {
+                    resultModel.clear();
+                    if (appResults)
+                        appResults.rowRefs = [];
+                }
+                root.selectionAnchorQuery = "\u0000";
+                root.actionFeedbackText = "";
+            }
+        }
+    }
+
+    Connections {
+        target: LauncherSearch
+        function onRequestOpenSettings() {
+            GlobalStates.overviewOpen = false;
+            Qt.callLater(() => {
+                GlobalStates.openSettings();
+            });
+        }
+    }
+    /** The width the content wants, before any easing. See `hostDrivesSize`. */
+    readonly property real contentTargetWidth: {
+        let baseW = 0;
+        if (root.activePanel)
+            baseW = root.activePanel.width() + (root.activePanelUsesHost ? root.hostedPanelSideMargin * 2 : 0);
+        else
+            baseW = Math.max(Config.options.search.baseWidth, gridLayout.implicitWidth);
+
+        // In notch mode, the DI container already provides horizontal spacing.
+        // Only add the 48px offset in non-notch connect mode.
+        baseW += root.connectSideInset * 2;
+        return Math.min(baseW, root.maximumSurfaceWidth);
+    }
+
+    /** The height the content wants, before any easing. See `hostDrivesSize`. */
+    readonly property real contentTargetHeight: {
+        const bottomMargin = GlobalStates.searchConnectActive ? 16 : 10;
+        let desiredHeight = 0;
+        if (root.activePanel)
+            desiredHeight = (root.activePanelItem?.implicitHeight ?? 520)
+                + (root.isAiMode ? 16 : searchBar.height + searchBar.verticalPadding * 2 + bottomMargin);
+        else
+            desiredHeight = gridLayout.implicitHeight;
+        return Math.min(desiredHeight, root.maximumSurfaceHeight);
+    }
+
+    implicitWidth: (root.exiting ? root.exitWidth : searchWidgetContent.implicitWidth) + (root.hostOwnsSurface ? 0 : Appearance.sizes.elevationMargin * 2)
+    implicitHeight: (root.exiting ? root.exitHeight : searchWidgetContent.implicitHeight) + (root.hostOwnsSurface ? 0 : Appearance.sizes.elevationMargin * 2)
+
+    // Track animation state via Connections to the animation IDs
+    property bool _heightAnimating: false
+    property bool _widthAnimating: false
+
+    Connections {
+        target: heightAnim
+        function onRunningChanged() {
+            root._heightAnimating = heightAnim.running;
+        }
+    }
+
+    Connections {
+        target: widthAnim
+        function onRunningChanged() {
+            root._widthAnimating = widthAnim.running;
+        }
+    }
+
+    // True while the widget is not resizing itself, so a host can tell whether the size
+    // it is reading is settled.
+    readonly property bool openStateStable: !root._heightAnimating && !root._widthAnimating
+
+    function focusFirstItem() {
+        if (root.isAiMode || root.activePanelOwnsInput) {
+            root.focusPrimaryInput();
+        } else if (root.activePanelItem && typeof root.activePanelItem.focusInput === "function") {
+            root.activePanelItem.focusInput();
+        } else {
+            appResults.selectFirst();
+        }
+    }
+
+    function focusPrimaryInput() {
+        if (root.activePanelOwnsInput && root.activePanelItem
+                && typeof root.activePanelItem.focusInput === "function") {
+            root.activePanelItem.focusInput();
+            return;
+        }
+        root.focusSearchInput();
+    }
+
+    function focusSearchInput() {
+        searchBar.forceFocus();
+    }
+
+    function selectedResultRow(): var {
+        if (appResults.currentIndex < 0 || appResults.currentIndex >= appResults.count)
+            return null;
+        const delegate = appResults.itemAtIndex(appResults.currentIndex);
+        return delegate?.item ?? delegate ?? null;
+    }
+
+    function refreshSelectedResultNavigation() {
+        const row = root.selectedResultRow();
+        root.selectedResultHandlesHorizontalNavigation = row?.supportsHorizontalNavigation === true;
+    }
+
+    function navigateSelectedResult(direction: string): bool {
+        const row = root.selectedResultRow();
+        if (!row)
+            return false;
+        if (direction === "left" && typeof row.navigateLeft === "function")
+            return row.navigateLeft();
+        if (direction === "right" && typeof row.navigateRight === "function")
+            return row.navigateRight();
+        return false;
+    }
+
+
+    function disableExpandAnimation() {
+        searchBar.animateWidth = false;
+    }
+
+    function cancelSearch() {
+        // Normal Search is intentionally ephemeral. The AI composer owns its
+        // draft per session; the launcher query must not become a second draft
+        // store that brings the last ordinary search back on the next open.
+        root.searchingText = "";
+        root.requestedPanelId = "";
+        LauncherSearch.query = "";
+        searchBar.searchInput.text = "";
+        searchBar.animateWidth = true;
+        resultModel.clear();
+        if (appResults)
+            appResults.rowRefs = [];
+        root.selectionAnchorQuery = "\u0000";
+        root.actionFeedbackText = "";
+    }
+
+    function exitActivePanel(): bool {
+        if (!root.isAnySpecialMode)
+            return false;
+        // A panel opened directly (keybind/IPC) has no plain-search step
+        // below it. Leaving it reveals an overview grid nobody asked for, so
+        // the first Esc/Backspace closes the whole surface instead.
+        if (GlobalStates.panelOpenedDirectly) {
+            GlobalStates.panelOpenedDirectly = false;
+            GlobalStates.closeSearchSurfaces();
+            return true;
+        }
+        root.requestedPanelId = "";
+        root.searchingText = "";
+        LauncherSearch.query = "";
+        searchBar.searchInput.text = "";
+        Qt.callLater(root.focusSearchInput);
+        return true;
+    }
+
+    /**
+     * Backspace on an empty query is "go back one level". A panel with somewhere of its own
+     * to go implements `navigateBack()` and returns true to claim the key; everything else
+     * leaves it unimplemented and the panel is left entirely.
+     *
+     * Returning true unconditionally makes a panel impossible to leave by keyboard: every
+     * Backspace is swallowed by a panel claiming it went back somewhere, so the only way out
+     * is Escape.
+     */
+    function handlePanelBackspace(): bool {
+        if (!root.isAnySpecialMode)
+            return false;
+        if (root.activePanelItem && typeof root.activePanelItem.navigateBack === "function"
+                && root.activePanelItem.navigateBack())
+            return true;
+        return root.exitActivePanel();
+    }
+
+    // One Escape path for the whole overview surface. A PanelWindow cannot
+    // host a Keys attached property, so Overview's window shortcut delegates
+    // here; the focused composer and child controls use the same function.
+    function handleEscape(): bool {
+        if (root.activePanelItem && typeof root.activePanelItem.handleEscape === "function"
+                && root.activePanelItem.handleEscape())
+            return true;
+        return root.exitActivePanel();
+    }
+
+    function setSearchingText(text) {
+        searchBar.searchInput.text = text;
+        LauncherSearch.query = text;
+    }
+
+    // Priority of the result groups, top to bottom, as the user arranged it in
+    // Settings. A group the user removed from that list is simply not iterated
+    // below, so its results never reach the model — the list is the on/off
+    // switch as much as it is the order.
+    readonly property bool bestMatchActive: Config.options.search.bestMatch?.enable === true
+    readonly property bool bestMatchUniformList: Config.options.search.bestMatch?.uniformList !== false
+
+    // "suggested" only ever holds rows while Search is idle (see
+    // LauncherSearch._computeIdleSuggestions) and is otherwise an empty,
+    // harmless bucket — but a config saved before that feature existed may
+    // still lack the id entirely. Guarantee it is present exactly once rather
+    // than relying on every persisted sectionOrder to have been migrated.
+    readonly property var sectionOrder: SearchResultSectionRegistry.activeOrder.indexOf("suggested") !== -1
+        ? SearchResultSectionRegistry.activeOrder
+        : ["suggested"].concat(SearchResultSectionRegistry.activeOrder)
+
+    // Category filtering is a view concern: providers still rank one complete
+    // result set, while Tab changes which classes the normal Search exposes.
+    // Keeping it here also means utility prefixes and hosted panels retain
+    // their existing query semantics.
+    property string resultCategoryId: "all"
+    readonly property var resultCategoryDefinitions: [
+        { id: "all", label: Translation.tr("All"), icon: "category", sections: [] },
+        { id: "apps", label: Translation.tr("Apps"), icon: "apps", sections: ["apps"] },
+        { id: "controls", label: Translation.tr("Controls"), icon: "tune", sections: ["controls"] },
+        { id: "tools", label: Translation.tr("Tools"), icon: "widgets", sections: ["tools", "actions"] },
+        { id: "content", label: Translation.tr("Content"), icon: "article", sections: ["quicklinks", "textSnippets", "files", "siteTabs", "siteFavorites", "siteSuggestions"] },
+        { id: "settings", label: Translation.tr("Settings"), icon: "settings", sections: ["settings"] },
+        { id: "other", label: Translation.tr("Other"), icon: "more_horiz", sections: ["other"] }
+    ]
+    readonly property var availableResultCategories: root.resultCategoryDefinitions.filter(category => {
+        if (category.id === "all")
+            return true;
+        return category.sections.some(sectionId => root.sectionOrder.indexOf(sectionId) !== -1);
+    })
+    readonly property var activeResultCategory: root.availableResultCategories.find(category => category.id === root.resultCategoryId)
+        ?? root.resultCategoryDefinitions[0]
+    // Idle Suggestions is already excluded here without a dedicated check:
+    // searchingText is "" and alwaysListAppsMode is false in that state, so
+    // the length/alwaysListApps condition below never passes.
+    readonly property bool showNormalCategoryFilter: !root.isAnySpecialMode
+        && !root.queryHasAnyPrefix
+        && (root.searchingText.trim().length > 0 || root.alwaysListAppsMode)
+
+    function categoryAcceptsSection(sectionId: string): bool {
+        if (root.queryHasAnyPrefix)
+            return true;
+        const category = root.activeResultCategory;
+        return category.id === "all" || category.sections.indexOf(sectionId) !== -1;
+    }
+
+    function cycleResultCategory(step: int) {
+        const categories = root.availableResultCategories;
+        if (categories.length < 2)
+            return;
+        let index = categories.findIndex(category => category.id === root.activeResultCategory.id);
+        if (index < 0)
+            index = 0;
+        const direction = step < 0 ? -1 : 1;
+        index = (index + direction + categories.length) % categories.length;
+        root.resultCategoryId = categories[index].id;
+        root.loadedResultsCount = root.resultPageSize;
+        categoryApplyTimer.restart();
+    }
+
+    readonly property var emptyFallbackActions: [
+        { id: "command", label: Translation.tr("Run command"), icon: "terminal", enabled: Config.options.search.modules.shellCommand },
+        { id: "ai", label: Translation.tr("Ask AI"), icon: "auto_awesome", enabled: SearchPanelRegistry.aiPolicyEnabled },
+        { id: "web", label: Translation.tr("Search the web"), icon: "travel_explore", enabled: Config.options.search.modules.webSearch }
+    ].filter(action => action.enabled)
+    readonly property int matchingCategoryResultCount: LauncherSearch.results.filter(item => {
+        if (!item)
+            return false;
+        const sectionId = root.resultSectionId(item);
+        return sectionId !== "continue" && root.categoryAcceptsSection(sectionId);
+    }).length
+    readonly property bool showContinuationRows: root.resultCategoryId === "all"
+        && !root.queryHasAnyPrefix
+        && root.realResultCount > 0
+    readonly property bool queryResultsPending: root.searchingText !== "" && root.selectionAnchorQuery !== root.searchingText
+    readonly property bool showEmptySearchState: root.showNormalCategoryFilter
+        && !root.queryHasAnyPrefix
+        && root.searchingText.trim().length > 0
+        && !root.queryResultsPending
+        && root.matchingCategoryResultCount === 0
+
+    function executeEmptyFallback(actionId: string) {
+        const query = root.searchingText.trim();
+        if (query.length === 0)
+            return;
+        if (actionId === "command") {
+            GlobalStates.overviewOpen = false;
+            LauncherSearch.runCommandQuery(query);
+        } else if (actionId === "web") {
+            GlobalStates.overviewOpen = false;
+            LauncherSearch.openWebSearch(query);
+        } else if (actionId === "ai") {
+            LauncherSearch.askAiQuery(query);
+        }
+    }
+
+    function resultSectionId(item): string {
+        const key = String(item?.key ?? "");
+        // Idle-only frecency strip (see LauncherSearch._computeIdleSuggestions).
+        // Checked first: it wraps another row's own key, e.g. "suggested:app:x".
+        if (key.startsWith("suggested:"))
+            return "suggested";
+        if (item?.isFallback === true)
+            return "continue";
+        if (item?.isAlias === true)
+            return "aliases";
+        if (key.startsWith("app:"))
+            return "apps";
+
+        if (key.startsWith("site:")) {
+            if (item?.siteSource === "open")
+                return "siteTabs";
+            return item?.siteSource === "favorite" ? "siteFavorites" : "siteSuggestions";
+        }
+        // The idle now-playing bubble is the only media row, and it used to land
+        // in "More results" — a caption that says nothing about it.
+        if (key.startsWith("mpris:"))
+            return "media";
+        if (/^(setting:|panel:settings$|shortcut:openSettings$)/.test(key))
+            return "settings";
+        if (/^(qtoggle:|bluetooth-device:|sys:|mode:)/.test(key))
+            return "controls";
+        if (/^(panel:|keybind:|cheatsheet:|shortcut:)/.test(key))
+            return "tools";
+        if (key.startsWith("tool:") || key.startsWith("win:"))
+            return "tools";
+        // Files and folders are their own class of result, not "links & text":
+        // they are the one group whose rows are a location on disk.
+        if (/^(file:|fsearch:|fcontent:)/.test(key))
+            return "files";
+        if (key.startsWith("note:"))
+            return "notes";
+        if (key.startsWith("quicklink:"))
+            return "quicklinks";
+        if (key.startsWith("text-snippet:"))
+            return "textSnippets";
+        if (key.startsWith("math:"))
+            return "tools";
+        if (/^(cmd:shell|web:search|ai:ask|fallback:)/.test(key))
+            return "continue";
+        if (/^(action:|snippet:|shell:|process:|generator:|sports:)/.test(key))
+            return "actions";
+        return "other";
+    }
+
+    function sectionPresentation(sectionId: string): var {
+        const section = SearchResultSectionRegistry.getComponent(sectionId);
+        if (section)
+            return { label: section.title, icon: section.icon };
+        return { label: Translation.tr("More results"), icon: "search" };
+    }
+
+    /**
+     * Flattens the ranked results into the row list the ListView consumes.
+     *
+     * Section captions are emitted as rows of their own instead of relying on
+     * `ListView.section`. Qt positions section delegates outside the view's
+     * add/move/displaced transitions, so every reorder left the captions
+     * snapping to their final spot while the rows around them were still
+     * travelling — the overlapping headers and doubled rows.
+     *
+     * Rows reference the original result object instead of a per-keystroke
+     * `Object.assign` copy, so the diff below can compare identities and skip
+     * rewriting roles that did not actually change.
+     */
+    function organizeResults(results, limit) {
+        const query = root.searchingText.trim();
+        const maxItems = limit > 0 ? limit : results.length;
+
+        const seenKeys = new Set();
+        const unique = [];
+        const sectionIds = [];
+        let hasApplications = false;
+
+        for (let i = 0; i < results.length; i++) {
+            const item = results[i];
+            if (!item)
+                continue;
+            const key = String(item.key ?? "");
+            if (key.length > 0) {
+                if (seenKeys.has(key))
+                    continue;
+                seenKeys.add(key);
+            }
+            const sectionId = root.resultSectionId(item);
+            // Generic continuations are rendered by the intentional empty
+            // state. Explicit command/web/math prefixes still keep their
+            // single result row and exact Enter behavior.
+            if (sectionId === "continue" && !root.queryHasAnyPrefix && !root.showContinuationRows)
+                continue;
+            if (!root.categoryAcceptsSection(sectionId))
+                continue;
+            if (sectionId === "apps")
+                hasApplications = true;
+            unique.push(item);
+            sectionIds.push(sectionId);
+        }
+
+        // Applications are always the strongest result class. Only promote a
+        // command surface when no application matches, and never promote
+        // Settings: configuration discovery is useful, but intentionally
+        // secondary to things the user can launch or act on immediately.
+        if (root.resultCategoryId === "all" && !hasApplications && query.length >= 2 && root.sectionOrder.indexOf("best") !== -1) {
+            let bestIndex = -1;
+            for (let i = 0; i < unique.length; i++) {
+                const key = String(unique[i].key ?? "");
+                if (key.startsWith("panel:") && key !== "panel:settings") {
+                    bestIndex = i;
+                    break;
+                }
+            }
+            if (bestIndex !== -1)
+                sectionIds[bestIndex] = "best";
+        }
+
+        const buckets = ({});
+        for (let i = 0; i < unique.length; i++) {
+            const bucket = buckets[sectionIds[i]];
+            if (bucket)
+                bucket.push(unique[i]);
+            else
+                buckets[sectionIds[i]] = [unique[i]];
+        }
+
+        // How many rows each section contributes is decided before any of them
+        // are laid out, so the page budget is shared rather than consumed
+        // front to back. Filling it in order let one broad section swallow the
+        // page — a three-letter query matches enough applications to push Files
+        // and Controls out of the list entirely, even though they matched.
+        //
+        // Pass one gives every section its opening few rows; pass two hands the
+        // leftover budget to whoever still has more, in section order. Paging
+        // then extends the same split as the user scrolls.
+        const takes = ({});
+        let remaining = maxItems;
+        for (let pass = 0; pass < 2 && remaining > 0; pass++) {
+            for (let s = 0; s < root.sectionOrder.length && remaining > 0; s++) {
+                const sectionId = root.sectionOrder[s];
+                const items = buckets[sectionId];
+                if (!items || items.length === 0)
+                    continue;
+                const already = takes[sectionId] ?? 0;
+                const ceiling = pass === 0 ? Math.min(items.length, root.sectionPageLimit) : items.length;
+                const take = Math.min(ceiling - already, remaining);
+                if (take <= 0)
+                    continue;
+                takes[sectionId] = already + take;
+                remaining -= take;
+            }
+        }
+
+        // A caption tells one group apart from the next. When there is only one
+        // group it names nothing, and costs 30px plus a line to read at the top
+        // of every short query.
+        let groupCount = 0;
+        for (let s = 0; s < root.sectionOrder.length; s++) {
+            if ((takes[root.sectionOrder[s]] ?? 0) > 0)
+                groupCount++;
+        }
+        // Best-match mode answers the question the captions were organising an
+        // answer to, so the rest reads better as one uninterrupted list.
+        // The expressive style always leads with a hero card.
+        const heroActive = (root.bestMatchActive || root.expressiveResults) && query.length > 0;
+        // Also show captions when category filter is active (even single section)
+        // so the category hint always has a caption row to live inline with.
+        // Expressive groups are panes, and a pane keeps its heading.
+        const showCaptions = (root.resultCategoryId === "all" ? groupCount > 1 : root.showNormalCategoryFilter)
+            && (root.expressiveResults || !(heroActive && root.bestMatchUniformList));
+
+        const rows = [];
+        for (let s = 0; s < root.sectionOrder.length; s++) {
+            const sectionId = root.sectionOrder[s];
+            const take = takes[sectionId] ?? 0;
+            if (take <= 0)
+                continue;
+            const items = buckets[sectionId];
+            if (showCaptions)
+                rows.push({
+                    key: "section:" + sectionId,
+                    sectionId: sectionId,
+                    isHeader: true,
+                    isHero: false,
+                    isFirst: rows.length === 0,
+                    isLast: false,
+                    ref: null
+                });
+            for (let i = 0; i < take; i++) {
+                const item = items[i];
+                rows.push({
+                    key: String(item.key ?? (sectionId + ":" + i)),
+                    sectionId: sectionId,
+                    isHeader: false,
+                    isHero: false,
+                    isFirst: i === 0,
+                    isLast: i === take - 1,
+                    ref: item
+                });
+            }
+        }
+
+        // The prominent row is whichever result the cursor would have landed on
+        // anyway, so what Enter does and what the row shows can never disagree.
+        // Expressive: the hero leaves its group and stands above every pane;
+        // a group it emptied loses its caption, and the next row opens it.
+        if (heroActive && root.expressiveResults) {
+            const h = rows.findIndex(r => !r.isHeader);
+            if (h !== -1) {
+                const hero = rows.splice(h, 1)[0];
+                hero.isHero = true;
+                hero.isFirst = true;
+                hero.isLast = true;
+                if (h < rows.length && !rows[h].isHeader && rows[h].sectionId === hero.sectionId)
+                    rows[h].isFirst = true;
+                else if (h > 0 && rows[h - 1].isHeader && rows[h - 1].sectionId === hero.sectionId)
+                    rows.splice(h - 1, 1);
+                rows.unshift(hero);
+                // A caption right under the hero takes no top gap: the hero's
+                // own bottom gap already separates them.
+                for (let i = 0; i < rows.length; i++) {
+                    if (!rows[i].isHeader)
+                        continue;
+                    rows[i].isFirst = i === 0 || rows[i - 1].isHero === true;
+                    // The caption opens the pane; the row under it must not
+                    // round its top inside the caption's strip.
+                    if (i + 1 < rows.length && !rows[i + 1].isHeader)
+                        rows[i + 1].isFirst = false;
+                }
+            }
+            return rows;
+        }
+        if (heroActive) {
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i].isHeader)
+                    continue;
+                rows[i].isHero = true;
+                // It stands alone, so the row under it starts the next group.
+                rows[i].isLast = true;
+                if (i + 1 < rows.length && !rows[i + 1].isHeader)
+                    rows[i + 1].isFirst = true;
+                break;
+            }
+        }
+        return rows;
+    }
+
+    function processResults(results) {
+        if (root.inNotchMode && root.searchingText === "" && !root.isAnySpecialMode)
+            return [];
+        const q = LauncherSearch.query.trim().toLowerCase();
+        const showNowPlaying = Config.options.search.nowPlaying?.enable ?? Config.options.search.showNowPlayingBubble;
+        const excludeMpris = root.inNotchMode || Config.options.search.alwaysListApps || q !== "" || !showNowPlaying;
+        const filtered = [];
+        for (let i = 0; i < results.length; i++) {
+            const item = results[i];
+            if (item && (!excludeMpris || item.key !== "mpris:now-playing"))
+                filtered.push(item);
+        }
+        return root.organizeResults(filtered, root.loadedResultsCount);
+    }
+
+    Keys.onPressed: event => {
+        if (root.activePanelOwnsInput && root.activePanelItem && typeof root.activePanelItem.handleKeyPress === "function") {
+            if (root.activePanelItem.handleKeyPress(event)) {
+                event.accepted = true;
+                return;
+            }
+        }
+        if (event.key === Qt.Key_K && (event.modifiers & Qt.ControlModifier)) {
+            if (appResults.visible) {
+                root.requestToggleActions();
+                event.accepted = true;
+            }
+            return;
+        }
+
+        // ESC first leaves any child panel. Nothing left to unwind closes
+        // the launcher surface.
+        if (event.key === Qt.Key_Escape) {
+            event.accepted = true;
+            if (!root.handleEscape())
+                GlobalStates.overviewOpen = false;
+            return;
+        }
+
+        // TAB / Backtab: route navigation inside AI panel when in AI mode
+        if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+            if (root.showNormalCategoryFilter) {
+                root.cycleResultCategory(event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier) ? -1 : 1);
+                event.accepted = true;
+                return;
+            }
+        }
+
+        // Handle Backspace: focus and delete character if not focused
+        if (event.key === Qt.Key_Backspace) {
+            if (root.activePanelOwnsInput)
+                return;
+            if (root.isAnySpecialMode && root.activePanelQuery.trim().length === 0) {
+                root.handlePanelBackspace();
+                event.accepted = true;
+                return;
+            }
+            if (!searchBar.searchInput.activeFocus) {
+                root.focusSearchInput();
+                if (event.modifiers & Qt.ControlModifier) {
+                    // Delete word before cursor
+                    let text = searchBar.searchInput.text;
+                    let pos = searchBar.searchInput.cursorPosition;
+                    if (pos > 0) {
+                        // Find the start of the previous word
+                        let left = text.slice(0, pos);
+                        let match = left.match(/(\s*\S+)\s*$/);
+                        let deleteLen = match ? match[0].length : 1;
+                        searchBar.searchInput.text = text.slice(0, pos - deleteLen) + text.slice(pos);
+                        searchBar.searchInput.cursorPosition = pos - deleteLen;
+                    }
+                } else {
+                    // Delete character before cursor if any
+                    if (searchBar.searchInput.cursorPosition > 0) {
+                        searchBar.searchInput.text = searchBar.searchInput.text.slice(0, searchBar.searchInput.cursorPosition - 1) + searchBar.searchInput.text.slice(searchBar.searchInput.cursorPosition);
+                        searchBar.searchInput.cursorPosition -= 1;
+                    }
+                }
+                // Always move cursor to end after programmatic edit
+                searchBar.searchInput.cursorPosition = searchBar.searchInput.text.length;
+                event.accepted = true;
+            }
+            // If already focused, let TextField handle it
+            return;
+        }
+
+        // Only handle visible printable characters (ignore control chars, arrows, etc.)
+        if (event.text && event.text.length === 1 && event.key !== Qt.Key_Enter && event.key !== Qt.Key_Return && event.key !== Qt.Key_Delete && event.key !== Qt.Key_Tab && event.key !== Qt.Key_Backtab && event.text.charCodeAt(0) >= 0x20)
+        {
+            if (root.activePanelOwnsInput)
+                return;
+            if (!searchBar.searchInput.activeFocus) {
+                root.focusSearchInput();
+                // Insert the character at the cursor position
+                searchBar.searchInput.text = searchBar.searchInput.text.slice(0, searchBar.searchInput.cursorPosition) + event.text + searchBar.searchInput.text.slice(searchBar.searchInput.cursorPosition);
+                searchBar.searchInput.cursorPosition += 1;
+                event.accepted = true;
+                root.focusFirstItem();
+            }
+        }
+    }
+
+    property real shadowOpacity: 1.0
+
+    StyledRectangularShadow {
+        target: searchWidgetContent
+        // searchWidgetContent only sets per-corner radii, so the default
+        // `target.radius` read 0: a square shadow sat behind the pill and its
+        // dark corners poked out past the rounded ones.
+        radius: Math.max(searchWidgetContent.topLeftRadius, searchWidgetContent.bottomLeftRadius)
+        visible: !root.hostOwnsSurface && !Config.options.appearance.transparency.popups && !Config.options.appearance.transparency.enable
+        opacity: root.shadowOpacity
+        offset: Qt.vector2d(0.0, 0.0)
+    }
+    Rectangle {
+        id: searchWidgetContent
+        // Centered vertically like every other mode — the AI panel is just
+        // another panel below the search bar, same as clipboard/translator.
+        anchors.centerIn: parent
+        width: root.hostOwnsSurface ? parent.width : (root.exiting ? root.exitWidth : implicitWidth)
+        height: root.hostOwnsSurface ? parent.height : (root.exiting ? root.exitHeight : implicitHeight)
+        clip: true
+        // An antialiased rounded clip costs a render target recreated on every
+        // frame of the height animation. Result rows are inset by
+        // `rowSideMargin` and rounded themselves, so they never reach the
+        // container's corners — only the hosted panels, which draw to their own
+        // edges, actually need the mask.
+        layer.enabled: !root.hostOwnsSurface
+            && (root.activePanelUsesHost || root.isAiMode)
+        layer.effect: OpacityMask {
+            maskSource: Rectangle {
+                width: searchWidgetContent.width
+                height: searchWidgetContent.height
+                topLeftRadius: searchWidgetContent.topLeftRadius
+                topRightRadius: searchWidgetContent.topRightRadius
+                bottomLeftRadius: searchWidgetContent.bottomLeftRadius
+                bottomRightRadius: searchWidgetContent.bottomRightRadius
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            // Absorb clicks inside search widget so they do not hit the full-screen dismiss MouseArea
+            onClicked: {}
+        }
+        // The target itself lives on the root, where a host can read it without
+        // subscribing to this eased value; see `contentTargetWidth`.
+        implicitWidth: root.contentTargetWidth
+        implicitHeight: root.contentTargetHeight
+        /**
+         * The top corners never change.
+         *
+         * They are the collapsed field's own pill radius, concentric with the
+         * input inside it, whether the surface is a bare field or a full result
+         * list. The previous corner blended from that pill to the window radius
+         * over the first 72px of growth, so every expansion visibly reshaped the
+         * corners right under the text the user was typing into.
+         *
+         * Normal results keep the same radius at the bottom too: the last row's
+         * rounding, inset by the row margin, sits concentric with it, so there is
+         * nothing to morph. Hosted panels and AI draw to their own edges and wear
+         * the shell's window corner at the bottom; that change animates, and it
+         * can never pass through a pill because both ends are at most half the
+         * collapsed height.
+         */
+        readonly property real collapsedHeight: searchBar.implicitHeight + searchBar.verticalPadding * 2
+        readonly property real fieldCornerRadius: Math.min(Appearance.rounding.verylarge, searchWidgetContent.collapsedHeight / 2)
+        readonly property real panelCornerRadius: Math.min(Appearance.rounding.windowRounding, searchWidgetContent.fieldCornerRadius)
+        // With the bar at the bottom the field is the last row, so "the field's
+        // corners" are the bottom ones and the far edge is the top.
+        readonly property bool fieldAtBottom: root.overviewPosition == "bottom"
+        property real farCornerRadius: (root.activePanel || root.isAiMode)
+            ? searchWidgetContent.panelCornerRadius
+            : searchWidgetContent.fieldCornerRadius
+        Behavior on farCornerRadius {
+            enabled: !root.animationsDisabled
+            NumberAnimation {
+                duration: Appearance.animation.elementMoveSmall.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+            }
+        }
+        topLeftRadius: searchWidgetContent.fieldAtBottom ? searchWidgetContent.farCornerRadius : searchWidgetContent.fieldCornerRadius
+        topRightRadius: searchWidgetContent.topLeftRadius
+        bottomLeftRadius: searchWidgetContent.fieldAtBottom ? searchWidgetContent.fieldCornerRadius : searchWidgetContent.farCornerRadius
+        bottomRightRadius: searchWidgetContent.bottomLeftRadius
+        // The appearance setting is for every panel routed from Search. Some
+        // older registry entries opted out individually, making the control
+        // look broken for common prefixes such as Clipboard and Translator.
+        color: root.hostOwnsSurface ? "transparent"
+             : Appearance.colors.colBackgroundSurfaceContainer
+
+        Behavior on color {
+            enabled: !root.animationsDisabled
+            ColorAnimation {
+                duration: Appearance.animation.elementMoveFast.duration
+                easing.type: Appearance.animation.elementMoveFast.type
+                easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+            }
+        }
+
+        Behavior on implicitWidth {
+            id: searchWidthBehavior
+            // Only one thing eases a given size. Where the host owns the surface it
+            // animates toward `contentTargetWidth` itself, so easing here as well would
+            // put two curves in series - the mushy expansion the island had.
+            enabled: !root.animationsDisabled && !root.hostDrivesSize
+            NumberAnimation {
+                id: widthAnim
+                duration: Appearance.animation.elementMoveSmall.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+            }
+        }
+
+        Behavior on implicitHeight {
+            id: searchHeightBehavior
+            // See the width behaviour above: one animator, and it is the host's when
+            // the host owns the surface.
+            enabled: !root.animationsDisabled && !root.hostDrivesSize
+            NumberAnimation {
+                id: heightAnim
+                duration: Appearance.animation.elementMoveSmall.duration
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+            }
+        }
+
+        GridLayout {
+            id: gridLayout
+            anchors.left: parent.left
+            anchors.right: parent.right
+            // In notch mode the DI container provides spacing — adding margins here would double-pad
+            anchors.leftMargin: root.connectSideInset
+            anchors.rightMargin: root.connectSideInset
+            anchors.top: parent.top
+            columns: 1
+            rowSpacing: 0
+            clip: true
+
+            SearchBar {
+                id: searchBar
+                property real verticalPadding: 4
+                Layout.fillWidth: true
+                Layout.preferredHeight: root.isAiMode ? 0 : implicitHeight
+                Layout.minimumHeight: 0
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                Layout.topMargin: root.isAiMode ? 0 : verticalPadding
+                Layout.bottomMargin: root.isAiMode ? 0 : verticalPadding
+                Layout.row: root.overviewPosition == "bottom" ? 1 : 0
+                visible: !root.isAiMode
+                animateWidth: !root.animationsDisabled
+                aiModeActive: root.isAiMode
+                Binding {
+                    target: searchBar
+                    property: "searchingText"
+                    value: root.searchingText
+                }
+
+                clipboardMode: root.isClipboardMode || root.isBluetoothMode || root.isTranslatorMode || root.isMediaDownloaderMode || root.isMaterialSymbolsMode
+                activePanelMode: root.isAnySpecialMode
+                activePanel: root.activePanel
+                activePanelItem: root.activePanelItem
+                activePanelOwnsInput: root.activePanelOwnsInput
+                activePanelQueryEmpty: root.activePanelQuery.trim().length === 0
+                supportsPanelSectionToggle: root.activePanelItem?.supportsSectionToggle === true
+                clipboardWidth: 830
+                currentResultIndex: appResults.currentIndex
+                selectedResultRef: LauncherSearch.selectedResult
+                isTranslatorPanelFocused: root.isTranslatorMode && root.activePanelItem && root.activePanelItem.focusedControlIndex !== -1
+                isMediaDownloaderPanelFocused: root.isMediaDownloaderMode && root.activePanelItem && root.activePanelItem.focusedControlIndex !== -1
+                isMaterialSymbolsPanelFocused: root.isMaterialSymbolsMode && root.activePanelItem && root.activePanelItem.focusedControlIndex !== -1
+                showSuggestionsPanel: root.showSuggestionsPanel
+                showCategoryFilter: root.showNormalCategoryFilter
+                categoryFilterLabel: root.activeResultCategory.label
+                categoryFilterIcon: root.activeResultCategory.icon
+                enabled: !root.isAiMode
+                opacity: root.isAiMode ? 0 : 1
+
+                Behavior on opacity {
+                    enabled: !root.animationsDisabled
+                    NumberAnimation {
+                        duration: Appearance.animation.elementMoveFast.duration
+                        easing.type: Appearance.animation.elementMoveFast.type
+                        easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                    }
+                }
+
+                Behavior on Layout.preferredHeight {
+                    enabled: !root.animationsDisabled
+                    NumberAnimation {
+                        duration: Appearance.animation.elementMoveSmall.duration
+                        easing.type: Appearance.animation.elementMoveSmall.type
+                        easing.bezierCurve: Appearance.animation.elementMoveSmall.bezierCurve
+                    }
+                }
+
+                onCtrlKPressed: {
+                    if (root.activePanelItem) {
+                        searchKeyRouter.dispatch("toggleActions");
+                    } else if (appResults.visible) {
+                        root.requestToggleActions();
+                    }
+                }
+
+                onBackspaceOnEmpty: root.handlePanelBackspace()
+                onClearRequested: {
+                    root.setSearchingText("");
+                    root.focusSearchInput();
+                }
+                panelShortcutHandler: methodName => searchKeyRouter.dispatch(methodName)
+
+                onTogglePanelSection: {
+                    searchKeyRouter.dispatch("toggleSection");
+                }
+
+                onOpenSelectedInCheatsheet: {
+                    if (!searchKeyRouter.dispatch("secondaryActivateSelected"))
+                        searchKeyRouter.dispatch("openSelectedInCheatsheet");
+                }
+
+                onSaveSelected: searchKeyRouter.dispatch("saveSelected")
+                onEditSelected: searchKeyRouter.dispatch("editSelected")
+                onOcrSelected: searchKeyRouter.dispatch("ocrSelected")
+                onCopyDispatchSelected: searchKeyRouter.dispatch("copyDispatchSelected")
+                onCreateFromQuery: searchKeyRouter.dispatch("createFromQuery")
+                onHistoryPrevious: root.selectSearchHistory(1)
+                onHistoryNext: root.selectSearchHistory(-1)
+                onToggleFavorite: {
+                    LauncherSearch.toggleFavorite(LauncherSearch.selectedResult);
+                }
+                onCycleCategoryFilter: step => root.cycleResultCategory(step)
+
+                onEscapeToSearch: {
+                    root.handleEscape();
+                }
+
+                onRunSecondaryAction: index => {
+                    const row = root.selectedResultRow();
+                    if (row && typeof row.runSecondary === "function")
+                        row.runSecondary(index);
+                }
+
+                onNavigateSectionUp: searchKeyRouter.dispatch("sectionPrevious")
+                onNavigateSectionDown: searchKeyRouter.dispatch("sectionNext")
+
+                onNavigateUp: searchKeyRouter.dispatch("navigateUp")
+                onNavigateDown: searchKeyRouter.dispatch("navigateDown")
+
+                onNavigateLeft: {
+                    if (root.activePanelItem)
+                        searchKeyRouter.dispatch("navigateLeft");
+                    else if (root.selectedResultHandlesHorizontalNavigation)
+                        searchKeyRouter.dispatch("navigateLeft");
+                }
+
+                onNavigateRight: {
+                    if (root.activePanelItem)
+                        searchKeyRouter.dispatch("navigateRight");
+                    else if (root.selectedResultHandlesHorizontalNavigation)
+                        searchKeyRouter.dispatch("navigateRight");
+                }
+
+                onActivate: searchKeyRouter.dispatch("activateSelected")
+
+                onDeleteSelected: {
+                    if (root.activePanelItem && typeof root.activePanelItem.deleteSelected === "function")
+                        root.activePanelItem.deleteSelected();
+                }
+            }
+
+            Item {
+                id: searchResultsSurface
+
+                // A GridLayout cell may only have one direct child. The
+                // regular results and the registry-backed panels alternate
+                // inside this surface instead of competing for that cell.
+                readonly property bool registeredPanelActive: root.activePanelUsesHost
+                Layout.fillWidth: true
+                implicitHeight: registeredPanelActive
+                    ? Math.min(registeredPanelHostLoader.item?.implicitHeight ?? 0, root.activePanelHeightBudget)
+                    : appResultsSurface.implicitHeight
+                height: implicitHeight
+                Layout.row: root.overviewPosition == "bottom" ? 0 : 1
+
+                Item {
+                    id: appResultsSurface
+                    anchors.fill: parent
+
+                // Use opacity-driven visibility so results fade out before collapsing on close
+                readonly property bool resultsActive: root.showResults && !root.isAnySpecialMode
+                opacity: resultsActive ? 1.0 : 0.0
+                visible: opacity > 0.01
+                implicitHeight: !resultsActive && (!root.inNotchMode || opacity <= 0.01)
+                    ? 0
+                    : (root.showSkeletons
+                        ? searchSkeletons.implicitHeight + (GlobalStates.searchConnectActive ? 12 : 16)
+                        : (root.showEmptySearchState
+                            ? emptySearchState.implicitHeight
+                            // View margins decorate actual rows; they are not
+                            // content and must not grow an empty search surface.
+                            : appResults.measuredContentExtent))
+
+                Behavior on opacity {
+                    enabled: !root.animationsDisabled
+                    NumberAnimation {
+                        duration: Appearance.animation.elementMoveFast.duration
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                    }
+                }
+
+
+                onOpacityChanged: {
+                    if (opacity <= 0.01 && !resultsActive && root.searchingText === "" && !root.alwaysListAppsMode) {
+                        resultModel.clear();
+                        appResults.rowRefs = [];
+                    }
+                }
+
+                // Deliberately not animated. This height feeds the container's own
+                // height Behavior, and animating both put two eased curves in
+                // series: the content slid while the frame grew, which is the
+                // mushy, laggy expansion. The container animates; the content is
+                // simply revealed by it.
+
+                ListView {
+                    id: appResults
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    visible: opacity > 0 && !root.showEmptySearchState
+                    opacity: root.showSkeletons || root.showEmptySearchState ? 0.0 : 1.0
+                    Behavior on opacity {
+                        enabled: !root.inNotchMode && !root.animationsDisabled
+                        NumberAnimation {
+                            duration: Appearance.animation.elementMoveFast.duration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Appearance.animationCurves.expressiveEffects
+                        }
+                    }
+                    clip: true
+                    /**
+                     * Rows scrolled out of view are recycled, not destroyed.
+                     *
+                     * Building a result row costs milliseconds (text layout, an
+                     * icon, a settings card's controls). The view only pools rows
+                     * that leave the viewport — a row removed from the model is
+                     * still destroyed — so typing relies on `applyRowsInPlace`,
+                     * and this covers scrolling and paging. See `onPooled` and
+                     * `onReused` on the delegate.
+                     */
+                    reuseItems: true
+                    topMargin: root.expressiveResults ? root.slabPad : 0
+                    // Matches the rows' own side inset: the gap under the last row
+                    // and the gap beside every row are the same edge of the panel,
+                    // and they were 6 against 10. Connect mode keeps its own value —
+                    // there the grid adds 24px gutters on top of the row inset, so
+                    // the two gaps are not the same relationship to begin with.
+                    bottomMargin: (GlobalStates.searchConnectActive ? 12 : root.rowSideMargin)
+                        + (root.actionFeedbackText.length > 0 ? actionFeedbackBar.height + Appearance.sizes.elevationMargin / 2 : 0)
+                    spacing: 2
+                    // contentHeight is calculated by a view whose viewport is
+                    // this surface's height. Binding the surface straight back
+                    // to it creates a circular dependency in Qt. Snapshot the
+                    // extent only when the view reports a real content change.
+                    property real measuredContentExtent: 0
+                    function updateMeasuredContentExtent() {
+                        const nextExtent = appResults.count === 0 || appResults.contentHeight <= 0
+                            ? 0
+                            : Math.min(root.maxResultsHeight,
+                                appResults.contentHeight + appResults.topMargin + appResults.bottomMargin);
+                        if (Math.abs(appResults.measuredContentExtent - nextExtent) > 0.5)
+                            appResults.measuredContentExtent = nextExtent;
+                    }
+                    Timer {
+                        id: resultsExtentSyncTimer
+                        interval: 0
+                        repeat: false
+                        onTriggered: appResults.updateMeasuredContentExtent()
+                    }
+                    onContentHeightChanged: resultsExtentSyncTimer.restart()
+                    onCountChanged: resultsExtentSyncTimer.restart()
+                    onTopMarginChanged: resultsExtentSyncTimer.restart()
+                    onBottomMarginChanged: resultsExtentSyncTimer.restart()
+                    KeyNavigation.up: searchBar
+                    highlightMoveDuration: 100
+                    // Cascade step between rows inserted by the same diff. It is
+                    // capped at four steps and dropped while typing in a burst, so
+                    // no row ever waits long enough to read as slow.
+                    readonly property int staggerStep: 10
+
+                    /**
+                     * ── Reorder motion ──
+                     *
+                     * One duration and one curve for every row movement, whatever
+                     * the typing cadence is. The list used to pick between two
+                     * durations and two stagger modes per keystroke, which is why
+                     * no two reorders ever looked alike.
+                     *
+                     * `reorderTravel` caps how far a row slides. A row's travel
+                     * distance carries nothing the eye can use while the whole
+                     * list is being replaced per keystroke — only the direction
+                     * does — and a row crossing five slots is precisely the motion
+                     * that read as chaos.
+                     */
+                    readonly property int reorderDuration: root.animationsDisabled ? 0 : 140
+                    readonly property int quietEntranceDuration: root.animationsDisabled ? 0 : 90
+                    readonly property real reorderTravel: 26
+
+                    /**
+                     * One more layout pass after a row changed height.
+                     *
+                     * A delegate that reports its final height a frame after the
+                     * view placed it leaves every row below it at the position it
+                     * was given, overlapping. The view is asked to lay out again
+                     * rather than trusting that it noticed.
+                     *
+                     * Deferred through a timer because the height change arrives
+                     * from inside the view's own layout pass, and it converges:
+                     * a pass in which no height moves schedules nothing.
+                     */
+                    Timer {
+                        id: relayoutTimer
+                        interval: 0
+                        repeat: false
+                        onTriggered: {
+                            appResults.forceLayout();
+                            // Re-asserted here because the scroll that buries the
+                            // caption lands in a layout pass of its own, after the
+                            // selection was anchored and while the viewport is still
+                            // growing to its final height.
+                            if (appResults.viewPinnedToTop && appResults.contentY > appResults.originY)
+                                appResults.pinViewToTop();
+                        }
+                    }
+
+                    function scheduleRelayout() {
+                        // Unconditional: a height that settles during the diff's own
+                        // forced layout would otherwise be the one nothing catches.
+                        // Restarting a zero-interval timer any number of times still
+                        // costs exactly one pass.
+                        relayoutTimer.restart();
+                    }
+
+                    // Rows are selectable results only; section captions live
+                    // in the model and are skipped by keyboard navigation.
+                    function isHeaderRow(rowIndex: int): bool {
+                        if (rowIndex < 0 || rowIndex >= resultModel.count)
+                            return true;
+                        return resultModel.get(rowIndex).isHeader === true;
+                    }
+
+                    function selectableIndex(from: int, step: int): int {
+                        for (let i = from; i >= 0 && i < resultModel.count; i += step) {
+                            if (!appResults.isHeaderRow(i))
+                                return i;
+                        }
+                        return -1;
+                    }
+
+                    function selectFirst() {
+                        const target = appResults.selectableIndex(0, 1);
+                        // A new query is a new list: the pill lands on its first
+                        // row instead of travelling there from the old one.
+                        appResults.snapNextSelection = true;
+                        appResults.currentIndex = target;
+                        appResults.snapNextSelection = false;
+                        appResults.stopSelectionSlide();
+                        appResults.publishSelection();
+
+                        /**
+                         * ...and the list is shown from its first row.
+                         *
+                         * The view only ever scrolls the *minimum* needed to keep
+                         * the current item visible, and the first selectable row is
+                         * index 1 — the section caption above it is index 0 and is
+                         * never the current item. So any leftover `contentY` from
+                         * the previous query is kept: the caption sits just above
+                         * the viewport, the first application row is flush against
+                         * the top, and nothing will ever scroll back up to reveal
+                         * the caption again. It reads exactly like the rows
+                         * overwriting the group label.
+                         */
+                        appResults.pinViewToTop();
+                    }
+
+                    /**
+                     * Bring the cursor back in line with a model that changed
+                     * underneath it, without moving it any further than it has to.
+                     */
+                    function resyncSelection() {
+                        if (resultModel.count === 0) {
+                            appResults.lastSelectionIndex = -1;
+                            appResults.stopSelectionSlide();
+                            appResults.publishSelection();
+                            return;
+                        }
+                        if (appResults.currentIndex < 0 || appResults.isHeaderRow(appResults.currentIndex)) {
+                            appResults.selectFirst();
+                            return;
+                        }
+                        appResults.lastSelectionIndex = appResults.currentIndex;
+                        // A diff that appended a page below the cursor did not move
+                        // the row under it, and a slide still running is still
+                        // measured against a row that is still where it was.
+                        if (appResults.selectionAnchorMoved)
+                            appResults.stopSelectionSlide();
+                        appResults.publishSelection();
+                    }
+
+                    function publishSelection() {
+                        const selected = appResults.currentIndex >= 0 && appResults.currentIndex < resultModel.count
+                            ? resultModel.get(appResults.currentIndex)?.modelRef ?? null
+                            : null;
+                        LauncherSearch.selectedResult = selected;
+                        root.refreshSelectedResultNavigation();
+                    }
+
+                    /**
+                     * One selection pill for the whole list, sliding between rows.
+                     *
+                     * It lives in list-content coordinates and is drawn by each
+                     * row as the part of it that overlaps the row, so only one
+                     * pill exists at a time: no fill growing inside a row, no
+                     * fading copy left behind on the row the cursor just left.
+                     *
+                     * The pill follows the current row's live geometry (reorders,
+                     * scroll) and only its offset from that row animates, from
+                     * wherever it was painted when the cursor moved — so holding an
+                     * arrow key keeps one continuous motion instead of restarts.
+                     */
+                    property int lastSelectionIndex: -1
+                    property bool snapNextSelection: false
+                    /**
+                     * Whether the cursor was last put where it is by the user.
+                     *
+                     * Arrow keys and section jumps set it; an edit of the query
+                     * clears it. While it is clear the rows draw their selection
+                     * state without animating it — see `snapSelection` on
+                     * SearchItem.
+                     */
+                    property bool selectionFollowsUser: false
+                    readonly property bool snapSelectionVisuals: !appResults.selectionFollowsUser
+                        || appResults.applyingDiff || appResults.snapNextSelection
+                    // Whether the last diff moved the row the cursor sits on.
+                    property bool selectionAnchorMoved: true
+                    property real selectionSlideOffset: 0
+                    property real selectionSlideHeightDelta: 0
+                    readonly property real selectionIndicatorY: appResults.currentItem
+                        ? appResults.currentItem.y + appResults.selectionSlideOffset
+                        : -100000
+                    readonly property real selectionIndicatorHeight: appResults.currentItem
+                        ? appResults.currentItem.height + appResults.selectionSlideHeightDelta
+                        : 0
+
+                    ParallelAnimation {
+                        id: selectionSlideAnim
+                        NumberAnimation {
+                            target: appResults
+                            property: "selectionSlideOffset"
+                            to: 0
+                            duration: appResults.reorderDuration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                        }
+                        NumberAnimation {
+                            target: appResults
+                            property: "selectionSlideHeightDelta"
+                            to: 0
+                            duration: appResults.reorderDuration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                        }
+                    }
+
+                    /**
+                     * Put the pill flush on its row. A slide left running when the
+                     * model changed is measured against a row that has since moved,
+                     * so it would land off by whatever that row travelled.
+                     */
+                    function stopSelectionSlide() {
+                        selectionSlideAnim.stop();
+                        appResults.selectionSlideOffset = 0;
+                        appResults.selectionSlideHeightDelta = 0;
+                    }
+
+                    function startSelectionSlide(fromIndex: int, slide: bool) {
+                        const from = fromIndex >= 0 ? appResults.itemAtIndex(fromIndex) : null;
+                        const to = appResults.currentItem;
+                        selectionSlideAnim.stop();
+                        if (!slide || root.animationsDisabled || !from || !to || from === to) {
+                            appResults.selectionSlideOffset = 0;
+                            appResults.selectionSlideHeightDelta = 0;
+                            return;
+                        }
+                        // Where the pill is painted right now, relative to the row
+                        // it was attached to until this change.
+                        const visibleY = from.y + appResults.selectionSlideOffset;
+                        const visibleHeight = from.height + appResults.selectionSlideHeightDelta;
+                        appResults.selectionSlideOffset = visibleY - to.y;
+                        appResults.selectionSlideHeightDelta = visibleHeight - to.height;
+                        selectionSlideAnim.start();
+                    }
+
+                    /**
+                     * Move the cursor to the first row of the next or previous
+                     * group. With four groups on screen, reaching the last one
+                     * a row at a time costs ten keystrokes.
+                     */
+                    function sectionJump(step: int): bool {
+                        if (resultModel.count === 0)
+                            return false;
+                        const from = Math.max(0, appResults.currentIndex);
+                        const current = String(resultModel.get(from)?.sectionId ?? "");
+                        for (let i = from + step; i >= 0 && i < resultModel.count; i += step) {
+                            const row = resultModel.get(i);
+                            if (row.isHeader === true || String(row.sectionId) === current)
+                                continue;
+                            // Going up lands on the *first* row of that group,
+                            // not the last one the scan happened to reach.
+                            const target = step < 0 ? appResults.sectionStart(i) : i;
+                            appResults.releaseViewPin();
+                            appResults.selectionFollowsUser = true;
+                            appResults.currentIndex = target;
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    function sectionStart(rowIndex: int): int {
+                        const sectionId = String(resultModel.get(rowIndex)?.sectionId ?? "");
+                        let start = rowIndex;
+                        while (start > 0) {
+                            const previous = resultModel.get(start - 1);
+                            if (previous.isHeader === true || String(previous.sectionId) !== sectionId)
+                                break;
+                            start--;
+                        }
+                        return start;
+                    }
+
+                    function moveSelection(step: int): bool {
+                        const target = appResults.selectableIndex(appResults.currentIndex + step, step);
+                        if (target === -1)
+                            return false;
+                        appResults.releaseViewPin();
+                        appResults.selectionFollowsUser = true;
+                        appResults.currentIndex = target;
+                        return true;
+                    }
+
+                    // An offscreen render target plus a shader pass on every frame of
+                    // every resize is not worth paying for a list that fits: the fade
+                    // only means anything while there is something to scroll to. The
+                    // test is stated against the fixed cap rather than the list's own
+                    // height, which is itself derived from contentHeight — comparing
+                    // the two made the layer flicker on and off around the boundary.
+                    layer.enabled: appResults.count > 0
+                        && appResults.contentHeight + appResults.topMargin + appResults.bottomMargin > root.maxResultsHeight
+                    layer.effect: OpacityMask {
+                        maskSource: Item {
+                            id: maskRoot
+                            width: appResults.width
+                            height: appResults.height
+
+                            property color topFadeColor: {
+                                if (appResults.currentItem) {
+                                    const visY = appResults.currentItem.y - appResults.contentY;
+                                    if (visY <= appResults.topMargin + maskRoot.topFadeHeight)
+                                        return "white";
+                                }
+                                return appResults.atYBeginning ? "white" : "transparent";
+                            }
+                            property color bottomFadeColor: {
+                                if (appResults.currentItem) {
+                                    const visBottom = appResults.currentItem.y - appResults.contentY + appResults.currentItem.height;
+                                    if (visBottom >= appResults.height - appResults.bottomMargin - maskRoot.bottomFadeHeight)
+                                        return "white";
+                                }
+                                return appResults.atYEnd ? "white" : "transparent";
+                            }
+
+                            Behavior on topFadeColor {
+                                enabled: !root.inNotchMode && !root.animationsDisabled
+                                ColorAnimation {
+                                    duration: Appearance.animation.elementMoveFast.duration
+                                    easing.type: Easing.BezierSpline
+                                    easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                                }
+                            }
+                            Behavior on bottomFadeColor {
+                                enabled: !root.inNotchMode && !root.animationsDisabled
+                                ColorAnimation {
+                                    duration: Appearance.animation.elementMoveFast.duration
+                                    easing.type: Easing.BezierSpline
+                                    easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                                }
+                            }
+
+                            // Edge fades long enough to read as depth rather than a
+                            // clipped line: 46/56px only softened the last few pixels.
+                            readonly property real topFadeHeight: Math.min(80, height / 3)
+                            readonly property real bottomFadeHeight: Math.min(110, height / 3)
+
+                            Column {
+                                anchors.fill: parent
+                                spacing: 0
+
+                                Rectangle {
+                                    width: parent.width
+                                    height: maskRoot.topFadeHeight
+                                    color: "transparent"
+                                    gradient: Gradient {
+                                        GradientStop {
+                                            position: 0.0
+                                            color: maskRoot.topFadeColor
+                                        }
+                                        GradientStop {
+                                            position: 1.0
+                                            color: "white"
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    width: parent.width
+                                    height: Math.max(0, parent.height - maskRoot.topFadeHeight - maskRoot.bottomFadeHeight)
+                                    color: "white"
+                                }
+
+                                Rectangle {
+                                    width: parent.width
+                                    height: maskRoot.bottomFadeHeight
+                                    color: "transparent"
+                                    gradient: Gradient {
+                                        GradientStop {
+                                            position: 0.0
+                                            color: "white"
+                                        }
+                                        GradientStop {
+                                            position: 1.0
+                                            color: maskRoot.bottomFadeColor
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    /**
+                     * Hold the list at its first row until the user leaves it.
+                     *
+                     * The view only ever scrolls the *minimum* needed to keep the
+                     * current item visible, and the first selectable row is index 1
+                     * — the section caption above it is index 0 and is never the
+                     * current item, so nothing ever scrolls back up to reveal it.
+                     *
+                     * The scroll that buries it comes from the selection being
+                     * re-anchored while the panel is still opening and the viewport
+                     * is still 0px tall: with a zero-height viewport, "make index 1
+                     * visible" means putting it at the very top, so `contentY` lands
+                     * on exactly the caption's height. Once the viewport grows,
+                     * index 1 is visible with room to spare and nothing corrects it.
+                     *
+                     * The result is the group label parked just above the top edge
+                     * with the first result flush against it, which reads as the
+                     * rows overwriting the caption.
+                     */
+                    property bool viewPinnedToTop: false
+
+                    function pinViewToTop() {
+                        appResults.viewPinnedToTop = true;
+                        appResultsWheel.stop();
+                        appResults.positionViewAtBeginning();
+                    }
+
+                    function releaseViewPin() {
+                        appResults.viewPinnedToTop = false;
+                    }
+
+                    // Qt's own wheel and drag scrolling never pass through the
+                    // scroll handler below, so without this the pin outlived
+                    // the user's first scroll and the next row height report
+                    // (rows realize as they come into view) snapped the list
+                    // back to its first row.
+                    onMovementStarted: appResults.releaseViewPin()
+
+                    maximumFlickVelocity: 3500
+
+                    TouchpadScrollHandler {
+                        id: appResultsWheel
+                        flickable: appResults
+                        // The pin is the user's to break.
+                        onScrolled: appResults.releaseViewPin()
+                    }
+
+                    onContentYChanged: {
+                        if (contentHeight > 0 && contentY + height > contentHeight - 150) {
+                            root.loadMoreResults();
+                        }
+                    }
+
+                    onCurrentIndexChanged: {
+                        // Mid-diff the view renumbers the cursor once per insert,
+                        // remove and move; every one of those intermediate indexes
+                        // is meaningless and none of them is ever painted. Reacting
+                        // to them only let a recovery fire against a half-applied
+                        // model and fight the re-anchor that follows the diff.
+                        if (appResults.applyingDiff) {
+                            appResults.lastSelectionIndex = currentIndex;
+                            return;
+                        }
+                        // A diff can slide a caption under the cursor. Step off it
+                        // in the direction the list grew rather than selecting a
+                        // row that cannot be activated.
+                        if (currentIndex >= 0 && appResults.isHeaderRow(currentIndex) && resultModel.count > 0) {
+                            const recovered = appResults.selectableIndex(currentIndex, 1);
+                            appResults.currentIndex = recovered !== -1 ? recovered : appResults.selectableIndex(currentIndex, -1);
+                            return;
+                        }
+                        // A diff renumbers rows under the cursor without the user
+                        // moving it; only a real move travels.
+                        appResults.startSelectionSlide(appResults.lastSelectionIndex,
+                            !appResults.applyingDiff && !appResults.snapNextSelection);
+                        appResults.lastSelectionIndex = currentIndex;
+                        const selected = currentIndex >= 0 && currentIndex < resultModel.count
+                            ? resultModel.get(currentIndex)?.modelRef ?? null
+                            : null;
+                        LauncherSearch.selectedResult = selected;
+                        root.refreshSelectedResultNavigation();
+                        if (currentIndex >= count - 5)
+                            root.loadMoreResults();
+                    }
+
+                    // ── Diff-based model update: drives the move/add/remove transitions ──
+                    // `rows` come from organizeResults(): section captions and result
+                    // rows in one flat list, each already carrying its grouping flags.
+                    // Every insert/remove/move below makes the view re-emit
+                    // contentY and currentIndex, and those handlers can ask for
+                    // another page. Re-entering here would restart the diff against
+                    // a `currentKeys` mirror that the outer pass is still editing,
+                    // and rows the outer pass had not reached yet would survive.
+                    property bool applyingDiff: false
+                    /**
+                     * Whether the diff being applied answers a new query.
+                     *
+                     * Those replace the list under someone who is still typing:
+                     * surviving rows go straight to their new slot and new rows
+                     * only fade in where they are, so nothing slides across the
+                     * selected row between two keystrokes. Later updates for the
+                     * same query (files, content, settings arriving) keep the
+                     * full reorder and entrance motion.
+                     */
+                    property bool quietDiff: false
+
+                    function applyResultDiff(rows) {
+                        if (appResults.applyingDiff)
+                            return;
+                        appResults.applyingDiff = true;
+                        // Assume the worst until `settleRowPositions` proves the
+                        // row under the cursor stayed put; every early exit below
+                        // it is a case where a running slide is not worth saving.
+                        appResults.selectionAnchorMoved = true;
+                        const before = appResults.captureRowPositions();
+                        try {
+                            appResults.applyResultDiffUnguarded(rows);
+                            // Inside the guard: the forced layout below re-emits
+                            // contentY and can re-emit currentIndex, and neither is
+                            // a cursor move the user made.
+                            appResults.settleRowPositions(before);
+                        } finally {
+                            appResults.applyingDiff = false;
+                        }
+                    }
+
+                    /**
+                     * Where every realized row sits, by key, before the diff.
+                     *
+                     * Comparing this against the same reading after the diff gives
+                     * the exact distance each surviving row travelled, including
+                     * rows that only moved because something above them was
+                     * inserted or removed. No separate bookkeeping of moves and
+                     * displacements, and no way for the two to disagree.
+                     */
+                    function captureRowPositions(): var {
+                        const snapshot = ({ positions: ({}), order: [] });
+                        if (root.animationsDisabled || appResults.quietDiff || resultModel.count === 0)
+                            return snapshot;
+                        for (let i = 0; i < resultModel.count; i++) {
+                            const key = resultModel.get(i).key;
+                            snapshot.order.push(key);
+                            const delegate = appResults.itemAtIndex(i);
+                            if (delegate)
+                                snapshot.positions[key] = delegate.y;
+                        }
+                        return snapshot;
+                    }
+
+                    /**
+                     * The keys whose order relative to each other actually changed.
+                     *
+                     * Every row below an inserted section caption moves down by the
+                     * caption's height, but none of them reordered: they are in the
+                     * same sequence they were in. Sliding them for it drew the whole
+                     * list on top of the caption that had just arrived — the label
+                     * disappearing under the first result.
+                     *
+                     * Comparing rank among the survivors, rather than index, tells
+                     * the two apart: a row that merely shifted keeps its rank, a row
+                     * that overtook another does not.
+                     */
+                    function reorderedKeys(before: var): var {
+                        const reordered = new Set();
+                        const beforeRanks = ({});
+                        let rank = 0;
+                        const survived = ({});
+                        for (let i = 0; i < resultModel.count; i++)
+                            survived[resultModel.get(i).key] = true;
+                        for (let i = 0; i < before.order.length; i++) {
+                            const key = before.order[i];
+                            if (survived[key] === true)
+                                beforeRanks[key] = rank++;
+                        }
+                        rank = 0;
+                        for (let i = 0; i < resultModel.count; i++) {
+                            const key = resultModel.get(i).key;
+                            if (beforeRanks[key] === undefined)
+                                continue;
+                            if (beforeRanks[key] !== rank)
+                                reordered.add(key);
+                            rank++;
+                        }
+                        return reordered;
+                    }
+
+                    /**
+                     * Replay each row's movement as a short, clamped slide.
+                     *
+                     * The row whose selection this diff lands on is skipped: the
+                     * pill and the row under it stay exactly where they are while
+                     * the rest of the list rearranges around them. That is the
+                     * whole point — typing never moves the cursor.
+                     */
+                    function settleRowPositions(before: var) {
+                        if (root.animationsDisabled || root.suppressItemTransitions || root.surfaceAnimating)
+                            return;
+                        if (resultModel.count === 0)
+                            return;
+                        // Nothing slides in a quiet diff (see `quietDiff`), and
+                        // `captureRowPositions` skipped it. The forced layout
+                        // below still runs: it builds the new rows now, while
+                        // the flag that makes them enter quietly is set.
+                        // Rows are repositioned in the polish phase. Without this the
+                        // `y` read below is still the pre-diff one and every delta is 0.
+                        appResults.forceLayout();
+                        // A new query always re-anchors the cursor on the top row
+                        // (see the results handler); anything else leaves the
+                        // cursor where the user put it.
+                        const pinnedIndex = root.selectionAnchorQuery !== root.searchingText
+                            ? appResults.selectableIndex(0, 1)
+                            : appResults.currentIndex;
+                        // Held still in every sense: the row under the cursor does
+                        // not slide *and* does not play an entrance, even when this
+                        // diff is what put it there. A pill that fades up from
+                        // nothing on every keystroke is the one thing the cursor
+                        // must never do. The entrance is cut in the same frame it
+                        // was armed, so nothing of it is ever drawn.
+                        const pinnedDelegate = pinnedIndex >= 0 ? appResults.itemAtIndex(pinnedIndex) : null;
+                        if (pinnedDelegate && typeof pinnedDelegate.finishReveal === "function")
+                            pinnedDelegate.finishReveal();
+                        if (pinnedDelegate) {
+                            const pinnedPreviousY = before.positions[resultModel.get(pinnedIndex).key];
+                            appResults.selectionAnchorMoved = pinnedPreviousY === undefined
+                                || Math.abs(pinnedPreviousY - pinnedDelegate.y) > 0.5;
+                        }
+                        const reordered = appResults.quietDiff ? new Set() : appResults.reorderedKeys(before);
+                        for (let i = 0; i < resultModel.count; i++) {
+                            const delegate = appResults.itemAtIndex(i);
+                            if (!delegate || typeof delegate.startReorderShift !== "function")
+                                continue;
+                            // A delegate with no item is one whose row data was
+                            // unreadable when its `sourceComponent` last ran. It
+                            // has no height and paints nothing, and the diff will
+                            // never touch its row again if nothing about that row
+                            // changed, so this is the only thing that brings it
+                            // back. Checked for every row, the cursor's included.
+                            // See `rowData` on the delegate.
+                            if (!delegate.item)
+                                delegate.rebuildRow();
+                            const key = resultModel.get(i).key;
+                            if (appResults.quietDiff || i === pinnedIndex || !reordered.has(key)) {
+                                // Not a reorder: whatever moved this row moved
+                                // everything around it the same way. It is already
+                                // where it belongs.
+                                delegate.startReorderShift(0);
+                                continue;
+                            }
+                            const previousY = before.positions[key];
+                            // Rows this diff inserted have no previous position and
+                            // play their entrance instead.
+                            if (previousY === undefined)
+                                continue;
+                            delegate.startReorderShift(previousY - delegate.y);
+                        }
+                    }
+
+                    /**
+                     * The result object written into each model row, mirrored
+                     * on the JS side.
+                     *
+                     * `dynamicRoles` does not round-trip object identity: two
+                     * reads of one slot hand back two different wrappers of the
+                     * same object, so comparing `get(i).modelRef` against the
+                     * incoming ref was always unequal and every row was rewritten
+                     * on every pass. Comparing against what was actually written
+                     * is the only reliable test.
+                     */
+                    property var rowRefs: []
+
+                    /** Which delegate shape a row needs; see `resolveRowComponent`. */
+                    function rowKind(isHeader: bool, isHero: bool, ref: var): string {
+                        if (isHeader)
+                            return "header";
+                        if (isHero)
+                            return "hero";
+                        return ref?.settingRef ? "setting" : "row";
+                    }
+
+                    function resetRowState(rowIndex: int) {
+                        const row = appResults.itemAtIndex(rowIndex)?.item ?? null;
+                        if (row && typeof row.resetTransientState === "function")
+                            row.resetTransientState();
+                        else if (row && row.writeError !== undefined)
+                            row.writeError = "";
+                    }
+
+                    /**
+                     * A new query written over the rows already on screen.
+                     *
+                     * Keyed diffs removed the rows of the previous query and
+                     * inserted the new ones, and the view never recycles a row
+                     * removed from its model: every keystroke built a dozen
+                     * delegates from scratch, 3-5ms each, in the frame the letter
+                     * appeared. Here each slot keeps its delegate and only
+                     * receives new data; a slot of the wrong shape is swapped
+                     * for one of the right shape from further down. A row is
+                     * only built when the list needs more of a shape than it
+                     * has, and nothing slides.
+                     */
+                    function applyRowsInPlace(rows) {
+                        const refs = appResults.rowRefs.slice();
+                        const kinds = [];
+                        for (let i = 0; i < resultModel.count; i++) {
+                            const row = resultModel.get(i);
+                            kinds.push(appResults.rowKind(row.isHeader === true, row.isHero === true, refs[i]));
+                        }
+                        for (let i = 0; i < rows.length; i++) {
+                            const rowData = rows[i];
+                            const kind = appResults.rowKind(rowData.isHeader, rowData.isHero, rowData.ref);
+                            if (i >= resultModel.count || kinds[i] !== kind) {
+                                // A slot of the right shape further down is moved
+                                // up rather than a new row built here: a caption
+                                // appearing between two groups must not cost the
+                                // delegate below it.
+                                let from = -1;
+                                for (let k = i + 1; k < kinds.length; k++) {
+                                    if (kinds[k] === kind) {
+                                        from = k;
+                                        break;
+                                    }
+                                }
+                                if (from !== -1) {
+                                    resultModel.move(from, i, 1);
+                                    kinds.splice(i, 0, kinds.splice(from, 1)[0]);
+                                    refs.splice(i, 0, refs.splice(from, 1)[0]);
+                                } else {
+                                    resultModel.insert(i, {
+                                        key: rowData.key,
+                                        sectionId: rowData.sectionId,
+                                        isHeader: rowData.isHeader,
+                                        isHero: rowData.isHero,
+                                        isFirst: rowData.isFirst,
+                                        isLast: rowData.isLast,
+                                        revealOrder: 0,
+                                        insertedAt: Date.now(),
+                                        quietEntrance: !root.inNotchMode,
+                                        modelRef: rowData.ref
+                                    });
+                                    kinds.splice(i, 0, kind);
+                                    refs.splice(i, 0, rowData.ref);
+                                    continue;
+                                }
+                            }
+                            const row = resultModel.get(i);
+                            if (row.key !== rowData.key) {
+                                resultModel.setProperty(i, "key", rowData.key);
+                                // Whatever the previous result left open (its
+                                // action panel, a capture) is not this one's.
+                                appResults.resetRowState(i);
+                            }
+                            if (row.sectionId !== rowData.sectionId)
+                                resultModel.setProperty(i, "sectionId", rowData.sectionId);
+                            if (row.isFirst !== rowData.isFirst)
+                                resultModel.setProperty(i, "isFirst", rowData.isFirst);
+                            if (row.isLast !== rowData.isLast)
+                                resultModel.setProperty(i, "isLast", rowData.isLast);
+                            if (refs[i] !== rowData.ref) {
+                                resultModel.setProperty(i, "modelRef", rowData.ref);
+                                refs[i] = rowData.ref;
+                            }
+                        }
+                        while (resultModel.count > rows.length) {
+                            resultModel.remove(resultModel.count - 1);
+                            refs.pop();
+                        }
+                        appResults.rowRefs = refs;
+                    }
+
+                    function applyResultDiffUnguarded(rows) {
+                        if (rows.length === 0) {
+                            if (resultModel.count > 0)
+                                resultModel.clear();
+                            appResults.rowRefs = [];
+                            return;
+                        }
+
+                        if (appResults.quietDiff && appResults.rowRefs.length === resultModel.count) {
+                            appResults.applyRowsInPlace(rows);
+                            return;
+                        }
+
+                        // Insertion order for this pass; see `revealOrder` on the delegate.
+                        let insertedCount = 0;
+
+                        const currentKeys = [];
+                        for (let i = 0; i < resultModel.count; i++)
+                            currentKeys.push(resultModel.get(i).key);
+
+                        // Anything that emptied or resized the model behind this
+                        // mirror makes it untrustworthy; a fresh one of nulls
+                        // simply treats every row as changed.
+                        let currentRefs = appResults.rowRefs.length === currentKeys.length
+                            ? appResults.rowRefs.slice()
+                            : currentKeys.map(() => null);
+
+                        const newKeySet = new Set();
+                        for (let i = 0; i < rows.length; i++)
+                            newKeySet.add(rows[i].key);
+
+                        // Remove stale rows from the end so model indexes stay valid.
+                        for (let i = currentKeys.length - 1; i >= 0; i--) {
+                            if (!newKeySet.has(currentKeys[i])) {
+                                resultModel.remove(i);
+                                currentKeys.splice(i, 1);
+                                currentRefs.splice(i, 1);
+                            }
+                        }
+
+                        // Move/insert each desired row once. The old implementation
+                        // rebuilt a full index map after every operation.
+                        for (let newIndex = 0; newIndex < rows.length; newIndex++) {
+                            const rowData = rows[newIndex];
+                            const currentIndex = currentKeys.indexOf(rowData.key);
+
+                            if (currentIndex === -1) {
+                                resultModel.insert(newIndex, {
+                                    key: rowData.key,
+                                    sectionId: rowData.sectionId,
+                                    isHeader: rowData.isHeader,
+                                    isHero: rowData.isHero,
+                                    isFirst: rowData.isFirst,
+                                    isLast: rowData.isLast,
+                                    revealOrder: insertedCount++,
+                                    insertedAt: Date.now(),
+                                    quietEntrance: appResults.quietDiff && !root.inNotchMode,
+                                    modelRef: rowData.ref
+                                });
+                                currentKeys.splice(newIndex, 0, rowData.key);
+                                currentRefs.splice(newIndex, 0, rowData.ref);
+                                continue;
+                            }
+
+                            if (currentIndex !== newIndex) {
+                                resultModel.move(currentIndex, newIndex, 1);
+                                const movedKey = currentKeys.splice(currentIndex, 1)[0];
+                                currentKeys.splice(newIndex, 0, movedKey);
+                                const movedRef = currentRefs.splice(currentIndex, 1)[0];
+                                currentRefs.splice(newIndex, 0, movedRef);
+                            }
+
+                            // Rows reference the original result object, so an
+                            // unchanged row costs zero setProperty calls — and zero
+                            // delegate rebinds — even when it moved.
+                            const row = resultModel.get(newIndex);
+                            if (row.sectionId !== rowData.sectionId)
+                                resultModel.setProperty(newIndex, "sectionId", rowData.sectionId);
+                            if (row.isHero !== rowData.isHero)
+                                resultModel.setProperty(newIndex, "isHero", rowData.isHero);
+                            if (row.isFirst !== rowData.isFirst)
+                                resultModel.setProperty(newIndex, "isFirst", rowData.isFirst);
+                            if (row.isLast !== rowData.isLast)
+                                resultModel.setProperty(newIndex, "isLast", rowData.isLast);
+                            if (currentRefs[newIndex] !== rowData.ref) {
+                                resultModel.setProperty(newIndex, "modelRef", rowData.ref);
+                                currentRefs[newIndex] = rowData.ref;
+                            }
+                        }
+
+                        // Whatever the passes above did, the model must end up
+                        // exactly as long as `rows`. Anything past that length is a
+                        // row the diff failed to account for, and it would stay
+                        // visible and clickable.
+                        while (resultModel.count > rows.length) {
+                            resultModel.remove(resultModel.count - 1);
+                            currentRefs.pop();
+                        }
+                        appResults.rowRefs = currentRefs;
+                    }
+
+                    Connections {
+                        target: root
+                        function onSearchingTextChanged() {
+                            appResults.selectionFollowsUser = false;
+                            root.loadedResultsCount = root.resultPageSize;
+                            if (appResults.count > 0)
+                                appResults.selectFirst();
+                            root.noteQueryEdit();
+                        }
+                    }
+
+                    Connections {
+                        target: LauncherSearch
+                        function onResultsChanged() {
+                            // Guard: don't populate while overview is closed/closing
+                            // (stale LauncherSearch.results from previous session would cause ghost expansion)
+                            if (!GlobalStates.overviewOpen)
+                                return;
+                            root.loadedResultsCount = root.resultPageSize;
+
+                            // Derive the decision from this signal's current payload.
+                            // showIdleNowPlaying is a binding over the same payload and
+                            // can still expose its previous value while resultsChanged
+                            // is being delivered, leaving an active but empty surface.
+                            const nextRows = root.processResults(LauncherSearch.results);
+
+                            // An empty query only means an empty list when nothing
+                            // actually produced rows for the idle surface.
+                            if (root.searchingText === "" && !root.alwaysListAppsMode && nextRows.length === 0) {
+                                root.suppressItemTransitions = true;
+                                if (!root.inNotchMode || appResultsSurface.opacity <= 0.01) {
+                                    resultModel.clear();
+                                    appResults.rowRefs = [];
+                                }
+                                return;
+                            }
+
+                            // One diff per results change. Applying a 15-row slice and
+                            // then the full list 150ms later made every keystroke add,
+                            // remove and re-add the same rows — the churn the reorder
+                            // animation was then asked to render.
+                            appResults.quietDiff = root.selectionAnchorQuery !== root.searchingText;
+                            appResults.applyResultDiff(nextRows);
+                            appResults.quietDiff = false;
+                            if (root.selectionAnchorQuery !== root.searchingText) {
+                                root.selectionAnchorQuery = root.searchingText;
+                                root.focusFirstItem();
+                            } else {
+                                // Same query, later results. The cursor keeps the row
+                                // it is on; it only has to step off a caption the diff
+                                // slid under it. Either way the mid-diff renumbering
+                                // was ignored, so the selection is published once,
+                                // here, against the settled model.
+                                appResults.resyncSelection();
+                            }
+                        }
+                    }
+
+                    model: ListModel {
+                        id: resultModel
+                        // Search rows intentionally carry heterogeneous result
+                        // objects (apps, panels, inline settings, files). Static
+                        // role inference locks `modelRef` to whichever shape is
+                        // inserted first and rejects later groups at runtime.
+                        dynamicRoles: true
+                    }
+
+                    Component.onCompleted: {
+                        applyResultDiff(root.processResults(LauncherSearch.results));
+                        appResults.resyncSelection();
+                    }
+
+                    delegate: Loader {
+                        id: resultDelegate
+                        required property int index
+                        required property var modelData
+
+                        /**
+                         * The row behind this delegate, resolved defensively.
+                         *
+                         * `modelData` can be briefly unavailable while the view
+                         * remaps a delegate across the inserts, removes and moves of
+                         * one diff. A binding that reads straight through it throws
+                         * there, and a binding that throws keeps whatever value it
+                         * already had — for `sourceComponent` that is `undefined`,
+                         * which is a Loader with no item: a row 0px tall that paints
+                         * nothing. The diff deliberately never rewrites a row whose
+                         * fields did not change, so nothing would invalidate such a
+                         * binding again either.
+                         *
+                         * This is a guard, not the fix for the missing section
+                         * caption — that was a stale row height, see `contentHeight`
+                         * on the caption. Reading the model by index is the
+                         * fallback, and `rebuildRow()` recovers a delegate that
+                         * ended up with no item anyway.
+                         */
+                        readonly property var rowData: resultDelegate.modelData
+                            ?? (resultDelegate.index >= 0 && resultDelegate.index < resultModel.count
+                                ? resultModel.get(resultDelegate.index)
+                                : null)
+
+                        /**
+                         * Which of the row shapes below this row is, or `null`.
+                         *
+                         * Never `undefined`, and it never throws: those are the two
+                         * ways `sourceComponent` ends up empty for good.
+                         */
+                        function resolveRowComponent(): var {
+                            const row = resultDelegate.rowData;
+                            if (!row)
+                                return null;
+                            if (row.isHeader === true)
+                                return sectionCaption;
+                            if (row.isHero === true)
+                                return bestMatchRow;
+                            return normalSearchItem;
+                        }
+
+                        /**
+                         * Re-arm the binding for a delegate that ended up with no
+                         * item. Re-establishing it is what forces a fresh
+                         * evaluation; bumping some counter it reads would not,
+                         * because the binding compiler is free to drop a dependency
+                         * whose value the result does not use.
+                         */
+                        function rebuildRow() {
+                            resultDelegate.sourceComponent = Qt.binding(() => resultDelegate.resolveRowComponent());
+                        }
+
+                        // A child, so it dies with the delegate. `Qt.callLater`
+                        // would still fire against a row the view destroyed in the
+                        // meantime, which this list does constantly.
+                        Timer {
+                            id: rowRebuildTimer
+                            interval: 0
+                            repeat: false
+                            onTriggered: {
+                                if (!resultDelegate.item)
+                                    resultDelegate.rebuildRow();
+                            }
+                        }
+
+                        width: appResults.width
+                        height: item ? item.implicitHeight : 0
+                        onHeightChanged: appResults.scheduleRelayout()
+                        sourceComponent: resultDelegate.resolveRowComponent()
+                        onLoaded: root.refreshSelectedResultNavigation()
+
+                        // Entrance belongs to the delegate, not to the view's `add`
+                        // transition: an interrupted view transition can strand
+                        // opacity at 0, and a row that never paints is a worse bug
+                        // than a row that never animates. `y` is left entirely to
+                        // the view — a Behavior here raced the move/displaced
+                        // transitions and let rows drift over each other.
+                        property real revealProgress: root.animationsDisabled ? 1 : 0
+                        opacity: revealProgress
+
+                        /**
+                         * How far this row still is from where the model already
+                         * put it. The view's own `y` is final the moment the diff
+                         * lands; only this offset animates, so nothing downstream
+                         * — the selection pill above all — ever reads a position
+                         * that is still travelling.
+                         */
+                        property real shiftOffset: 0
+
+                        // A row that answers a new query fades in where it is; see
+                        // `quietDiff`.
+                        readonly property bool quietEntrance: resultDelegate.rowData?.quietEntrance === true
+
+                        transform: Translate {
+                            y: root.animationsDisabled
+                                ? 0
+                                : (root.inNotchMode
+                                    ? (((1 - resultDelegate.revealProgress) * -16) + resultDelegate.shiftOffset)
+                                    : (((1 - resultDelegate.revealProgress) * (resultDelegate.quietEntrance ? 0 : -6)) + resultDelegate.shiftOffset))
+                        }
+
+                        NumberAnimation {
+                            id: shiftAnim
+                            target: resultDelegate
+                            property: "shiftOffset"
+                            to: 0
+                            duration: appResults.reorderDuration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                        }
+
+                        function startReorderShift(delta: real) {
+                            shiftAnim.stop();
+                            if (root.animationsDisabled || Math.abs(delta) < 0.5) {
+                                resultDelegate.shiftOffset = 0;
+                                return;
+                            }
+                            // Clamped, so a row crossing the whole list enters from
+                            // just off its new slot rather than flying past four
+                            // others on the way. Direction is what reads.
+                            resultDelegate.shiftOffset = Math.max(-appResults.reorderTravel,
+                                Math.min(appResults.reorderTravel, delta));
+                            shiftAnim.start();
+                        }
+
+                        /**
+                         * Rows inserted by one diff cascade in the order they
+                         * were inserted, not by list position. A group that
+                         * arrives in the middle of a settled list (Files landing
+                         * after the apps) enters as a unit — caption first, rows
+                         * after it — instead of every row waiting on how far down
+                         * the list it happens to sit. `revealOrder` is written by
+                         * the diff; a first fill is simply orders 0..n.
+                         */
+                        readonly property int revealOrder: Math.max(0, Number(resultDelegate.rowData?.revealOrder ?? 0))
+                        readonly property bool revealStaggers: !root.animationsDisabled && (root.inNotchMode || (!root.burstTyping && !resultDelegate.quietEntrance))
+
+                        SequentialAnimation {
+                            id: revealAnim
+                            PauseAnimation {
+                                duration: resultDelegate.revealStaggers
+                                    ? (root.inNotchMode
+                                        ? Math.min(8, Math.max(0, resultDelegate.index >= 0 ? resultDelegate.index : resultDelegate.revealOrder)) * 28
+                                        : Math.min(4, resultDelegate.revealOrder) * appResults.staggerStep)
+                                    : 0
+                            }
+                            NumberAnimation {
+                                target: resultDelegate
+                                property: "revealProgress"
+                                to: 1
+                                duration: root.inNotchMode ? 220 : (resultDelegate.quietEntrance ? appResults.quietEntranceDuration : appResults.reorderDuration)
+                                easing.type: Easing.BezierSpline
+                                easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                            }
+                        }
+
+                        function finishReveal() {
+                            revealAnim.stop();
+                            resultDelegate.revealProgress = 1;
+                            shiftAnim.stop();
+                            resultDelegate.shiftOffset = 0;
+                        }
+
+                        Connections {
+                            target: root
+                            function onSuppressItemTransitionsChanged() {
+                                if (!root.inNotchMode && root.suppressItemTransitions)
+                                    resultDelegate.finishReveal();
+                            }
+                            function onSurfaceAnimatingChanged() {
+                                if (root.surfaceAnimating)
+                                    resultDelegate.finishReveal();
+                            }
+                        }
+
+                        Component.onCompleted: {
+                            resultDelegate.arriveInView();
+                        }
+
+                        /**
+                         * Whether this row is in the reuse pool or being handed new
+                         * data. The row's own animations stay off while it is, so a
+                         * recycled row shows its new result at once instead of
+                         * animating from whatever the previous result looked like.
+                         */
+                        property bool recycling: false
+
+                        ListView.onPooled: {
+                            resultDelegate.recycling = true;
+                            resultDelegate.finishReveal();
+                        }
+
+                        ListView.onReused: {
+                            appResults.resetRowState(resultDelegate.index);
+                            resultDelegate.recycling = false;
+                            resultDelegate.arriveInView();
+                        }
+
+                        function arriveInView() {
+                            // Built while its row was unreadable: no item, no
+                            // height, nothing painted. Nothing else invalidates
+                            // `sourceComponent` for a row the diff leaves alone, so
+                            // re-resolve once the view is past the batch this
+                            // delegate was created in. Costs nothing for a row that
+                            // built normally, and covers the delegates created
+                            // outside a diff — scrolled back into view, or built
+                            // while transitions were suppressed.
+                            if (!resultDelegate.item)
+                                rowRebuildTimer.start();
+                            // The view also builds delegates for rows scrolled back
+                            // into view. Those rows were already on screen once: only
+                            // a row the latest diff actually inserted gets an entrance.
+                            const insertedAt = Number(resultDelegate.rowData?.insertedAt ?? 0);
+                            const freshlyInserted = Date.now() - insertedAt < 250;
+                            if (root.animationsDisabled || root.surfaceAnimating || (!root.inNotchMode && root.suppressItemTransitions) || !freshlyInserted)
+                                resultDelegate.finishReveal();
+                            else {
+                                // A recycled row was left fully shown when pooled.
+                                resultDelegate.revealProgress = 0;
+                                revealAnim.start();
+                            }
+                        }
+
+                        /**
+                         * Expressive: this row's strip of its group's pane.
+                         *
+                         * A pane is the union of its delegates' strips — the
+                         * caption opens it (top corners), every row carries it
+                         * through the list spacing below, and the last row closes
+                         * it `slabPad` past its own bottom. A first row reaches
+                         * `slabPad` up as well: under a caption that lands inside
+                         * the caption's strip, without one it is the pane's top.
+                         * Strips overhang their delegate, which the list's top
+                         * and bottom margins leave room for.
+                         */
+                        Rectangle {
+                            id: groupSlab
+                            readonly property var row: resultDelegate.rowData
+                            readonly property bool header: row?.isHeader === true
+                            readonly property bool opens: !header && row?.isFirst === true
+                            readonly property bool closes: !header && row?.isLast === true
+                            readonly property real stripTop: header ? (resultDelegate.item?.topGap ?? 0) : (opens ? -root.slabPad : 0)
+                            readonly property real radius2: Appearance.rounding.verylarge
+                            z: -1
+                            visible: root.expressiveResults && !!row && row.isHero !== true && resultDelegate.height > 0
+                            x: root.rowSideMargin
+                            y: stripTop
+                            width: resultDelegate.width - root.rowSideMargin * 2
+                            height: resultDelegate.height - stripTop + (closes ? root.slabPad : appResults.spacing)
+                            topLeftRadius: header || opens ? radius2 : 0
+                            topRightRadius: topLeftRadius
+                            bottomLeftRadius: closes ? radius2 : 0
+                            bottomRightRadius: bottomLeftRadius
+                            color: Appearance.colors.colSurfaceContainerHigh
+                            antialiasing: true
+                        }
+
+                        Component {
+                            id: sectionCaption
+
+                            Item {
+                                readonly property real topGap: resultDelegate.rowData?.isFirst
+                                    ? 0
+                                    : Appearance.sizes.elevationMargin * (root.expressiveResults ? 1.4 : 1)
+                                // Expressive: the pane's own padding above the heading.
+                                readonly property real innerTop: root.expressiveResults ? 14 : 0
+                                readonly property real bottomGap: Appearance.sizes.elevationMargin * (root.expressiveResults ? 0.8 : 0.4)
+
+                                /**
+                                 * The caption's height must be right in the frame
+                                 * the row is created, not in the one after it.
+                                 *
+                                 * A `RowLayout` reports `implicitHeight: 0` until
+                                 * the layout engine polishes it, which is a frame
+                                 * later. Deriving the row height from `captionRow`
+                                 * therefore handed the view 6px for the first
+                                 * caption (`topGap` 0) and 21px for the others, and
+                                 * the view laid every row below out against that.
+                                 * When the layout then polished and the caption grew
+                                 * ~19px, the rows kept the positions they were given
+                                 * and sat on top of it — the group label vanishing
+                                 * under the first result.
+                                 *
+                                 * The label is a `Text`: its `implicitHeight` is
+                                 * correct immediately. Every result row already
+                                 * sizes itself this way — `SearchItem.implicitHeight`
+                                 * is a constant — which is why rows never drifted
+                                 * and only captions did.
+                                 */
+                                readonly property real contentHeight: Math.max(captionIcon.implicitHeight, captionLabel.implicitHeight)
+                                implicitHeight: contentHeight + topGap + innerTop + bottomGap
+
+                                RowLayout {
+                                    id: captionRow
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.top: parent.top
+                                    anchors.leftMargin: root.expressiveResults ? root.rowInset + 10 : Appearance.sizes.elevationMargin + 6
+                                    anchors.rightMargin: root.expressiveResults ? root.rowInset + 10 : Appearance.sizes.elevationMargin + 6
+                                    anchors.topMargin: parent.topGap + parent.innerTop
+                                    // Given, not asked for: the layout is free to
+                                    // report its own implicit size a frame late as
+                                    // long as nothing sizes the row from it.
+                                    height: parent.contentHeight
+                                    spacing: 7
+
+                                    MaterialSymbol {
+                                        id: captionIcon
+                                        text: root.sectionPresentation(resultDelegate.rowData?.sectionId ?? "").icon
+                                        iconSize: root.expressiveResults ? Appearance.font.pixelSize.larger : Appearance.font.pixelSize.small
+                                        fill: root.expressiveResults ? 1 : 0
+                                        color: root.expressiveResults ? Appearance.colors.colPrimary : Appearance.colors.colOutline
+                                    }
+
+                                    // Expressive: the group name in the rounded
+                                    // title face, wide and heavy, so captions read
+                                    // as headings over the rows' lighter names.
+                                    StyledText {
+                                        id: captionLabel
+                                        Layout.fillWidth: true
+                                        text: root.sectionPresentation(resultDelegate.rowData?.sectionId ?? "").label
+                                        color: root.expressiveResults ? Appearance.m3colors.m3onSurface : Appearance.colors.colOnSurfaceVariant
+                                        font.pixelSize: root.expressiveResults ? Appearance.font.pixelSize.larger : Appearance.font.pixelSize.small
+                                        font.family: Appearance.font.family.main
+                                        font.weight: Font.Medium
+                                        font.variableAxes: root.expressiveResults
+                                            ? ({ "wght": 780, "wdth": 118, "ROND": 100 })
+                                            : Appearance.font.variableAxes.main
+                                    }
+
+                                    // Category hint inline on first section caption
+                                    RowLayout {
+                                        visible: root.showNormalCategoryFilter && resultDelegate.rowData?.isFirst === true
+                                        spacing: 4
+
+                                        StyledText {
+                                            text: root.activeResultCategory.label
+                                            color: Appearance.colors.colOutline
+                                            font.pixelSize: Appearance.font.pixelSize.small
+                                            font.weight: Font.Medium
+                                        }
+
+                                        KeyHint {
+                                            visible: Config.options.search.appearance.showKeyHints
+                                            keys: ["Tab"]
+                                            surface: "transparent"
+                                            onSurface: Appearance.colors.colOutline
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Component {
+                            id: normalSearchItem
+
+                            SearchItem {
+                                id: searchItem
+                                width: resultDelegate.width
+                                listIndex: resultDelegate.index
+                                listCurrentIndex: appResults.currentIndex
+                                snapSelection: appResults.snapSelectionVisuals
+                                recycling: resultDelegate.recycling || appResults.quietDiff
+                                // The model row wraps the result; `modelRef` is the
+                                // original LauncherSearchResult, not a copy of it.
+                                entry: resultDelegate.rowData?.modelRef ?? null
+                                isFirst: resultDelegate.rowData?.isFirst === true
+                                isLast: resultDelegate.rowData?.isLast === true
+                                horizontalMargin: root.rowInset
+                                clipInset: root.expressiveResults ? root.rowSideMargin : 0
+                                // This row's slice of the list-wide selection pill.
+                                indicatorTop: appResults.selectionIndicatorY - resultDelegate.y
+                                indicatorBottom: appResults.selectionIndicatorY + appResults.selectionIndicatorHeight - resultDelegate.y
+                                // The delegate owns the entrance for every row kind,
+                                // captions included; a second fade underneath it only
+                                // muddies the curve.
+                                animateEntrance: false
+                                query: StringUtils.cleanOnePrefix(root.searchingText, [Config.options.search.prefix.action, Config.options.search.prefix.app, Config.options.search.prefix.clipboard, Config.options.search.prefix.math, Config.options.search.prefix.shellCommand, Config.options.search.prefix.webSearch])
+                                onResultExecuted: feedbackText => root.showActionFeedback(feedbackText)
+                                onKeybindCaptureFinished: root.focusSearchInput()
+
+                                Connections {
+                                    target: root
+                                    function onRequestToggleActions() {
+                                        if (searchItem.listIndex === appResults.currentIndex) {
+                                            searchItem.actionPanelOpen = !searchItem.actionPanelOpen;
+                                            searchItem.actionSelectedIndex = 0;
+                                            if (searchItem.actionPanelOpen) {
+                                                searchItem.forceActiveFocus();
+                                            } else {
+                                                root.focusSearchInput();
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Keys.onPressed: event => {
+                                    // The row's keybind recorder owns every key while open.
+                                    if (searchItem.keybindCaptureOpen || searchItem.aliasCaptureOpen)
+                                        return;
+                                    if (event.key === Qt.Key_K && (event.modifiers & Qt.ControlModifier)) {
+                                        searchItem.actionPanelOpen = !searchItem.actionPanelOpen;
+                                        searchItem.actionSelectedIndex = 0;
+                                        if (searchItem.actionPanelOpen) {
+                                            searchItem.forceActiveFocus();
+                                        } else {
+                                            root.focusSearchInput();
+                                        }
+                                        event.accepted = true;
+                                    } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+                                        if (searchItem.actionPanelOpen)
+                                            return;
+                                        if (root.showNormalCategoryFilter) {
+                                            root.cycleResultCategory(event.key === Qt.Key_Backtab || (event.modifiers & Qt.ShiftModifier) ? -1 : 1);
+                                        } else if (event.key === Qt.Key_Tab && resultDelegate.rowData?.modelRef) {
+                                            const tabbedText = resultDelegate.rowData.modelRef.name;
+                                            LauncherSearch.query = tabbedText;
+                                            searchBar.searchInput.text = tabbedText;
+                                            root.focusSearchInput();
+                                        } else {
+                                            return;
+                                        }
+                                        event.accepted = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // No view transitions at all — `move`, `displaced` and `add`
+                    // are all left null, deliberately.
+                    //
+                    // A view transition animates the delegate's own `y`, which is
+                    // also what the selection pill is anchored to. Selecting the
+                    // new top result while its delegate was still travelling up
+                    // from wherever it used to sit therefore painted the pill at
+                    // the *old* position and dragged it up the list — the cursor
+                    // appearing on a low row and rising. On top of that, an
+                    // interrupted view transition (which a burst of keystrokes
+                    // causes constantly) leaves `y` stranded mid-flight, so rows
+                    // overlapped and no two reorders looked the same.
+                    //
+                    // Rows now take their final slot the instant the model says
+                    // so, and `settleRowPositions` replays the last few pixels of
+                    // the trip on each delegate's transform. Layout is always
+                    // settled, the pill is always where the row actually is, and
+                    // nothing can be left in flight.
+
+                    // No `remove` transition either.
+                    //
+                    // It is the only view transition that keeps a delegate alive
+                    // after its model row is gone, and therefore the only one that
+                    // can strand one: interrupt a removal — which a burst of
+                    // keystrokes, or the asynchronous file results landing a beat
+                    // after the query settled, does constantly — and the delegate
+                    // is left in the scene with no row behind it. It keeps its old
+                    // y, reserves no space, and still answers clicks.
+                    //
+                    // `removeDisplaced` (which falls back to `displaced` above) is
+                    // what actually reads as a removal anyway: the rows below close
+                    // the gap. The vanishing row itself was never the motion the eye
+                    // was following.
+                }
+
+                Item {
+                    id: emptySearchState
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    implicitHeight: emptyStateContent.implicitHeight + Appearance.sizes.elevationMargin * 4
+                    visible: opacity > 0.01
+                    opacity: root.showEmptySearchState && !root.showSkeletons ? 1.0 : 0.0
+
+                    transform: Translate {
+                        y: (root.animationsDisabled || emptySearchState.opacity > 0) ? 0 : Appearance.sizes.elevationMargin
+                    }
+
+                    Behavior on opacity {
+                        enabled: !root.animationsDisabled
+                        NumberAnimation {
+                            duration: Appearance.animation.elementMoveFast.duration
+                            easing.type: Appearance.animation.elementMoveFast.type
+                            easing.bezierCurve: Appearance.animation.elementMoveFast.bezierCurve
+                        }
+                    }
+
+                    ColumnLayout {
+                        id: emptyStateContent
+                        anchors.centerIn: parent
+                        width: Math.min(implicitWidth, parent.width - Appearance.sizes.elevationMargin * 4)
+                        spacing: Appearance.sizes.elevationMargin
+
+                        MaterialShapeWrappedMaterialSymbol {
+                            Layout.alignment: Qt.AlignHCenter
+                            shape: MaterialShape.Shape.SoftBurst
+                            text: "search_off"
+                            iconSize: Appearance.font.pixelSize.huge
+                            color: Appearance.colors.colSecondaryContainer
+                            colSymbol: Appearance.colors.colOnSecondaryContainer
+                        }
+
+                        StyledText {
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.maximumWidth: emptySearchState.width - Appearance.sizes.elevationMargin * 4
+                            text: Translation.tr("Nothing found for %1").arg(String(root.searchingText.trim()))
+                            color: Appearance.colors.colOnSurface
+                            font.pixelSize: Appearance.font.pixelSize.large
+                            font.weight: Font.DemiBold
+                            elide: Text.ElideMiddle
+                        }
+
+                        StyledText {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: Translation.tr("Try another category or continue with an action")
+                            color: Appearance.colors.colOnSurfaceVariant
+                            font.pixelSize: Appearance.font.pixelSize.small
+                        }
+
+                        RowLayout {
+                            Layout.alignment: Qt.AlignHCenter
+                            spacing: Appearance.sizes.elevationMargin / 2
+
+                            Repeater {
+                                model: root.emptyFallbackActions
+
+                                RippleButton {
+                                    id: fallbackChip
+                                    required property var modelData
+                                    implicitWidth: fallbackChipContent.implicitWidth + Appearance.sizes.elevationMargin * 2
+                                    implicitHeight: Appearance.sizes.elevationMargin * 4
+                                    buttonRadius: Appearance.rounding.full
+                                    colBackground: Appearance.colors.colSurfaceContainerHigh
+                                    colBackgroundHover: Appearance.colors.colSecondaryContainerHover
+                                    colRipple: Appearance.colors.colSecondaryContainerActive
+                                    onClicked: root.executeEmptyFallback(modelData.id)
+
+                                    contentItem: RowLayout {
+                                        id: fallbackChipContent
+                                        anchors.centerIn: parent
+                                        spacing: Appearance.sizes.elevationMargin / 2
+
+                                        MaterialSymbol {
+                                            text: fallbackChip.modelData.icon
+                                            iconSize: Appearance.font.pixelSize.normal
+                                            color: Appearance.colors.colOnSurface
+                                        }
+
+                                        StyledText {
+                                            text: fallbackChip.modelData.label
+                                            color: Appearance.colors.colOnSurface
+                                            font.pixelSize: Appearance.font.pixelSize.small
+                                            font.weight: Font.Medium
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: actionFeedbackBar
+                    z: 4
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.leftMargin: Appearance.sizes.elevationMargin
+                    anchors.rightMargin: Appearance.sizes.elevationMargin
+                    anchors.bottomMargin: Appearance.sizes.elevationMargin / 2
+                    implicitHeight: feedbackContent.implicitHeight + Appearance.sizes.elevationMargin
+                    radius: Appearance.rounding.full
+                    color: Appearance.colors.colSecondaryContainer
+                    opacity: root.actionFeedbackText.length > 0 ? 1.0 : 0.0
+                    visible: opacity > 0.01
+
+                    transform: Translate {
+                        y: (root.animationsDisabled || root.actionFeedbackText.length > 0) ? 0 : Appearance.sizes.elevationMargin
+                        Behavior on y {
+                            enabled: !root.animationsDisabled
+                            animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                        }
+                    }
+                    Behavior on opacity {
+                        enabled: !root.animationsDisabled
+                        animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)
+                    }
+
+                    RowLayout {
+                        id: feedbackContent
+                        anchors.centerIn: parent
+                        spacing: Appearance.sizes.elevationMargin / 2
+                        MaterialSymbol {
+                            text: "check_circle"
+                            iconSize: Appearance.font.pixelSize.normal
+                            color: Appearance.colors.colOnSecondaryContainer
+                        }
+                        StyledText {
+                            text: root.actionFeedbackText
+                            color: Appearance.colors.colOnSecondaryContainer
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: Font.Medium
+                        }
+                    }
+                }
+
+                ColumnLayout {
+                    id: searchSkeletons
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: 16
+                    anchors.rightMargin: 16
+                    anchors.topMargin: 10
+                    anchors.bottomMargin: 10
+                    spacing: 8
+                    visible: opacity > 0
+                    opacity: root.showSkeletons ? 1.0 : 0.0
+                    Behavior on opacity {
+                        enabled: !root.inNotchMode && !root.animationsDisabled
+                        NumberAnimation {
+                            duration: Appearance.animation.elementMoveFast.duration
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: Appearance.animationCurves.emphasizedDecel
+                        }
+                    }
+
+                    Repeater {
+                        model: 4
+                        Rectangle {
+                            id: skeletonRow
+                            required property int index
+                            Layout.fillWidth: true
+                            implicitHeight: root.expressiveResults ? 60 : 52
+                            radius: Appearance.rounding.small
+                            color: Appearance.colors.colSurfaceContainerHigh
+                            antialiasing: true
+
+                            RowLayout {
+                                anchors.fill: parent
+                                anchors.leftMargin: 12
+                                anchors.rightMargin: 12
+                                spacing: 12
+
+                                Rectangle {
+                                    implicitWidth: 32
+                                    implicitHeight: 32
+                                    radius: Appearance.rounding.full
+                                    color: Appearance.colors.colSurfaceContainerHighest
+                                }
+
+                                ColumnLayout {
+                                    Layout.fillWidth: true
+                                    spacing: 4
+
+                                    Rectangle {
+                                        Layout.preferredWidth: 120
+                                        implicitHeight: 12
+                                        radius: Appearance.rounding.verysmall
+                                        color: Appearance.colors.colSurfaceContainerHighest
+                                    }
+
+                                    Rectangle {
+                                        Layout.preferredWidth: 80
+                                        implicitHeight: 8
+                                        radius: Appearance.rounding.verysmall
+                                        color: Appearance.colors.colSurfaceContainerHighest
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                }
+
+                Loader {
+                    id: registeredPanelHostLoader
+
+                    readonly property bool keepAlive: item?.keepAlive === true
+                    active: (GlobalStates.overviewOpen && searchResultsSurface.registeredPanelActive) || keepAlive
+                    visible: GlobalStates.overviewOpen && searchResultsSurface.registeredPanelActive
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: root.hostedPanelSideMargin
+                    anchors.rightMargin: root.hostedPanelSideMargin
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+
+                    sourceComponent: Component {
+                        SearchPanelHost {
+                            activePanelId: GlobalStates.overviewOpen ? root.activePanelId : ""
+                            searchQuery: root.searchingText
+                            inNotchMode: root.inNotchMode
+                            settledWidth: (root.hostDrivesSize && root.activePanelUsesHost)
+                                ? Math.max(0, root.contentTargetWidth - root.connectSideInset * 2 - root.hostedPanelSideMargin * 2) : 0
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}

@@ -1,0 +1,210 @@
+import QtQuick
+import QtQuick.Layouts
+import "../../../common"
+import "../../../common/widgets"
+import "../../../../services"
+
+Item {
+    id: subPageRoot
+    anchors.fill: parent
+
+    property bool showBackButton: false
+    signal goBack()
+
+    ContentPage {
+        anchors.fill: parent
+        forceWidth: false
+
+        RowLayout {
+            visible: subPageRoot.showBackButton
+            spacing: 12
+
+            RippleButton {
+                implicitWidth: implicitHeight
+                implicitHeight: 40
+                topLeftRadius: Appearance.rounding.full
+                topRightRadius: Appearance.rounding.full
+                bottomLeftRadius: Appearance.rounding.full
+                bottomRightRadius: Appearance.rounding.full
+                colBackground: Appearance.colors.colSecondaryContainer
+                colBackgroundHover: Appearance.colors.colSecondaryContainerHover
+                colRipple: Appearance.colors.colSecondaryContainerActive
+                onClicked: subPageRoot.goBack()
+
+                MaterialSymbol {
+                    anchors.centerIn: parent
+                    text: "arrow_back"
+                    iconSize: Appearance.font.pixelSize.large
+                    color: Appearance.colors.colOnSecondaryContainer
+                }
+            }
+
+            StyledText {
+                text: Translation.tr("On-Screen Display")
+                font.pixelSize: Appearance.font.pixelSize.large
+                font.family: Appearance.font.family.title
+                color: Appearance.colors.colOnLayer0
+            }
+        }
+
+        ContentSection {
+            title: Translation.tr("General")
+            icon: "tune"
+
+            ConfigSwitch {
+                buttonIcon: "visibility"
+                text: Translation.tr("Enable OSD")
+                checked: Config.options.osd.enable
+                onCheckedChanged: {
+                    Config.options.osd.enable = checked;
+                }
+                StyledToolTip {
+                    text: Translation.tr("Master switch. When off, no on-screen indicator is shown at all")
+                }
+            }
+        }
+
+        ContentSection {
+            title: Translation.tr("Indicators")
+            icon: "display_settings"
+            tooltip: Translation.tr("Pick which value changes pop up an on-screen indicator.")
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 4
+                enabled: Config.options.osd.enable
+                opacity: enabled ? 1.0 : 0.4
+
+                ConfigSwitch {
+                    buttonIcon: "volume_up"
+                    text: Translation.tr("Volume")
+                    checked: Config.options.osd.indicators.volume
+                    onCheckedChanged: Config.options.osd.indicators.volume = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show an indicator when the output volume or mute state changes")
+                    }
+                }
+
+                ConfigSwitch {
+                    buttonIcon: "brightness_medium"
+                    text: Translation.tr("Brightness")
+                    checked: Config.options.osd.indicators.brightness
+                    onCheckedChanged: Config.options.osd.indicators.brightness = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show an indicator when the screen backlight changes")
+                    }
+                }
+
+                ConfigSwitch {
+                    buttonIcon: "keyboard"
+                    text: Translation.tr("Keyboard backlight")
+                    description: KeyboardBacklight.available ? "" : Translation.tr("No keyboard backlight detected on this machine")
+                    checked: Config.options.osd.indicators.keyboardBrightness
+                    onCheckedChanged: Config.options.osd.indicators.keyboardBrightness = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show an indicator when the keyboard backlight level changes")
+                    }
+                }
+
+                ConfigSwitch {
+                    buttonIcon: "music_note"
+                    text: Translation.tr("Media volume")
+                    checked: Config.options.osd.indicators.playerVolume
+                    onCheckedChanged: Config.options.osd.indicators.playerVolume = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show an indicator when the active media player's own volume changes")
+                    }
+                }
+
+                ConfigSwitch {
+                    buttonIcon: "wb_twilight"
+                    text: Translation.tr("Night Light")
+                    checked: Config.options.osd.indicators.gamma
+                    onCheckedChanged: Config.options.osd.indicators.gamma = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show an indicator when the screen color temperature changes")
+                    }
+                }
+            }
+        }
+
+        ContentSection {
+            title: Translation.tr("On/off pills")
+            icon: "toggle_on"
+            tooltip: Translation.tr("Short pills for switches. Shown by the Dynamic Island and the connected OSD only.")
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: 4
+                enabled: Config.options.osd.enable
+                opacity: enabled ? 1.0 : 0.4
+
+                ConfigSwitch {
+                    buttonIcon: "mic"
+                    text: Translation.tr("Microphone mute")
+                    checked: Config.options.osd.indicators.microphone
+                    onCheckedChanged: Config.options.osd.indicators.microphone = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show a pill when the default microphone is muted or unmuted")
+                    }
+                }
+
+                ConfigSwitch {
+                    buttonIcon: "keyboard_capslock"
+                    text: Translation.tr("Caps Lock")
+                    checked: Config.options.osd.indicators.capsLock
+                    onCheckedChanged: Config.options.osd.indicators.capsLock = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show a pill when Caps Lock is switched. Needs the default Caps_Lock keybind")
+                    }
+                }
+
+                ConfigSwitch {
+                    buttonIcon: "numbers"
+                    text: Translation.tr("Num Lock")
+                    checked: Config.options.osd.indicators.numLock
+                    onCheckedChanged: Config.options.osd.indicators.numLock = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show a pill when Num Lock is switched. Needs the default Num_Lock keybind")
+                    }
+                }
+
+                ConfigSwitch {
+                    buttonIcon: "terminal"
+                    text: Translation.tr("Pills from scripts")
+                    checked: Config.options.osd.indicators.pills
+                    onCheckedChanged: Config.options.osd.indicators.pills = checked
+
+                    StyledToolTip {
+                        text: Translation.tr("Show pills sent with: qs -c ii ipc call osd pill <icon> <label> <on|off>")
+                    }
+                }
+            }
+        }
+
+        ContentSection {
+            title: Translation.tr("Brightness keys")
+            icon: "brightness_medium"
+
+            ConfigSwitch {
+                enabled: Config.options.osd.enable
+                buttonIcon: "touch_app"
+                text: Translation.tr("Only on key presses")
+                checked: Config.options.osd.brightnessKeysOnly
+                onCheckedChanged: Config.options.osd.brightnessKeysOnly = checked
+
+                StyledToolTip {
+                    text: Translation.tr("Ignore screen and keyboard backlight changes made outside the shell unless a key was pressed. Turn on if an automatic brightness daemon keeps popping the OSD up")
+                }
+            }
+        }
+    }
+}

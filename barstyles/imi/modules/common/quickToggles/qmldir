@@ -1,0 +1,8 @@
+AbstractQuickPanel 1.0 AbstractQuickPanel.qml
+AndroidQuickPanel 1.0 AndroidQuickPanel.qml
+ClassicQuickPanel 1.0 ClassicQuickPanel.qml
+NightLightIcon 1.0 NightLightIcon.qml
+QuickToggleIcon 1.0 QuickToggleIcon.qml
+singleton QuickToggleIconDriver 1.0 QuickToggleIconDriver.qml
+singleton QuickToggleMetrics 1.0 QuickToggleMetrics.qml
+ThemeModeIcon 1.0 ThemeModeIcon.qml

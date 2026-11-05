@@ -1,18 +1,13 @@
 import QtQuick
+import Quickshell
 import "../../../services"
 import ".."
 import "."
 import "../functions"
 
 Image {
-    id: root
-    asynchronous: true
-
-    Component.onCompleted: {
-        if (typeof root.retainWhileLoading !== "undefined")
-            root.retainWhileLoading = true;
-    }
-
+    asynchronous: !source.toString().startsWith("image://icon/")
+    retainWhileLoading: true
     visible: opacity > 0
     opacity: (status === Image.Ready) ? 1 : 0
     Behavior on opacity {
@@ -27,5 +22,10 @@ Image {
             source = fallbacks[currentFallbackIndex];
             currentFallbackIndex += 1;
         }
+    }
+
+    sourceSize: {
+        const dpr = (QsWindow.window as QsWindow)?.devicePixelRatio ?? 1;
+        return Qt.size(width * dpr, height * dpr);
     }
 }

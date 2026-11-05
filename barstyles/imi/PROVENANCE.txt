@@ -1,8 +1,11 @@
-Immaterial Impulse (imi) Ryoku Bar Style
+Imi 2.0.0 for the Ryoku desktop.
 
-Source: Forked and ported from Immaterial Impulse (end-4 dotfiles)
-Author: dodo986
-Description: Material 3-Like design with heavy customizations, ported and forked from Immaterial Impulse
-License: GNU General Public License version 3; see LICENSE
+Derived from the ii desktop shell family (pedrovfx's fork of end-4's
+dots-hyprland, GPL-3.0). Adapted to the Ryoku desktop: services run on
+the shell's own service facade, compositor state goes through the host
+Wm interface, and features the shell already provides (wallpapers, dock,
+launcher hosting, lockscreen, polkit dialogs) are left to the shell.
 
-This bar style contains the customized Immaterial Impulse bar adapted for native Ryoku shell integration, featuring Matugen dynamic theming, Ryoku MusicBars spectrum visualizer, native ring gauges, kanji workspaces, and Quick Settings integration.
+Version 1.x of this barstyle was a stripped version of immaterial
+impulse; the 2.0.0 line is a fresh derivation and shares no code with it.
+Maintainer: dodo98 (https://github.com/dodo98).

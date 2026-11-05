@@ -6,5 +6,5 @@ import "."
 StyledText {
     text: "Subsection"
     color: Appearance.colors.colSubtext
-    Layout.leftMargin: Appearance.spacing.space25
+    Layout.leftMargin: 2
 }

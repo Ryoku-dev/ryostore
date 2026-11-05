@@ -1,0 +1,238 @@
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import QtQuick.Layouts
+import "../../../../common"
+import "../../../dynamicIsland/core"
+import "../../../../common/functions"
+import "../../../../common/widgets"
+import "../../../../../services"
+
+/**
+ * Material 3 Expressive Timer widget.
+ *
+ * Each active timer is a separate tonal capsule with an organic mode marker.
+ * This keeps Pomodoro, stopwatch, and countdown independently actionable while
+ * making their hierarchy legible through shape, weight, and colour.
+ */
+Item {
+    id: root
+
+    property bool vertical: false
+
+    /**
+     * Out in one of the Dynamic Island's auxiliary bubbles right now, so the bar
+     * leaves it to the bubble instead of showing it twice.
+     */
+    readonly property bool bubbled: IslandGeometry.bubbled("timer")
+    readonly property bool compVisible: timerState.visible && !root.bubbled
+    readonly property real thickness: root.vertical
+        ? Appearance.sizes.verticalBarWidth - 8
+        : Appearance.sizes.baseBarHeight - 8
+    readonly property int contentRotation: root.vertical
+        ? (Config.options.bar.bottom ? 90 : -90)
+        : 0
+    readonly property real targetLength: root.vertical
+        ? readoutLayout.implicitHeight
+        : readoutLayout.implicitWidth
+    property real animatedLength: root.targetLength
+
+    visible: root.compVisible
+    clip: true
+    implicitWidth: root.compVisible
+        ? (root.vertical ? Appearance.sizes.verticalBarWidth : root.animatedLength)
+        : 0
+    implicitHeight: root.compVisible
+        ? (root.vertical ? root.animatedLength : Appearance.sizes.baseBarHeight)
+        : 0
+
+    function syncBarVisibility() {
+        if (typeof rootItem !== "undefined" && rootItem?.toggleVisible)
+            rootItem.toggleVisible(root.compVisible);
+    }
+
+    onCompVisibleChanged: root.syncBarVisibility()
+    Component.onCompleted: root.syncBarVisibility()
+
+    Behavior on animatedLength {
+        animation: Appearance.animation.barResize.numberAnimation.createObject(root)
+    }
+
+    TimerBarState {
+        id: timerState
+    }
+
+    BarWidgetPalette {
+        id: theme
+        colorMode: Config.options.bar.timers.colorMode ?? "primary"
+    }
+
+    GridLayout {
+        id: readoutLayout
+        anchors.centerIn: parent
+        columns: root.vertical ? 1 : 3
+        rows: root.vertical ? 3 : 1
+        rowSpacing: 4
+        columnSpacing: 4
+
+        Loader {
+            active: timerState.showStopwatch && timerState.hasStopwatch
+            visible: active
+            Layout.alignment: Qt.AlignCenter
+            sourceComponent: ExpressiveReadout {
+                vertical: root.vertical
+                thickness: root.thickness
+                contentRotation: root.contentRotation
+                iconName: timerState.stopwatchRunning ? "timer" : "timer_pause"
+                value: timerState.stopwatchText
+                markerShape: MaterialShape.Shape.Circle
+                tooltip: timerState.stopwatchRunning
+                    ? Translation.tr("Pause stopwatch")
+                    : Translation.tr("Resume stopwatch")
+                onTriggered: TimerService.toggleStopwatch()
+            }
+        }
+
+        Loader {
+            active: timerState.showPomodoro && timerState.hasPomodoro
+            visible: active
+            Layout.alignment: Qt.AlignCenter
+            sourceComponent: ExpressiveReadout {
+                vertical: root.vertical
+                thickness: root.thickness
+                contentRotation: root.contentRotation
+                iconName: timerState.pomodoroRunning ? "search_activity" : "pause_circle"
+                value: timerState.pomodoroText
+                markerShape: MaterialShape.Shape.Cookie9Sided
+                tooltip: timerState.pomodoroRunning
+                    ? Translation.tr("Pause pomodoro")
+                    : Translation.tr("Resume pomodoro")
+                onTriggered: TimerService.togglePomodoro()
+            }
+        }
+
+        Loader {
+            active: timerState.showCountdowns && timerState.hasCountdown
+            visible: active
+            Layout.alignment: Qt.AlignCenter
+            sourceComponent: ExpressiveReadout {
+                vertical: root.vertical
+                thickness: root.thickness
+                contentRotation: root.contentRotation
+                iconName: timerState.countdownPaused ? "pause_circle" : "hourglass_top"
+                value: timerState.countdownText
+                badgeCount: timerState.countdownCount
+                markerShape: MaterialShape.Shape.Arch
+                tooltip: timerState.countdownTooltip
+                onTriggered: timerState.toggleCountdown()
+            }
+        }
+
+        Loader {
+            active: timerState.hasUpcomingAlarm
+            visible: active
+            Layout.alignment: Qt.AlignCenter
+            sourceComponent: ExpressiveReadout {
+                vertical: root.vertical
+                thickness: root.thickness
+                contentRotation: root.contentRotation
+                iconName: timerState.upcomingAlarm?.phone ? "phone_android" : "alarm"
+                value: timerState.upcomingAlarmText
+                markerShape: MaterialShape.Shape.Cookie7Sided
+                tooltip: timerState.upcomingAlarmTooltip
+                onTriggered: timerState.openUpcomingAlarm()
+            }
+        }
+    }
+
+    component ExpressiveReadout: RippleButton {
+        id: readout
+
+        property bool vertical: false
+        property real thickness: 0
+        property int contentRotation: 0
+        property string iconName: ""
+        property string value: ""
+        property string tooltip: ""
+        property int badgeCount: 0
+        property int markerShape: MaterialShape.Shape.Circle
+        signal triggered
+
+        implicitWidth: readout.vertical
+            ? readout.thickness
+            : content.implicitWidth + 12
+        implicitHeight: readout.vertical
+            ? content.implicitHeight + 12
+            : readout.thickness
+
+        buttonRadius: (typeof rootItem !== "undefined" ? rootItem.groupStyle : Config.options.bar.barGroupStyle) === 1
+            ? Appearance.rounding.windowRounding
+            : Appearance.rounding.full
+        colBackground: theme.colBackground
+        colBackgroundHover: theme.colBackgroundHover
+        colBackgroundActive: theme.colBackgroundActive
+        colRipple: theme.colBackgroundActive
+        onPressed: readout.triggered()
+
+        GridLayout {
+            id: content
+            anchors.centerIn: parent
+            columns: readout.vertical ? 1 : (readout.badgeCount > 1 ? 3 : 2)
+            rows: readout.vertical ? (readout.badgeCount > 1 ? 3 : 2) : 1
+            rowSpacing: 4
+            columnSpacing: 6
+
+            MaterialShapeWrappedMaterialSymbol {
+                Layout.alignment: Qt.AlignCenter
+                shape: readout.markerShape
+                implicitSize: readout.thickness - 10
+                iconSize: Appearance.font.pixelSize.normal
+                padding: 3
+                text: readout.iconName
+                color: theme.colBackgroundVariant
+                colSymbol: theme.colOnBackgroundVariant
+            }
+
+            Item {
+                id: timeHolder
+                Layout.alignment: Qt.AlignCenter
+                implicitWidth: readout.vertical ? timeText.implicitHeight : timeText.implicitWidth
+                implicitHeight: readout.vertical ? timeText.implicitWidth : timeText.implicitHeight
+
+                StyledText {
+                    id: timeText
+                    anchors.centerIn: parent
+                    rotation: readout.contentRotation
+                    text: readout.value
+                    font.family: Appearance.font.family.title
+                    font.pixelSize: Appearance.font.pixelSize.small
+                    font.weight: Font.DemiBold
+                    font.features: ({ "tnum": 1 })
+                    color: ColorUtils.categoryOnColor(theme.colBackground)
+                }
+            }
+
+            Rectangle {
+                visible: readout.badgeCount > 1
+                Layout.alignment: Qt.AlignCenter
+                implicitWidth: 18
+                implicitHeight: 18
+                radius: Appearance.rounding.full
+                color: theme.colBackgroundVariant
+
+                StyledText {
+                    anchors.centerIn: parent
+                    text: String(readout.badgeCount)
+                    font.pixelSize: Appearance.font.pixelSize.smallest
+                    font.weight: Font.Bold
+                    color: theme.colOnBackgroundVariant
+                }
+            }
+        }
+
+        StyledToolTip {
+            text: readout.tooltip
+            requireOverlay: false
+        }
+    }
+}
