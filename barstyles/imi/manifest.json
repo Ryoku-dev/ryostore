@@ -14665,8 +14665,8 @@
       "source": "services/Notifications.qml",
       "destination": "services/Notifications.qml",
       "mode": "0644",
-      "size": 21334,
-      "sha256": "65a75705253ad6b85b512eebe8a930b8c281295202d1fdd3da485e4b54c3b43e",
+      "size": 24097,
+      "sha256": "4fd91d21be039ec2d2e0e42c3e2124c010afc576318ad4ed231495723a380804",
       "install": true
     },
     {
