@@ -1246,8 +1246,8 @@
       "version": "1.0.0",
       "path": "plugins/medkit-guide",
       "author": "Hatem <hatem@users.noreply.github.com>",
-      "summary": "Medicine guide for MedKit: detailed info, interactions, side effects, and food warnings from OpenFDA.",
-      "description": "Medicine guide for MedKit: detailed info, interactions, side effects, and food warnings from OpenFDA. Click any medicine to see full prescribing details.",
+      "summary": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
+      "description": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
       "tags": [
         "bar-widget",
         "health",
@@ -1256,18 +1256,20 @@
       ],
       "accent": "#8f8378",
       "surface": "#101010",
-      "preview": "",
-      "screenshots": [],
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "f269575748925ff6023f925efe15aa2e6e20d179ce197b35d0393f00a25349f7",
+      "manifestSha256": "4159ef052976d77afc2678ded634560ef9eb572183a9cb84efbd1873e51b3bc6",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/medkit-guide",
       "official": false,
-      "tagline": "Medicine guide for MedKit: detailed info, interactions, side effects, and food warnings from OpenFDA.",
+      "tagline": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
       "icon": "pill",
       "hosts": [
-        "topbarGlyph",
-        "framePopout"
+        "topbarGlyph"
       ],
-      "lastUpdated": "2026-11-03"
+      "lastUpdated": "2026-11-05"
     }
   ]
 }

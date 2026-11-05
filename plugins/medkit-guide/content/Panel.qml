@@ -1,5 +1,5 @@
+pragma ComponentBehavior: Bound
 import QtQuick
-import Ryoku.PluginKit
 import Ryoku.PluginKit.Singletons
 
 Item {
@@ -70,6 +70,16 @@ Item {
       border.width: 1
       border.color: "#334155"
 
+      Text {
+        anchors.left: parent.left
+        anchors.leftMargin: 12 * root.s
+        anchors.verticalCenter: parent.verticalCenter
+        visible: searchField.text.length === 0
+        text: qsTr("Search medicines...")
+        color: "#64748b"
+        font.family: Theme.font
+        font.pixelSize: 12 * root.s
+      }
       TextInput {
         id: searchField
         anchors.fill: parent
@@ -81,8 +91,6 @@ Item {
         color: "#f1f5f9"
         font.family: Theme.font
         font.pixelSize: 12 * root.s
-        placeholderText: qsTr("Search medicines...")
-        placeholderTextColor: "#64748b"
       }
     }
 
@@ -94,6 +102,7 @@ Item {
       color: refreshTap.containsMouse ? "#334155" : "#1e293b"
       border.width: 1
       border.color: "#334155"
+      opacity: root.service && root.service.loading ? 0.55 : 1
 
       Text {
         anchors.centerIn: parent
@@ -107,16 +116,27 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+        enabled: root.service && !root.service.loading
         onClicked: root.service && root.service.refresh()
       }
+    }
+
+    Text {
+      width: parent.width
+      visible: root.service && root.service.lastError.length > 0
+      text: root.service ? root.service.lastError : ""
+      color: "#fbbf24"
+      font.family: Theme.font
+      font.pixelSize: 10 * root.s
+      wrapMode: Text.WordWrap
     }
 
     // Medicine cards
     Repeater {
       model: {
-        var meds = root.service ? (root.service.medicines || []) : []
+        let meds = root.service ? (root.service.medicines || []) : []
         if (root.searchQuery) {
-          var q = root.searchQuery.toLowerCase()
+          const q = root.searchQuery.toLowerCase()
           meds = meds.filter(function(m) {
             return (m.name || "").toLowerCase().indexOf(q) >= 0 ||
                    (m.generic || "").toLowerCase().indexOf(q) >= 0
@@ -453,7 +473,7 @@ Item {
                 }
                 Text {
                   width: parent.width
-                  text: modelData.missed_dose_note || qsTr("Take as soon as possible")
+                  text: modelData.missed_dose_note || qsTr("No missed-dose guidance is available. Ask your doctor or pharmacist.")
                   color: "#cbd5e1"
                   font.family: Theme.font
                   font.pixelSize: 10 * root.s

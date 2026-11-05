@@ -1,56 +1,63 @@
+pragma ComponentBehavior: Bound
 import QtQuick
-import Ryoku.PluginKit
 
 Item {
   id: root
   property var pluginApi
-  property bool isGlyph: true
+  property var screen
+  property bool active: false
+  property string density: "glyph"
   property real s: 1
+  property real widthBudget: 0
+  property bool open: false
+  property real reveal: 0
+  property bool tabActive: false
+  signal requestClose()
+
   property real glyphW: 22
   property real glyphH: 22
-
   readonly property var service: pluginApi && pluginApi.mainInstance ? pluginApi.mainInstance : null
 
-  // Pill icon with status
-  Canvas {
-    id: pillMark
+  implicitWidth: root.glyphW * root.s
+  implicitHeight: root.glyphH * root.s
+
+  Item {
     anchors.centerIn: parent
     width: root.glyphW * root.s
     height: root.glyphH * root.s
-    onPaint: {
-      var ctx = getContext("2d")
-      ctx.clearRect(0, 0, width, height)
-      var scale = Math.min(width / 24, height / 24)
-      ctx.save()
-      ctx.translate((width - 24 * scale) / 2, (height - 24 * scale) / 2)
-      ctx.scale(scale, scale)
 
-      // Pill shape (capsule)
-      ctx.fillStyle = "#4ade80"
-      ctx.beginPath()
-      ctx.roundRect(4, 8, 16, 8, 4)
-      ctx.fill()
+    Rectangle {
+      anchors.centerIn: parent
+      width: 16 * root.s
+      height: 8 * root.s
+      radius: height / 2
+      color: "#4ade80"
 
-      // Pill divider
-      ctx.strokeStyle = "rgba(0,0,0,0.2)"
-      ctx.lineWidth = 1
-      ctx.beginPath()
-      ctx.moveTo(12, 8)
-      ctx.lineTo(12, 16)
-      ctx.stroke()
+      Rectangle {
+        width: parent.width / 2
+        height: parent.height
+        radius: parent.radius
+        color: "#ffffff4d"
+      }
 
-      // Left half (white)
-      ctx.fillStyle = "rgba(255,255,255,0.3)"
-      ctx.beginPath()
-      ctx.roundRect(4, 8, 8, 8, 4)
-      ctx.fill()
-
-      ctx.restore()
+      Rectangle {
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: Math.max(1, root.s)
+        height: parent.height
+        color: "#33000000"
+      }
     }
   }
 
   MouseArea {
     anchors.fill: parent
-    onClicked: root.pluginApi && root.pluginApi.togglePanel()
+    onClicked: {
+      if (!root.pluginApi)
+        return
+      if (root.open)
+        root.requestClose()
+      else if (root.pluginApi.togglePanel)
+        root.pluginApi.togglePanel()
+    }
   }
 }

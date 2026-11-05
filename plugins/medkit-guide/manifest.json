@@ -3,7 +3,7 @@
   "name": "MedKit Guide",
   "version": "1.0.0",
   "author": "Hatem <hatem@users.noreply.github.com>",
-  "description": "Medicine guide for MedKit: detailed info, interactions, side effects, and food warnings from OpenFDA. Click any medicine to see full prescribing details.",
+  "description": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
   "license": "MIT",
   "tags": ["bar-widget", "health", "medicine", "medkit"],
   "official": false,
@@ -12,13 +12,18 @@
     "content": "content/Widget.qml",
     "panel": "content/Panel.qml"
   },
-  "files": [],
+  "files": [
+    "bin/fetch-medicine.py",
+    "assets/preview-widget.png"
+  ],
   "capabilities": {
-    "densities": ["glyph", "compact"]
+    "densities": ["glyph"],
+    "network": ["api.fda.gov"]
   },
-  "hosts": ["topbarGlyph", "framePopout"],
+  "hosts": ["topbarGlyph"],
+  "commands": ["bin/fetch-medicine.py"],
   "dependencies": {
-    "commands": ["python3", "mkdir"]
+    "commands": ["python3"]
   },
   "defaults": {
     "host": "topbarGlyph",
@@ -31,20 +36,21 @@
     "settings": [
       {
         "key": "autoRefresh",
-        "type": "bool",
-        "label": "Auto-refresh medicine details",
+        "type": "toggle",
+        "label": "Refresh OpenFDA details when the plugin starts",
         "group": "MedKit Guide",
         "default": true
       },
       {
         "key": "cacheDays",
-        "type": "int",
+        "type": "slider",
         "label": "Cache duration (days)",
         "group": "MedKit Guide",
         "default": 7,
         "min": 1,
         "max": 30,
-        "step": 1
+        "step": 1,
+        "decimals": 0
       }
     ]
   }

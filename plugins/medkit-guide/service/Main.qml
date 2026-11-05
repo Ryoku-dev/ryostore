@@ -1,69 +1,68 @@
 import QtQuick
-import Quickshell
 import Quickshell.Io
 
 Item {
   id: root
   property var pluginApi
 
-  readonly property string medkitPath: (Quickshell.env("HOME") || "/home/hatem") + "/.local/share/medkit/medicines.json"
-  readonly property string cachePath: (pluginApi && pluginApi.stateDir ? pluginApi.stateDir : (Quickshell.env("XDG_CACHE_HOME") || (Quickshell.env("HOME") + "/.cache")) + "/ryoku/plugins/medkit-guide") + "/medicine-cache.json"
+  readonly property var settings: pluginApi ? pluginApi.pluginSettings : null
   readonly property string scriptPath: pluginApi && pluginApi.pluginDir ? pluginApi.pluginDir + "/bin/fetch-medicine.py" : ""
+  readonly property bool autoRefresh: settings ? (settings.autoRefresh ?? true) : true
+  readonly property int cacheDays: Math.max(1, Math.min(30, Number(settings ? (settings.cacheDays ?? 7) : 7)))
 
   property var medicines: []
   property bool loading: false
   property string lastError: ""
-  property real now: Date.now()
 
-  function loadMedicines() {
+  function loadMedicines(forceNetwork) {
+    if (!root.scriptPath || fetchProcess.running)
+      return
     root.loading = true
     root.lastError = ""
-    // Run the helper script
-    fetchProcess.command = ["python3", root.scriptPath]
+    var argv = ["python3", root.scriptPath, "--cache-days", String(root.cacheDays)]
+    if (forceNetwork)
+      argv.push("--force")
+    else if (!root.autoRefresh)
+      argv.push("--offline")
+    fetchProcess.command = argv
     fetchProcess.running = true
   }
 
   Process {
     id: fetchProcess
-    property string output: ""
-    onStarted: { output = "" }
-    onReadyRead: { output += readAllStandardOutput() }
+    stdout: StdioCollector { id: fetchOutput; waitForEnd: true }
+    stderr: StdioCollector { waitForEnd: true }
     onExited: (code) => {
       root.loading = false
-      if (code === 0) {
-        try {
-          var data = JSON.parse(output)
-          if (data.medicines) {
-            var meds = []
-            for (var key in data.medicines) {
-              meds.push(data.medicines[key])
-            }
-            root.medicines = meds
-          }
-          if (data.errors && data.errors.length > 0) {
-            root.lastError = data.errors.join("; ")
-          }
-        } catch (e) {
-          root.lastError = "Failed to parse medicine data"
-        }
-      } else {
-        root.lastError = "Failed to fetch medicine details"
+      if (code !== 0) {
+        root.lastError = "Failed to load medicine details"
+        return
+      }
+      try {
+        var data = JSON.parse(fetchOutput.text || "{}")
+        if (data.error)
+          root.lastError = String(data.error)
+        var meds = []
+        var values = data.medicines || {}
+        for (var key in values)
+          meds.push(values[key])
+        root.medicines = meds
+        if (data.errors && data.errors.length > 0)
+          root.lastError = data.errors.join("; ")
+      } catch (e) {
+        root.lastError = "Failed to parse medicine data"
       }
     }
   }
 
   function refresh() {
-    loadMedicines()
+    root.loadMedicines(true)
   }
 
-  function getMedicineByName(name) {
-    for (var i = 0; i < root.medicines.length; i++) {
-      if (root.medicines[i].name === name) return root.medicines[i]
-    }
-    return null
+  onScriptPathChanged: {
+    if (root.scriptPath)
+      root.loadMedicines(false)
   }
 
-  Component.onCompleted: {
-    loadMedicines()
-  }
+  Component.onCompleted: root.loadMedicines(false)
 }
