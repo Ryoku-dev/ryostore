@@ -56,9 +56,9 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "049f111fb7a06acc21739ff369df82f215ae0c83474e88c37c3c56486911ffc6",
+      "sha256": "d9ede3a953a3c8f61ed5f51a7e45d951e10bc4c5019629397ff646f0faf97bd9",
       "mode": "0644",
-      "size": 6922,
+      "size": 7182,
       "install": true
     }
   ]

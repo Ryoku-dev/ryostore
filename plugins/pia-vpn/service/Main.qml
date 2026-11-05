@@ -20,18 +20,23 @@ Item {
     property bool busy: false                    // true while connect/disconnect/setRegion run
     property string lastError: ""
 
-    // -- regions -------------------------------------------------------------
-    property var regionIds: []       // every region id piactl knows about
+    property var regionIds: []
     property bool regionsLoaded: false
 
     readonly property int pollSeconds: settings && settings.pollSeconds ? settings.pollSeconds : 5
 
-    // -- favorites, persisted through pluginApi.saveSetting (R5) -------------
+    function validRegionId(id) {
+        return typeof id === "string" && /^[a-z0-9-]{1,64}$/.test(id);
+    }
+
     readonly property var favoriteRegions: {
         const raw = settings ? settings.favoriteRegions : "[]";
         try {
-            const v = JSON.parse(raw || "[]");
-            return Array.isArray(v) ? v : [];
+            const values = JSON.parse(raw || "[]");
+            if (!Array.isArray(values))
+                return [];
+            return values.filter((id, index) => svc.validRegionId(id)
+                && values.indexOf(id) === index);
         } catch (e) {
             return [];
         }
@@ -42,14 +47,17 @@ Item {
     }
 
     function toggleFavorite(id) {
-        if (!svc.pluginApi || !id)
+        if (!svc.pluginApi || !svc.validRegionId(id))
             return;
         const cur = svc.favoriteRegions.slice();
         const idx = cur.indexOf(id);
-        if (idx === -1)
+        if (idx === -1) {
+            if (svc.regionIds.indexOf(id) === -1)
+                return;
             cur.push(id);
-        else
+        } else {
             cur.splice(idx, 1);
+        }
         svc.pluginApi.saveSetting("favoriteRegions", JSON.stringify(cur));
     }
 
@@ -104,7 +112,9 @@ Item {
             command: ["piactl", "get", "regions"]
             stdout: StdioCollector {
                 onStreamFinished: {
-                    const lines = (this.text || "").split("\n").map(s => s.trim()).filter(s => s.length);
+                    const lines = (this.text || "").split("\n").map(s => s.trim())
+                        .filter((id, index, all) => svc.validRegionId(id)
+                            && all.indexOf(id) === index);
                     svc.regionIds = lines;
                     svc.regionsLoaded = true;
                     proc.destroy();
@@ -122,11 +132,11 @@ Item {
         svc.runAction(["piactl", "disconnect"]);
     }
 
-    // Switch region, then (re)connect to apply it -- mirrors what the PIA
-    // dashboard itself does when you pick a region while connected.
     function useRegion(id) {
-        if (!id)
+        if (!svc.validRegionId(id) || svc.regionIds.indexOf(id) === -1) {
+            svc.lastError = "That PIA region is not available.";
             return;
+        }
         svc.busy = true;
         const setProc = actionComponent.createObject(svc, {
             argv: ["piactl", "set", "region", id],
