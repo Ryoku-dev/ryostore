@@ -1230,7 +1230,7 @@
         "assets/mounted-devices.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "8ebd07c973a598068b9b14693d1242675fa05e6d2868aca51b5b615f4f1b594d",
+      "manifestSha256": "7a053360ae0ce1301041f9947e6f50159fc022f0486195b5cb6b99d24ee0a246",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/removable-drives",
       "official": false,
       "tagline": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",

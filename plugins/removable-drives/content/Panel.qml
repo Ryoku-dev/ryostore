@@ -26,6 +26,7 @@ Item {
     readonly property var drives: service ? service.drives : []
     readonly property string lastError: service ? service.lastError : ""
     readonly property string lastAction: service ? service.lastAction : ""
+    readonly property bool busy: service ? service.busy : false
 
     // Group the flat drive list into removable disks + their mounted
     // partitions (or the disk itself, if it has no partition table).
@@ -162,10 +163,8 @@ Item {
                         width: ejectLabel.implicitWidth + 16 * root.s
                         height: ejectLabel.implicitHeight + 8 * root.s
                         radius: Theme.radius
-                        // Always enabled: eject/power-off is valid even when the
-                        // disk already has nothing mounted (the normal state
-                        // right after Unmount), so it must not grey out there.
                         color: ejectArea.pressed ? Theme.vermDeep : Theme.accent
+                        opacity: root.busy ? 0.55 : 1
 
                         Text {
                             id: ejectLabel
@@ -179,6 +178,7 @@ Item {
                         MouseArea {
                             id: ejectArea
                             anchors.fill: parent
+                            enabled: !root.busy
                             onClicked: if (root.service)
                                 root.service.ejectDisk(modelData.diskPath)
                         }
@@ -218,6 +218,7 @@ Item {
                             height: unmountLabel.implicitHeight + 8 * root.s
                             radius: Theme.radius
                             color: unmountArea.pressed ? Theme.vermDeep : Theme.tileBg
+                            opacity: root.busy ? 0.55 : 1
 
                             Text {
                                 id: unmountLabel
@@ -231,6 +232,7 @@ Item {
                             MouseArea {
                                 id: unmountArea
                                 anchors.fill: parent
+                                enabled: !root.busy
                                 onClicked: if (root.service)
                                     root.service.unmountOne(modelData.path)
                             }
@@ -245,6 +247,7 @@ Item {
             height: refreshLabel.implicitHeight + 12 * root.s
             radius: Theme.radius
             color: refreshArea.pressed ? Theme.vermDeep : Theme.tileBg
+            opacity: root.busy ? 0.55 : 1
 
             Text {
                 id: refreshLabel
@@ -258,6 +261,7 @@ Item {
             MouseArea {
                 id: refreshArea
                 anchors.fill: parent
+                enabled: !root.busy
                 onClicked: if (root.service)
                     root.service.refresh()
             }

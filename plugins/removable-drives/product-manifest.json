@@ -40,9 +40,9 @@
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "9fa59a2bd723231829b1e8cf6f54dd86f0f6f9a639a22e245573b18215b22f5f",
+      "sha256": "34e1d53841dbc1728a5a34c34d89d29e8d5d86adfd7adef33597ac1715a94b82",
       "mode": "0644",
-      "size": 9925,
+      "size": 10039,
       "install": true
     },
     {
@@ -64,9 +64,9 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "474bcbac845fb76df98fd84d2091e94ca58a78a43b1630563f770592a15a2124",
+      "sha256": "eae5f42b56286d9a70bb2689e484bfb53cbdb2a059186a41d11d1d238a6a0fff",
       "mode": "0644",
-      "size": 9048,
+      "size": 9878,
       "install": true
     }
   ]

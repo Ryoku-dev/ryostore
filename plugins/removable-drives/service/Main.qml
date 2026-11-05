@@ -28,6 +28,7 @@ Item {
     property var drives: []
     property string lastError: ""
     property string lastAction: ""
+    property bool busy: false
 
     // Mounted removable filesystems -- the ones that actually need a safe
     // unmount before the stick can be pulled.
@@ -152,6 +153,14 @@ Item {
         p.running = true;
     }
 
+    function driveByPath(path) {
+        for (var i = 0; i < svc.drives.length; i++) {
+            if (svc.drives[i].path === path)
+                return svc.drives[i];
+        }
+        return null;
+    }
+
     // Fire a desktop notification so an action's result is visible even if
     // the panel isn't open. Best-effort: failures here never set lastError.
     function notify(title, body, urgent) {
@@ -163,9 +172,14 @@ Item {
     }
 
     function unmountOne(path, after) {
+        var drive = svc.driveByPath(path);
+        if (svc.busy || !drive || !drive.removable || drive.mountpoint === "")
+            return;
+        svc.busy = true;
         svc.lastError = "";
         svc.lastAction = "Unmounting " + path;
         runCmd(["udisksctl", "unmount", "-b", path], function (code, err) {
+            svc.busy = false;
             svc.lastAction = "";
             if (code !== 0) {
                 svc.lastError = "Could not unmount " + path + (err ? ": " + err : "");
@@ -181,12 +195,14 @@ Item {
 
     function unmountSequence(paths, idx, done) {
         if (idx >= paths.length) {
-            done();
+            done(0, "", "");
             return;
         }
         runCmd(["udisksctl", "unmount", "-b", paths[idx]], function (code, err) {
-            if (code !== 0)
-                svc.lastError = "Could not unmount " + paths[idx] + (err ? ": " + err : "");
+            if (code !== 0) {
+                done(code, paths[idx], err);
+                return;
+            }
             svc.unmountSequence(paths, idx + 1, done);
         });
     }
@@ -211,20 +227,30 @@ Item {
         return out;
     }
 
-    // Unmount every mounted filesystem on a disk (at any depth), then power
-    // it off so it is safe to physically unplug. A short settle delay before
-    // power-off avoids a spurious "device busy" right after udisks finishes
-    // an unmount.
     function ejectDisk(diskPath) {
+        var disk = svc.driveByPath(diskPath);
+        if (svc.busy || !disk || !disk.removable || disk.type !== "disk")
+            return;
         var descendants = svc.descendantPaths(diskPath);
         var parts = [];
-        for (var i = 0; i < descendants.length; i++) {
+        if (disk.mountpoint !== "")
+            parts.push(disk.path);
+        for (var i = descendants.length - 1; i >= 0; i--) {
             if (descendants[i].mountpoint !== "")
                 parts.push(descendants[i].path);
         }
+        svc.busy = true;
         svc.lastError = "";
         svc.lastAction = "Ejecting " + diskPath;
-        svc.unmountSequence(parts, 0, function () {
+        svc.unmountSequence(parts, 0, function (code, failedPath, err) {
+            if (code !== 0) {
+                svc.busy = false;
+                svc.lastAction = "";
+                svc.lastError = "Could not unmount " + failedPath + (err ? ": " + err : "");
+                svc.notify("Eject stopped", failedPath + " is still mounted.", true);
+                svc.refresh();
+                return;
+            }
             settleTimer.diskPath = diskPath;
             settleTimer.restart();
         });
@@ -237,6 +263,7 @@ Item {
         repeat: false
         onTriggered: {
             runCmd(["udisksctl", "power-off", "-b", diskPath], function (code, err) {
+                svc.busy = false;
                 svc.lastAction = "";
                 if (code !== 0) {
                     svc.lastError = "Could not power off " + diskPath + (err ? ": " + err : "");
