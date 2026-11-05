@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "imi",
   "category": "barstyles",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "destination": "ryoku/barstyles/imi",
   "files": [
     {
@@ -17,8 +17,8 @@
       "source": "GlobalStates.qml",
       "destination": "GlobalStates.qml",
       "mode": "0644",
-      "size": 153864,
-      "sha256": "b8955110b9dea3e14e72608ddf19bce8ecccf602a618b89f42f0783af361e3d5",
+      "size": 153329,
+      "sha256": "3defad1dd43b947c86cc78bb41dc398268d3b4715e3b3d85b5f1eb3a20c58d72",
       "install": true
     },
     {
@@ -49,8 +49,8 @@
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 4003,
-      "sha256": "59a0f4b31e81e99ae841f1579b3f4cfb5bb0baabc68189c1e4c59cbc5b6f786c",
+      "size": 4614,
+      "sha256": "fcb5c5829557c186a4fe2c052b385c57653ff745548b1a68ff3ba015be97bb5c",
       "install": true
     },
     {
@@ -66,7 +66,7 @@
       "destination": "VERSION",
       "mode": "0644",
       "size": 6,
-      "sha256": "c28fcca53637bc88e124af1725df13cb98c69dedefd62fb3cdbe1cdb6b760624",
+      "sha256": "fe840f52fb5578d3f77eb497115eb02c6036601c3a53e60df7995c7276baa77a",
       "install": true
     },
     {
@@ -2281,8 +2281,8 @@
       "source": "assets/preview.png",
       "destination": "assets/preview.png",
       "mode": "0644",
-      "size": 1048017,
-      "sha256": "621dc0329d095ee25edebdb9e8070ef64c9a6a4f62a6fb2107dccedda63b2969",
+      "size": 659831,
+      "sha256": "d8a626ca7ab84d9913e0634ddce8fe7d4a6b18d17e749d48e128394571a9a9a4",
       "install": false
     },
     {
@@ -7761,8 +7761,8 @@
       "source": "modules/ii/bar/popups/bluetooth/ExpressiveBluetoothDevicesPopup.qml",
       "destination": "modules/ii/bar/popups/bluetooth/ExpressiveBluetoothDevicesPopup.qml",
       "mode": "0644",
-      "size": 23495,
-      "sha256": "4152a3fed6a92a958608f477a36a5ad90c7096dd31fa2fca50cfe472064b1ec7",
+      "size": 23520,
+      "sha256": "5458730faea12d15433180b4d34f76e480eb65b8be23f984ccb2b16bd05f51ea",
       "install": true
     },
     {
@@ -12770,7 +12770,7 @@
       "destination": "modules/settings/configs/AboutConfig.qml",
       "mode": "0644",
       "size": 31950,
-      "sha256": "ee016658e0614ed502566f028c06ffce5aa8e41f15010de0bfe751fc8ffa7d97",
+      "sha256": "f2dc2dee7f54adb471d883f6001bcec7b61f69d17de8a3f1cf09cea7fd188960",
       "install": true
     },
     {
@@ -14665,8 +14665,8 @@
       "source": "services/Notifications.qml",
       "destination": "services/Notifications.qml",
       "mode": "0644",
-      "size": 21334,
-      "sha256": "65a75705253ad6b85b512eebe8a930b8c281295202d1fdd3da485e4b54c3b43e",
+      "size": 24097,
+      "sha256": "4fd91d21be039ec2d2e0e42c3e2124c010afc576318ad4ed231495723a380804",
       "install": true
     },
     {
@@ -15505,8 +15505,8 @@
       "source": "services/modes/conditions/ResourceCondition.qml",
       "destination": "services/modes/conditions/ResourceCondition.qml",
       "mode": "0644",
-      "size": 3145,
-      "sha256": "4b11b27d61a3b7173ef9be1e5b498be4969ea566eb01f11a83d859b0d10d6cea",
+      "size": 3144,
+      "sha256": "0aa6a7178b103404af20cb8ff9df540acfadd81c6a13f56c5a534573a0f63a42",
       "install": true
     },
     {

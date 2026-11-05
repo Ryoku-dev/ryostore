@@ -57,7 +57,10 @@ ModeCondition {
         }
     }
 
-    Component.onCompleted: root.syncMetricRequest()
+    Component.onCompleted: {
+        root.syncMetricRequest();
+        root.reevaluate();
+    }
     Component.onDestruction: {
         if (_requestedMetric)
             ResourceUsage.requestMetric(_requestedMetric, false);
@@ -84,7 +87,6 @@ ModeCondition {
     onValueChanged: root.reevaluate()
     onAboveChanged: root.reevaluate()
     onBelowChanged: root.reevaluate()
-    Component.onCompleted: root.reevaluate()
 
     satisfied: root.over
     reason: `${Math.round(root.value)} ${root.unit}`
