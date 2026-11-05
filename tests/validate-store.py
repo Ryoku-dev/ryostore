@@ -84,6 +84,13 @@ DISTRIBUTION_MARKS = frozenset(int(code, 16) for code in """
 # that use another manager, so a format names all of them or none.
 PACKAGE_COUNTS = {"pacman", "rpm", "xbps"}
 PACKAGE_COUNT_PATTERN = re.compile(r"\{(pacman|rpm|xbps)\}")
+# A preset may hand the readout to an executable in its own product folder:
+#   // ryoku:renderer <product-id>/<relative-executable>
+# ryoku-fastfetch resolves the same marker at runtime; the store rejects a
+# renderer that escapes its product, is not executable, or is not installed.
+RENDERER_LINE = re.compile(r"^//[ \t]*ryoku:renderer\b.*$", re.MULTILINE)
+RENDERER_PATTERN = re.compile(r"^//[ \t]*ryoku:renderer[ \t]+(\S+)$", re.MULTILINE)
+RENDERER_TARGET = re.compile(r"^[a-z0-9][a-z0-9-]*/[A-Za-z0-9_./-]+$")
 MAX_FILE_SIZE = 256 * 1024 * 1024
 MAX_PRODUCT_SIZE = 512 * 1024 * 1024
 MAX_FILES = 2048
@@ -663,7 +670,47 @@ def config_strings(value: object) -> Iterable[str]:
             yield from config_strings(item)
 
 
-def validate_fastfetch_preset(entry: dict, product: Path, errors: list[str]) -> None:
+def validate_fastfetch_renderer(
+    entry: dict, product: Path, manifest: object, renderer: str, errors: list[str]
+) -> None:
+    """A renderer is an executable inside the preset's own product folder.
+    ryoku-fastfetch runs it in place of fastfetch, so it must be installed,
+    executable, and unable to reach another product."""
+    label = f"fastfetch/{entry.get('id', '?')}"
+    product_id = str(entry.get("id", ""))
+    parts = PurePosixPath(renderer).parts
+    if not RENDERER_TARGET.fullmatch(renderer) or ".." in parts:
+        errors.append(
+            f"{label}: renderer must be <product-id>/<executable> inside its own product: {renderer}"
+        )
+        return
+    owner, _, relative = renderer.partition("/")
+    if owner != product_id:
+        errors.append(f"{label}: renderer must stay inside {product_id}/, not {owner}/")
+        return
+    target = product.joinpath(*PurePosixPath(relative).parts)
+    if not target.is_file() or target.is_symlink():
+        errors.append(f"{label}: renderer target missing: {renderer}")
+        return
+    if not target.stat().st_mode & 0o111:
+        errors.append(f"{label}: renderer target must be executable: {renderer}")
+        return
+    rows = manifest.get("files") if isinstance(manifest, dict) else None
+    row = next(
+        (
+            item
+            for item in rows or []
+            if isinstance(item, dict) and item.get("destination") == relative
+        ),
+        None,
+    )
+    if row is None or row.get("install") is not True:
+        errors.append(f"{label}: renderer target must be installed: {renderer}")
+
+
+def validate_fastfetch_preset(
+    entry: dict, product: Path, manifest: object, errors: list[str]
+) -> None:
     """A preset runs on whichever Ryoku edition the user has (Arch, CachyOS,
     Fedora or Void), so its logo, package counts and glyphs follow that system
     instead of naming one."""
@@ -673,7 +720,8 @@ def validate_fastfetch_preset(entry: dict, product: Path, errors: list[str]) -> 
         errors.append(f"{label}: config.jsonc missing")
         return
     try:
-        config = json.loads(strip_jsonc(config_path.read_text(encoding="utf-8")))
+        raw = config_path.read_text(encoding="utf-8")
+        config = json.loads(strip_jsonc(raw))
     except (UnicodeDecodeError, ValueError) as error:
         errors.append(f"{label}: config.jsonc does not parse: {error}")
         return
@@ -708,6 +756,17 @@ def validate_fastfetch_preset(entry: dict, product: Path, errors: list[str]) -> 
             f"{label}: draws one system's own mark ({', '.join(f'U+{mark:04X}' for mark in marks)}); "
             "use Tux (U+F31A) or a neutral glyph"
         )
+
+    declared = RENDERER_LINE.findall(raw)
+    renderers = RENDERER_PATTERN.findall(raw)
+    if len(declared) > 1:
+        errors.append(f"{label}: declare one ryoku:renderer line, not {len(declared)}")
+    elif declared and not renderers:
+        errors.append(
+            f"{label}: renderer line must read `// ryoku:renderer <product-id>/<executable>`"
+        )
+    elif renderers:
+        validate_fastfetch_renderer(entry, product, manifest, renderers[0], errors)
 
 
 def validate_entry(category: str, entry: object, root: Path, errors: list[str], require_media: bool) -> None:
@@ -788,7 +847,7 @@ def validate_entry(category: str, entry: object, root: Path, errors: list[str], 
         elif category in FOLDER_PRODUCTS:
             validate_folder_product(category, entry, manifest, errors)
         elif category == "fastfetch":
-            validate_fastfetch_preset(entry, product, errors)
+            validate_fastfetch_preset(entry, product, manifest, errors)
 
 
 def validate_tree(

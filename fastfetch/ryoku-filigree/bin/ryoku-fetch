@@ -28,8 +28,15 @@ ART_W = 1786
 ART_H = 881
 
 def cursor_position():
-    fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
-    previous = termios.tcgetattr(fd)
+    try:
+        fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
+    except OSError:
+        return None
+    try:
+        previous = termios.tcgetattr(fd)
+    except (OSError, termios.error):
+        os.close(fd)
+        return None
     try:
         tty.setcbreak(fd)
         os.write(fd, b"\x1b[6n")
@@ -42,9 +49,17 @@ def cursor_position():
                 if match:
                     return int(match[1]) - 1, int(match[2]) - 1
         return None
+    except (OSError, termios.error):
+        return None
     finally:
-        termios.tcsetattr(fd, termios.TCSANOW, previous)
-        os.close(fd)
+        try:
+            termios.tcsetattr(fd, termios.TCSANOW, previous)
+        except (OSError, termios.error):
+            pass
+        try:
+            os.close(fd)
+        except OSError:
+            pass
 
 def move(row, col):
     sys.stdout.write(f"\x1b[{row + 1};{col + 1}H")
@@ -65,12 +80,9 @@ def palette():
     except Exception:
         data = {}
 
-    accent = hex_rgb(
-        data.get("primary") or data.get("color2"),
-        (226, 176, 150),
-    )
+    accent = hex_rgb(data.get("primary"), (226, 176, 150))
     text = hex_rgb(
-        data.get("onSurface") or data.get("foreground") or data.get("color7"),
+        data.get("onSurface") or data.get("foreground"),
         (224, 216, 208),
     )
     muted = hex_rgb(
@@ -103,6 +115,11 @@ def icat_binary():
     if kitty:
         return [kitty, "+kitten", "icat"]
     return None
+
+def debug(message):
+    """RYOKU_FILIGREE_DEBUG=1 explains why a session fell back to plain text."""
+    if os.environ.get("RYOKU_FILIGREE_DEBUG"):
+        print(f"ryoku-fetch: {message}", file=sys.stderr)
 
 def plain_fallback(lines, accent, text, muted):
     user, distro = distro_id()
@@ -172,6 +189,17 @@ def main():
         and not arguments
     )
     if not kitty_session:
+        debug(
+            "plain: tty=%s KITTY_WINDOW_ID=%s artwork=%s logo=%s icat=%s args=%s"
+            % (
+                sys.stdout.isatty(),
+                bool(os.environ.get("KITTY_WINDOW_ID")),
+                ARTWORK.is_file(),
+                LOGO.is_file(),
+                icat_binary() is not None,
+                bool(arguments),
+            )
+        )
         plain_fallback(lines, accent, text, muted)
         return 0
 
@@ -189,26 +217,49 @@ def main():
     # Both keep their native aspect ratios. The frame remains large enough to
     # wrap the text while the mark gets roughly the same visual height as the
     # vertical filigree without being stretched.
-    height = min(16, rows - 4)
+    height = min(16, rows - 1)
     frame_width = math.ceil(height * cell_h / cell_w * ART_W / ART_H)
     logo_height = max(7, round(height * 0.40))
     logo_width = math.ceil(logo_height * cell_h / cell_w * LOGO_W / LOGO_H)
     gap = 0
     total_width = logo_width + gap + frame_width
 
-    if total_width > cols - 2:
-        scale = (cols - 2) / total_width
+    if total_width > cols - 3:
+        scale = (cols - 3) / total_width
         height = max(12, math.floor(height * scale))
         frame_width = math.ceil(height * cell_h / cell_w * ART_W / ART_H)
         logo_height = max(7, round(height * 0.40))
         logo_width = math.ceil(logo_height * cell_h / cell_w * LOGO_W / LOGO_H)
         total_width = logo_width + gap + frame_width
 
-    if frame_width < 50 or height < 12 or height + 3 > rows or len(lines) > 8:
+    frame_left = 3 + logo_width + 1
+    text_x = frame_left + max(20, math.ceil(frame_width * 0.365))
+    room = cols - text_x - 1
+
+    last_clear_row = math.floor(height * 0.75) - 1
+    decor = 2  # tagline + the gap under it
+    while decor >= 0 and last_clear_row - len(lines) - decor < 0:
+        decor -= 1
+    blocked = (
+        frame_width < 24
+        or height < 12
+        or height + 1 > rows
+        or len(lines) > 8
+        or decor < 0
+        or room < 22
+    )
+    if blocked:
+        debug(
+            "plain: terminal %dx%d cells %.1fx%.1f frame %dx%d rows %d..%d "
+            "last_clear_row=%d lines=%d decor=%d"
+            % (
+                rows, cols, cell_w, cell_h, frame_width, height,
+                0, height - 1, last_clear_row, len(lines), decor,
+            )
+        )
         plain_fallback(lines, accent, text, muted)
         return 0
 
-    # Reserve terminal space before painting so invocation near the bottom scrolls normally.
     sys.stdout.write("\n" * (height + 1))
     sys.stdout.flush()
 
@@ -264,27 +315,37 @@ def main():
     )
 
     # Text stays inside the ornamental frame, not inside the Ryoku mark.
-    text_x = frame_left + max(20, math.ceil(frame_width * 0.365))
-    # Keep the usual vertical centering in a tall frame, but lift the block as
-    # needed so its last module clears the sword crossing the lower fifth.
+    # Tuck the block under the top edge when the frame is short, but never let
+    # its last module row reach the blade: last_clear_row is the highest row the
+    # artwork still draws nothing over.
     preferred_text_y = max(2, round(height * 0.19))
-    last_module_offset = len(lines) + 2  # header, gap, then the module rows
-    safe_text_y = max(0, math.floor(height * 0.78) - last_module_offset)
+    block_rows = 1 + decor + len(lines)  # header + decor + module rows
+    # text_y + block_rows - 1 <= last_clear_row  =>  text_y <= last_clear_row - block_rows + 1
+    safe_text_y = max(0, last_clear_row - block_rows + 1)
+    # The user asked to drop the block a row lower to see how it looks. Drop
+    # it whenever the clear space above the blade leaves room for the extra
+    # row, but keep it tight under the crest when the space is exact.
+    if safe_text_y >= preferred_text_y + 1:
+        preferred_text_y += 1
     text_y = top + min(preferred_text_y, safe_text_y)
-    room = cols - text_x - 1
+    debug(
+        "drawing: terminal %dx%d frame %dx%d text_row=%d decor=%d lines=%d"
+        % (rows, cols, frame_width, height, text_y - top, decor, len(lines))
+    )
 
     user, distro = distro_id()
 
     move(text_y, text_x)
     sys.stdout.write(f"{esc(text, True)}RYOKU\x1b[0m  {esc(accent)}緑\x1b[0m")
 
-    move(text_y + 1, text_x)
-    sys.stdout.write(
-        f"{esc(text)}{user}@{distro}\x1b[0m  "
-        f"{esc(muted)}利用者・環境\x1b[0m"
-    )
+    if decor >= 2:
+        move(text_y + 1, text_x)
+        sys.stdout.write(
+            f"{esc(text)}{user}@{distro}\x1b[0m  "
+            f"{esc(muted)}利用者・環境\x1b[0m"
+        )
 
-    spec_y = text_y + 3
+    spec_y = text_y + 1 + decor
     for index, line in enumerate(lines):
         move(spec_y + index, text_x)
         parts = line.split(maxsplit=1)

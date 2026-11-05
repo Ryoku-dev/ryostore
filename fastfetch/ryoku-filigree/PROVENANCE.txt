@@ -5,8 +5,11 @@ https://github.com/Sipper1236/inspo-fastfetch
 
 The Ryostore-native edition preserves the locked v18 Ryoku composition while
 removing the standalone installer's machine-specific shim state. The renderer
-is product-local, uses Ryoku's selected Fastfetch config, and resolves the real
-Fastfetch binary from the platform at runtime.
+is product-local, keeps its own fixed module list, takes its colours from
+Ryoku's selected palette (~/.cache/ryoku/colors.json), and resolves the real
+Fastfetch binary from the platform at runtime. It never reads
+~/.config/fastfetch/config.jsonc: the composition is closed, so a Settings edit
+cannot change the line count.
 
 No code or artwork from Sipper1236/inspo-fastfetch is redistributed here unless
 separate redistribution permission is provided. The shipped ornamental artwork

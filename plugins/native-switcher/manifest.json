@@ -1,0 +1,60 @@
+{
+  "id": "native-switcher",
+  "name": "Native Switcher",
+  "version": "0.2.9",
+  "author": "wolf1999h <doorman-bust-exile@duck.com>",
+  "description": "Event-driven window switcher inside the resident Ryoku shell; lazy UI, no extra daemon.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "framePopout"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "bin/check-bindings",
+    "service/Model.js",
+    "service/IconResolver.js",
+    "tests/icons.test.cjs",
+    "tests/model.test.cjs",
+    "tests/layout.test.cjs",
+    "tests/motion.test.cjs",
+    "tests/hover.test.cjs",
+    "tests/keyboard-style.test.cjs",
+    "tests/scroll.test.cjs",
+    "tests/host.test.cjs",
+    "tests/initial-position.test.cjs",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "full"
+    ],
+    "network": [],
+    "privileged": []
+  },
+  "defaults": {
+    "host": "framePopout",
+    "framePopout": {"edge": "center", "align": "center", "hoverW": 0, "hoverH": 0},
+    "label": "Native Switcher"
+  },
+  "dependencies": {
+    "commands": ["ryoku-shell", "notify-send"]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "delayMs",
+        "type": "int",
+        "label": "Panel delay (ms)",
+        "group": "Switcher",
+        "default": 160,
+        "min": 80,
+        "max": 500
+      }
+    ]
+  }
+}

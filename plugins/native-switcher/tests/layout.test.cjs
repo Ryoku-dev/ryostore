@@ -1,0 +1,12 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const qml = fs.readFileSync(require('node:path').join(__dirname,'../content/Widget.qml'),'utf8');
+const expression = qml.match(/implicitWidth: (Math\.min[^\n]+)/)[1];
+const width = (n,w=1920) => vm.runInNewContext(expression,{root:{service:{windows:Array(n)}},screen:{width:w}});
+assert.equal(width(1),190,'one card plus symmetric 22px margins');
+assert.equal(width(2),346,'two cards, one gap and symmetric margins');
+assert.equal(width(3),502);
+assert.equal(width(20),1000);
+assert.equal(width(20,800),720);
+console.log('PASS: compact one/two-card layout, exact padding, screen and maximum width caps');

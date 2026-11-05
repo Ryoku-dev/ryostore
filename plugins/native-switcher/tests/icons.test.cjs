@@ -1,0 +1,16 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const path = require('node:path');
+const ctx = {};
+vm.createContext(ctx);
+vm.runInContext(fs.readFileSync(path.join(__dirname, '../service/IconResolver.js'), 'utf8'), ctx);
+const index = {'zen-browser':'/usr/share/icons/zen.svg','hermes':'/opt/Hermes/icon.png','application-x-executable':'/usr/share/icons/app.svg'};
+assert.equal(ctx.resolve('zen-browser',index),'file:///usr/share/icons/zen.svg');
+assert.equal(ctx.resolve('/opt/Hermes/icon.png',index),'file:///opt/Hermes/icon.png');
+assert.equal(ctx.resolve('image://icon/zen-browser',index),'file:///usr/share/icons/zen.svg');
+assert.equal(ctx.forWindow({class:'bad',initialClass:'zen-browser'},index,()=>null),'file:///usr/share/icons/zen.svg');
+assert.equal(ctx.forWindow({class:'Hermes'},index,()=>({icon:'/opt/Hermes/icon.png'})),'file:///opt/Hermes/icon.png');
+assert.equal(ctx.forWindow({class:'org.quickshell',title:'Ryoku Settings'},index,c=>c==='ryoku-hub'?{icon:'hermes'}:null),'file:///opt/Hermes/icon.png');
+assert.equal(ctx.forWindow({class:'unknown'},index,()=>null),'file:///usr/share/icons/app.svg');
+console.log('PASS: indexed theme icons, absolute paths, initialClass fallback, title identity, generic fallback');
