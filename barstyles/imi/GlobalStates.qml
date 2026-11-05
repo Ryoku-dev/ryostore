@@ -4,7 +4,6 @@ import "modules/common"
 import "modules/common/functions"
 import "services"
 import shell.services as ShellState
-import shell.services as HostServices
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -1629,17 +1628,6 @@ Singleton {
     // and the close grace, exactly as StyledPopup does for the other popups.
     property bool mediaWidgetHovered: false
 
-    // background.wallpaperPath follows the host Session wallpaper.
-    function syncWallpaperPath() {
-        const live = HostServices.Session.wallpaper || "";
-        if (live !== "" && Config.ready && Config.options.background.wallpaperPath !== live)
-            Config.options.background.wallpaperPath = live;
-    }
-    Connections {
-        target: HostServices.Session
-        function onWallpaperChanged() { root.syncWallpaperPath(); }
-    }
-
     function setMediaWidgetHovered(hovered) {
         root.mediaWidgetHovered = hovered;
     }
@@ -2581,7 +2569,6 @@ Singleton {
     }
 
     Component.onCompleted: {
-        Qt.callLater(root.syncWallpaperPath);
         animatedLeftSidebarWidth = leftSidebarTargetWidth;
         animatedRightSidebarWidth = rightSidebarTargetWidth;
         root.enforceSidebarStyle();
