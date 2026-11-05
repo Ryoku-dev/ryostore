@@ -2281,8 +2281,8 @@
       "source": "assets/preview.png",
       "destination": "assets/preview.png",
       "mode": "0644",
-      "size": 2400326,
-      "sha256": "5978732422f52fd4874d4942c688028b492f57c8de0a7b1e20aba279c8f76126",
+      "size": 659831,
+      "sha256": "d8a626ca7ab84d9913e0634ddce8fe7d4a6b18d17e749d48e128394571a9a9a4",
       "install": false
     },
     {
