@@ -338,7 +338,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "c3185e6b2daef7ef65d93bc8340018a51eaae0185901af9875988a038e88e53b",
+      "manifestSha256": "995e29b0a825c2cf068a72b5c33d4c5de0e87f350d2880448c4aa60225d0b7d8",
       "official": false,
       "tagline": "Max the backlight for fullscreen media, then restore.",
       "icon": "brightness_auto",

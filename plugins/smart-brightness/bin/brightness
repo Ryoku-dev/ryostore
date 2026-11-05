@@ -51,7 +51,7 @@ case "${cmd}" in
     fi
     ;;
   *)
-    echo "Usage: $0 get|set <pct>|save <dir> [pct]|restore <dir>" >&2
+    echo "Usage: $0 get|set <pct>|save <dir> [pct]|restore <dir> [pct]" >&2
     exit 2
     ;;
 esac

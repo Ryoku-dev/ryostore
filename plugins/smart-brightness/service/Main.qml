@@ -47,6 +47,9 @@ Item {
     property bool entering: false
     // In-memory restore target; file under stateDir is the durable twin.
     property int savedPercent: -1
+    // Kept until the queued restore succeeds, so teardown during an exit can
+    // still restore the original level.
+    property int pendingRestorePercent: -1
     property int brightnessPercent: -1
     property string lastAction: ""
     // After an exit, ignore re-enter for a beat so a flaky fullscreen signal
@@ -94,6 +97,7 @@ Item {
             return;
         var next = actionProc.pending[0];
         actionProc.pending = actionProc.pending.slice(1);
+        actionProc.active = next;
         actionProc.command = [_bin].concat(next);
         actionProc.running = true;
     }
@@ -154,6 +158,7 @@ Item {
         exitLatchTimer.restart();
 
         var pct = savedPercent;
+        pendingRestorePercent = pct;
         savedPercent = -1;
         actionProc.pending = [];
         if (pct >= 0 && pct < 99) {
@@ -234,7 +239,17 @@ Item {
     Process {
         id: actionProc
         property var pending: []
-        onExited: Qt.callLater(svc._startNextAction)
+        property var active: []
+        onExited: function(code) {
+            if (code === 0 && active.length > 0) {
+                if (active[0] === "restore"
+                        || (active[0] === "set" && !svc.videoActive
+                            && Number(active[1]) === svc.pendingRestorePercent))
+                    svc.pendingRestorePercent = -1;
+            }
+            active = [];
+            Qt.callLater(svc._startNextAction);
+        }
     }
 
     Timer {
@@ -291,11 +306,12 @@ Item {
     }
 
     Component.onDestruction: {
-        if (!videoActive || !_bin || savedPercent < 0 || savedPercent >= 99)
+        var pct = savedPercent >= 0 ? savedPercent : pendingRestorePercent;
+        if (!_bin || pct < 0 || pct >= 99)
             return;
         var args = _stateDir.length > 0
-            ? ["restore", _stateDir, String(savedPercent)]
-            : ["set", String(savedPercent)];
+            ? ["restore", _stateDir, String(pct)]
+            : ["set", String(pct)];
         Quickshell.execDetached([_bin].concat(args));
     }
 }

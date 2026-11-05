@@ -40,9 +40,9 @@
     {
       "source": "bin/brightness",
       "destination": "bin/brightness",
-      "sha256": "68d143a6268d2d5483b838bf57a97a7733d2ab6cab674f38487689940622dddf",
+      "sha256": "ff2f8e752bf5e22b7d559898961e31294b561b0aa38631eefe4bac341494410c",
       "mode": "0755",
-      "size": 1554,
+      "size": 1560,
       "install": true
     },
     {
@@ -96,9 +96,9 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "4cd95bc1d7067800293deb120f9c7e4505d77aca9f45989ec7d4e853e55a685b",
+      "sha256": "693a27540f394c15f6131eeb51a6edb909f16ef347c4d667be305ad8b775ce6e",
       "mode": "0644",
-      "size": 9209,
+      "size": 9873,
       "install": true
     }
   ]
