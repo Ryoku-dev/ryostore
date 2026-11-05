@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "id": "medkit-guide",
+  "category": "plugins",
+  "version": "1.0.0",
+  "destination": "ryoku/plugins/medkit-guide",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "20dd49cffa29f7642793b22e7058a84bdd0f99f6194f589a2553224348783489",
+      "mode": "0644",
+      "size": 1062,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "be67935a527e8c38e7e9e38f468b695c152fc8ac12d3c05107944507bcbeb141",
+      "mode": "0644",
+      "size": 58371,
+      "install": false
+    },
+    {
+      "source": "bin/fetch-medicine.py",
+      "destination": "bin/fetch-medicine.py",
+      "sha256": "ad7fb3a901cb526b9f3166893b2152c462d5bcc1d937b5793b7bb3216afe9fb0",
+      "mode": "0755",
+      "size": 9739,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "24359b567cffec26e176efb1dcb78ec48891cda258ce972907932810aea0cd16",
+      "mode": "0644",
+      "size": 18259,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "831358540992c89676f8425748c69d93b14363f1fc7318a7e52351a148e90853",
+      "mode": "0644",
+      "size": 1398,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "7000e8b153b8f9f675bb821e693691fcffdf0c8b9f3744110811302db63db6b4",
+      "mode": "0644",
+      "size": 1404,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "1b092989b2f469983a9b527087142abf1d3c9713dd6cabca27076508b89f1953",
+      "mode": "0644",
+      "size": 1988,
+      "install": true
+    }
+  ]
+}

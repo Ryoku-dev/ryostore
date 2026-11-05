@@ -1,0 +1,59 @@
+{
+  "id": "pia-vpn",
+  "name": "PIA VPN",
+  "version": "0.1.0",
+  "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+  "description": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 360
+  },
+  "files": [
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "PIA VPN"
+  },
+  "dependencies": {
+    "commands": [
+      "piactl",
+      "/opt/piavpn/bin/pia-client"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "favoriteRegions",
+        "type": "text",
+        "label": "Favorite region ids (JSON array, managed by the panel's star button)",
+        "group": "Regions",
+        "default": "[]"
+      },
+      {
+        "key": "pollSeconds",
+        "type": "int",
+        "label": "Status refresh interval (seconds)",
+        "group": "General",
+        "default": 5,
+        "min": 2,
+        "max": 60
+      }
+    ]
+  }
+}

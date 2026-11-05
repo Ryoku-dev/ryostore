@@ -1265,6 +1265,94 @@
       ],
       "lastUpdated": "2026-10-31",
       "upstream": "https://github.com/wolf1999h/native-switcher"
+    },
+    {
+      "id": "pia-vpn",
+      "name": "PIA VPN",
+      "version": "0.1.0",
+      "path": "plugins/pia-vpn",
+      "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+      "summary": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "description": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "02d4c356c60023ea58f47318c46672b251e8d0380c0c5a60f48ee3aa9ec7c788",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/pia-vpn",
+      "official": false,
+      "tagline": "Status, public/VPN IP, current region, connect/disconnect, open the PIA app, and a favorite-region switcher, all driven by piactl.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-04"
+    },
+    {
+      "id": "removable-drives",
+      "name": "Removable Drives",
+      "version": "0.1.0",
+      "path": "plugins/removable-drives",
+      "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+      "summary": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "description": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview.png",
+      "screenshots": [
+        "assets/preview.png",
+        "assets/mounted-devices.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "7a053360ae0ce1301041f9947e6f50159fc022f0486195b5cb6b99d24ee0a246",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/removable-drives",
+      "official": false,
+      "tagline": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-01"
+    },
+    {
+      "id": "medkit-guide",
+      "name": "MedKit Guide",
+      "version": "1.0.0",
+      "path": "plugins/medkit-guide",
+      "author": "Hatem <hatem@users.noreply.github.com>",
+      "summary": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
+      "description": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
+      "tags": [
+        "bar-widget",
+        "health",
+        "medicine",
+        "medkit"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "4159ef052976d77afc2678ded634560ef9eb572183a9cb84efbd1873e51b3bc6",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/medkit-guide",
+      "official": false,
+      "tagline": "Medicine guide for MedKit with OpenFDA prescribing details, interactions, warnings, and side effects.",
+      "icon": "pill",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-05"
     }
   ]
 }
