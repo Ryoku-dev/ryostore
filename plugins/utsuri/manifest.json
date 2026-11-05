@@ -1,0 +1,150 @@
+{
+  "id": "utsuri",
+  "name": "Utsuri",
+  "version": "1.0.0",
+  "author": "CratusGod",
+  "description": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Results land next to the originals, which are never changed. The Ryoku front end for the Utsuri app.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 360
+  },
+  "files": [
+    "assets/preview-widget.png",
+    "bin/utsuri",
+    "content/urls.js",
+    "engine/PIN",
+    "service/menu.js",
+    "service/themes.js",
+    "service/MenuView.qml",
+    "service/RadialMenu.qml",
+    "service/CardView.qml",
+    "service/Toasts.qml",
+    "service/JobRunner.qml",
+    "service/shaders/glass.frag.qsb",
+    "service/shaders/ink.frag.qsb",
+    "service/shaders/card.frag.qsb",
+    "hypr/trigger.lua",
+    "engine/setup.sh",
+    "engine/update.sh",
+    "engine/requirements.in",
+    "engine/requirements.lock",
+    "content/Customize.qml",
+    "service/CustomizeWindow.qml",
+    "service/Prefs.qml"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph"
+    ],
+    "network": [
+      "github.com",
+      "pypi.org",
+      "files.pythonhosted.org"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "icon": "swap_horiz",
+    "label": "Utsuri"
+  },
+  "dependencies": {
+    "commands": [
+      "python3",
+      "git",
+      "gio",
+      "xdg-open",
+      "notify-send",
+      "dbus-send",
+      "stat",
+      "qs",
+      "ffmpeg",
+      "tesseract",
+      "wl-copy",
+      "fc-match",
+      "uv"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "engineDir",
+        "type": "text",
+        "label": "Utsuri engine folder",
+        "group": "Utsuri",
+        "default": "~/.local/share/utsuri/engine",
+        "placeholder": "~/.local/share/utsuri/engine"
+      },
+      {
+        "key": "output",
+        "type": "choice",
+        "label": "Save results",
+        "group": "Utsuri",
+        "default": "next",
+        "options": [
+          {
+            "value": "next",
+            "label": "Next to the original"
+          },
+          {
+            "value": "folder",
+            "label": "In a Utsuri subfolder"
+          }
+        ]
+      },
+      {
+        "key": "barIcon",
+        "type": "choice",
+        "label": "Bar icon (drop target and panel)",
+        "group": "Utsuri",
+        "default": "auto",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Until Shift+drag is set up"
+          },
+          {
+            "value": "on",
+            "label": "Always"
+          },
+          {
+            "value": "off",
+            "label": "Never"
+          }
+        ]
+      },
+      {
+        "key": "ocrLang",
+        "type": "text",
+        "label": "Text recognition languages (e.g. eng+vie)",
+        "group": "Utsuri",
+        "default": "eng",
+        "placeholder": "eng"
+      }
+    ]
+  },
+  "tags": [
+    "files",
+    "convert",
+    "images",
+    "pdf",
+    "compress",
+    "utsuri",
+    "folders",
+    "zip",
+    "video",
+    "ocr",
+    "pdf-tools"
+  ],
+  "commands": [
+    "bin/utsuri"
+  ]
+}

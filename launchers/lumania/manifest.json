@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "id": "lumania",
+  "category": "launchers",
+  "version": "1.0.0",
+  "destination": "ryoku/launchers/lumania",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "c81c57febb0a0cf249d47a22a920e130fde4aadd8de667ddc7e40f3bac966f96",
+      "mode": "0644",
+      "size": 1062,
+      "install": true
+    },
+    {
+      "source": "Main.qml",
+      "destination": "Main.qml",
+      "sha256": "9f01210d8169418768e7b29e357f4d74496ee8e81d5df9c809dfe86d186caa53",
+      "mode": "0644",
+      "size": 30767,
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "sha256": "04eddd2425a8fed50fc6640bb3507be590be96d3a78dd7851e57dae4ee3f392c",
+      "mode": "0644",
+      "size": 697,
+      "install": true
+    },
+    {
+      "source": "Preview.qml",
+      "destination": "Preview.qml",
+      "sha256": "3593f64c132884fb921d1f8928c03ed8e9d8a401fc08526ec5d6251543ea8e9c",
+      "mode": "0644",
+      "size": 3307,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "8fe555e7eae1687de4ae7bf5752cfcd3e0ece9de463f588e3b7994d641519768",
+      "mode": "0644",
+      "size": 897,
+      "install": true
+    },
+    {
+      "source": "VERSION",
+      "destination": "VERSION",
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03",
+      "mode": "0644",
+      "size": 6,
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "assets/preview.png",
+      "sha256": "a7a192e372722092d1135f7503d7bab182be34ae2ca3d8522ae7f7989e29f817",
+      "mode": "0644",
+      "size": 77429,
+      "install": false
+    },
+    {
+      "source": "components/FluidSpring.qml",
+      "destination": "components/FluidSpring.qml",
+      "sha256": "47ee7fd7a2d31d6f3c8bca69b1e5ae1593e93cff3e0a0439cda012c38a7fb90f",
+      "mode": "0644",
+      "size": 3285,
+      "install": true
+    },
+    {
+      "source": "settings.json",
+      "destination": "settings.json",
+      "sha256": "8f9f5eb97eabe0eee5b74f076633a14f0c03fb1170f5ae583e787cdc2c3b6ebb",
+      "mode": "0644",
+      "size": 37,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

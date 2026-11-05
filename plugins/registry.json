@@ -1868,47 +1868,6 @@
       "lastUpdated": "2026-10-08"
     },
     {
-      "id": "dragshift",
-      "name": "DragShift",
-      "version": "0.5.1",
-      "path": "plugins/dragshift",
-      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/dragshift",
-      "author": "CratusGod <nghiabigg652@gmail.com>",
-      "summary": "DragShift on Wayland: start dragging files, folders or highlighted text, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
-      "description": "DragShift on Wayland: start dragging files, folders or highlighted text, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Dragged text gets Copy, and Translate through the Oumu app. Results land next to the originals, which are never changed.",
-      "tags": [
-        "files",
-        "convert",
-        "images",
-        "pdf",
-        "compress",
-        "dragshift",
-        "folders",
-        "zip",
-        "video",
-        "ocr",
-        "pdf-tools",
-        "bar-widget",
-        "text",
-        "translate"
-      ],
-      "accent": "#8f8378",
-      "surface": "#101010",
-      "preview": "assets/preview-widget.png",
-      "screenshots": [
-        "assets/preview-widget.png"
-      ],
-      "manifest": "product-manifest.json",
-      "manifestSha256": "92e1438846f5ee8c9a70dd85f9f2362277dc35b40ccb1c54e5ac006a4396e5f6",
-      "official": false,
-      "tagline": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
-      "icon": "swap_horiz",
-      "hosts": [
-        "topbarGlyph"
-      ],
-      "lastUpdated": "2026-10-30"
-    },
-    {
       "id": "kbd-layouts",
       "name": "Keyboard Layouts",
       "version": "0.1.0",
@@ -2092,6 +2051,49 @@
       ],
       "lastUpdated": "2026-10-26",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/radio-atlas"
+    },
+    {
+      "id": "utsuri",
+      "name": "Utsuri",
+      "version": "1.0.0",
+      "path": "plugins/utsuri",
+      "author": "CratusGod",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/utsuri",
+      "summary": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit ...",
+      "description": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Results land next to the originals, which are never changed. The Ryoku front end for the Utsuri app. Nine themes (Transparent, Matugen that follows your wallpaper, and seven colours) and every option can be turned off, from a Customize window on Super+Shift+U.",
+      "tags": [
+        "files",
+        "convert",
+        "images",
+        "pdf",
+        "compress",
+        "utsuri",
+        "folders",
+        "zip",
+        "video",
+        "ocr",
+        "pdf-tools",
+        "bar-widget",
+        "themes",
+        "matugen",
+        "text",
+        "translate"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "b459d09323aa02895e136d13d6fc5bf037750b4130b6ec65d8c68a7c209a4fcd",
+      "official": false,
+      "tagline": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit ...",
+      "icon": "swap_horiz",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-10-31"
     }
   ]
 }

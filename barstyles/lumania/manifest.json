@@ -1,0 +1,226 @@
+{
+  "schema": 1,
+  "id": "lumania",
+  "category": "barstyles",
+  "version": "1.0.0",
+  "destination": "ryoku/barstyles/lumania",
+  "files": [
+    {
+      "source": "FrameConfig.qml",
+      "destination": "FrameConfig.qml",
+      "mode": "0644",
+      "size": 10907,
+      "sha256": "bb507d224201396c29563cfcf4a208c5e3f71cc11d95f1f9dbeb0a5de0f2d044",
+      "install": true
+    },
+    {
+      "source": "GlobalState.qml",
+      "destination": "GlobalState.qml",
+      "mode": "0644",
+      "size": 1669,
+      "sha256": "90dd0f4423c74c91ae9482ff2382acfe0122f8a3d7c8aeea4a845cb55543b356",
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1062,
+      "sha256": "c81c57febb0a0cf249d47a22a920e130fde4aadd8de667ddc7e40f3bac966f96",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 1410,
+      "sha256": "929b6d29c844ea5e8599c1eab023a07d296f416f221e1c77232a8725a88938c3",
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 1986,
+      "sha256": "ae7c3b19335bf46f61a080ba46baa42113734a53973f481873bffb4094657b1e",
+      "install": true
+    },
+    {
+      "source": "Scene.qml",
+      "destination": "Scene.qml",
+      "mode": "0644",
+      "size": 12650,
+      "sha256": "0ca117a4dff882a7bc786dd98c5882e2904b4149be7c7a4311bc1caadc52604e",
+      "install": true
+    },
+    {
+      "source": "VERSION",
+      "destination": "VERSION",
+      "mode": "0644",
+      "size": 6,
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03",
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "assets/preview.png",
+      "mode": "0644",
+      "size": 1247913,
+      "sha256": "be2aa011a093543e6be5217408ad084bbb606da7ceffebd9f26be8e62b3d2954",
+      "install": false
+    },
+    {
+      "source": "components/FluidSpring.qml",
+      "destination": "components/FluidSpring.qml",
+      "mode": "0644",
+      "size": 3285,
+      "sha256": "47ee7fd7a2d31d6f3c8bca69b1e5ae1593e93cff3e0a0439cda012c38a7fb90f",
+      "install": true
+    },
+    {
+      "source": "components/FrameCorner.qml",
+      "destination": "components/FrameCorner.qml",
+      "mode": "0644",
+      "size": 3341,
+      "sha256": "3499845d8f253402faf130ec7d480c94eef87ce924389bf863a83e48dc648afc",
+      "install": true
+    },
+    {
+      "source": "control/ControlCenter.qml",
+      "destination": "control/ControlCenter.qml",
+      "mode": "0644",
+      "size": 48151,
+      "sha256": "1a575b999b4f469bad0d81fd8998392c1485128dec2ef923d79c3f0207442b08",
+      "install": true
+    },
+    {
+      "source": "control/ControlCenterSubpanel.qml",
+      "destination": "control/ControlCenterSubpanel.qml",
+      "mode": "0644",
+      "size": 15797,
+      "sha256": "0ffd6d5b87b4c8106806ecc9166de2ca9ef99a012805a5ce4e12b3444bee9ac2",
+      "install": true
+    },
+    {
+      "source": "island/DynamicWorkspaceView.qml",
+      "destination": "island/DynamicWorkspaceView.qml",
+      "mode": "0644",
+      "size": 2819,
+      "sha256": "418412a8df74effc0be2fcf5fbd89547c6af9f459f87d1e2a75913f35d600b42",
+      "install": true
+    },
+    {
+      "source": "island/Island.qml",
+      "destination": "island/Island.qml",
+      "mode": "0644",
+      "size": 26221,
+      "sha256": "3556ae7d178beaa245034c0960072795dc9b8d21291a5f9c8a6406f4a534a9bf",
+      "install": true
+    },
+    {
+      "source": "island/MediaWaveform.qml",
+      "destination": "island/MediaWaveform.qml",
+      "mode": "0644",
+      "size": 5046,
+      "sha256": "c3c9ccba10e7bb3ab206ea0c7e02d649a5234c2479490660f4679c5b2628ecba",
+      "install": true
+    },
+    {
+      "source": "power/PowerNotch.qml",
+      "destination": "power/PowerNotch.qml",
+      "mode": "0644",
+      "size": 10313,
+      "sha256": "f52ff15a4a4855f849343b01dcbb86a329462eed8b8c667d66082f2e793dcd21",
+      "install": true
+    },
+    {
+      "source": "qmldir",
+      "destination": "qmldir",
+      "mode": "0644",
+      "size": 35,
+      "sha256": "fd46173542afb05372afca21c92b7bce4a62789f070d753c9e45cb27f5b6651f",
+      "install": true
+    },
+    {
+      "source": "search/SearchGusset.qml",
+      "destination": "search/SearchGusset.qml",
+      "mode": "0644",
+      "size": 4383,
+      "sha256": "308c26411239b7706a46f752a0417c70242c02214ef8b9400a37869c08966c07",
+      "install": true
+    },
+    {
+      "source": "services/NotificationModel.qml",
+      "destination": "services/NotificationModel.qml",
+      "mode": "0644",
+      "size": 1167,
+      "sha256": "a61e3bad0bc68e3237645630ae45e89693c232cdcd108466c4358dd27f056cd1",
+      "install": true
+    },
+    {
+      "source": "services/WallpaperModel.qml",
+      "destination": "services/WallpaperModel.qml",
+      "mode": "0644",
+      "size": 2364,
+      "sha256": "8202c29304715e22ae0a6397f2b499e39a401db24abb9c2726d0546932652971",
+      "install": true
+    },
+    {
+      "source": "settings/SettingSlider.qml",
+      "destination": "settings/SettingSlider.qml",
+      "mode": "0644",
+      "size": 2418,
+      "sha256": "33503e9e71e204efd96224382d09df633e053a7f640baa4974c87766a6ba92f7",
+      "install": true
+    },
+    {
+      "source": "settings/SettingToggle.qml",
+      "destination": "settings/SettingToggle.qml",
+      "mode": "0644",
+      "size": 1327,
+      "sha256": "60dbe06c733aec4e528e9784e591121662bd8730da1b09a2bd0a517385e88a37",
+      "install": true
+    },
+    {
+      "source": "settings/SettingsPanel.qml",
+      "destination": "settings/SettingsPanel.qml",
+      "mode": "0644",
+      "size": 5777,
+      "sha256": "11036bfe83f0526b3bf95521dd6e3dfaeb54ea0da5ce0445bbd11de238201f4b",
+      "install": true
+    },
+    {
+      "source": "tray/TrayMenu.qml",
+      "destination": "tray/TrayMenu.qml",
+      "mode": "0644",
+      "size": 10827,
+      "sha256": "112e4edd2e8df0f38573bd9e2053e7743838fc911a01b843a11eb90c3ae4bbf9",
+      "install": true
+    },
+    {
+      "source": "tray/TrayNotch.qml",
+      "destination": "tray/TrayNotch.qml",
+      "mode": "0644",
+      "size": 11108,
+      "sha256": "1557d96e3ebb9a68ff32bbe48cb31c2aea755afc9738ab5eb42133332e682a34",
+      "install": true
+    },
+    {
+      "source": "wallpaper/WallpaperStrip.qml",
+      "destination": "wallpaper/WallpaperStrip.qml",
+      "mode": "0644",
+      "size": 22448,
+      "sha256": "df36c5eac7e4530fd8fe66d95e29e540b7b9e6d42d0093f3cb854be4ce216d79",
+      "install": true
+    },
+    {
+      "source": "workspaces/WorkspaceRail.qml",
+      "destination": "workspaces/WorkspaceRail.qml",
+      "mode": "0644",
+      "size": 12985,
+      "sha256": "8d1b5248ffadb64cffab4d6d10f73cd364fabde7e7aff9c9d0d9e53f8db939c4",
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+"""utsuri - the one command the Utsuri bar plugin runs.
+
+Standard library only, so it works on whatever python3 pacman ships. It finds
+the engine checkout (--engine DIR, default ~/.local/share/utsuri/engine), then runs
+that checkout's own venv interpreter on its utsuri.cli module under `python -I`,
+passing stdin/stdout through, forwarding SIGTERM/SIGINT/SIGHUP, and exiting with
+its code. The child also dies if this process is SIGKILLed (PR_SET_PDEATHSIG),
+so a cancelled job never keeps running unseen. That venv uses a uv-managed Python, so system Python upgrades
+never break it. If the venv is missing it answers in the same one-line JSON the
+engine uses, with the command that fixes it.
+
+    utsuri [--engine DIR] [--output next|folder] COMMAND ARGS...
+"""
+import ctypes
+import json
+import os
+import signal
+import subprocess
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+DEFAULT_ENGINE = "~/.local/share/utsuri/engine"
+
+
+def answer(obj, code):
+    print(json.dumps(obj, ensure_ascii=False), flush=True)
+    sys.exit(code)
+
+
+def main(argv):
+    engine = os.environ.get("UTSURI_ENGINE") or DEFAULT_ENGINE
+    if argv[:1] == ["--engine"]:
+        if len(argv) < 2:
+            answer({"ok": False, "error": "--engine needs a directory"}, 1)
+        engine, argv = argv[1], argv[2:]
+    if not argv:
+        answer({"ok": False, "error": "No command given"}, 1)
+    engine = Path(engine).expanduser().resolve()
+    python = engine / ".venv" / "bin" / "python"
+    if not os.access(python, os.X_OK):
+        answer({"ok": False, "engine": str(engine),
+                "error": f"Utsuri engine is not set up at {engine}",
+                "fix": f"{HERE.parent / 'engine' / 'setup.sh'} {engine}"}, 1)
+    env = dict(os.environ, UTSURI_ENGINE=str(engine))
+    # -I: ignore PYTHON* env and cwd, so the engine folder goes on sys.path explicitly;
+    # -B: never write __pycache__ (R8)
+    boot = "import sys; sys.path.insert(0, sys.argv.pop(1)); from utsuri.cli import main; sys.exit(main())"
+    cmd = [str(python), "-I", "-B", "-c", boot, str(engine), *argv]
+    if "doctor" in argv[:3]:
+        sys.exit(doctor(cmd, env, engine))
+    sys.exit(run(cmd, env))
+
+
+def _git(engine, *args):
+    try:
+        r = subprocess.run(["git", "-C", str(engine), *args], capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return r.stdout.strip() if r.returncode == 0 else ""
+
+
+def doctor(cmd, env, engine):
+    """The engine's own doctor, plus: is the checkout at the commit this plugin was
+    tested with (engine/PIN), without local edits?"""
+    r = subprocess.run(cmd, env=env, capture_output=True, text=True)
+    try:
+        d = json.loads(r.stdout.strip().splitlines()[-1])
+    except (ValueError, IndexError):
+        answer({"ok": False, "engine": str(engine), "error": "Utsuri engine gave no answer: " + (r.stderr.strip()[-300:] or f"exit {r.returncode}"),
+                "fix": f"{HERE.parent / 'engine' / 'setup.sh'} {engine}"}, 1)
+    try:
+        pin = (HERE.parent / "engine" / "PIN").read_text().strip()
+    except OSError:
+        pin = ""
+    sha = _git(engine, "rev-parse", "HEAD")
+    d.update(engine=str(engine), pin=pin, sha=sha, pinned=bool(pin) and sha == pin)
+    if d.get("ok") and not d["pinned"]:
+        d.update(ok=False, error=f"Engine is at {sha[:12] or 'an unknown commit'}, plugin is tested with {pin[:12]}",
+                 fix=f"git -C {engine} checkout --detach {pin}")
+    elif d.get("ok") and _git(engine, "status", "--porcelain", "--untracked-files=no"):
+        d.update(ok=False, error="The engine checkout has local edits to tracked files",
+                 fix=f"git -C {engine} status   (then restore or stash the edits)")
+    print(json.dumps(d, ensure_ascii=False), flush=True)
+    return 0 if d.get("ok") else 1
+
+
+def _die_with_parent():
+    """In the child, before exec: get SIGKILL when the launcher goes away."""
+    try:
+        ctypes.CDLL(None, use_errno=True).prctl(1, signal.SIGKILL)  # PR_SET_PDEATHSIG
+    except (OSError, AttributeError):
+        pass
+
+
+def run(cmd, env):
+    """Run the engine as a child, forward termination signals, return its exit code."""
+    proc = subprocess.Popen(cmd, env=env, preexec_fn=_die_with_parent)
+
+    def forward(sig, _frame):
+        proc.send_signal(sig)
+    for sig in (signal.SIGTERM, signal.SIGINT, signal.SIGHUP):
+        signal.signal(sig, forward)
+    code = proc.wait()
+    return 128 - code if code < 0 else code
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

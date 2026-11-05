@@ -1,0 +1,28 @@
+Lumania Ryoku Bar Style
+
+Source: Ported from Lumania Shell
+Upstream: https://github.com/rover-001/lumania-shell
+Commit: 8f1c07f74c109900f7f6a9f898573410baf7b75f
+Author: rover (port by dodo986)
+Description: The screen frame and its notches, ported to Ryoku
+License: MIT; see LICENSE
+
+Lumania draws a thin frame around the screen and hangs seven notches on it: the
+island at the top centre, the power menu at the top left, the tray at the top
+right, the workspace rail down the left edge, the control centre in the bottom
+right corner, the wallpaper filmstrip at the bottom centre, and the search lip
+in the bottom left corner.
+
+The port keeps that picture and replaces the Omarchy plumbing with Ryoku's:
+workspaces and fullscreen state come from the Wm facade, system state and
+actions from shell.services, Bluetooth from Quickshell.Bluetooth, media from
+the Media service, notifications from the one resident Notifs server (through
+services/NotificationModel.qml), the audio spectrum from AudioBars, and
+wallpapers from ryogami. The wallpaper colour engine, the keyboard backlight
+sync, the voice-call view and the timer engine were left out.
+
+The search lip no longer blooms into a search panel: it opens Ryoku's app
+launcher instead, which ships beside this style as the Lumania launcher. Its
+right-click opens this style's own settings panel.
+
+Settings are written to ~/.config/ryoku/barstyle-lumania.json.
