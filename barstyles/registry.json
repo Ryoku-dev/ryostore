@@ -69,7 +69,7 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "c97045cef32156f8e3f419e304559ecc3f3a579ca4576a60315f9a7d51487da9",
+      "manifestSha256": "3a31596345ec02eead06ab135c721db45d9db03e4076d12be1216faf507542e9",
       "lastUpdated": "2026-11-03",
       "official": false,
       "license": "GPL-3.0-only"

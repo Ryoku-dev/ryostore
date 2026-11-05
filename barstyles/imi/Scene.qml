@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import shell.services as HostServices
 import Quickshell.Io
 import "modules/common"
 import "modules/ii/bar"
@@ -117,6 +118,19 @@ Scope {
             && scene.modelData.name === (Quickshell.screens[0]?.name ?? "")
             && (GlobalStates.settingsOpen || GlobalStates.settingsPendingPageName !== "")
         sourceComponent: SettingsWindow {}
+    }
+
+    // background.wallpaperPath follows the host Session wallpaper (used by
+    // the sidebar banner and search previews).
+    function syncWallpaperPath() {
+        const live = HostServices.Session.wallpaper || "";
+        if (live !== "" && Config.ready && Config.options.background.wallpaperPath !== live)
+            Config.options.background.wallpaperPath = live;
+    }
+    Component.onCompleted: Qt.callLater(scene.syncWallpaperPath)
+    Connections {
+        target: HostServices.Session
+        function onWallpaperChanged() { scene.syncWallpaperPath(); }
     }
 
     // Handoff for Ryoku Hub > Bar Studio.

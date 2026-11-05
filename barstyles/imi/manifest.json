@@ -17,8 +17,8 @@
       "source": "GlobalStates.qml",
       "destination": "GlobalStates.qml",
       "mode": "0644",
-      "size": 153864,
-      "sha256": "b8955110b9dea3e14e72608ddf19bce8ecccf602a618b89f42f0783af361e3d5",
+      "size": 153329,
+      "sha256": "3defad1dd43b947c86cc78bb41dc398268d3b4715e3b3d85b5f1eb3a20c58d72",
       "install": true
     },
     {
@@ -49,8 +49,8 @@
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 4003,
-      "sha256": "59a0f4b31e81e99ae841f1579b3f4cfb5bb0baabc68189c1e4c59cbc5b6f786c",
+      "size": 4614,
+      "sha256": "fcb5c5829557c186a4fe2c052b385c57653ff745548b1a68ff3ba015be97bb5c",
       "install": true
     },
     {
@@ -7761,8 +7761,8 @@
       "source": "modules/ii/bar/popups/bluetooth/ExpressiveBluetoothDevicesPopup.qml",
       "destination": "modules/ii/bar/popups/bluetooth/ExpressiveBluetoothDevicesPopup.qml",
       "mode": "0644",
-      "size": 23495,
-      "sha256": "4152a3fed6a92a958608f477a36a5ad90c7096dd31fa2fca50cfe472064b1ec7",
+      "size": 23520,
+      "sha256": "5458730faea12d15433180b4d34f76e480eb65b8be23f984ccb2b16bd05f51ea",
       "install": true
     },
     {
