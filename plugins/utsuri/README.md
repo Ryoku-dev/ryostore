@@ -152,12 +152,12 @@ Reload with `ryoku wm act config.reload`, check with `hyprctl configerrors`.
 - **Reads** the files and folders you drop, the text you drag, the engine
   checkout, and `engine/PIN`.
 - **Writes** new files next to the files you dropped (or in a `Utsuri`
-  subfolder beside them, see Settings), and nothing else. This is the one
-  departure from rule R8 (stateDir only), and it is the plugin's purpose. It
-  never overwrites: a clash gets `name (1).ext`.
-- **Network:** none at runtime. `engine/setup.sh` and `engine/update.sh`
-  contact github.com and PyPI (declared in `capabilities.network`), but only when
-  you run them by hand.
+  subfolder beside them, see Settings) and a ledger of folders it created under
+  `$XDG_STATE_HOME/ryoku/plugins/utsuri`. It never overwrites an output: a clash
+  gets `name (1).ext`.
+- **Network:** `engine/setup.sh` and `engine/update.sh` contact github.com and
+  PyPI only when you run them by hand. The Metadata editor opens
+  www.openstreetmap.org only when you click its map button.
 - **Outside the state dir:** the engine lives in `~/.local/share/utsuri/engine`
   so removing or reinstalling the plugin never deletes it, and the setup command
   shown in the panel appends to `~/.config/hypr/user.lua` when *you* run it.

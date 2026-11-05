@@ -89,12 +89,18 @@ Item {
         setEnabled(!enabled);
     }
 
-    function _run(proc, args) {
-        if (!_bin || proc.running)
-            return false;
-        proc.command = [_bin].concat(args);
-        proc.running = true;
-        return true;
+    function _startNextAction() {
+        if (!_bin || actionProc.running || actionProc.pending.length === 0)
+            return;
+        var next = actionProc.pending[0];
+        actionProc.pending = actionProc.pending.slice(1);
+        actionProc.command = [_bin].concat(next);
+        actionProc.running = true;
+    }
+
+    function _queueAction(args) {
+        actionProc.pending = actionProc.pending.concat([args]);
+        _startNextAction();
     }
 
     function enterVideoMode() {
@@ -119,16 +125,23 @@ Item {
     }
 
     function _finishEnter(pct) {
-        if (pct >= 0 && pct < 99)
-            savedPercent = pct;
-        if (_stateDir.length > 0 && savedPercent >= 0 && savedPercent < 99)
-            _run(saveProc, ["save", _stateDir, String(savedPercent)]);
+        if (pct < 0) {
+            entering = false;
+            lastAction = "video: backlight unavailable";
+            return;
+        }
+        savedPercent = pct < 99 ? pct : -1;
         videoActive = true;
         entering = false;
-        _run(setProc, ["set", "100"]);
-        lastAction = savedPercent >= 0
-            ? ("video: max (was " + savedPercent + "%)")
-            : "video: max backlight";
+        if (savedPercent < 0) {
+            lastAction = "video: already max";
+            brightnessPercent = pct;
+            return;
+        }
+        if (_stateDir.length > 0)
+            _queueAction(["save", _stateDir, String(savedPercent)]);
+        _queueAction(["set", "100"]);
+        lastAction = "video: max (was " + savedPercent + "%)";
         brightnessPercent = 100;
     }
 
@@ -141,14 +154,15 @@ Item {
         exitLatchTimer.restart();
 
         var pct = savedPercent;
+        savedPercent = -1;
+        actionProc.pending = [];
         if (pct >= 0 && pct < 99) {
-            _run(setProc, ["set", String(pct)]);
+            if (_stateDir.length > 0)
+                _queueAction(["restore", _stateDir, String(pct)]);
+            else
+                _queueAction(["set", String(pct)]);
             lastAction = "restore " + pct + "%";
             brightnessPercent = pct;
-        } else if (_stateDir.length > 0) {
-            _run(restoreProc, ["restore", _stateDir]);
-            lastAction = "restore backlight";
-            refreshBrightness();
         } else {
             lastAction = "restore skipped (no saved level)";
         }
@@ -217,9 +231,11 @@ Item {
         }
     }
 
-    Process { id: setProc }
-    Process { id: saveProc }
-    Process { id: restoreProc }
+    Process {
+        id: actionProc
+        property var pending: []
+        onExited: Qt.callLater(svc._startNextAction)
+    }
 
     Timer {
         id: exitLatchTimer
@@ -274,5 +290,12 @@ Item {
         tick();
     }
 
-    Component.onDestruction: exitVideoMode()
+    Component.onDestruction: {
+        if (!videoActive || !_bin || savedPercent < 0 || savedPercent >= 99)
+            return;
+        var args = _stateDir.length > 0
+            ? ["restore", _stateDir, String(savedPercent)]
+            : ["set", String(savedPercent)];
+        Quickshell.execDetached([_bin].concat(args));
+    }
 }

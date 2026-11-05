@@ -43,13 +43,21 @@ def main(argv):
         answer({"ok": False, "engine": str(engine),
                 "error": f"Utsuri engine is not set up at {engine}",
                 "fix": f"{HERE.parent / 'engine' / 'setup.sh'} {engine}"}, 1)
-    env = dict(os.environ, UTSURI_ENGINE=str(engine))
+    pin, sha, dirty = pin_state(engine)
+    if not pin or sha != pin or dirty:
+        detail = ("The engine checkout has local or untracked source edits" if dirty
+                  else f"Engine is at {sha[:12] or 'an unknown commit'}, plugin is tested with {pin[:12]}")
+        answer({"ok": False, "engine": str(engine), "error": detail,
+                "fix": f"{HERE.parent / 'engine' / 'setup.sh'} {engine}"}, 1)
+    state_home = Path(os.environ.get("XDG_STATE_HOME") or "~/.local/state").expanduser()
+    plugin_state = state_home / "ryoku" / "plugins" / "utsuri"
+    env = dict(os.environ, UTSURI_ENGINE=str(engine), XDG_STATE_HOME=str(plugin_state))
     # -I: ignore PYTHON* env and cwd, so the engine folder goes on sys.path explicitly;
     # -B: never write __pycache__ (R8)
     boot = "import sys; sys.path.insert(0, sys.argv.pop(1)); from utsuri.cli import main; sys.exit(main())"
     cmd = [str(python), "-I", "-B", "-c", boot, str(engine), *argv]
     if "doctor" in argv[:3]:
-        sys.exit(doctor(cmd, env, engine))
+        sys.exit(doctor(cmd, env, engine, pin, sha))
     sys.exit(run(cmd, env))
 
 
@@ -60,28 +68,25 @@ def _git(engine, *args):
         return ""
     return r.stdout.strip() if r.returncode == 0 else ""
 
+def pin_state(engine):
+    try:
+        pin = (HERE.parent / "engine" / "PIN").read_text().strip()
+    except OSError:
+        pin = ""
+    sha = _git(engine, "rev-parse", "HEAD")
+    dirty = _git(engine, "status", "--porcelain", "--untracked-files=normal")
+    return pin, sha, dirty
 
-def doctor(cmd, env, engine):
-    """The engine's own doctor, plus: is the checkout at the commit this plugin was
-    tested with (engine/PIN), without local edits?"""
+
+def doctor(cmd, env, engine, pin, sha):
+    """Run the pinned engine's doctor and include the verified checkout identity."""
     r = subprocess.run(cmd, env=env, capture_output=True, text=True)
     try:
         d = json.loads(r.stdout.strip().splitlines()[-1])
     except (ValueError, IndexError):
         answer({"ok": False, "engine": str(engine), "error": "Utsuri engine gave no answer: " + (r.stderr.strip()[-300:] or f"exit {r.returncode}"),
                 "fix": f"{HERE.parent / 'engine' / 'setup.sh'} {engine}"}, 1)
-    try:
-        pin = (HERE.parent / "engine" / "PIN").read_text().strip()
-    except OSError:
-        pin = ""
-    sha = _git(engine, "rev-parse", "HEAD")
-    d.update(engine=str(engine), pin=pin, sha=sha, pinned=bool(pin) and sha == pin)
-    if d.get("ok") and not d["pinned"]:
-        d.update(ok=False, error=f"Engine is at {sha[:12] or 'an unknown commit'}, plugin is tested with {pin[:12]}",
-                 fix=f"git -C {engine} checkout --detach {pin}")
-    elif d.get("ok") and _git(engine, "status", "--porcelain", "--untracked-files=no"):
-        d.update(ok=False, error="The engine checkout has local edits to tracked files",
-                 fix=f"git -C {engine} status   (then restore or stash the edits)")
+    d.update(engine=str(engine), pin=pin, sha=sha, pinned=True)
     print(json.dumps(d, ensure_ascii=False), flush=True)
     return 0 if d.get("ok") else 1
 

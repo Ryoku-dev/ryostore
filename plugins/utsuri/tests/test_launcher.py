@@ -39,6 +39,21 @@ def test_launcher_explains_a_missing_engine(tmp_path):
     assert code == 1 and r["ok"] is False
     assert "setup.sh" in r["fix"]
 
+def test_launcher_refuses_unpinned_engine_before_starting_it(tmp_path):
+    engine = tmp_path / "engine"
+    python = engine / ".venv" / "bin" / "python"
+    python.parent.mkdir(parents=True)
+    marker = tmp_path / "started"
+    python.write_text("#!/bin/sh\nprintf started > \"$MARKER\"\n", encoding="utf-8")
+    python.chmod(0o755)
+    subprocess.run(["git", "init", "-q", str(engine)], check=True)
+
+    code, reply = call("doctor", engine=engine, env={"MARKER": str(marker)})
+
+    assert code == 1
+    assert reply["ok"] is False
+    assert not marker.exists()
+
 
 @pytest.mark.skipif(not ENGINE.is_relative_to(Path.home()), reason="engine is outside ~")
 def test_launcher_expands_a_tilde_engine_path():

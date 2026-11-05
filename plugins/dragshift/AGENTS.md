@@ -1,4 +1,4 @@
-# Agent guide for the utsuri plugin
+# Agent guide for the dragshift plugin
 
 This folder is a Ryoku shell plugin. If you are an AI agent editing it, follow
 every rule below. They are the same rules `ryoku plugin validate` enforces, so

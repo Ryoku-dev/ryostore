@@ -14,22 +14,6 @@
       "install": true
     },
     {
-      "source": "AGENTS.md",
-      "destination": "AGENTS.md",
-      "sha256": "8fe016145f569aa11f1aac1048f8f9f6f760e8aa1922557a7fcec83a35568d53",
-      "mode": "0644",
-      "size": 4635,
-      "install": true
-    },
-    {
-      "source": "CLAUDE.md",
-      "destination": "CLAUDE.md",
-      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
-      "mode": "0644",
-      "size": 152,
-      "install": true
-    },
-    {
       "source": "LICENSE",
       "destination": "LICENSE",
       "sha256": "a821d90f67cb96c776f78a81c60c46bc4a27549f948f1cc4949d22417e9b67d3",
@@ -56,9 +40,9 @@
     {
       "source": "bin/brightness",
       "destination": "bin/brightness",
-      "sha256": "b560d2fcb771548fc2d7a8835974533c0f8eac5eb35502fac21ee5db9d1f812b",
+      "sha256": "68d143a6268d2d5483b838bf57a97a7733d2ab6cab674f38487689940622dddf",
       "mode": "0755",
-      "size": 1403,
+      "size": 1554,
       "install": true
     },
     {
@@ -112,9 +96,9 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "b39ad876dc5002f9c58fa81ce4f3312d47739a015771e82b0b90bb220cd5bf11",
+      "sha256": "4cd95bc1d7067800293deb120f9c7e4505d77aca9f45989ec7d4e853e55a685b",
       "mode": "0644",
-      "size": 8465,
+      "size": 9209,
       "install": true
     }
   ]

@@ -6,7 +6,7 @@
 #   brightness get
 #   brightness set <percent>
 #   brightness save <state-dir> [percent]   # optional explicit % avoids a get/set race
-#   brightness restore <state-dir>
+#   brightness restore <state-dir> [percent]
 set -euo pipefail
 
 cmd="${1:-}"
@@ -39,10 +39,16 @@ case "${cmd}" in
     ;;
   restore)
     dir="${2:?state dir required}"
-    [[ -f "${dir}/saved" ]] || exit 0
-    pct="$(tr -d '[:space:]' < "${dir}/saved" || true)"
-    [[ -n "${pct}" ]] || exit 0
-    brightnessctl --class=backlight set "${pct}%" >/dev/null 2>&1 || true
+    if [[ "${3:-}" =~ ^[0-9]+$ ]]; then
+      pct="${3}"
+    else
+      [[ -f "${dir}/saved" ]] || exit 0
+      pct="$(tr -d '[:space:]' < "${dir}/saved" || true)"
+    fi
+    [[ "${pct}" =~ ^[0-9]+$ ]] && (( pct <= 100 )) || exit 1
+    if brightnessctl --class=backlight set "${pct}%" >/dev/null 2>&1; then
+      rm -f "${dir}/saved"
+    fi
     ;;
   *)
     echo "Usage: $0 get|set <pct>|save <dir> [pct]|restore <dir>" >&2

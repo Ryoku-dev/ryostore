@@ -48,7 +48,8 @@
     "network": [
       "github.com",
       "pypi.org",
-      "files.pythonhosted.org"
+      "files.pythonhosted.org",
+      "www.openstreetmap.org"
     ]
   },
   "defaults": {

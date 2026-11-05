@@ -14,22 +14,6 @@
       "install": true
     },
     {
-      "source": "AGENTS.md",
-      "destination": "AGENTS.md",
-      "sha256": "2febf1b1dc1d271c65722cdea7e7cd4f8c2d8983524c5d2ccc3e099f27466075",
-      "mode": "0644",
-      "size": 4625,
-      "install": true
-    },
-    {
-      "source": "CLAUDE.md",
-      "destination": "CLAUDE.md",
-      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
-      "mode": "0644",
-      "size": 152,
-      "install": true
-    },
-    {
       "source": "LICENSE",
       "destination": "LICENSE",
       "sha256": "159e233883012069640d32b100042037e6665fb6b20deff98f26804a0146e105",
@@ -40,9 +24,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "47ab75109441cf23e592e285343fb9d635436dd4d172d05774e0abba036c9dd1",
+      "sha256": "4e80033b2dadf3694e040dcdab89371e2f5c0ab968702a258d00228d8919cac4",
       "mode": "0644",
-      "size": 11772,
+      "size": 11781,
       "install": false
     },
     {
@@ -56,9 +40,9 @@
     {
       "source": "bin/utsuri",
       "destination": "bin/utsuri",
-      "sha256": "c34850e68c28fff7fa97fa1310c20c1bbf64867fa4f641ccdba2855cc4c2f3e8",
+      "sha256": "6578175a36fcc02e7dc0b6ac3e2f28f847353c6f1507cfd5a0be131dabc4c7af",
       "mode": "0755",
-      "size": 4575,
+      "size": 4772,
       "install": true
     },
     {
@@ -144,9 +128,9 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "511e89ddf8df628dd5cc364f52538363afe24f3044baff80ce3f119276ca64d3",
+      "sha256": "521e33b74d6ede21948c197f17c063b8b0bd0c775d22c65686888c5ce409a403",
       "mode": "0644",
-      "size": 3376,
+      "size": 3407,
       "install": true
     },
     {
@@ -304,9 +288,9 @@
     {
       "source": "tests/test_launcher.py",
       "destination": "tests/test_launcher.py",
-      "sha256": "21805702c1f67e1aa94022613b323f1f7f525a060166582a399038e4467cfa56",
+      "sha256": "5a07e8fc68aafdd1301cd244a9332daaa8f04424b4936468a88b098cfe849bde",
       "mode": "0644",
-      "size": 4277,
+      "size": 4843,
       "install": true
     },
     {

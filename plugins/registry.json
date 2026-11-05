@@ -250,8 +250,8 @@
       ],
       "lastUpdated": "2026-08-12"
     },
-    {
 
+    {
       "id": "obsidian",
       "name": "Obsidian",
       "version": "1.3.1",
@@ -323,7 +323,7 @@
       "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
       "upstream": "https://github.com/visnudeva/ryostore/tree/main/plugins/smart-brightness",
       "summary": "Max the backlight for fullscreen media, then restore.",
-      "description": "Max the backlight for fullscreen media, then restore. Runs from a desktop widget (or the bar) \u2014 no QS Bar required.",
+      "description": "Max the backlight for fullscreen media, then restore. Runs from a desktop widget (or the bar) — no QS Bar required.",
       "tags": [
         "brightness",
         "media",
@@ -338,7 +338,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "97d12212b59362cb6b02ac0cccaccdfb4d3fe39c4d0195f9a4ec4b76fcc202e5",
+      "manifestSha256": "c3185e6b2daef7ef65d93bc8340018a51eaae0185901af9875988a038e88e53b",
       "official": false,
       "tagline": "Max the backlight for fullscreen media, then restore.",
       "icon": "brightness_auto",
@@ -1149,6 +1149,51 @@
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/radio-atlas"
     },
     {
+      "id": "dragshift",
+      "name": "DragShift",
+      "version": "0.5.1",
+      "path": "plugins/dragshift",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/dragshift",
+      "author": "CratusGod <nghiabigg652@gmail.com>",
+      "summary": "DragShift on Wayland: start dragging files, folders or highlighted text, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
+      "description": "DragShift on Wayland: start dragging files, folders or highlighted text, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit them, with a PDF24-style PDF toolkit (organize, merge, cut, watermark, unlock, searchable). Dragged text gets Copy, and Translate through the Oumu app. Results land next to the originals, which are never changed.",
+      "tags": [
+        "files",
+        "convert",
+        "images",
+        "pdf",
+        "compress",
+        "dragshift",
+        "folders",
+        "zip",
+        "video",
+        "ocr",
+        "pdf-tools",
+        "bar-widget",
+        "text",
+        "translate"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "92e1438846f5ee8c9a70dd85f9f2362277dc35b40ccb1c54e5ac006a4396e5f6",
+      "downloadPaused": true,
+      "downloadPauseReason": "Replaced by Utsuri. Existing installs remain removable.",
+      "official": false,
+      "tagline": "DragShift on Wayland: start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip...",
+      "icon": "swap_horiz",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-05",
+      "windowManager": "hyprland",
+      "windowManagerReason": "Shift-drag activation uses Hyprland's input bindings."
+    },
+    {
       "id": "utsuri",
       "name": "Utsuri",
       "version": "1.0.0",
@@ -1182,14 +1227,16 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "b459d09323aa02895e136d13d6fc5bf037750b4130b6ec65d8c68a7c209a4fcd",
+      "manifestSha256": "a9056d1305b3b37ccb1ff13705290817abe6f4c4ee1fa5fe614d9d233b3a2df7",
       "official": false,
       "tagline": "Start dragging files or folders, press Shift, and drop them on a liquid-glass radial menu to convert, compress, zip, unpack, OCR or edit ...",
       "icon": "swap_horiz",
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-10-31"
+      "lastUpdated": "2026-10-31",
+      "windowManager": "hyprland",
+      "windowManagerReason": "Shift-drag activation uses Hyprland's input bindings."
     },
     {
       "id": "native-switcher",
