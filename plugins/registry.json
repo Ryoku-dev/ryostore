@@ -1382,7 +1382,7 @@
         "assets/preview-settings.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "afc8d4784a73d221570a7494e6926e97ee7e893c1380245691cbfbd95f6b6cd6",
+      "manifestSha256": "744447ddaa10690f585d90c69c3eb1d9eb3b2cce85653086677f03cb5e03c4cf",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/quickcalc",
       "official": false,
       "tagline": "A fast keyboard calculator: basic, scientific and programmer.",
@@ -1391,7 +1391,7 @@
         "framePopout",
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-11-06"
+      "lastUpdated": "2026-11-07"
     }
   ]
 }
