@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "id": "quickcalc",
+  "category": "plugins",
+  "version": "0.2.0",
+  "destination": "ryoku/plugins/quickcalc",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "f5aa0c2b14211cd64aeb9816d9a7d8fcfa0b33714a28c80076ed1c3f09574b0a",
+      "mode": "0644",
+      "size": 1063,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "2bb72991fbd9ab0b94eda1d26b991f10633f87e641536b6320539949f596ed9b",
+      "mode": "0644",
+      "size": 9991,
+      "install": false
+    },
+    {
+      "source": "assets/preview-bar-compact.png",
+      "destination": "assets/preview-bar-compact.png",
+      "sha256": "fa5ecd6f421b201b3ea1fb5c7937b95d93c964bf2d367a9d82dbd87e7662afb2",
+      "mode": "0644",
+      "size": 28114,
+      "install": false
+    },
+    {
+      "source": "assets/preview-bar-shortcuts.png",
+      "destination": "assets/preview-bar-shortcuts.png",
+      "sha256": "b88c3f923b2e6047d673946ea8e6db19ef31bdadfb63690d7dd265c54260dbed",
+      "mode": "0644",
+      "size": 48899,
+      "install": false
+    },
+    {
+      "source": "assets/preview-bar.png",
+      "destination": "assets/preview-bar.png",
+      "sha256": "5877825f371f8bc22e103543c51bec13a4ac68d687b9302b3f1a8ff83d5dc426",
+      "mode": "0644",
+      "size": 54862,
+      "install": false
+    },
+    {
+      "source": "assets/preview-compact.png",
+      "destination": "assets/preview-compact.png",
+      "sha256": "c001f9f3ae03f45c9d2b544b931f40646499025881717556d528092efd21b9ae",
+      "mode": "0644",
+      "size": 10911,
+      "install": false
+    },
+    {
+      "source": "assets/preview-popout.png",
+      "destination": "assets/preview-popout.png",
+      "sha256": "193c283f0171fedcf53949ba22eae8aa3bcf86e44f3e6ebd4efec8b944c55473",
+      "mode": "0644",
+      "size": 42442,
+      "install": false
+    },
+    {
+      "source": "assets/preview-programmer.png",
+      "destination": "assets/preview-programmer.png",
+      "sha256": "20719d7c706b5d82b610078575759c1aba8d0fa5b2d13e9b269aa8ddbe5cbcc9",
+      "mode": "0644",
+      "size": 42241,
+      "install": false
+    },
+    {
+      "source": "assets/preview-settings.png",
+      "destination": "assets/preview-settings.png",
+      "sha256": "c01ac8332cf0fecec07415882d8525c265da9a5de9dac53d77263d0e4cc130ce",
+      "mode": "0644",
+      "size": 70591,
+      "install": false
+    },
+    {
+      "source": "content/CalculatorView.qml",
+      "destination": "content/CalculatorView.qml",
+      "sha256": "720790f1614006f04dda0b5f06d9d29c802239b242081e427462adf2d45b2a90",
+      "mode": "0644",
+      "size": 26978,
+      "install": true
+    },
+    {
+      "source": "content/FloatingWindow.qml",
+      "destination": "content/FloatingWindow.qml",
+      "sha256": "ddad4ac78359aa63b5f4255d2e27ed68ca4297dff260aadb64c1f080005c7348",
+      "mode": "0644",
+      "size": 3258,
+      "install": true
+    },
+    {
+      "source": "content/Keypad.qml",
+      "destination": "content/Keypad.qml",
+      "sha256": "79e0d5fd8b7b975c516c7201329d7332a414a44d326e2e23a6b50151670056d7",
+      "mode": "0644",
+      "size": 5311,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "c0dd78cf4ec0c4c3b6069c9e0d59f50ab09d74616e9354580d08cf34d1c2401c",
+      "mode": "0644",
+      "size": 777,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "8c8b7624235304b6f48ae80b60a9e3449aac5d1e49674c6a3fc2f5509b7b52f7",
+      "mode": "0644",
+      "size": 5786,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "ee8261ec3eaa0f4f9f9e4c65ff238ca3740f88a253a78661db78ede66c4feb3b",
+      "mode": "0644",
+      "size": 2785,
+      "install": true
+    },
+    {
+      "source": "service/Engine.js",
+      "destination": "service/Engine.js",
+      "sha256": "c372972300ca8d00f0d1a66dd8cd77a1330fea4c27062fffec2a345861990321",
+      "mode": "0644",
+      "size": 18959,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "ab656faebcfcb886d8cd905e4905f50b89336d4f3d02f8efd12618d2cc94d72c",
+      "mode": "0644",
+      "size": 17914,
+      "install": true
+    },
+    {
+      "source": "tests/engine.test.cjs",
+      "destination": "tests/engine.test.cjs",
+      "sha256": "214b62db028abbe1da255e5c9b47559750c6080d935b6f2f77ea4b3533785272",
+      "mode": "0644",
+      "size": 7984,
+      "install": true
+    }
+  ]
+}
