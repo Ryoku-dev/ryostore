@@ -11,19 +11,8 @@ import "Navigation.mjs" as Navigation
 ShellRoot {
     id: root
     property bool shown: false
-    readonly property bool mapped: shown || revealAnimation.running || reveal !== 0
-    property real reveal: 0
+    readonly property bool mapped: shown
     property var restoreTarget: null
-    NumberAnimation {
-        id: revealAnimation
-        target: root; property: "reveal"
-        duration: root.shown ? Motion.enterMs : Motion.exitMs
-        easing.type: Easing.BezierSpline
-        easing.bezierCurve: root.shown ? Motion.enterCurve : Motion.exitCurve
-    }
-    function animateReveal(value) {
-        revealAnimation.stop();revealAnimation.to=value;revealAnimation.start();
-    }
     Component.onCompleted: Qt.callLater(root.open)
     property bool searching: false
     property bool busy: false
@@ -71,7 +60,7 @@ ShellRoot {
     function open() {
         if(busy)return;
         target=ToplevelManager.activeToplevel;
-        restoreFocus.stop();restoreTarget=null;shown=true;searching=true;animateReveal(1);
+        restoreFocus.stop();restoreTarget=null;shown=true;searching=true;Motion.refresh();
         keyboardNavigation=false;
         status="↓ entra na grade · Setas navegam · Enter insere · Esc fecha";
         Qt.callLater(function(){if(root.shown)searchBox.forceActiveFocus();});
@@ -92,7 +81,7 @@ ShellRoot {
     }
     function hide() {
         if(!shown)return;
-        release.stop();shown=false;releaseFocus();target=null;animateReveal(0);
+        release.stop();shown=false;releaseFocus();target=null;
         if(!inject.running){busy=false;pending="";}
     }
     function pick(e) {
@@ -107,7 +96,7 @@ ShellRoot {
         searching=true;
         searchBox.forceActiveFocus();
     }
-    IpcHandler { target: "keymoji"; function toggle(): void { if(root.shown)root.hide();else root.open(); } function hide(): void {root.hide();} function state(): string {return JSON.stringify({visible:root.shown,mapped:root.mapped,windowVisible:panel.visible,backingVisible:panel.backingWindowVisible,inputRegion:{width:panel.mask.width,height:panel.mask.height},pointerInput:root.shown,searchFocused:searchBox.activeFocus,selectedIndex:root.selectedIndex,selectedEmoji:root.selectedItem?root.selectedItem.e:null,keyboardNavigation:root.keyboardNavigation,columns:grid.columns,scrollY:grid.contentY,resultCount:root.results.length,searching:root.searching,motion:Motion.settings,adaptiveTheme:Theme.adaptive,colors:Theme.roles});} }
+    IpcHandler { target: "keymoji"; function toggle(): void { if(root.shown)root.hide();else root.open(); } function hide(): void {root.hide();} function state(): string {return JSON.stringify({visible:root.shown,mapped:root.mapped,windowVisible:panel.visible,backingVisible:panel.backingWindowVisible,inputRegion:{width:panel.mask.width,height:panel.mask.height},pointerInput:root.shown,searchFocused:searchBox.activeFocus,selectedIndex:root.selectedIndex,selectedEmoji:root.selectedItem?root.selectedItem.e:null,keyboardNavigation:root.keyboardNavigation,columns:grid.columns,scrollY:grid.contentY,resultCount:root.results.length,searching:root.searching,motionOwner:"compositor",motion:Motion.settings,adaptiveTheme:Theme.adaptive,colors:Theme.roles});} }
     FileView {
         path: Quickshell.shellPath("../data/emojis.json")
         onLoaded: {
@@ -159,8 +148,6 @@ ShellRoot {
             width: Math.min(528, panel.width-48)
             height: Math.min(590, panel.height-48)
             MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onPressed: event => event.accepted=true }
-            opacity: Math.max(0,Math.min(1,root.reveal))
-            transform: Translate { y: (1-root.reveal)*24 }
             radius: 20; color: Theme.surface; border.color: Theme.border
             ColumnLayout {
                 anchors.fill: parent; anchors.margins: 20; spacing: 12

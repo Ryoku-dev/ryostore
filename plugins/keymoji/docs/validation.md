@@ -1,6 +1,6 @@
-# Validation — Keymoji 0.3.0
+# Validation — Keymoji 0.3.1
 
-18 Bun tests passed: catalogue integrity and complete sequences; accent-insensitive and bilingual/multi-term search; Unicode/exact emoji/typo ranking; favorites/recents; insertion target and input validation; named/wallpaper/fallback palette precedence; Bézier overshoot, inherited timings, reduce-motion and low-power behavior; grid columns, boundaries, partial rows and paging.
+19 Bun tests passed: catalogue integrity and complete sequences; accent-insensitive and bilingual/multi-term search; Unicode/exact emoji/typo ranking; favorites/recents; insertion target and input validation; named/wallpaper/fallback palette precedence; Bézier overshoot, inherited timings, reduce-motion and low-power behavior; grid columns, boundaries, partial rows and paging.
 
 Qt rendered the interface at 528×590 and 320×480. The preview shows the active Ryoku palette. UI components use local Tabler SVGs with no icon-font download.
 
@@ -13,3 +13,9 @@ Remaining manual interoperability matrix: insertion at a caret/selection in Qt/G
 The local Go-based plugin validator reports config-write for the literal shell.json path in Theme.qml. That FileView only reads and watches palette changes; it has no adapter, write method or external process. This is documented for explicit review; no scanner or exception-policy changes are included in the PR.
 
 Motion follows persisted assignments: 1 speed unit is 100 ms. The curve editor's fixed 640 ms preview is not the per-animation duration. Custom Bézier y values above 1 are retained while opacity is clamped to 0..1. Desktop files are never modified by the keyboard.
+
+## Native motion ownership
+
+Opening and closing are now entirely compositor-owned: no QML reveal animation, fixed 24 px offset or duplicate fade is added. Closing immediately releases input and unmaps the client; the compositor owns its exit snapshot. Internal transitions load the effective registry through ryoku-hub desktop defaults at open and watched configuration changes, with no polling. Effective defaults can contain inherited leaf/fade assignments and named curves absent from desktop.json. The parser exposes geometry and layer fade channels separately.
+
+Live checks distinguished layers=400 ms/ryokuRiceEase from fadeLayersIn/Out=700 ms/easeOutQuint in this session, and verified source=effective. Three native source cycles and installed-package cycles checked search focus and removal of pointer capture. The new unit regression verifies live registry precedence and the separate inherited fade channels. No compositor configuration was changed to force an animation.

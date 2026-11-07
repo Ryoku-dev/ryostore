@@ -4,7 +4,7 @@
   "category": "plugins",
   "destination": "ryoku/plugins/keymoji",
   "name": "Keymoji",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Eduardo Augusto <eduardoaugustolb@users.noreply.github.com>",
   "description": "Teclado de emojis offline com busca em português e inserção no campo ativo.",
   "license": "MIT",
@@ -46,7 +46,8 @@
       "bash",
       "dirname",
       "mkdir",
-      "env"
+      "env",
+      "ryoku-hub"
     ]
   },
   "commands": [

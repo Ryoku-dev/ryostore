@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "keymoji",
   "category": "plugins",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "destination": "ryoku/plugins/keymoji",
   "files": [
     {
@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "263715fee38fd7a654eefc9d85dbb55f87b801c9d870706dc16397f51d29d4e3",
+      "sha256": "64b29b31d27ca53d425ddf133ea821838df79c9d86fb72d4f6d99460ba53936d",
       "mode": "0644",
-      "size": 5438,
+      "size": 5724,
       "install": true
     },
     {
@@ -56,17 +56,17 @@
     {
       "source": "app/Motion.qml",
       "destination": "app/Motion.qml",
-      "sha256": "0fb5ba1d4c47d7acf5c085d0e955303b526b7c523e1b9ba7ebe59390b4e2756a",
+      "sha256": "b8cf4400f5645180bc1defaac6040f64024bde74914f688274284934dc920f93",
       "mode": "0644",
-      "size": 1179,
+      "size": 1753,
       "install": true
     },
     {
       "source": "app/MotionConfig.mjs",
       "destination": "app/MotionConfig.mjs",
-      "sha256": "aaf1999672fc66fc2f377e1c27b0e68bf27f86aa84901dcbe0b10e0da6b6620f",
+      "sha256": "9ec00ee008c0da5f0931a600255f85941a7732a2b10577fb78328d54c493fc8d",
       "mode": "0644",
-      "size": 1439,
+      "size": 1723,
       "install": true
     },
     {
@@ -264,9 +264,9 @@
     {
       "source": "app/shell.qml",
       "destination": "app/shell.qml",
-      "sha256": "f589330d416e2dcaffb6b2611c6f8aa462c99f89bfd6c0ca7c36179a0b8fc3ab",
+      "sha256": "69a9706305b58242e5c306ceb84d19ca9a48c70c42f398d88c3253056d755819",
       "mode": "0644",
-      "size": 15784,
+      "size": 15204,
       "install": true
     },
     {
@@ -328,23 +328,23 @@
     {
       "source": "docs/validation.md",
       "destination": "docs/validation.md",
-      "sha256": "0694c48549e424ae3783fb4370e90757359c0310371431f910a98f8346dcb8b6",
+      "sha256": "7f0ecf8070226191dba5405dc48b5870ca14f62585bd4219322ad56b2f3687c7",
       "mode": "0644",
-      "size": 2388,
+      "size": 3372,
       "install": true
     },
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "db7c7f3ada81c3e03de7e88ed161a6b482e1dc34cfdf375f6d25799e04b01f0c",
+      "sha256": "36152d123cd09965ea5ad58eedae9b0ac1de771bea5e9522e441b64e0327d833",
       "mode": "0644",
-      "size": 2310,
+      "size": 2329,
       "install": true
     },
     {
       "source": "package.json",
       "destination": "package.json",
-      "sha256": "8121b0cee50471617f6d183fe9ea6765a6aaed8ffc08b07038a5653874795764",
+      "sha256": "2ece05f2dd111ee34e2466c1bf385ee084d23baae0e0f3bc0ffdc26eaa203b0b",
       "mode": "0644",
       "size": 143,
       "install": false
@@ -368,9 +368,9 @@
     {
       "source": "tests/motion.test.ts",
       "destination": "tests/motion.test.ts",
-      "sha256": "a5cb1a92f2dfb57818e5fff77822c6e1efa229820858386939aaad1a29d02fa7",
+      "sha256": "97815c9a6f057fbac15cce62e25edd3824c332f18e28aef6ea7c9d009184d2fd",
       "mode": "0644",
-      "size": 1032,
+      "size": 1658,
       "install": false
     },
     {
