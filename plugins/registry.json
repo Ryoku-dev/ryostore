@@ -1353,6 +1353,38 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-11-05"
+    },
+    {
+      "id": "keymoji",
+      "name": "Keymoji",
+      "path": "plugins/keymoji",
+      "version": "0.3.0",
+      "author": "Eduardo Augusto <eduardoaugustolb@users.noreply.github.com>",
+      "upstream": "https://github.com/eduardoaugustolb/ryostore/tree/main/plugins/keymoji",
+      "official": false,
+      "summary": "Teclado de emojis offline com busca em português e inserção no campo ativo.",
+      "accent": "#c7f285",
+      "surface": "#151d18",
+      "description": "Teclado de emojis offline com busca em português e inserção no campo ativo.",
+      "tagline": "Emojis no seu fluxo",
+      "tags": [
+        "bar-widget",
+        "emoji",
+        "keyboard",
+        "search",
+        "portuguese"
+      ],
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "icon": "keyboard",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "lastUpdated": "2026-11-07",
+      "manifest": "product-manifest.json",
+      "manifestSha256": "a939d8d0d28719af4871933cce8d3658c70dad4875d9d4ac43f9a852490f8b58"
     }
   ]
 }

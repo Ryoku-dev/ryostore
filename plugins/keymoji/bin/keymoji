@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+state="${KEYMOJI_STATE_DIR:?Defina KEYMOJI_STATE_DIR}"
+mkdir -p -- "$state"
+export KEYMOJI_STATE_DIR="$state"
+case "${1:-toggle}" in
+  toggle)
+    if qs ipc -p "$root/app" call keymoji toggle 2>/dev/null; then exit 0; fi
+    exec qs -d -n -p "$root/app"
+    ;;
+  open) exec qs -d -n -p "$root/app" ;;
+  close) exec qs ipc -p "$root/app" call keymoji hide ;;
+  *) echo 'Uso: keymoji [toggle|open|close]' >&2; exit 2 ;;
+esac

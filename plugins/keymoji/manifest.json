@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "id": "keymoji",
+  "category": "plugins",
+  "destination": "ryoku/plugins/keymoji",
+  "name": "Keymoji",
+  "version": "0.3.0",
+  "author": "Eduardo Augusto <eduardoaugustolb@users.noreply.github.com>",
+  "description": "Teclado de emojis offline com busca em português e inserção no campo ativo.",
+  "license": "MIT",
+  "official": false,
+  "tags": [
+    "bar-widget",
+    "emoji",
+    "keyboard",
+    "search",
+    "portuguese"
+  ],
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 320
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Keymoji",
+    "icon": "keyboard"
+  },
+  "capabilities": {
+    "densities": [
+      "glyph"
+    ],
+    "network": [],
+    "privileged": []
+  },
+  "dependencies": {
+    "commands": [
+      "qs",
+      "wtype",
+      "bash",
+      "dirname",
+      "mkdir",
+      "env"
+    ]
+  },
+  "commands": [
+    "bin/keymoji"
+  ],
+  "metadata": {
+    "settings": []
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "app/Icon.qml",
+    "app/Icons.mjs",
+    "app/Input.mjs",
+    "app/Key.qml",
+    "app/Motion.qml",
+    "app/MotionConfig.mjs",
+    "app/Navigation.mjs",
+    "app/Palette.mjs",
+    "app/Search.mjs",
+    "app/Theme.qml",
+    "app/icons/LICENSE",
+    "app/icons/apple.svg",
+    "app/icons/ball-football.svg",
+    "app/icons/bulb.svg",
+    "app/icons/check.svg",
+    "app/icons/clock.svg",
+    "app/icons/flag.svg",
+    "app/icons/hand-stop.svg",
+    "app/icons/heart.svg",
+    "app/icons/keyboard.svg",
+    "app/icons/layout-grid.svg",
+    "app/icons/leaf.svg",
+    "app/icons/math-symbols.svg",
+    "app/icons/mood-smile.svg",
+    "app/icons/plane.svg",
+    "app/icons/search.svg",
+    "app/icons/source.json",
+    "app/icons/star.svg",
+    "app/icons/x.svg",
+    "app/qmldir",
+    "app/shell.qml",
+    "assets/preview-widget.png",
+    "bin/keymoji",
+    "content/Panel.qml",
+    "content/Widget.qml",
+    "data/emojis.json",
+    "docs/UNICODE-LICENSE.txt",
+    "docs/data.md",
+    "docs/validation.md",
+    "package.json",
+    "service/Main.qml",
+    "tests/input.test.ts",
+    "tests/motion.test.ts",
+    "tests/navigation.test.ts",
+    "tests/palette.test.ts",
+    "tests/search.test.ts"
+  ]
+}
