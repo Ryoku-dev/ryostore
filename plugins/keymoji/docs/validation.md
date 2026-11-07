@@ -1,6 +1,6 @@
-# Validation — Keymoji 0.3.1
+# Validation — Keymoji 0.4.0
 
-19 Bun tests passed: catalogue integrity and complete sequences; accent-insensitive and bilingual/multi-term search; Unicode/exact emoji/typo ranking; favorites/recents; insertion target and input validation; named/wallpaper/fallback palette precedence; Bézier overshoot, inherited timings, reduce-motion and low-power behavior; grid columns, boundaries, partial rows and paging.
+25 Bun tests passed: catalogue integrity and complete sequences; accent-insensitive and bilingual/multi-term search; Unicode/exact emoji/typo ranking; favorites/recents; insertion target and input validation; named/wallpaper/fallback palette precedence; Bézier overshoot, inherited timings, reduce-motion and low-power behavior; grid columns, boundaries, partial rows and paging.
 
 Qt rendered the interface at 528×590 and 320×480. The preview shows the active Ryoku palette. UI components use local Tabler SVGs with no icon-font download.
 
@@ -19,3 +19,9 @@ Motion follows persisted assignments: 1 speed unit is 100 ms. The curve editor's
 Opening and closing are now entirely compositor-owned: no QML reveal animation, fixed 24 px offset or duplicate fade is added. Closing immediately releases input and unmaps the client; the compositor owns its exit snapshot. Internal transitions load the effective registry through ryoku-hub desktop defaults at open and watched configuration changes, with no polling. Effective defaults can contain inherited leaf/fade assignments and named curves absent from desktop.json. The parser exposes geometry and layer fade channels separately.
 
 Live checks distinguished layers=400 ms/ryokuRiceEase from fadeLayersIn/Out=700 ms/easeOutQuint in this session, and verified source=effective. Three native source cycles and installed-package cycles checked search focus and removal of pointer capture. The new unit regression verifies live registry precedence and the separate inherited fade channels. No compositor configuration was changed to force an animation.
+
+## Internationalization
+
+25 unit tests also cover language precedence, POSIX/Qt locale normalization, English fallback, message-key and placeholder completeness, four CLDR dictionaries covering every sequence, localized ranking and accent/ligature folding. Native checks switched PT/EN/ES/FR, matched displayed emoji names to CLDR, verified override persistence across restart, restored Auto, and confirmed dismissal still removes input capture. An isolated test state directory kept the user preference unchanged. The compact French UI was rendered at 320×480; the standard preview shows Auto/PT under Ryoku.
+
+The shell.json language reference in Localization.qml is read-only, like the palette lookup in Theme.qml. The standalone preference writer uses only stateDir/settings.json. Both read-only host references are disclosed for static-screen review; no policy exception is added by this contribution.

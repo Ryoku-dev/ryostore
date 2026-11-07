@@ -1,8 +1,15 @@
-export function fold(s) { return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[:_\-]+/g, ' ').trim(); }
-export function indexCatalog(data) {
-    const rows = [];
-    data.groups.forEach(g => g.subs.forEach(sub => sub.l.forEach(it => {
-        rows.push({e:it.e, n:it.n, g:g.g, sub:sub.s, k:it.k || '', name:fold(it.n), search:fold(it.n+' '+it.k+' '+g.g+' '+sub.s), code:Array.from(it.e).map(c=>'U+'+c.codePointAt(0).toString(16).toUpperCase()).join(' ')});
+export function fold(s) { return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/œ/g,'oe').replace(/æ/g,'ae').replace(/ß/g,'ss').replace(/[:_\-]+/g, ' ').trim(); }
+export const groupIds=['all','recent','favorites','faces','people','nature','food','travel','activities','objects','symbols','flags'];
+const aliases={'Todos':'all','Recentes':'recent','Favoritos':'favorites','Rostos e emoções':'faces','Pessoas e corpo':'people','Animais e natureza':'nature','Comidas e bebidas':'food','Viagens e lugares':'travel','Atividades':'activities','Objetos':'objects','Símbolos':'symbols','Bandeiras':'flags'};
+export function indexCatalog(data,annotations,english={},groupLabels={},language='pt') {
+    const rows=[];
+    data.groups.forEach(g=>g.subs.forEach(sub=>sub.l.forEach(it=>{
+        const id=aliases[g.g]||g.g,local=annotations&&annotations[it.e]||{},en=english[it.e]||{};
+        const suffix=String(it.k||'').match(/E\d+(?:\.\d+)*\s+(.+)$/);
+        const fallback=en.n||(suffix?suffix[1]:it.n);
+        const name=annotations?(local.n||fallback):it.n;
+        const keywords=annotations?((local.k||'')+' '+(en.n||fallback)+' '+(en.k||'')+' '+(language==='pt'?(it.k||''):'')):(it.k||'');
+        rows.push({e:it.e,n:name,g:id,sub:sub.s,k:keywords,name:fold(name),search:fold(name+' '+keywords+' '+(groupLabels[id]||g.g)+' '+sub.s),code:Array.from(it.e).map(c=>'U+'+c.codePointAt(0).toString(16).toUpperCase()).join(' ')});
     })));
     return rows;
 }
@@ -19,13 +26,14 @@ function near(a,b) {
     return errors+(a.length-i)+(b.length-j)<=1;
 }
 export function search(rows, query, group, favorites, recent) {
+    group=aliases[group]||group||'all';
     const q=fold(query), tokens=q.split(/\s+/).filter(Boolean);
     const fav=favorites||[], rec=recent||[];
     return rows.map((r,i)=>{
-        if(group==='Favoritos' && fav.indexOf(r.e)<0) return null;
-        if(group==='Recentes' && rec.indexOf(r.e)<0) return null;
-        if(group && ['Todos','Favoritos','Recentes'].indexOf(group)<0 && r.g!==group) return null;
-        if(!q) return {r,score:group==='Recentes'?1000-rec.indexOf(r.e):0,i};
+        if(group==='favorites' && fav.indexOf(r.e)<0) return null;
+        if(group==='recent' && rec.indexOf(r.e)<0) return null;
+        if(group && ['all','favorites','recent'].indexOf(group)<0 && r.g!==group) return null;
+        if(!q) return {r,score:group==='recent'?1000-rec.indexOf(r.e):0,i};
         if(r.e===query.trim() || fold(r.code)===q) return {r,score:2000,i};
         let score=r.name===q?1000:r.name.indexOf(q)===0?500:0;
         const words=r.search.split(/\s+/);

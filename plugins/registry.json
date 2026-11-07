@@ -1358,20 +1358,21 @@
       "id": "keymoji",
       "name": "Keymoji",
       "path": "plugins/keymoji",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "author": "Eduardo Augusto <eduardoaugustolb@users.noreply.github.com>",
       "upstream": "https://github.com/eduardoaugustolb/ryostore/tree/main/plugins/keymoji",
       "official": false,
-      "summary": "Teclado de emojis offline com busca em português e inserção no campo ativo.",
+      "summary": "Offline emoji keyboard with localized search and insertion into the active field.",
       "accent": "#c7f285",
       "surface": "#151d18",
-      "description": "Teclado de emojis offline com busca em português e inserção no campo ativo.",
+      "description": "Offline emoji keyboard with localized search and insertion into the active field.",
       "tagline": "Emojis no seu fluxo",
       "tags": [
         "bar-widget",
         "emoji",
         "keyboard",
         "search",
+        "i18n",
         "portuguese"
       ],
       "hosts": [
@@ -1384,7 +1385,7 @@
       ],
       "lastUpdated": "2026-11-07",
       "manifest": "product-manifest.json",
-      "manifestSha256": "f4f2e00fc27ef5210c8e907f50c083c6fb794c35f6dc196a76b8c76fabf2390d"
+      "manifestSha256": "a420f43e8152bf14470f6521bf48e904b44d52055b92a22bd0b8b2d6fb875c0c"
     }
   ]
 }
