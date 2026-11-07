@@ -296,9 +296,9 @@
     {
       "source": "app/shell.qml",
       "destination": "app/shell.qml",
-      "sha256": "8c8bad02243d53bd37bf33961ad8f629fb01601b4bd62218d00126337a117239",
+      "sha256": "e23589379a6054a70e0ca01d2e112d779312926ca4b707218c4f7ade9dc8af88",
       "mode": "0644",
-      "size": 17190,
+      "size": 17177,
       "install": true
     },
     {

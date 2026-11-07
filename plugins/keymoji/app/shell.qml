@@ -43,7 +43,7 @@ ShellRoot {
     property string statePath: stateDir+"/history.json"
     readonly property var localization: i18n
     Localization {id:i18n;stateDir:root.stateDir}
-    Connections {target:i18n;function onLanguageChanged(){root.localeAnnotations={};root.catalogLocale="";root.reindexCatalog();}}
+    Connections {target:i18n;function onLanguageChanged(){root.reindexCatalog();}}
     function groupName(id) {return i18n.t("group."+id);}
     function groupIcon(id) {
         const icons={all:"layout-grid",recent:"clock",favorites:"star",faces:"mood-smile",people:"hand-stop",nature:"leaf",food:"apple",travel:"plane",activities:"ball-football",objects:"bulb",symbols:"math-symbols",flags:"flag"};
@@ -51,7 +51,7 @@ ShellRoot {
     }
     function reindexCatalog() {
         if(!rawCatalog)return;
-        const annotations=i18n.language==="en"?englishAnnotations:localeAnnotations;
+        const annotations=i18n.language==="en"?englishAnnotations:(catalogLocale===i18n.language?localeAnnotations:{});
         rows=Search.indexCatalog(rawCatalog,annotations,englishAnnotations,i18n.groupLabels,i18n.language);
         apply();
     }
