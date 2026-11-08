@@ -55,8 +55,8 @@ Item {
         Text {
             id: glyph
             anchors.verticalCenter: parent.verticalCenter
-            text: (root.service && (root.service.nextKey === "fajr" || root.service.nextKey === "isha")) ? "☾" : "☀"
-            color: (root.service && (root.service.nextKey === "fajr" || root.service.nextKey === "isha")) ? Theme.moonGlow : Theme.sunGold
+            text: (root.service && root.service.nextIsNight) ? "☾" : "☀"
+            color: (root.service && root.service.nextIsNight) ? Theme.moonGlow : Theme.sunGold
             font.family: Theme.font
             font.pixelSize: 12
         }
@@ -90,7 +90,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.displayMode === "full"
             text: root.service ? root.service.countdownText : ""
-            color: Theme.faint
+            color: (root.service && root.service.isNow) ? Theme.accent : Theme.faint
             font.family: Theme.mono
             font.pixelSize: 11
         }

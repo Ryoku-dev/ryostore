@@ -10,36 +10,56 @@ Item {
     id: svc
 
     property var pluginApi
+    // set by the host while the panel is open: the clock then ticks once a second
+    // so the ring countdown runs; collapsed it only needs the minute
+    property bool panelOpen: false
+
     property string cityName: ""
     property bool cityEstimated: true
+    property bool timezoneMismatch: false
+    property string cityHint: ""
     property var today: ({})
     property var tomorrow: ({})
-    property int now: 0
+    property int now: 0                     // minutes from local midnight
+    property int nowSec: 0
     property string gregorianText: ""
     property string hijriText: ""
+    property string monthLabel: ""
+    property string monthShort: ""
+    property int todayIndex: 0
     property string nextKey: ""
     property string nextLabel: ""
-    property int nextAt: 0
-    property int nextIn: 0
-    property bool isNow: false
-    property string countdownText: ""
+    property int nextAt: 0                  // >1440 when the next prayer is tomorrow's
+    property int nextIn: 0                  // minutes
+    property int nextInSec: 0               // seconds, drives the ring
+    property bool nextIsNight: false
+    property bool isNow: false              // inside the 10 minute adhan window
+    property string countdownText: ""       // bar: "2h 14m" / "now"
+    property string countdownPrecise: ""    // panel: "2:14:05" / "now"
     property string nextTimeText: "—"
     property real progress: 0
+    property bool hasTimes: false
+    property bool twilightMissing: false
     readonly property var prayerKeys: ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"]
     readonly property var prayerLabels: ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
     readonly property var prayerShortLabels: ["FAJR", "SUNRISE", "DHUHR", "ASR", "MAGHRIB", "ISHA"]
     property var rows: []
     property string nightText: ""
     property string qiblaText: ""
+    property real qiblaDeg: 0
     property string holidayToday: ""
     property string nextHolidayText: ""
+    property int nextHolidayDays: 0
+    property bool holidaySoon: false
     property var weekRows: []
     property var monthRows: []
     property var holidayRows: []
-    property string monthLabel: ""
+    property bool clock24: false
+    property int hijriAdjust: 0
 
     readonly property var st: (pluginApi && pluginApi.pluginSettings) ? pluginApi.pluginSettings : ({})
     property string detectedCityId: ""
+    property string detectedZone: ""
     property bool timezoneExact: false
     property bool timezoneReady: false
     property string currentDayKey: ""
@@ -65,10 +85,13 @@ Item {
         var zone = clean;
         if (parts.length >= 2)
             zone = parts[parts.length - 2] + "/" + parts[parts.length - 1];
-        var guessed = C.guess(zone);
+        detectedZone = zone;
+        var guessed = C.guess(clean);
+        if (!guessed.exact)
+            guessed = C.guess(zone);
         detectedCityId = guessed.city.id;
         timezoneExact = guessed.exact;
-        recompute();
+        rebuild();
     }
 
     function timesFor(date, lat, lon, method, asr, highLat, offsets) {
@@ -86,10 +109,10 @@ Item {
         });
     }
 
-    function dayRow(date, todayKey, lat, lon, method, asr, highLat, offsets, clock24, adjust, weekdays) {
+    function dayRow(date, todayKey, lat, lon, method, asr, highLat, offsets, weekdays) {
         var values = timesFor(date, lat, lon, method, asr, highLat, offsets);
         var key = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-        var hijri = H.toHijri(date.getFullYear(), date.getMonth() + 1, date.getDate(), adjust);
+        var hijri = H.toHijri(date.getFullYear(), date.getMonth() + 1, date.getDate(), hijriAdjust);
         return {
             day: weekdays[date.getDay()] + " " + date.getDate(),
             fajr: PT.fmt(values ? values.fajr : null, clock24, true),
@@ -106,65 +129,31 @@ Item {
     function countdown(minutes) {
         if (minutes < 60)
             return minutes + "m";
-        var hours = Math.floor(minutes / 60);
-        var mins = minutes % 60;
-        return hours + "h " + mins + "m";
+        return Math.floor(minutes / 60) + "h " + (minutes % 60) + "m";
     }
 
-    function recompute() {
-        var date = new Date();
-        var y = date.getFullYear();
-        var m = date.getMonth() + 1;
-        var d = date.getDate();
-        var dayKey = y + "-" + m + "-" + d;
-        var rolledOver = currentDayKey !== dayKey;
-        currentDayKey = dayKey;
-        svc.now = date.getHours() * 60 + date.getMinutes();
+    // h:mm:ss, or m:ss inside the last hour; "now" while the adhan window is open
+    function precise(seconds) {
+        var s = Math.max(0, seconds);
+        var h = Math.floor(s / 3600);
+        var m = Math.floor((s % 3600) / 60);
+        var sec = s % 60;
+        var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+        return h > 0 ? h + ":" + pad(m) + ":" + pad(sec) : m + ":" + pad(sec);
+    }
 
-        var configuredCity = s("city", "auto");
-        var autoCity = configuredCity === undefined || configuredCity === "" || configuredCity === "auto";
-        var cityId = autoCity ? detectedCityId : configuredCity;
-        var city = C.byId(cityId) || C.guess("").city;
-        svc.cityName = city.name + ", " + city.country;
-        svc.cityEstimated = !timezoneExact;
-
-        // settings are a trust boundary: anything outside the valid range falls back
-        // to the preset instead of feeding nonsense into the solar math
-        var lat = s("latitude", "") === "" ? city.lat : Number(s("latitude", ""));
-        var lon = s("longitude", "") === "" ? city.lon : Number(s("longitude", ""));
-        if (!isFinite(lat) || lat < -90 || lat > 90)
-            lat = city.lat;
-        if (!isFinite(lon) || lon < -180 || lon > 180)
-            lon = city.lon;
-        var configuredMethod = s("method", "auto");
-        var method = configuredMethod === "auto" ? city.method : configuredMethod;
-        var asr = s("asr", "standard") === "hanafi" ? 2 : 1;
-        var highLat = s("highLat", "none");
-        var clock24 = !!s("clock24", true);
-        var adjust = bounded(s("hijriAdjust", 0), -2, 2, 0) | 0;
-        var offsets = {
-            fajr: bounded(s("offsetFajr", 0), -30, 30, 0) | 0,
-            sunrise: bounded(s("offsetSunrise", 0), -30, 30, 0) | 0,
-            dhuhr: bounded(s("offsetDhuhr", 0), -30, 30, 0) | 0,
-            asr: bounded(s("offsetAsr", 0), -30, 30, 0) | 0,
-            maghrib: bounded(s("offsetMaghrib", 0), -30, 30, 0) | 0,
-            isha: bounded(s("offsetIsha", 0), -30, 30, 0) | 0
-        };
+    // ---- cheap pass: clock derived values only, safe to run every second
+    function nextEvent() {
         var keys = svc.prayerKeys;
         var labels = svc.prayerLabels;
-        var todayDate = new Date(y, m - 1, d, 12);
-        var tomorrowDate = new Date(y, m - 1, d + 1, 12);
-        var todayTimes = timesFor(todayDate, lat, lon, method, asr, highLat, offsets);
-        var tomorrowTimes = timesFor(tomorrowDate, lat, lon, method, asr, highLat, offsets);
-        svc.today = todayTimes || ({});
-        svc.tomorrow = tomorrowTimes || ({});
-
+        var times = svc.today;
         var next = null;
         var recent = null;
         var previous = null;
-        if (todayTimes) {
+
+        if (times) {
             for (var i = 0; i < keys.length; ++i) {
-                var value = todayTimes[keys[i]];
+                var value = times[keys[i]];
                 if (value === null || value === undefined)
                     continue;
                 var item = { key: keys[i], label: labels[i], at: value, previous: previous };
@@ -179,9 +168,9 @@ Item {
         }
         if (recent) {
             next = recent;
-        } else if (!next && tomorrowTimes) {
+        } else if (!next && svc.tomorrow) {
             for (var j = 0; j < keys.length; ++j) {
-                var tomorrowValue = tomorrowTimes[keys[j]];
+                var tomorrowValue = svc.tomorrow[keys[j]];
                 if (tomorrowValue !== null && tomorrowValue !== undefined) {
                     next = { key: keys[j], label: labels[j], at: tomorrowValue + 1440, previous: previous };
                     break;
@@ -193,40 +182,124 @@ Item {
         svc.nextKey = next ? next.key : "";
         svc.nextLabel = next ? next.label : "";
         svc.nextAt = next ? next.at : 0;
+        svc.nextIsNight = svc.nextKey === "fajr" || svc.nextKey === "isha";
         svc.nextIn = next ? Math.max(0, next.at - svc.now) : 0;
         svc.countdownText = !next ? "" : (recent ? "now" : countdown(svc.nextIn));
-        svc.nextTimeText = next ? PT.fmt(next.at, clock24) : "—";
+        svc.nextTimeText = next ? PT.fmt(next.at, svc.clock24) : "—";
+
+        var elapsed = svc.now * 60 + svc.nowSec;
+        svc.nextInSec = next ? Math.max(0, next.at * 60 - elapsed) : 0;
+        svc.countdownPrecise = !next ? "" : (recent ? "now" : precise(svc.nextInSec));
+
         if (next) {
             var start = recent ? (recent.previous ? recent.previous.at : 0) : (previous ? previous.at : 0);
-            var span = next.at - start;
-            svc.progress = span > 0 ? Math.max(0, Math.min(1, (svc.now - start) / span)) : 0;
+            var span = (next.at - start) * 60;
+            svc.progress = span > 0 ? Math.max(0, Math.min(1, (elapsed - start * 60) / span)) : 0;
         } else {
             svc.progress = 0;
         }
+    }
+
+    function updateClock(date) {
+        svc.now = date.getHours() * 60 + date.getMinutes();
+        svc.nowSec = date.getSeconds();
+        nextEvent();
+    }
+
+    function tick() {
+        var date = new Date();
+        var key = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+        if (key !== currentDayKey) {
+            rebuild();          // midnight: everything below the clock is stale
+            return;
+        }
+        updateClock(date);
+    }
+
+    // ---- heavy pass: settings, place, day tables. Runs on boot, settings change,
+    // timezone resolution and midnight, never on a tick.
+    function rebuild() {
+        var date = new Date();
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        var d = date.getDate();
+        var dayKey = y + "-" + m + "-" + d;
+        currentDayKey = dayKey;
+
+        var configuredCity = s("city", "auto");
+        var autoCity = configuredCity === undefined || configuredCity === "" || configuredCity === "auto";
+        var cityId = autoCity ? detectedCityId : configuredCity;
+        var city = C.byId(cityId) || C.guess("").city;
+        svc.cityName = city.name + ", " + city.country;
+        svc.cityEstimated = autoCity && !timezoneExact && timezoneReady;
+        // a city in another zone is rendered on THIS clock (the engine takes the
+        // machine offset), so the countdown stays right and the times read strangely
+        svc.timezoneMismatch = timezoneReady && !autoCity && detectedZone !== "" && city.tz !== detectedZone;
+        svc.cityHint = svc.cityEstimated ? "Approximate · set your city in Settings"
+                   : (svc.timezoneMismatch ? "Shown on your clock" : "");
+
+        // settings are a trust boundary: anything outside the valid range falls back
+        // to the preset instead of feeding nonsense into the solar math
+        var lat = s("latitude", "") === "" ? city.lat : Number(s("latitude", ""));
+        var lon = s("longitude", "") === "" ? city.lon : Number(s("longitude", ""));
+        if (!isFinite(lat) || lat < -90 || lat > 90)
+            lat = city.lat;
+        if (!isFinite(lon) || lon < -180 || lon > 180)
+            lon = city.lon;
+
+        var configuredMethod = s("method", "auto");
+        var method = configuredMethod === "auto" ? city.method : configuredMethod;
+        var asr = s("asr", "standard") === "hanafi" ? 2 : 1;
+        var highLat = s("highLat", "none");
+        svc.clock24 = !!s("clock24", false);
+        svc.hijriAdjust = bounded(s("hijriAdjust", 0), -1, 1, 0) | 0;
+        var offsets = {
+            fajr: bounded(s("offsetFajr", 0), -30, 30, 0) | 0,
+            sunrise: bounded(s("offsetSunrise", 0), -30, 30, 0) | 0,
+            dhuhr: bounded(s("offsetDhuhr", 0), -30, 30, 0) | 0,
+            asr: bounded(s("offsetAsr", 0), -30, 30, 0) | 0,
+            maghrib: bounded(s("offsetMaghrib", 0), -30, 30, 0) | 0,
+            isha: bounded(s("offsetIsha", 0), -30, 30, 0) | 0
+        };
+
+        var keys = svc.prayerKeys;
+        var labels = svc.prayerLabels;
+        var todayDate = new Date(y, m - 1, d, 12);
+        var tomorrowDate = new Date(y, m - 1, d + 1, 12);
+        var todayTimes = timesFor(todayDate, lat, lon, method, asr, highLat, offsets);
+        var tomorrowTimes = timesFor(tomorrowDate, lat, lon, method, asr, highLat, offsets);
+        svc.today = todayTimes || ({});
+        svc.tomorrow = tomorrowTimes || ({});
 
         var dayRows = [];
+        var anyTime = false;
         for (var k = 0; k < keys.length; ++k) {
             var prayerAt = todayTimes ? todayTimes[keys[k]] : null;
-            var rowNow = recent !== null && recent.key === keys[k];
+            if (prayerAt !== null && prayerAt !== undefined)
+                anyTime = true;
             dayRows.push({
                 key: keys[k],
                 label: labels[k],
-                time: PT.fmt(prayerAt, clock24),
-                isPast: prayerAt !== null && prayerAt !== undefined && prayerAt < svc.now && !rowNow,
-                isNext: next !== null && next.at < 1440 && next.key === keys[k],
-                isNow: rowNow
+                at: (prayerAt === undefined ? null : prayerAt),
+                time: PT.fmt(prayerAt, svc.clock24)
             });
         }
         svc.rows = dayRows;
+        svc.hasTimes = anyTime;
+        // the sun never reaches the angle: honest about it instead of six "--:--"
+        svc.twilightMissing = todayTimes !== null && (todayTimes.fajr === null || todayTimes.maghrib === null)
+            && todayTimes.dhuhr !== null;
 
         var weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        var months = ["January", "February", "March", "April", "May", "June", "July",
+                      "August", "September", "October", "November", "December"];
         svc.gregorianText = weekdays[date.getDay()] + " " + d + " " + months[m - 1].substring(0, 3);
         svc.monthLabel = months[m - 1] + " " + y;
-        var hijri = H.toHijri(y, m, d, adjust);
+        svc.monthShort = months[m - 1].substring(0, 3) + " " + y;
+        var hijri = H.toHijri(y, m, d, svc.hijriAdjust);
         svc.hijriText = hijri ? hijri.d + " " + H.monthName(hijri.m) + " " + hijri.y : "";
 
-        var ahead = H.upcoming(y, m, d, 6, adjust) || [];
+        var ahead = H.upcoming(y, m, d, 6, svc.hijriAdjust) || [];
         var hrows = [];
         for (var hi = 0; hi < ahead.length; hi++) {
             var hd = ahead[hi];
@@ -241,33 +314,47 @@ Item {
         }
         svc.holidayRows = hrows;
         svc.holidayToday = H.holidayFor(hijri) || "";
-        var followingHoliday = H.nextHoliday(y, m, d, 400, adjust);
-        svc.nextHolidayText = followingHoliday ? followingHoliday.name + " in " + followingHoliday.inDays + " day" + (followingHoliday.inDays === 1 ? "" : "s") : "";
+        var followingHoliday = H.nextHoliday(y, m, d, 400, svc.hijriAdjust);
+        svc.nextHolidayDays = followingHoliday ? followingHoliday.inDays : 0;
+        svc.holidaySoon = svc.holidayToday !== "" || (followingHoliday !== null && followingHoliday.inDays <= 7);
+        svc.nextHolidayText = followingHoliday
+            ? followingHoliday.name + " in " + followingHoliday.inDays + " day" + (followingHoliday.inDays === 1 ? "" : "s")
+            : "";
 
         var night = PT.nightInfo(todayTimes, tomorrowTimes ? tomorrowTimes.fajr : null);
-        svc.nightText = night ? "Midnight " + PT.fmt(night.midnight, clock24) + " · Last third " + PT.fmt(night.lastThird, clock24) : "";
-        var qibla = PT.qibla(lat, lon);
-        svc.qiblaText = "Qibla " + Math.round(qibla) + "° " + PT.compassPoint(qibla);
+        svc.nightText = night ? "Midnight " + PT.fmt(night.midnight, svc.clock24)
+                              + " · Last third " + PT.fmt(night.lastThird, svc.clock24) : "";
+        svc.qiblaDeg = PT.qibla(lat, lon);
+        svc.qiblaText = "Qibla " + Math.round(svc.qiblaDeg) + "° " + PT.compassPoint(svc.qiblaDeg);
 
         var week = [];
         for (var w = 0; w < 7; ++w)
-            week.push(dayRow(new Date(y, m - 1, d + w, 12), dayKey, lat, lon, method, asr, highLat, offsets, clock24, adjust, weekdays));
+            week.push(dayRow(new Date(y, m - 1, d + w, 12), dayKey, lat, lon, method, asr, highLat, offsets, weekdays));
         svc.weekRows = week;
+
         var month = [];
         var daysInMonth = new Date(y, m, 0).getDate();
-        for (var md = 1; md <= daysInMonth; ++md)
-            month.push(dayRow(new Date(y, m - 1, md, 12), dayKey, lat, lon, method, asr, highLat, offsets, clock24, adjust, weekdays));
+        var index = 0;
+        for (var md = 1; md <= daysInMonth; ++md) {
+            var row = dayRow(new Date(y, m - 1, md, 12), dayKey, lat, lon, method, asr, highLat, offsets, weekdays);
+            if (row.today)
+                index = md - 1;
+            month.push(row);
+        }
         svc.monthRows = month;
+        svc.todayIndex = index;
+
+        updateClock(date);
     }
 
-    onStChanged: recompute()
-    Component.onCompleted: recompute()
+    onStChanged: rebuild()
+    Component.onCompleted: rebuild()
 
     Timer {
-        interval: 20000
+        interval: svc.panelOpen ? 1000 : 30000
         running: true
         repeat: true
-        onTriggered: svc.recompute()
+        onTriggered: svc.tick()
     }
 
     Process {

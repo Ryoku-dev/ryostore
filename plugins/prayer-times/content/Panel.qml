@@ -35,33 +35,17 @@ Item {
     ]
 
     readonly property var service: pluginApi ? pluginApi.mainInstance : null
-    readonly property int todayIndex: {
-        if (!service || !service.monthRows)
-            return 0;
-        for (var i = 0; i < service.monthRows.length; ++i) {
-            if (service.monthRows[i].today)
-                return i;
-        }
-        return 0;
-    }
-    readonly property bool holidaySoon: {
-        if (!service)
-            return false;
-        if (service.holidayToday)
-            return true;
-        var match = service.nextHolidayText.match(/ in ([0-9]+) day/);
-        return match !== null && parseInt(match[1], 10) <= 7;
-    }
+    readonly property int todayIndex: service ? service.todayIndex : 0
+    readonly property bool holidaySoon: service ? service.holidaySoon : false
 
-    function shortMonthLabel() {
-        if (!service)
-            return "";
-        var parts = service.monthLabel.split(" ");
-        return parts.length === 2 ? parts[0].substring(0, 3) + " " + parts[1] : service.monthLabel;
-    }
+    // the panel is the only view that needs seconds: while it is open the service
+    // ticks once a second instead of once a minute
+    onActiveChanged: if (service) service.panelOpen = active
+    Component.onDestruction: if (service) service.panelOpen = false
 
     implicitWidth: root.widthBudget
     implicitHeight: service ? col.implicitHeight + 28 * s : unavailable.implicitHeight + 28 * s
+    Behavior on implicitHeight { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
 
     Column {
         id: col
@@ -103,7 +87,7 @@ Item {
                 Text {
                     id: monthText
                     anchors.centerIn: parent
-                    text: root.shortMonthLabel()
+                    text: root.service ? root.service.monthShort : ""
                     color: Theme.dim
                     font.family: Theme.mono
                     font.pixelSize: 10 * root.s
@@ -119,6 +103,20 @@ Item {
             font.family: Theme.font
             font.pixelSize: 10.5 * root.s
             font.letterSpacing: 0.2 * root.s
+            elide: Text.ElideRight
+            maximumLineCount: 1
+        }
+
+        // honest about the city: auto missed every preset, or the city sits in
+        // another timezone and its times are converted onto this clock
+        Text {
+            width: parent.width
+            visible: text.length > 0
+            text: root.service ? root.service.cityHint : ""
+            color: Theme.gold
+            opacity: 0.85
+            font.family: Theme.font
+            font.pixelSize: 9.5 * root.s
             elide: Text.ElideRight
             maximumLineCount: 1
         }
@@ -179,6 +177,8 @@ Item {
 
         Item {
             visible: root.tab === "today"
+            opacity: visible ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 140 } }
             width: parent.width
             height: todayColumn.implicitHeight
 
@@ -190,8 +190,12 @@ Item {
                 Item {
                     id: ringItem
                     width: root.m.ring
-                    height: ring.height + 24 * root.s
+                    height: ring.height + 4 * root.s
                     anchors.horizontalCenter: parent.horizontalCenter
+
+                    property real shownProgress: root.service ? root.service.progress : 0
+                    Behavior on shownProgress { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
+                    onShownProgressChanged: ring.requestPaint()
 
                     Canvas {
                         id: ring
@@ -206,58 +210,61 @@ Item {
                             ctx.clearRect(0, 0, width, height);
                             var cx = width / 2;
                             var cy = height / 2;
-                            var radius = (width - 5 * root.s) / 2;
-                            ctx.lineWidth = 3.2 * root.s;
+                            var radius = (width - 6 * root.s) / 2;
                             ctx.lineCap = "round";
+
                             ctx.beginPath();
                             ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                            ctx.lineWidth = 2.4 * root.s;
                             ctx.strokeStyle = Theme.hair;
-                            ctx.globalAlpha = 0.9;
                             ctx.stroke();
-                            ctx.globalAlpha = 1;
-                            var amount = root.service ? root.service.progress : 0;
+
+                            var amount = Math.max(0, Math.min(1, ringItem.shownProgress));
                             if (amount > 0) {
+                                var tip = -Math.PI / 2 + Math.PI * 2 * amount;
+                                // soft halo under the lit arc, then the arc, then the tip
                                 ctx.beginPath();
-                                ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * amount);
+                                ctx.arc(cx, cy, radius, -Math.PI / 2, tip);
+                                ctx.lineWidth = 7 * root.s;
+                                ctx.globalAlpha = 0.15;
                                 ctx.strokeStyle = Theme.accent;
                                 ctx.stroke();
-                                var tip = -Math.PI / 2 + Math.PI * 2 * amount;
+                                ctx.globalAlpha = 1;
                                 ctx.beginPath();
-                                ctx.arc(cx + Math.cos(tip) * radius, cy + Math.sin(tip) * radius, 3.2 * root.s, 0, Math.PI * 2);
+                                ctx.arc(cx, cy, radius, -Math.PI / 2, tip);
+                                ctx.lineWidth = 2.4 * root.s;
+                                ctx.strokeStyle = Theme.accent;
+                                ctx.stroke();
+                                ctx.beginPath();
+                                ctx.arc(cx + Math.cos(tip) * radius, cy + Math.sin(tip) * radius, 2.6 * root.s, 0, Math.PI * 2);
                                 ctx.fillStyle = Theme.accent;
                                 ctx.fill();
                             }
                         }
                     }
 
-                    Connections {
-                        target: root.service
-                        function onProgressChanged() {
-                            ring.requestPaint();
-                        }
-                    }
-
-                    Text {
+                    Column {
                         anchors.centerIn: ring
-                        width: ring.width - 12 * root.s
-                        horizontalAlignment: Text.AlignHCenter
-                        text: root.service ? root.service.countdownText : ""
-                        color: Theme.bright
-                        font.family: Theme.display
-                        font.pixelSize: 17 * root.s
-                        elide: Text.ElideRight
-                        maximumLineCount: 1
-                    }
+                        spacing: 1 * root.s
 
-                    Text {
-                        y: ring.height + 5 * root.s
-                        width: parent.width
-                        horizontalAlignment: Text.AlignHCenter
-                        text: root.service && root.service.nextLabel ? ("TO " + root.service.nextLabel.toUpperCase()) : ""
-                        color: Theme.dim
-                        font.family: Theme.mono
-                        font.pixelSize: 9.5 * root.s
-                        font.letterSpacing: 0.8 * root.s
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: root.service ? root.service.countdownPrecise : ""
+                            color: Theme.bright
+                            font.family: Theme.mono
+                            font.pixelSize: 15 * root.s
+                            font.weight: Font.DemiBold
+                            font.letterSpacing: 0.3 * root.s
+                        }
+
+                        Text {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: root.service && root.service.nextLabel ? ("TO " + root.service.nextLabel.toUpperCase()) : ""
+                            color: Theme.dim
+                            font.family: Theme.mono
+                            font.pixelSize: 8 * root.s
+                            font.letterSpacing: 0.7 * root.s
+                        }
                     }
                 }
 
@@ -267,9 +274,16 @@ Item {
                     delegate: Item {
                         id: prayerRow
                         required property var modelData
+                        readonly property bool rowNow: root.service !== null && root.service.isNow
+                                                       && root.service.nextKey === modelData.key
+                                                       && modelData.at === root.service.nextAt
+                        readonly property bool rowNext: root.service !== null && !rowNow
+                                                        && modelData.at !== null && modelData.at === root.service.nextAt
+                        readonly property bool rowPast: root.service !== null && modelData.at !== null
+                                                        && modelData.at < root.service.now && !rowNow
                         width: todayColumn.width
                         height: 26 * root.s
-                        opacity: modelData.isPast ? 0.45 : 1
+                        opacity: rowPast ? 0.45 : 1
 
                         Rectangle {
                             anchors.left: parent.left
@@ -278,7 +292,7 @@ Item {
                             height: 18 * root.s
                             radius: Theme.radius
                             color: Theme.accent
-                            visible: prayerRow.modelData.isNext
+                            visible: prayerRow.rowNext
                         }
 
                         Text {
@@ -286,7 +300,7 @@ Item {
                             anchors.leftMargin: 10 * root.s
                             anchors.verticalCenter: parent.verticalCenter
                             text: prayerRow.modelData.label
-                            color: prayerRow.modelData.isNext ? Theme.bright : Theme.dim
+                            color: prayerRow.rowNext ? Theme.bright : Theme.dim
                             font.family: Theme.font
                             font.pixelSize: 12.5 * root.s
                         }
@@ -295,7 +309,7 @@ Item {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
                             text: prayerRow.modelData.time
-                            color: prayerRow.modelData.isNow ? Theme.accent : (prayerRow.modelData.isNext ? Theme.bright : Theme.dim)
+                            color: prayerRow.rowNow ? Theme.accent : (prayerRow.rowNext ? Theme.bright : Theme.dim)
                             font.family: Theme.mono
                             font.pixelSize: 12.5 * root.s
                         }
@@ -313,6 +327,17 @@ Item {
                     maximumLineCount: 1
                 }
 
+                Text {
+                    width: parent.width
+                    visible: root.service !== null && root.service.twilightMissing
+                    text: "No twilight at this latitude today · pick a high-latitude rule in Settings"
+                    color: Theme.gold
+                    opacity: 0.85
+                    font.family: Theme.font
+                    font.pixelSize: 9.5 * root.s
+                    wrapMode: Text.WordWrap
+                }
+
                 Item {
                     width: parent.width
                     height: 6 * root.s
@@ -328,13 +353,31 @@ Item {
                     width: parent.width
                     spacing: 8 * root.s
 
-                    Text {
+                    Item {
                         width: (parent.width - 8 * root.s) / 2
-                        text: root.service ? root.service.qiblaText : ""
-                        color: Theme.faint
-                        font.family: Theme.mono
-                        font.pixelSize: 10 * root.s
-                        elide: Text.ElideRight
+                        height: qiblaLabel.implicitHeight
+
+                        Text {
+                            id: qiblaArrow
+                            text: "\u2191"
+                            rotation: root.service ? root.service.qiblaDeg : 0
+                            color: Theme.faint
+                            font.pixelSize: 11 * root.s
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Text {
+                            id: qiblaLabel
+                            anchors.left: qiblaArrow.right
+                            anchors.leftMargin: 5 * root.s
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: parent.width - qiblaArrow.width - 5 * root.s
+                            text: root.service ? root.service.qiblaText : ""
+                            color: Theme.faint
+                            font.family: Theme.mono
+                            font.pixelSize: 10 * root.s
+                            elide: Text.ElideRight
+                        }
                     }
 
                     Item {
@@ -343,7 +386,7 @@ Item {
 
                         Text {
                             id: holidayText
-                            width: parent.width - 9 * root.s
+                            width: parent.width - 16 * root.s
                             horizontalAlignment: Text.AlignRight
                             text: root.service ? (root.service.holidayToday || root.service.nextHolidayText) : ""
                             color: root.holidaySoon ? Theme.gold : Theme.dim
@@ -357,7 +400,8 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             text: "\u203a"
                             color: root.holidaySoon ? Theme.gold : Theme.faint
-                            font.pixelSize: 11 * root.s
+                            font.family: Theme.mono
+                            font.pixelSize: 13 * root.s
                         }
 
                         HoverHandler {
@@ -375,6 +419,8 @@ Item {
         Column {
             id: weekTable
             visible: root.tab === "week"
+            opacity: visible ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 140 } }
             width: parent.width
             property var dayRows: root.service ? root.service.weekRows : []
             property real scale: root.s
@@ -491,6 +537,8 @@ Item {
         Column {
             id: monthSection
             visible: root.tab === "month"
+            opacity: visible ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 140 } }
             width: parent.width
             spacing: 2 * root.s
 
@@ -650,6 +698,8 @@ Item {
         Column {
             id: holidayView
             visible: root.tab === "holidays"
+            opacity: visible ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 140 } }
             width: parent.width
             spacing: 0
 
@@ -659,8 +709,17 @@ Item {
                 delegate: Item {
                     id: holRow
                     required property var modelData
+                    required property int index
                     width: holidayView.width
                     height: 40 * root.s
+
+                    Rectangle {
+                        anchors.bottom: parent.bottom
+                        width: parent.width
+                        height: 1 * root.s
+                        color: Theme.hair
+                        visible: holRow.index > 0
+                    }
 
                     Rectangle {
                         x: 1 * root.s
@@ -684,7 +743,7 @@ Item {
                             text: holRow.modelData.name
                             color: Theme.bright
                             font.family: Theme.font
-                            font.pixelSize: 11.5 * root.s
+                            font.pixelSize: 12 * root.s
                             elide: Text.ElideRight
                         }
 

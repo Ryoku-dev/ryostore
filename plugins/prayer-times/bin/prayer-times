@@ -3,6 +3,7 @@
 
 const PT = require('../lib/praytimes.js');
 const C = require('../lib/cities.js');
+const H = require('../lib/hijri.js');
 
 const keys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
 const labels = {
@@ -14,16 +15,51 @@ const labels = {
     isha: 'Isha'
 };
 
+const USAGE = `usage: prayer-times [--json|--text|--waybar] [--city <id>|auto]
+                   [--date YYYY-MM-DD] [--method <id>] [--high-lat <rule>] [--24]
+
+  --city      preset id (see --cities), or auto to detect from the timezone
+  --date      defaults to today in that city's timezone
+  --method    override the city's method: ${Object.keys(PT.METHODS).join(', ')}
+  --high-lat  none, middle, seventh or angle (fills missing twilight above ~48 deg)
+  --24        print a 24-hour clock
+`;
+
 function fail(message) {
     console.error(`prayer-times: ${message}`);
     process.exit(1);
 }
 
+// Everything below works on the city's wall clock, not this machine's: a preset in
+// another country still prints that country's times.
+function zoneParts(timeZone, instant) {
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone, hour12: false,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+    }).formatToParts(instant);
+    const get = (type) => Number(parts.find((p) => p.type === type).value);
+    return { y: get('year'), m: get('month'), d: get('day'), hh: get('hour') % 24, mm: get('minute') };
+}
+
+function zoneNow(timeZone) {
+    const p = zoneParts(timeZone, new Date());
+    const pad = (n) => String(n).padStart(2, '0');
+    return {
+        iso: `${p.y}-${pad(p.m)}-${pad(p.d)}`,
+        minutes: p.hh * 60 + p.mm
+    };
+}
+
+function zoneOffsetHours(timeZone, y, m, d) {
+    const utcNoon = Date.UTC(y, m - 1, d, 12);
+    const p = zoneParts(timeZone, new Date(utcNoon));
+    return (Date.UTC(p.y, p.m - 1, p.d, p.hh, p.mm) - utcNoon) / 3600000;
+}
+
 function isoDate(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
 function parseDate(value) {
@@ -42,16 +78,36 @@ function parseDate(value) {
 let mode = 'json';
 let cityId = null;
 let clock24 = false;
-let dateValue = isoDate(new Date());
+let dateValue = null;
+let methodOverride = null;
+let highLat = 'none';
 
 for (let i = 2; i < process.argv.length; ++i) {
     const arg = process.argv[i];
     if (arg === '--json' || arg === '--text' || arg === '--waybar') {
         mode = arg.substring(2);
+    } else if (arg === '--help' || arg === '-h') {
+        process.stdout.write(USAGE);
+        process.exit(0);
+    } else if (arg === '--cities') {
+        console.log(C.ids().join('\n'));
+        process.exit(0);
     } else if (arg === 'auto' || arg === '--auto') {
         cityId = null;
     } else if (arg === '--24') {
         clock24 = true;
+    } else if (arg === '--method') {
+        if (++i >= process.argv.length)
+            fail('--method requires an id');
+        methodOverride = process.argv[i];
+        if (!PT.METHODS[methodOverride])
+            fail(`unknown method: ${methodOverride}`);
+    } else if (arg === '--high-lat') {
+        if (++i >= process.argv.length)
+            fail('--high-lat requires a rule');
+        highLat = process.argv[i];
+        if (!['none', 'middle', 'seventh', 'angle'].includes(highLat))
+            fail(`unknown high-latitude rule: ${highLat}`);
     } else if (arg === '--city') {
         if (++i >= process.argv.length)
             fail('--city requires an id');
@@ -65,12 +121,12 @@ for (let i = 2; i < process.argv.length; ++i) {
     }
 }
 
-if (cityId === null)
-    cityId = C.guess(Intl.DateTimeFormat().resolvedOptions().timeZone).city.id;
-const city = C.byId(cityId);
+const city = C.byId(cityId === null ? C.guess(Intl.DateTimeFormat().resolvedOptions().timeZone).city.id : cityId);
 if (!city)
     fail(`unknown city: ${cityId}`);
-const date = parseDate(dateValue);
+
+const now = zoneNow(city.tz);
+const date = parseDate(dateValue || now.iso);
 
 function calculate(day) {
     return PT.times({
@@ -79,10 +135,10 @@ function calculate(day) {
         day: day.getDate(),
         lat: city.lat,
         lon: city.lon,
-        tzHours: -new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12).getTimezoneOffset() / 60,
-        method: city.method,
+        tzHours: zoneOffsetHours(city.tz, day.getFullYear(), day.getMonth() + 1, day.getDate()),
+        method: methodOverride || city.method,
         asr: 1,
-        highLat: 'none',
+        highLat,
         offsets: { fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0 }
     });
 }
@@ -93,23 +149,25 @@ for (const key of keys)
     formatted[key] = PT.fmt(times ? times[key] : null, clock24);
 
 if (mode === 'json') {
+    const hijri = H.toHijri(date.getFullYear(), date.getMonth() + 1, date.getDate(), 0);
     console.log(JSON.stringify({
         city: city.id,
         name: `${city.name}, ${city.country}`,
         date: isoDate(date),
-        method: city.method,
+        hijri: hijri ? `${hijri.d} ${H.monthName(hijri.m)} ${hijri.y}` : null,
+        method: methodOverride || city.method,
+        highLat,
         times: formatted
     }));
 } else if (mode === 'text') {
     for (const key of keys)
         console.log(`${labels[key].padEnd(8)} ${formatted[key]}`);
 } else {
+    // waybar module: the next prayer on the city's clock, not this machine's
     let next = null;
-    const now = new Date();
-    if (isoDate(now) === isoDate(date)) {
-        const minutes = now.getHours() * 60 + now.getMinutes();
+    if (now.iso === isoDate(date)) {
         for (const key of keys) {
-            if (times && times[key] !== null && times[key] > minutes) {
+            if (times && times[key] !== null && times[key] > now.minutes) {
                 next = { key, at: times[key] };
                 break;
             }
@@ -136,7 +194,7 @@ if (mode === 'json') {
         next = { key: 'fajr', at: null };
     const icon = next.key === 'fajr' || next.key === 'isha' ? '☾' : '☀';
     const tooltip = [`${city.name}, ${city.country} · ${isoDate(date)}`]
-        .concat(keys.map(key => `${labels[key]} ${formatted[key]}`))
+        .concat(keys.map((key) => `${labels[key]} ${formatted[key]}`))
         .join('\n');
     console.log(JSON.stringify({
         text: `${icon} ${labels[next.key]} ${PT.fmt(next.at, clock24)}`,

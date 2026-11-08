@@ -376,5 +376,111 @@
    "maghrib": "11:42",
    "isha": "16:44"
   }
+ },
+ {
+  "name": "jakarta-seasia",
+  "lat": -6.1754,
+  "lon": 106.8272,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 7.0,
+  "method": "seasia",
+  "asr": 1,
+  "expect": {
+   "fajr": "04:05",
+   "sunrise": "05:26",
+   "dhuhr": "11:36",
+   "asr": "14:56",
+   "maghrib": "17:47",
+   "isha": "19:00"
+  }
+ },
+ {
+  "name": "moscow-russia",
+  "lat": 55.6256,
+  "lon": 37.6064,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 3.0,
+  "method": "russia",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:54",
+   "sunrise": "07:47",
+   "dhuhr": "12:13",
+   "asr": "14:14",
+   "maghrib": "16:38",
+   "isha": "18:24"
+  }
+ },
+ {
+  "name": "denver-isna",
+  "lat": 39.7392,
+  "lon": -104.9849,
+  "date": [
+   2027,
+   3,
+   10
+  ],
+  "tzHours": -7.0,
+  "method": "isna",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:06",
+   "sunrise": "06:19",
+   "dhuhr": "12:10",
+   "asr": "15:27",
+   "maghrib": "18:02",
+   "isha": "19:15"
+  }
+ },
+ {
+  "name": "auckland-mwl",
+  "lat": -36.8521,
+  "lon": 174.7632,
+  "date": [
+   2026,
+   6,
+   21
+  ],
+  "tzHours": 12.0,
+  "method": "mwl",
+  "asr": 1,
+  "expect": {
+   "fajr": "06:01",
+   "sunrise": "07:34",
+   "dhuhr": "12:23",
+   "asr": "14:54",
+   "maghrib": "17:12",
+   "isha": "18:40"
+  }
+ },
+ {
+  "name": "stockholm-midsummer-angle",
+  "lat": 59.3251,
+  "lon": 18.0711,
+  "date": [
+   2026,
+   6,
+   21
+  ],
+  "tzHours": 2.0,
+  "method": "mwl",
+  "asr": 1,
+  "highLat": "angle",
+  "expect": {
+   "fajr": "01:54",
+   "sunrise": "03:31",
+   "dhuhr": "12:50",
+   "asr": "17:30",
+   "maghrib": "22:08",
+   "isha": "23:40"
+  }
  }
 ]

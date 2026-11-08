@@ -20,7 +20,12 @@ var METHODS = {
     // Regional authorities apply their own few-minute tuning on top of the angles;
     // these reproduce AlAdhan's published times for these two methods exactly.
     dubai:     { fajr: 18.2, isha: 18.2, tune: { dhuhr: 3, maghrib: 3 } },
-    diyanet:   { fajr: 18.0, isha: 17.0, tune: { sunrise: -7, dhuhr: 5, asr: 5, maghrib: 7 } }
+    diyanet:   { fajr: 18.0, isha: 17.0, tune: { sunrise: -7, dhuhr: 5, asr: 5, maghrib: 7 } },
+    // Kemenag (Indonesia), JAKIM (Malaysia) and MUIS (Singapore) all use 20/18;
+    // checked minute-exact against AlAdhan methods 20, 17 and 11.
+    seasia:    { fajr: 20.0, isha: 18.0 },
+    // AlAdhan method 14.
+    russia:    { fajr: 16.0, isha: 15.0 }
 };
 
 function julianDay(y, m, d) {
@@ -77,24 +82,42 @@ function times(opts) {
     var ishaInterval = base.ishaInterval || 0;
     var asrFactor = opts.asr === 2 ? 2 : 1;
 
-    // Julian day at 0h UTC for this date, corrected for longitude (solar noon reference).
-    var jd = julianDay(y, m, d) - lon / (15 * 24);
+    // Julian day at 0h UTC (the solver works in UTC hours from there) and at local
+    // midnight, which is where the first guess samples the sun.
+    var jdUtc = julianDay(y, m, d);
+    var jd = jdUtc - lon / (15 * 24);
     var sun = sunPosition(jd);
 
-    var noonUtc = 12 - sun.eqt - lon / 15;          // hours UTC at solar noon
-    var riseSet = angleHour(0.833, lat, sun.decl);
-    var asr = asrHour(asrFactor, lat, sun.decl);
-    var fajrH = fajrAngle === null ? null : angleHour(fajrAngle, lat, sun.decl);
-    var ishaH = ishaAngle === null ? null : angleHour(ishaAngle, lat, sun.decl);
+    // Solve the whole day from one sun position.
+    function solve(at) {
+        var noon = 12 - at.eqt - lon / 15;          // hours UTC at solar noon
+        var riseSet = angleHour(0.833, lat, at.decl);
+        var asr = asrHour(asrFactor, lat, at.decl);
+        var fajrH = fajrAngle === null ? null : angleHour(fajrAngle, lat, at.decl);
+        var ishaH = ishaAngle === null ? null : angleHour(ishaAngle, lat, at.decl);
+        return {
+            fajr:    fajrH === null ? null : noon - fajrH,
+            sunrise: riseSet === null ? null : noon - riseSet,
+            dhuhr:   noon,
+            asr:     asr === null ? null : noon + asr,
+            maghrib: riseSet === null ? null : noon + riseSet,
+            isha:    ishaInterval ? null : (ishaH === null ? null : noon + ishaH)
+        };
+    }
 
-    var out = {
-        fajr:    fajrH === null ? null : noonUtc - fajrH,
-        sunrise: riseSet === null ? null : noonUtc - riseSet,
-        dhuhr:   noonUtc,
-        asr:     asr === null ? null : noonUtc + asr,
-        maghrib: riseSet === null ? null : noonUtc + riseSet,
-        isha:    ishaInterval ? null : (ishaH === null ? null : noonUtc + ishaH)
-    };
+    // One sample per day is what PrayTimes does, and it is up to two minutes late
+    // on the horizon events: by the time the sun reaches the angle the declination
+    // has already moved. Re-solve each event with the sun where it actually is.
+    var first = solve(sun);
+    var out = {};
+    for (var key in first) {
+        var guess = first[key];
+        out[key] = null;
+        if (guess === null || guess === undefined)
+            continue;
+        var exact = solve(sunPosition(jdUtc + guess / 24));
+        out[key] = exact[key] === null ? guess : exact[key];
+    }
 
     // Interval-based Isha (Umm al-Qura): 90 minutes after Maghrib.
     if (ishaInterval && out.maghrib !== null) out.isha = out.maghrib + ishaInterval / 60;

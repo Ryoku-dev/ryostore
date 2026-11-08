@@ -1,7 +1,7 @@
 {
   "id": "prayer-times",
   "name": "Prayer Times",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": "Sweet Pea <sweetpea@mysweetpea.cc>",
   "description": "Prayer times in the QS Bar: next prayer with a live countdown, a full-day panel with Umm al-Qura Hijri dates, Islamic holidays, a month table and Qibla. Offline, no dependencies.",
   "license": "MIT",
@@ -73,8 +73,24 @@
             "label": "Los Angeles, US"
           },
           {
+            "value": "denver",
+            "label": "Denver, US"
+          },
+          {
+            "value": "phoenix",
+            "label": "Phoenix, US"
+          },
+          {
             "value": "toronto",
             "label": "Toronto, CA"
+          },
+          {
+            "value": "vancouver",
+            "label": "Vancouver, CA"
+          },
+          {
+            "value": "mexico-city",
+            "label": "Mexico City, MX"
           },
           {
             "value": "london",
@@ -87,6 +103,10 @@
           {
             "value": "birmingham",
             "label": "Birmingham, GB"
+          },
+          {
+            "value": "dublin",
+            "label": "Dublin, IE"
           },
           {
             "value": "paris",
@@ -115,6 +135,14 @@
           {
             "value": "madrid",
             "label": "Madrid, ES"
+          },
+          {
+            "value": "rome",
+            "label": "Rome, IT"
+          },
+          {
+            "value": "moscow",
+            "label": "Moscow, RU"
           },
           {
             "value": "istanbul",
@@ -177,6 +205,10 @@
             "label": "Melbourne, AU"
           },
           {
+            "value": "auckland",
+            "label": "Auckland, NZ"
+          },
+          {
             "value": "cape-town",
             "label": "Cape Town, ZA"
           },
@@ -195,6 +227,10 @@
           {
             "value": "sao-paulo",
             "label": "Sao Paulo, BR"
+          },
+          {
+            "value": "buenos-aires",
+            "label": "Buenos Aires, AR"
           }
         ]
       },
@@ -250,6 +286,14 @@
           {
             "value": "diyanet",
             "label": "Diyanet (Turkey)"
+          },
+          {
+            "value": "seasia",
+            "label": "Southeast Asia (Kemenag, JAKIM, MUIS)"
+          },
+          {
+            "value": "russia",
+            "label": "Russia"
           }
         ]
       },
