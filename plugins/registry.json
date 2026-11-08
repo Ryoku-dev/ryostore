@@ -1354,6 +1354,35 @@
       "lastUpdated": "2026-11-05"
     },
     {
+      "id": "prayer-times",
+      "name": "Prayer Times",
+      "version": "1.4.0",
+      "path": "plugins/prayer-times",
+      "author": "Sweet Pea <sweetpea@mysweetpea.cc>",
+      "summary": "Prayer times, Hijri dates, holidays and Qibla in the QS Bar. Offline, zero dependencies.",
+      "description": "Prayer times in the QS Bar: next prayer with a live countdown, a full-day panel with Umm al-Qura Hijri dates, Islamic holidays, a month table and Qibla. Offline, no dependencies.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "21a7f6c1b6934e80adda824b2ac3bb9ca8cc066316e80aa587de87ec7158cabb",
+      "official": false,
+      "tagline": "Prayer times, Hijri dates, holidays and Qibla in the QS Bar. Offline, zero dependencies.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-08",
+      "upstream": "https://github.com/mysweetpea/prayer-times"
+    },
+    {
       "id": "quickcalc",
       "name": "QuickCalc",
       "version": "0.2.0",
