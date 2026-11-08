@@ -19,7 +19,11 @@
   },
   "files": [
     "assets/preview-widget.png",
-    "assets/preview-panel.png"
+    "assets/preview-panel.png",
+    "bin/prayer-times",
+    "lib/cities.js",
+    "lib/hijri.js",
+    "lib/praytimes.js"
   ],
   "capabilities": {
     "densities": [
