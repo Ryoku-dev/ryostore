@@ -22,38 +22,6 @@
       "install": true
     },
     {
-      "source": ".oc-tmp/BRIEF.md",
-      "destination": ".oc-tmp/BRIEF.md",
-      "sha256": "0160319aea1299ed4c0ffa8b52141a932565713dd88a9e38ff8a9e8958bdb70c",
-      "mode": "0644",
-      "size": 14284,
-      "install": true
-    },
-    {
-      "source": ".oc-tmp/Widget.scaffold.qml",
-      "destination": ".oc-tmp/Widget.scaffold.qml",
-      "sha256": "33ba8ba47c1695d631c3bd96048a33d182daad5f08a93af1197c15a66b9c13e5",
-      "mode": "0644",
-      "size": 2232,
-      "install": true
-    },
-    {
-      "source": ".oc-tmp/probe.qml",
-      "destination": ".oc-tmp/probe.qml",
-      "sha256": "4b78806aad9fd4c2b9d20b09cad744314b5fd01c4407c242f63580f25b99a3c9",
-      "mode": "0644",
-      "size": 187,
-      "install": true
-    },
-    {
-      "source": ".oc-tmp/run.log",
-      "destination": ".oc-tmp/run.log",
-      "sha256": "710663e72d74c521b3740b8b00c1efdfb581e2ce2f4eaef64371852249f9adec",
-      "mode": "0644",
-      "size": 5718,
-      "install": true
-    },
-    {
       "source": "AGENTS.md",
       "destination": "AGENTS.md",
       "sha256": "a94ac1c48c30a2e1ff3114abcf319f72b47b050185dd69cf7a42b6d83379180b",
