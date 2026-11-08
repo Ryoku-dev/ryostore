@@ -4,12 +4,17 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   engine:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
       - name: engine tests against AlAdhan ground truth
@@ -20,6 +25,21 @@ jobs:
           for (const k of ['id','name','version','author','license','hosts','entryPoints','metadata'])
             if (!m[k]) { console.error('missing manifest key:', k); process.exit(1) }
           if (m.id !== 'prayer-times') { console.error('id must match the folder name'); process.exit(1) }
+          for (const c of (m.dependencies || {}).commands || [])
+            if (!/^[a-z0-9._-]+$/.test(c)) { console.error('suspicious dependency command:', c); process.exit(1) }
           console.log('manifest ok')"
+      - name: shipped code stays offline and inert
+        run: |
+          node -e "
+          const fs=require('fs'), path=require('path'); const files=[];
+          (function walk(d){ for (const e of fs.readdirSync(d,{withFileTypes:true})) {
+             const p=path.join(d,e.name);
+             if (e.isDirectory()) { if(!/^\.git\$/.test(e.name)) walk(p) }
+             else if (/\.(qml|js)\$/.test(e.name) || e.name==='prayer-times') files.push(p) } })('.');
+          const banned=[/XMLHttpRequest/,/fetch\s*\(/,/child_process/,/eval\s*\(/,/new Function/,/\bcurl\b/,/\bwget\b/];
+          let bad=0;
+          for (const f of files) { const t=fs.readFileSync(f,'utf8');
+            for (const re of banned) if (re.test(t)) { console.error('banned pattern',re,'in',f); bad++ } }
+          if (bad) process.exit(1); console.log('clean:', files.length, 'files');"
       - name: CLI smoke
         run: node bin/prayer-times --waybar

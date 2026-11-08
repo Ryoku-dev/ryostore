@@ -39,9 +39,19 @@ ryoku plugin add <git-url> --bar --yes
 | `clock24` | toggle | `true` | Use a 24-hour clock instead of AM/PM. |
 | `hijriAdjust` | int | `0` | Shift the Hijri date by -1, 0 or 1 day. |
 
-## Offline and private
+## Security and privacy
 
-Everything is computed locally. The only external command is `readlink -f /etc/localtime`, used once to guess the city; there is no network, ever. The plugin reads only its settings and that timezone link, writes no files, and requests no privileged capabilities.
+The plugin runs inside the shell process with your own privileges. What it can and cannot do:
+
+- **No network.** No sockets, no `fetch`, no `curl`, no telemetry — the times are pure arithmetic.
+- **No file writes.** Nothing is stored on disk; settings live in Ryoku's own plugin store.
+- **No shell.** The only external command is `readlink -f /etc/localtime`, run once as an argv array (never through a shell) to guess the city.
+- **No dynamic code.** No `eval`, no `new Function`, no QML created from strings.
+- **Plain text only.** Nothing is rendered as rich text or HTML, so a setting value cannot inject markup.
+- **Settings are range-checked.** Latitude, longitude, per-prayer offsets and the Hijri shift outside their valid ranges fall back to defaults instead of feeding nonsense into the maths.
+- **No dependencies.** Zero npm packages, so there is no supply chain to compromise.
+
+CI pins both GitHub Actions to commit SHAs, runs with `contents: read`, and fails the build if a network, shell or `eval` call ever appears in the shipped code.
 
 ## Credits
 

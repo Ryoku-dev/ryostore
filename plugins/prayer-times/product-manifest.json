@@ -2,15 +2,15 @@
   "schema": 1,
   "id": "prayer-times",
   "category": "plugins",
-  "version": "1.0.4",
+  "version": "1.0.8",
   "destination": "ryoku/plugins/prayer-times",
   "files": [
     {
       "source": ".github/workflows/validate.yml",
       "destination": ".github/workflows/validate.yml",
-      "sha256": "f01154d462c70721a51ed6a6e625bbffeaa2775d586b62a01dd07f367e11c81f",
+      "sha256": "01eec96f9a215443a2c93093b0f055f1e341a5d7ecffcc9d617494144907fbd1",
       "mode": "0644",
-      "size": 809,
+      "size": 2025,
       "install": true
     },
     {
@@ -48,9 +48,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "a77a41dfedcb0366011c504bf31eda84ec2eb715221f6c867bf7818ad9e820cd",
+      "sha256": "d218b5248079c43cbb713ac293eb70c8a72b5aba395641b96f8b7fe7cdfde0cc",
       "mode": "0644",
-      "size": 2231,
+      "size": 3022,
       "install": false
     },
     {
@@ -128,15 +128,15 @@
     {
       "source": "lib/praytimes.js",
       "destination": "lib/praytimes.js",
-      "sha256": "767e54544b111f2495a0adbd7d473ddb72d9728fa46b439f1d279e1b6a1b9b86",
+      "sha256": "62f6743adc0602e4189a96ee9cb7669f12862b614e376570313da0e84da8a711",
       "mode": "0644",
-      "size": 7828,
+      "size": 7861,
       "install": true
     },
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "56304f4676124271d0364817f77141940aed32f4732fa666eb5cf3a39faa302a",
+      "sha256": "b27bea19afcea7ffc5dbbdea31beef6b96be276b24aa0b6250a628b514354908",
       "mode": "0644",
       "size": 8734,
       "install": true
@@ -144,17 +144,17 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "611ec8c718108d5a07b00ca1e19ac9d2b8507d51e81e7424facfa936973688d4",
+      "sha256": "4513202714ba795d1f49fccd3c1e9fe81b1ceaa64c625f0ac474a0fc1c495f43",
       "mode": "0644",
-      "size": 10396,
+      "size": 10994,
       "install": true
     },
     {
       "source": "tests/engine-test.js",
       "destination": "tests/engine-test.js",
-      "sha256": "6168eb49fa243c2e6297e94aecc6dc27e9a23e068337956bf0318747df4aa2c3",
+      "sha256": "fc005659a84daa554fc986f991ceffc460e267f748f3ba002e5b9b4c71fd5453",
       "mode": "0644",
-      "size": 5103,
+      "size": 5100,
       "install": true
     },
     {

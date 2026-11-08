@@ -35,10 +35,17 @@ Item {
     property string monthLabel: ""
 
     readonly property var st: (pluginApi && pluginApi.pluginSettings) ? pluginApi.pluginSettings : ({})
-    property string detectedCityId: "baltimore"
+    property string detectedCityId: ""
     property bool timezoneExact: false
     property bool timezoneReady: false
     property string currentDayKey: ""
+
+    // a value outside the allowed range is rejected, never saturated: a hostile or
+    // corrupt setting must leave the widget on its defaults, not on the farthest limit
+    function bounded(v, lo, hi, dflt) {
+        var n = Number(v);
+        return (isFinite(n) && n >= lo && n <= hi) ? n : dflt;
+    }
 
     function s(key, dflt) {
         var v = st[key];
@@ -117,25 +124,27 @@ Item {
         svc.cityName = city.name + ", " + city.country;
         svc.cityEstimated = !timezoneExact;
 
+        // settings are a trust boundary: anything outside the valid range falls back
+        // to the preset instead of feeding nonsense into the solar math
         var lat = s("latitude", "") === "" ? city.lat : Number(s("latitude", ""));
         var lon = s("longitude", "") === "" ? city.lon : Number(s("longitude", ""));
-        if (!isFinite(lat))
+        if (!isFinite(lat) || lat < -90 || lat > 90)
             lat = city.lat;
-        if (!isFinite(lon))
+        if (!isFinite(lon) || lon < -180 || lon > 180)
             lon = city.lon;
         var configuredMethod = s("method", "auto");
         var method = configuredMethod === "auto" ? city.method : configuredMethod;
         var asr = s("asr", "standard") === "hanafi" ? 2 : 1;
         var highLat = s("highLat", "none");
         var clock24 = !!s("clock24", true);
-        var adjust = Number(s("hijriAdjust", 0));
+        var adjust = bounded(s("hijriAdjust", 0), -2, 2, 0) | 0;
         var offsets = {
-            fajr: Number(s("offsetFajr", 0)) || 0,
-            sunrise: Number(s("offsetSunrise", 0)) || 0,
-            dhuhr: Number(s("offsetDhuhr", 0)) || 0,
-            asr: Number(s("offsetAsr", 0)) || 0,
-            maghrib: Number(s("offsetMaghrib", 0)) || 0,
-            isha: Number(s("offsetIsha", 0)) || 0
+            fajr: bounded(s("offsetFajr", 0), -30, 30, 0) | 0,
+            sunrise: bounded(s("offsetSunrise", 0), -30, 30, 0) | 0,
+            dhuhr: bounded(s("offsetDhuhr", 0), -30, 30, 0) | 0,
+            asr: bounded(s("offsetAsr", 0), -30, 30, 0) | 0,
+            maghrib: bounded(s("offsetMaghrib", 0), -30, 30, 0) | 0,
+            isha: bounded(s("offsetIsha", 0), -30, 30, 0) | 0
         };
         var keys = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"];
         var labels = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];

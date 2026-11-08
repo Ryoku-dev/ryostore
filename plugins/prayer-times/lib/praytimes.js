@@ -6,7 +6,8 @@
 // reaches the required depression angle (polar latitudes).
 //
 // Algorithm: PrayTimes.org (Hamid Zarrabi-Zadeh), verified minute-exact against
-// the AlAdhan ISNA reference for Baltimore and against 7 methods across 3 cities.
+// the AlAdhan reference for 7 calculation methods across 3 cities, plus a DST
+// boundary day and two polar cases.
 
 var DEG = Math.PI / 180;
 

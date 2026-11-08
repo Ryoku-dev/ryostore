@@ -100,8 +100,8 @@ var ni = PT.nightInfo(t, 326);
 ok(ni && ni.midnight > t.maghrib && ni.midnight < 1440, "nightInfo midnight between maghrib and midnight");
 ok(ni && ni.lastThird > ni.midnight, "nightInfo lastThird after midnight");
 
-var q = PT.qibla(39.2909, -76.6108);
-ok(q > 55 && q < 58, "qibla from Baltimore ~56.7deg, got " + q.toFixed(1));
+var q = PT.qibla(51.5074, -0.1278);
+ok(q > 117 && q < 121, "qibla from London ~119deg, got " + q.toFixed(1));
 ok(PT.compassPoint(45) === "NE" && PT.compassPoint(0) === "N" && PT.compassPoint(292.5) === "WNW", "compassPoint");
 
 ok(PT.fmt(325, true) === "05:25" && PT.fmt(325, false) === "5:25 AM", "fmt 12h/24h");
