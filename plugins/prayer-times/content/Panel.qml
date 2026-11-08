@@ -9,7 +9,7 @@ Item {
     property var pluginApi
     property string density: "full"
     property real s: 1
-    property real widthBudget: 360
+    property real widthBudget: 380
     property bool active: false
     property string tab: "today"
 
@@ -21,7 +21,7 @@ Item {
         readonly property real gap: 10 * s
         readonly property real rowH: 22 * s
         readonly property real headH: 18 * s
-        readonly property real dayCol: 54 * s
+        readonly property real dayCol: 44 * s
         readonly property real ring: 92 * s
         readonly property real gutter: 8 * s
         readonly property int monthRows: 13
@@ -347,7 +347,7 @@ Item {
 
             Row {
                 id: weekHeader
-                width: parent.width - 6 * weekTable.scale
+                width: parent.width
                 height: weekTable.headH
 
                 Text {
@@ -357,7 +357,7 @@ Item {
                     leftPadding: 8 * (weekTable.scale)
                     color: Theme.faint
                     font.family: Theme.mono
-                    font.pixelSize: 8.5 * weekTable.scale
+                    font.pixelSize: 8 * weekTable.scale
                 }
 
                 Repeater {
@@ -371,7 +371,7 @@ Item {
                         text: modelData
                         color: Theme.faint
                         font.family: Theme.mono
-                        font.pixelSize: 8.5 * weekTable.scale
+                        font.pixelSize: 8 * weekTable.scale
                     }
                 }
             }
@@ -414,7 +414,7 @@ Item {
 
                     Text {
                         x: 8 * weekTable.scale
-                        width: 46 * weekTable.scale
+                        width: weekTable.dayCol - 10 * weekTable.scale
                         anchors.verticalCenter: parent.verticalCenter
                         text: weekRow.modelData.day
                         color: weekRow.modelData.today ? Theme.bright : Theme.dim
@@ -428,7 +428,7 @@ Item {
                     Row {
                         id: weekTimes
                         x: weekTable.dayCol
-                        width: parent.width - x - 6 * weekTable.scale
+                        width: parent.width - x
                         height: parent.height
 
                         Repeater {
@@ -469,7 +469,7 @@ Item {
                             leftPadding: 8 * (monthTable.scale)
                             color: Theme.faint
                             font.family: Theme.mono
-                            font.pixelSize: 8.5 * monthTable.scale
+                            font.pixelSize: 8 * monthTable.scale
                         }
 
                         Repeater {
@@ -483,7 +483,7 @@ Item {
                                 text: modelData
                                 color: Theme.faint
                                 font.family: Theme.mono
-                                font.pixelSize: 8.5 * monthTable.scale
+                                font.pixelSize: 8 * monthTable.scale
                             }
                         }
                     }
@@ -545,7 +545,7 @@ Item {
 
                             Text {
                                 x: 8 * monthTable.scale
-                                width: 46 * monthTable.scale
+                                width: monthTable.dayCol - 10 * monthTable.scale
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: monthRow.modelData.day
                                 color: monthRow.modelData.today ? Theme.bright : Theme.dim

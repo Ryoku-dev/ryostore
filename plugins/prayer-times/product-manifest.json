@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "prayer-times",
   "category": "plugins",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "destination": "ryoku/plugins/prayer-times",
   "files": [
     {
@@ -56,9 +56,9 @@
     {
       "source": "assets/preview-panel.png",
       "destination": "assets/preview-panel.png",
-      "sha256": "812ca13d1df7e0ac989973688ee96a3e081ea3a9012fb799dcb927d55c34a9ca",
+      "sha256": "67eec0d000053574543048f5af5f205af5131f5ca7d81f3faa7b220b12b818a8",
       "mode": "0644",
-      "size": 40421,
+      "size": 43404,
       "install": false
     },
     {
@@ -80,9 +80,9 @@
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "c1c1906a31a88f6d856f0b229cc92beac794baf030a33818f66ea214a6604070",
+      "sha256": "e3e4eea5fff99dce4d84ac0887f61a49ee7f22df1e09a771e90fd8406d13afe3",
       "mode": "0644",
-      "size": 27645,
+      "size": 27632,
       "install": true
     },
     {
@@ -136,7 +136,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "aff0d6d60d70c6550048569a0a38d63c2ff22095c84f8837495603e020626502",
+      "sha256": "999a003f7db93825860df4e984ccaffb8dc380bdf1193f612116ea689814aaa3",
       "mode": "0644",
       "size": 8734,
       "install": true
