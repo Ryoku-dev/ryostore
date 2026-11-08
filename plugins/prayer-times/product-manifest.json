@@ -64,9 +64,9 @@
     {
       "source": "bin/prayer-times",
       "destination": "bin/prayer-times",
-      "sha256": "7c3afbcc9b0a5f8ffd4a6d2274d15e3c22cc07a0b6b627167020849e1dbec4fc",
+      "sha256": "18d37d9e66211cb91515a21a54fd12e1e5093379b206fbd7b224dc4128859451",
       "mode": "0755",
-      "size": 7185,
+      "size": 7688,
       "install": true
     },
     {
@@ -112,17 +112,17 @@
     {
       "source": "lib/hijri.js",
       "destination": "lib/hijri.js",
-      "sha256": "25766a3c5e54a6884e3a42e3d0e8d607d619116a077c18c4d4d789f593e60e21",
+      "sha256": "501fd340dc59d45c80e3d520d7d70f97cf6b780df33aaa4766db519815ceeff6",
       "mode": "0644",
-      "size": 18406,
+      "size": 18951,
       "install": true
     },
     {
       "source": "lib/praytimes.js",
       "destination": "lib/praytimes.js",
-      "sha256": "bb6b0ee47b3e4003c87b535aa71b9de814039d7adbaf02ac91b84dee1035be4f",
+      "sha256": "5db568f3010ccef655ce644ad1c5d393a2dd79584c48c8885a2b812e004ab74f",
       "mode": "0644",
-      "size": 9198,
+      "size": 9382,
       "install": true
     },
     {
@@ -136,17 +136,25 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "ce0b546946a1d40f99d7eb7107984b17dd7be7066167f046c7e50ec7889d0715",
+      "sha256": "a185a2f91ca1cbf18808b1fa48b984cf24a7337324994976855389ebac0ab7a4",
       "mode": "0644",
-      "size": 15897,
+      "size": 15961,
+      "install": true
+    },
+    {
+      "source": "tests/cli-test.js",
+      "destination": "tests/cli-test.js",
+      "sha256": "9d59a5c7d14d1bdb0eaf5b4ffeffb69287022d84338e4b1920ec000cb5d99608",
+      "mode": "0644",
+      "size": 3160,
       "install": true
     },
     {
       "source": "tests/engine-test.js",
       "destination": "tests/engine-test.js",
-      "sha256": "bb537194bad42ab36bf9f431dcda6723710fa6906d3e8370566f24cd820eff5a",
+      "sha256": "041c866ea665d214f0e35742cc62a6e64f70946e500fdc7101e0c0f0c8087e3c",
       "mode": "0644",
-      "size": 16294,
+      "size": 17615,
       "install": true
     },
     {

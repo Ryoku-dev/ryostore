@@ -202,7 +202,14 @@ function fromIndex(idx) {
 
 // Gregorian -> Hijri. adjust shifts the result by +/-1 day for local moon sighting.
 function toHijri(y, m, d, adjust) {
-    var idx = dayIndex(y, m, d) + (adjust || 0);
+    // Date.UTC would happily roll month 13 into next year, day 32 into next month
+    // and years 0-99 into 19xx, so reject anything that is not a real date first
+    if (y % 1 !== 0 || m % 1 !== 0 || d % 1 !== 0) return null;      // also rejects NaN
+    if (y < 100 || m < 1 || m > 12 || d < 1 || d > 31) return null;
+    var shift = adjust == null ? 0 : Number(adjust);
+    if (!isFinite(shift) || shift % 1 !== 0) return null;
+    var idx = dayIndex(y, m, d) + shift;
+    if (!isFinite(idx)) return null;
     // the table has no terminal boundary row: the last entry starts 1500-12, which
     // is 30 days long, so the table covers up to and including its day 30
     if (idx < MONTH_STARTS[0] || idx >= MONTH_STARTS[MONTH_STARTS.length - 1] + LAST_MONTH_DAYS) return null;
@@ -248,7 +255,8 @@ function nextHoliday(y, m, d, maxDays, adjust) {
 
 // Next N holidays in date order, starting today (inDays 0 = today).
 function upcoming(y, m, d, count, adjust) {
-    var want = count || 5;
+    var want = count == null ? 5 : Math.floor(Number(count));
+    if (!isFinite(want) || want < 0) return [];
     var out = [];
     var start = new Date(Date.UTC(y, m - 1, d));
     var limit = 800;

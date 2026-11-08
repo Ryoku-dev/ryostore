@@ -134,12 +134,14 @@ function times(opts) {
         if (out.fajr === null) {
             if (rule === "middle") out.fajr = out.sunrise - night / 2;
             else if (rule === "seventh") out.fajr = out.sunrise - night / 7;
-            else if (rule === "angle") out.fajr = out.sunrise - night * (fajrAngle / 60);
+            else if (rule === "angle" && typeof fajrAngle === "number")
+                out.fajr = out.sunrise - night * (fajrAngle / 60);
         }
         if (out.isha === null) {
             if (rule === "middle") out.isha = out.maghrib + night / 2;
             else if (rule === "seventh") out.isha = out.maghrib + night / 7;
-            else if (rule === "angle") out.isha = out.maghrib + night * (ishaAngle / 60);
+            else if (rule === "angle" && typeof ishaAngle === "number")
+                out.isha = out.maghrib + night * (ishaAngle / 60);
         }
     }
 
@@ -156,10 +158,10 @@ function times(opts) {
 // Islamic midnight and the last third of the night, in minutes from local midnight.
 // night = Maghrib -> next Fajr. Uses tomorrow's fajr when given, else today's.
 function nightInfo(today, tomorrowFajr) {
-    if (!today || today.maghrib === null) return null;
+    if (!today || typeof today.maghrib !== "number" || !isFinite(today.maghrib)) return null;
     var fajr = tomorrowFajr;
-    if (fajr === null || fajr === undefined) fajr = today.fajr;
-    if (fajr === null || fajr === undefined) return null;
+    if (typeof fajr !== "number" || !isFinite(fajr)) fajr = today.fajr;
+    if (typeof fajr !== "number" || !isFinite(fajr)) return null;
     var night = (fajr <= today.maghrib ? fajr + 1440 : fajr) - today.maghrib;
     return {
         midnight: today.maghrib + Math.round(night / 2),
@@ -186,13 +188,14 @@ function compassPoint(deg) {
 
 // 12h / 24h formatting of a minutes-from-midnight value.
 function fmt(mins, clock24, compact) {
-    if (mins === null || mins === undefined) return "--:--";
+    if (typeof mins !== "number" || !isFinite(mins)) return "--:--";
     var m = ((Math.round(mins) % 1440) + 1440) % 1440;
     var h = Math.floor(m / 60), mm = m % 60;
     if (clock24) return (h < 10 ? "0" : "") + h + ":" + (mm < 10 ? "0" : "") + mm;
     var ap = h < 12 ? "AM" : "PM";
     var h12 = h % 12; if (h12 === 0) h12 = 12;
-    return h12 + ":" + (mm < 10 ? "0" : "") + mm + (compact ? (h < 12 ? "a" : "p") : " " + ap);
+    var suffix = compact ? (h < 12 ? "a" : "p") : " " + ap;
+    return h12 + ":" + (mm < 10 ? "0" : "") + mm + suffix;
 }
 
 if (typeof module !== "undefined" && module.exports) {

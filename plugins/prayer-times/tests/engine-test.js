@@ -235,6 +235,27 @@ ok(H.toGregorian(1500, 13, 1) === null, "month 13 is rejected");
 ok(H.toGregorian(1500, 0, 1) === null, "month 0 is rejected");
 ok(H.toHijri(2077, 11, 17, 0) === null, "day after the table ends is null, not 1501");
 
+// Date.UTC normalises bad components; the API must not
+ok(H.toHijri(2024, 13, 1, 0) === null, "month 13 is rejected");
+ok(H.toHijri(2024, 1, 32, 0) === null, "day 32 is rejected");
+ok(H.toHijri(2024, 1, 0, 0) === null, "day 0 is rejected");
+ok(H.toHijri(50, 1, 1, 0) === null, "two-digit years are not mapped to 19xx");
+ok(JSON.stringify(H.toHijri(2026, 11, 7, "1")) === JSON.stringify(H.toHijri(2026, 11, 7, 1)),
+   "a numeric-string adjust is coerced, never concatenated");
+ok(H.toHijri(2026, 11, 7, 1.5) === null, "a fractional adjust is rejected");
+
+ok(Array.isArray(H.upcoming(2026, 11, 8, 0, 0)) && H.upcoming(2026, 11, 8, 0, 0).length === 0,
+   "an explicit count of 0 returns nothing");
+
+ok(PT.fmt(NaN, true) === "--:--" && PT.fmt(Infinity, true) === "--:--", "fmt rejects non-finite minutes");
+ok(PT.nightInfo(null, 300) === null, "nightInfo(null) is null");
+ok(PT.nightInfo({}, 300) === null, "nightInfo with no maghrib is null");
+ok(PT.nightInfo({ maghrib: 1100 }, null) === null, "nightInfo with no fajr is null");
+
+var polarNoAngle = PT.times({ year: 2026, month: 6, day: 21, lat: 69.6492, lon: 18.9553,
+                              tzHours: 2, method: "mwl", asr: 1, highLat: "angle", ishaAngle: null });
+ok(polarNoAngle.isha === null, "angle rule does not invent an isha when the method has no angle");
+
 var back = H.toGregorian(1448, 5, 27);
 ok(back && back.y === 2026 && back.m === 11 && back.d === 7, "hijri roundtrip 1448-05-27");
 ok(H.holidayFor({ y: 1448, m: 10, d: 1 }) === "Eid al-Fitr", "holiday 10-1 = Eid al-Fitr");

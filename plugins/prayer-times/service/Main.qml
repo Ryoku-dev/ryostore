@@ -88,7 +88,7 @@ Item {
             zone = parts[parts.length - 2] + "/" + parts[parts.length - 1];
         detectedZone = zone;
         var guessed = C.guess(clean);
-        if (!guessed.exact)
+        if (!guessed.matched)                  // try the truncated zone only as a fallback
             guessed = C.guess(zone);
         detectedCityId = guessed.city.id;
         timezoneExact = guessed.exact;

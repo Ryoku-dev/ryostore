@@ -18,11 +18,16 @@ const labels = {
 const USAGE = `usage: prayer-times [--json|--text|--waybar] [--city <id>|auto]
                    [--date YYYY-MM-DD] [--method <id>] [--high-lat <rule>] [--24]
 
-  --city      preset id (see --cities), or auto to detect from the timezone
+  --json      default: one JSON object with every time
+  --text      one prayer per line
+  --waybar    waybar module JSON (text + tooltip + class)
+  --city      preset id, or auto/--auto to detect from the timezone (see --cities)
+  --cities    list every preset id
   --date      defaults to today in that city's timezone
   --method    override the city's method: ${Object.keys(PT.METHODS).join(', ')}
   --high-lat  none, middle, seventh or angle (fills missing twilight above ~48 deg)
   --24        print a 24-hour clock
+  -h, --help  this text
 `;
 
 function fail(message) {
@@ -97,23 +102,23 @@ for (let i = 2; i < process.argv.length; ++i) {
     } else if (arg === '--24') {
         clock24 = true;
     } else if (arg === '--method') {
-        if (++i >= process.argv.length)
+        if (++i >= process.argv.length || process.argv[i].startsWith('-'))
             fail('--method requires an id');
         methodOverride = process.argv[i];
         if (!PT.METHODS[methodOverride])
             fail(`unknown method: ${methodOverride}`);
     } else if (arg === '--high-lat') {
-        if (++i >= process.argv.length)
+        if (++i >= process.argv.length || process.argv[i].startsWith('-'))
             fail('--high-lat requires a rule');
         highLat = process.argv[i];
         if (!['none', 'middle', 'seventh', 'angle'].includes(highLat))
             fail(`unknown high-latitude rule: ${highLat}`);
     } else if (arg === '--city') {
-        if (++i >= process.argv.length)
+        if (++i >= process.argv.length || process.argv[i].startsWith('-'))
             fail('--city requires an id');
         cityId = process.argv[i] === 'auto' ? null : process.argv[i];
     } else if (arg === '--date') {
-        if (++i >= process.argv.length)
+        if (++i >= process.argv.length || process.argv[i].startsWith('-'))
             fail('--date requires YYYY-MM-DD');
         dateValue = process.argv[i];
     } else {
@@ -169,7 +174,9 @@ if (mode === 'json') {
     let next = null;
     if (now.iso === isoDate(date)) {
         for (const key of keys) {
-            if (times && times[key] !== null && times[key] > now.minutes) {
+            if (!times || times[key] === null || times[key] < 0 || times[key] >= 1440)
+                continue;                       // a high-latitude fallback can leave the day
+            if (times[key] >= now.minutes) {
                 next = { key, at: times[key] };
                 break;
             }
