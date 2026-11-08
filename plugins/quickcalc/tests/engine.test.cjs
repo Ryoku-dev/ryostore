@@ -83,6 +83,9 @@ check("variable use", ev("x^2", { vars: { x: 10 } }), 100);
 check("2x implicit with variable", ev("2x", { vars: { x: 10 } }), 20);
 check("reserved name", errOf("pi = 3"), "'pi' is a built-in name");
 check("carry keeps full precision", ev("0.3333333333*3", { carry: { text: "0.3333333333", value: 1 / 3 } }), 1);
+check("negative carry keeps unary precedence", ev("-2^2", { carry: { text: "-2", value: -2 } }), -4);
+check("negative carry plain", ev("-2*3", { carry: { text: "-2", value: -2 } }), -6);
+check("negative carry full precision", ev("-0.3333333333*3", { carry: { text: "-0.3333333333", value: -1 / 3 } }), -1);
 check("carry ignored when edited", ev("0.33333333331", { carry: { text: "0.3333333333", value: 1 / 3 } }), 0.33333333331);
 
 // --- programmer mode
@@ -121,6 +124,11 @@ check("hex display", E.format(255, { base: 16 }), "FF");
 check("hex two's complement", E.format(-1, { base: 16 }), "FFFFFFFF");
 check("group digits", E.groupDigits("11111111", 4), "1111 1111");
 check("group digits uneven", E.groupDigits("101", 4), "101");
+
+// --- HEX base: a-f are digits, so a bare e is 14, not Euler's number
+check("hex e is a digit", ev("e", hex), 14);
+check("hex pi still a constant", ev("pi", hex), 3);
+check("dec e is euler", ev("e"), Math.E);
 
 // --- input text round-trips
 function roundTrip(v, opts, ctx) { return E.evaluate(E.toInput(v, opts), ctx || {}); }

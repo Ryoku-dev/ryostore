@@ -1381,7 +1381,7 @@
         "assets/preview-settings.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "27ab7e177d1a2d0a00a660abb17257116fa1090025cbff8272c094a3080e640d",
+      "manifestSha256": "2c903f43b32b617ae9213db96c0ea83b8798374c94cdcdc1a3b8d1854bc1d723",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/quickcalc",
       "official": false,
       "tagline": "A fast keyboard calculator: basic, scientific and programmer.",

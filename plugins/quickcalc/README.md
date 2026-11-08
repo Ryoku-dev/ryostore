@@ -24,7 +24,11 @@ Settings:
   `0o17`, `0b101` prefixes always work, in any base. Shifts are operators
   (`1<<4`, `x>>2`); the other bitwise helpers are functions: `and(a,b)`
   `or(a,b)` `xor(a,b)` `not(a)`. Results are truncated and wrapped to 32
-  bits, so `0xFFFFFFFF` is `-1`.
+  bits, so `0xFFFFFFFF` is `-1`. In the HEX base the letters `a`-`f` are
+  digits, so a bare `e` (or `cafe`) is a hex number there, not Euler's
+  number -- which would truncate to `2` anyway. Other names (`pi`, `ans`,
+  your variables, `f(...)` calls) still work, and a variable named like a
+  hex word wins over the digits.
 
 Everything above is reachable by typing it -- the on-screen keypad (the
 `showKeypad` setting, off by default) is an optional extra, not a
@@ -87,7 +91,9 @@ remove it. No keybind is set (see below). Choose the placement under
   and the calculator opens in a panel underneath.
 - **Frame popout** -- used as the **floating window**: the keybind opens the
   calculator as its own floating surface, which stays open until Esc or the
-  keybind (no hover, no timeout) and takes the keyboard while open. Its
+  keybind (no hover, no timeout). It takes the keyboard while open and
+  closes on Esc, the keybind, or a click anywhere outside it -- like the
+  shell's Ask bar and launcher -- keeping your expression for next time. Its
   position is the Add-ons drag-and-drop placer: drop the chip on an edge,
   a corner, or the centre, and the window opens there.
 

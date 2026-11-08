@@ -6,14 +6,6 @@
   "destination": "ryoku/plugins/quickcalc",
   "files": [
     {
-      "source": "CalculatorView.qml",
-      "destination": "CalculatorView.qml",
-      "sha256": "d8ad38e583e2faad064b593361ef92ac67f2bada269591e1827fa0b6d5f9c17d",
-      "mode": "0644",
-      "size": 26973,
-      "install": true
-    },
-    {
       "source": "LICENSE",
       "destination": "LICENSE",
       "sha256": "f5aa0c2b14211cd64aeb9816d9a7d8fcfa0b33714a28c80076ed1c3f09574b0a",
@@ -24,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "2bb72991fbd9ab0b94eda1d26b991f10633f87e641536b6320539949f596ed9b",
+      "sha256": "e90055b0d52e59970d736efadfd9a974ac54fdb984f4788baa36b618d84b506b",
       "mode": "0644",
-      "size": 9991,
+      "size": 10432,
       "install": false
     },
     {
@@ -88,17 +80,17 @@
     {
       "source": "content/CalculatorView.qml",
       "destination": "content/CalculatorView.qml",
-      "sha256": "720790f1614006f04dda0b5f06d9d29c802239b242081e427462adf2d45b2a90",
+      "sha256": "01855078c35af22294a5f9bf2eacd485affe14b645e4779f1fb7340110572bf8",
       "mode": "0644",
-      "size": 26978,
+      "size": 27244,
       "install": true
     },
     {
       "source": "content/FloatingWindow.qml",
       "destination": "content/FloatingWindow.qml",
-      "sha256": "ddad4ac78359aa63b5f4255d2e27ed68ca4297dff260aadb64c1f080005c7348",
+      "sha256": "f8f258c2279895dd2d46bd71f79208f1a5c7c8e0dbe4bf340cb58ec508df5f8d",
       "mode": "0644",
-      "size": 3258,
+      "size": 4498,
       "install": true
     },
     {
@@ -120,9 +112,9 @@
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "8c8b7624235304b6f48ae80b60a9e3449aac5d1e49674c6a3fc2f5509b7b52f7",
+      "sha256": "b2a3a409b49ebf70a6c78da1a4e8c8dd1a04d0fda95b5e1c91069b9676de6f84",
       "mode": "0644",
-      "size": 5786,
+      "size": 6793,
       "install": true
     },
     {
@@ -136,25 +128,25 @@
     {
       "source": "service/Engine.js",
       "destination": "service/Engine.js",
-      "sha256": "c372972300ca8d00f0d1a66dd8cd77a1330fea4c27062fffec2a345861990321",
+      "sha256": "8fc1b5e132bfbcbb73d2e12e38b9351a09754cda9256b2dcc3a6e5820386c306",
       "mode": "0644",
-      "size": 18959,
+      "size": 19332,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "ab656faebcfcb886d8cd905e4905f50b89336d4f3d02f8efd12618d2cc94d72c",
+      "sha256": "a90207e958b364f5402db7295ced19b9caa265c40350641c91ada85d56b39a54",
       "mode": "0644",
-      "size": 17914,
+      "size": 17941,
       "install": true
     },
     {
       "source": "tests/engine.test.cjs",
       "destination": "tests/engine.test.cjs",
-      "sha256": "214b62db028abbe1da255e5c9b47559750c6080d935b6f2f77ea4b3533785272",
+      "sha256": "b3f5b718bc6af645b9006810d7fe8e88a5d76a8e3dc7a9439b7a8f856fd67ce3",
       "mode": "0644",
-      "size": 7984,
+      "size": 8502,
       "install": true
     }
   ]

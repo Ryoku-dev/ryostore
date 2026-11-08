@@ -54,8 +54,13 @@ Item {
     // Lowering the setting (to 0 = keep none) trims the tape now, not only
     // at the next result.
     onHistorySizeChanged: if (svc.history.length > svc.historySize) {
-        svc.history = svc.historySize > 0 ? svc.history.slice(svc.history.length - svc.historySize) : [];
+        svc.history = svc.trimHistory(svc.history);
         svc.persist();
+    }
+    // The newest historySize entries; none at all when historySize is 0.
+    function trimHistory(h) {
+        if (svc.historySize <= 0) return [];
+        return h.length > svc.historySize ? h.slice(h.length - svc.historySize) : h;
     }
 
     property string expression: ""
@@ -156,9 +161,7 @@ Item {
             var v = r.value;
             var input = svc.inputText(v);
             var entry = { expr: svc.expression, result: (r.name ? r.name + " = " : "") + svc.fmt(v), input: input };
-            var h = svc.history.concat([entry]);
-            if (h.length > svc.historySize) h = h.slice(h.length - svc.historySize);
-            svc.history = h;
+            svc.history = svc.trimHistory(svc.history.concat([entry]));
             if (r.name) {
                 var nv = Object.assign({}, svc.vars);
                 nv[r.name] = v;
@@ -337,8 +340,7 @@ Item {
                 return e && typeof e.expr === "string" && typeof e.result === "string"
                     && (e.input === undefined || typeof e.input === "string");
             });
-            if (h.length > svc.historySize) h = h.slice(h.length - svc.historySize);
-            svc.history = h;
+            svc.history = svc.trimHistory(h);
         }
         if (data.vars && typeof data.vars === "object") {
             var v = {};

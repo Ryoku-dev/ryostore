@@ -95,7 +95,7 @@ Item {
         if (root.layout === "programmer") h.push({ keys: ["Ctrl", "B"], label: "Next base", action: "cycleBase" });
         h.push({ keys: ["Ctrl", "L"], label: root.clearArmed ? "Again to clear" : "Clear history", action: "clearHistory" });
         h.push({ keys: ["Ctrl", "K"], label: "Keypad", action: "toggleKeypad" });
-        h.push({ keys: ["Ctrl", "H"], label: "Hide shortcuts", action: "toggleHints" });
+        h.push({ keys: ["Ctrl", "H"], label: "Shortcuts", action: "toggleHints" });
         h.push({ keys: ["Esc"], label: "Close", action: "close" });
         return h;
     }
@@ -381,7 +381,10 @@ Item {
                 font.pixelSize: 24
                 color: root.service && root.service.errorText.length > 0 ? Theme.vermBurn : Theme.bright
                 selectByMouse: true
-                text: ""
+                // Start from the service's expression: the floating window
+                // builds a fresh view on every open, and a second view can
+                // be open at once, so "" would hide a half-typed expression.
+                text: root.service ? root.service.expression : ""
                 onTextChanged: if (root.service && text !== root.service.expression) root.service.setExpression(text)
                 Connections {
                     target: root.service

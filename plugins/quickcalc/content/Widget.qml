@@ -47,8 +47,24 @@ Item {
         }
         return null;
     }
-    readonly property string hostEdge: root.popoutHost ? (root.popoutHost.centered ? "center" : root.popoutHost.edge) : "center"
-    readonly property string hostAlign: root.popoutHost ? root.popoutHost.align : "center"
+    // A fresh install stores no framePopout placement, and the shell's host
+    // then falls back to its own top/start (top-left) while the Hub shows the
+    // manifest default -- so until the user moves the chip, the host's
+    // edge/align are not a real placement. The host delegate carries the
+    // stored placement as `place`; with none there, use the manifest default.
+    // Keep these two in step with manifest.json defaults.framePopout.
+    readonly property string defaultEdge: "right"
+    readonly property string defaultAlign: "start"
+    // A host without `place` (another shell version) is trusted as-is.
+    readonly property bool hostHasPlacement: !!root.popoutHost
+        && (typeof root.popoutHost.place !== "object" || !root.popoutHost.place
+            || (!!root.popoutHost.place.framePopout && typeof root.popoutHost.place.framePopout.edge === "string"))
+    readonly property string hostEdge: !root.popoutHost ? "center"
+        : !root.hostHasPlacement ? root.defaultEdge
+        : (root.popoutHost.centered ? "center" : root.popoutHost.edge)
+    readonly property string hostAlign: !root.popoutHost ? "center"
+        : !root.hostHasPlacement ? root.defaultAlign
+        : root.popoutHost.align
     function reportPlacement() {
         if (!root.isGlyph && root.service && typeof root.service.setPlacement === "function")
             root.service.setPlacement(root.hostEdge, root.hostAlign);

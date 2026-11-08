@@ -343,8 +343,15 @@ function tokenizeWithCarry(text, c) {
     var carry = c.carry;
     if (carry && carry.text && text.indexOf(carry.text) === 0) {
         var after = text[carry.text.length];
-        if (after === undefined || !/[0-9a-zA-Z_.]/.test(after))
-            return [{ t: "num", v: carry.value }].concat(tokenize(text.slice(carry.text.length), c));
+        if (after === undefined || !/[0-9a-zA-Z_.]/.test(after)) {
+            // A negative result is written back as "-x". Keep that minus a
+            // unary operator, so "-2" then "^2" is -(2^2) = -4 exactly as
+            // typing "-2^2" would be, not (-2)^2.
+            var head = carry.text[0] === "-" && carry.value < 0
+                ? [{ t: "op", v: "-" }, { t: "num", v: -carry.value }]
+                : [{ t: "num", v: carry.value }];
+            return head.concat(tokenize(text.slice(carry.text.length), c));
+        }
     }
     return tokenize(text, c);
 }
