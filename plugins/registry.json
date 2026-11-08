@@ -250,7 +250,6 @@
       ],
       "lastUpdated": "2026-08-12"
     },
-
     {
       "id": "obsidian",
       "name": "Obsidian",
@@ -421,12 +420,12 @@
     },
     {
       "id": "public-ip",
-      "name": "IP P\u00fablica",
+      "name": "IP Pública",
       "version": "0.1.0",
       "path": "plugins/public-ip",
       "author": "vampirejsv <vampirejsv@local>",
-      "summary": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
-      "description": "Muestra la IP p\u00fablica actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
+      "summary": "Muestra la IP pública actual (consultando https://checkip.",
+      "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
       "tags": [
         "bar-widget"
       ],
@@ -439,7 +438,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "eced7c39a65f038744a15ea4577d65648243e948521fa46d80b1f107eb9b2cc0",
       "official": false,
-      "tagline": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
+      "tagline": "Muestra la IP pública actual (consultando https://checkip.",
       "icon": "public",
       "hosts": [
         "topbarGlyph"
@@ -1353,6 +1352,35 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-11-05"
+    },
+    {
+      "id": "prayer-times",
+      "name": "Prayer Times",
+      "version": "1.4.0",
+      "path": "plugins/prayer-times",
+      "author": "Sweet Pea <sweetpea@mysweetpea.cc>",
+      "summary": "Prayer times, Hijri dates, holidays and Qibla in the QS Bar. Offline, zero dependencies.",
+      "description": "Prayer times in the QS Bar: next prayer with a live countdown, a full-day panel with Umm al-Qura Hijri dates, Islamic holidays, a month table and Qibla. Offline, no dependencies.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "21a7f6c1b6934e80adda824b2ac3bb9ca8cc066316e80aa587de87ec7158cabb",
+      "official": false,
+      "tagline": "Prayer times, Hijri dates, holidays and Qibla in the QS Bar. Offline, zero dependencies.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-08",
+      "upstream": "https://github.com/mysweetpea/prayer-times"
     }
   ]
 }
