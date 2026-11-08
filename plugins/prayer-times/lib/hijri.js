@@ -1,6 +1,18 @@
 // lib/hijri.js — Umm al-Qura Hijri calendar, exact (no approximation).
 // Month-start table covers 1343-1500 AH = 1924-08-01 .. 2077-11-17 CE.
 // Source: dralshehri/hijri-converter (MIT), src/hijridate/ummalqura.py MONTH_STARTS.
+//
+// The month-start table is redistributed under the upstream MIT licence:
+//   Copyright (c) Mohammed Alshehri
+//   Permission is hereby granted, free of charge, to any person obtaining a copy
+//   of this software and associated documentation files (the "Software"), to deal
+//   in the Software without restriction, including without limitation the rights
+//   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//   copies of the Software, and to permit persons to whom the Software is
+//   furnished to do so, subject to the following conditions: the above copyright
+//   notice and this permission notice shall be included in all copies or
+//   substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS",
+//   WITHOUT WARRANTY OF ANY KIND.
 // Values are Reduced Julian Days: RJD = ordinal - 678575 = daysSinceEpoch + 40588.
 // ES5, no dependencies, runs in QML and node.
 

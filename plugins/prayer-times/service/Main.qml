@@ -99,7 +99,7 @@ Item {
         var hijri = H.toHijri(date.getFullYear(), date.getMonth() + 1, date.getDate(), hijriAdjust);
         return PT.times({
             // Umm al-Qura holds Isha 120 minutes in Ramadan instead of 90
-            ramadan: !!hijri && hijri.month === 9,
+            ramadan: !!hijri && hijri.m === 9,
             year: date.getFullYear(),
             month: date.getMonth() + 1,
             day: date.getDate(),

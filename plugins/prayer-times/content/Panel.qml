@@ -280,6 +280,8 @@ Item {
                                                        && root.service.nextKey === modelData.key
                                                        && modelData.at === root.service.nextAt
                         readonly property bool rowNext: root.service !== null && !rowNow
+                                && modelData.at !== null && modelData.at === root.service.nextAt
+                                && modelData.at >= root.service.now   // not the same minute tomorrow
                                                         && modelData.at !== null && modelData.at === root.service.nextAt
                         readonly property bool rowPast: root.service !== null && modelData.at !== null
                                                         && modelData.at < root.service.now && !rowNow

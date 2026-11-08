@@ -126,7 +126,9 @@ CI pins both GitHub Actions to commit SHAs, runs with `contents: read`, and fail
 ## Credits
 
 - Prayer algorithm: PrayTimes.org.
-- Umm al-Qura table: dralshehri/hijri-converter, MIT.
+- Umm al-Qura table: [dralshehri/hijri-converter](https://github.com/dralshehri/hijri-converter), MIT.
+  The upstream copyright and permission notice is reproduced in `lib/hijri.js` (the
+  store does not install README/LICENSE for plugins, so the notice ships with the module).
 - City coordinates: OpenStreetMap.
 
 ## Licence

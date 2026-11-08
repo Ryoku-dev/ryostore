@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "d22ccd832328e1765d84d4cf023b3fbee119a69e1a3bbb5e8b0e7daac93cee94",
+      "sha256": "9e0ba58680ddb4aedcd0875f7cd675bf7ef0dc0c5387b36c4e9937e0d152d70d",
       "mode": "0644",
-      "size": 6672,
+      "size": 6896,
       "install": false
     },
     {
@@ -40,17 +40,17 @@
     {
       "source": "bin/prayer-times",
       "destination": "bin/prayer-times",
-      "sha256": "644eef18badc4543c664eabb7c512f6d1dbbd77f270aac263efcdf95457ada55",
+      "sha256": "77ab72c715472016b826a7c8196760af985016be76134cd5dfc359fda0b9f592",
       "mode": "0755",
-      "size": 8099,
+      "size": 8095,
       "install": true
     },
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "5e9ff9439fb0d7769a450476f22aa07ae750a49fb5328ec5a3a6228655478171",
+      "sha256": "cf088aa816758806d37b092a1a6cf0695f9b7a54ea0282e482bff9750258361a",
       "mode": "0644",
-      "size": 32981,
+      "size": 33180,
       "install": true
     },
     {
@@ -88,9 +88,9 @@
     {
       "source": "lib/hijri.js",
       "destination": "lib/hijri.js",
-      "sha256": "dac3299862b7ed12afd820c51f27ad85effbf8386eb4d86c4712046f33d0debb",
+      "sha256": "63dcd7fd2c47242004f0a08cdf70cd9eb8af22521deefe71d3bb7a82e52bb450",
       "mode": "0644",
-      "size": 19171,
+      "size": 19954,
       "install": true
     },
     {
@@ -112,17 +112,17 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "443c6335f9989158ea4d7eb3130ef0a4188407db605ab84e594595c2ae0c5b97",
+      "sha256": "a8a5b2b6bc6a5a4e6059ba9bc86c0737dc143ffad94fa5cb9b915a580e789ad9",
       "mode": "0644",
-      "size": 16227,
+      "size": 16223,
       "install": true
     },
     {
       "source": "tests/cli-test.js",
       "destination": "tests/cli-test.js",
-      "sha256": "e23cb8d291d9ec7b563d239b1b66fa19ffeba74a0284753b76ee60eb435439d4",
+      "sha256": "0a472c95332573d2e134d9c6e66f89b950aa0c683571ffe83b23f49a9773dde8",
       "mode": "0644",
-      "size": 3755,
+      "size": 4474,
       "install": true
     },
     {
