@@ -313,24 +313,61 @@ Item {
                     maximumLineCount: 1
                 }
 
-                Text {
+                Item {
                     width: parent.width
-                    visible: text.length > 0
-                    text: root.service ? root.service.qiblaText : ""
-                    color: Theme.faint
-                    font.family: Theme.mono
-                    font.pixelSize: 10 * root.s
+                    height: 6 * root.s
                 }
 
-                Text {
+                Rectangle {
                     width: parent.width
-                    visible: text.length > 0
-                    text: root.service ? (root.service.holidayToday || root.service.nextHolidayText) : ""
-                    color: root.holidaySoon ? Theme.gold : Theme.dim
-                    font.family: Theme.mono
-                    font.pixelSize: 10 * root.s
-                    elide: Text.ElideRight
-                    maximumLineCount: 1
+                    height: 1 * root.s
+                    color: Theme.hair
+                }
+
+                Row {
+                    width: parent.width
+                    spacing: 8 * root.s
+
+                    Text {
+                        width: (parent.width - 8 * root.s) / 2
+                        text: root.service ? root.service.qiblaText : ""
+                        color: Theme.faint
+                        font.family: Theme.mono
+                        font.pixelSize: 10 * root.s
+                        elide: Text.ElideRight
+                    }
+
+                    Item {
+                        width: (parent.width - 8 * root.s) / 2
+                        height: holidayText.implicitHeight
+
+                        Text {
+                            id: holidayText
+                            width: parent.width - 9 * root.s
+                            horizontalAlignment: Text.AlignRight
+                            text: root.service ? (root.service.holidayToday || root.service.nextHolidayText) : ""
+                            color: root.holidaySoon ? Theme.gold : Theme.dim
+                            font.family: Theme.mono
+                            font.pixelSize: 10 * root.s
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "\u203a"
+                            color: root.holidaySoon ? Theme.gold : Theme.faint
+                            font.pixelSize: 11 * root.s
+                        }
+
+                        HoverHandler {
+                            cursorShape: Qt.PointingHandCursor
+                        }
+
+                        TapHandler {
+                            onTapped: root.tab = "holidays"
+                        }
+                    }
                 }
             }
         }
@@ -512,6 +549,7 @@ Item {
                         delegate: Item {
                             id: monthRow
                             required property var modelData
+                            required property int index
                             width: monthTable.width
                             height: monthTable.rowH
 
@@ -521,6 +559,15 @@ Item {
                                 color: Theme.accent
                                 opacity: 0.20
                                 radius: Theme.radius
+                            }
+
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 1 * root.s
+                                color: Theme.dim
+                                opacity: 0.45
+                                visible: monthRow.index > 0 && monthRow.index % 7 === 0
                             }
 
                             Rectangle {

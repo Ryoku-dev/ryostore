@@ -1356,7 +1356,7 @@
     {
       "id": "prayer-times",
       "name": "Prayer Times",
-      "version": "1.2.1",
+      "version": "1.3.0",
       "path": "plugins/prayer-times",
       "author": "Sweet Pea <sweetpea@mysweetpea.cc>",
       "summary": "Prayer times, Hijri dates, holidays and Qibla in the QS Bar. Offline, zero dependencies.",
@@ -1372,7 +1372,7 @@
         "assets/preview-panel.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "6837ea0001206e31fdb5bea1af11ecfbd5becbf5542b2cda102ac0af1b20327a",
+      "manifestSha256": "67349c5056fb8725aca26d4f3da5ce5ed6fae46cb0b85ebb889d285112dae33a",
       "official": false,
       "tagline": "Prayer times, Hijri dates, holidays and Qibla in the QS Bar. Offline, zero dependencies.",
       "icon": "",
