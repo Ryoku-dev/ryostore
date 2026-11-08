@@ -1,7 +1,7 @@
 {
   "id": "prayer-times",
   "name": "Prayer Times",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Sweet Pea <sweetpea@mysweetpea.cc>",
   "description": "Prayer times in the QS Bar: next prayer with a live countdown, a full-day panel with Umm al-Qura Hijri dates, Islamic holidays, a month table and Qibla. Offline, no dependencies.",
   "license": "MIT",

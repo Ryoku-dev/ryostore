@@ -237,10 +237,27 @@ function nextHoliday(y, m, d, maxDays, adjust) {
     return null;
 }
 
+// Next N holidays in date order, starting today (inDays 0 = today).
+function upcoming(y, m, d, count, adjust) {
+    var want = count || 5;
+    var out = [];
+    var start = new Date(Date.UTC(y, m - 1, d));
+    var limit = 800;
+    for (var i = 0; i <= limit && out.length < want; i++) {
+        var t = new Date(start.getTime() + i * 86400000);
+        var h = toHijri(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate(), adjust);
+        var name = holidayFor(h);
+        if (name)
+            out.push({ name: name, inDays: i, hijri: h,
+                       date: { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate() } });
+    }
+    return out;
+}
+
 if (typeof module !== "undefined" && module.exports) {
     module.exports = {
         toHijri: toHijri, toGregorian: toGregorian, monthName: monthName,
-        holidayFor: holidayFor, nextHoliday: nextHoliday,
+        holidayFor: holidayFor, nextHoliday: nextHoliday, upcoming: upcoming,
         MONTH_NAMES: MONTH_NAMES, HOLIDAYS: HOLIDAYS
     };
 }

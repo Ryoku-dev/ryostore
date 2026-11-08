@@ -35,6 +35,7 @@ Item {
     property string nextHolidayText: ""
     property var weekRows: []
     property var monthRows: []
+    property var holidayRows: []
     property string monthLabel: ""
 
     readonly property var st: (pluginApi && pluginApi.pluginSettings) ? pluginApi.pluginSettings : ({})
@@ -224,6 +225,21 @@ Item {
         svc.monthLabel = months[m - 1] + " " + y;
         var hijri = H.toHijri(y, m, d, adjust);
         svc.hijriText = hijri ? hijri.d + " " + H.monthName(hijri.m) + " " + hijri.y : "";
+
+        var ahead = H.upcoming(y, m, d, 6, adjust) || [];
+        var hrows = [];
+        for (var hi = 0; hi < ahead.length; hi++) {
+            var hd = ahead[hi];
+            var when = new Date(hd.date.y, hd.date.m - 1, hd.date.d);
+            hrows.push({
+                name: hd.name,
+                date: weekdays[when.getDay()] + " " + hd.date.d + " " + months[hd.date.m - 1].substring(0, 3) + " " + hd.date.y,
+                hijri: hd.hijri.d + " " + H.monthName(hd.hijri.m) + " " + hd.hijri.y,
+                when: hd.inDays === 0 ? "today" : (hd.inDays === 1 ? "tomorrow" : "in " + hd.inDays + " days"),
+                soon: hd.inDays <= 30
+            });
+        }
+        svc.holidayRows = hrows;
         svc.holidayToday = H.holidayFor(hijri) || "";
         var followingHoliday = H.nextHoliday(y, m, d, 400, adjust);
         svc.nextHolidayText = followingHoliday ? followingHoliday.name + " in " + followingHoliday.inDays + " day" + (followingHoliday.inDays === 1 ? "" : "s") : "";

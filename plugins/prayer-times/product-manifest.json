@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "prayer-times",
   "category": "plugins",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "destination": "ryoku/plugins/prayer-times",
   "files": [
     {
@@ -48,25 +48,25 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "d218b5248079c43cbb713ac293eb70c8a72b5aba395641b96f8b7fe7cdfde0cc",
+      "sha256": "3abf3b10f85283fa184f6ed30e4b26175cec06d1ad6b783f7a43b2a38a7e8bbf",
       "mode": "0644",
-      "size": 3022,
+      "size": 3525,
       "install": false
     },
     {
       "source": "assets/preview-panel.png",
       "destination": "assets/preview-panel.png",
-      "sha256": "2131362189de34ad066e3c52febc9023d96477b8ff8ed23fca1048803949482e",
+      "sha256": "812ca13d1df7e0ac989973688ee96a3e081ea3a9012fb799dcb927d55c34a9ca",
       "mode": "0644",
-      "size": 40534,
+      "size": 40421,
       "install": false
     },
     {
       "source": "assets/preview-widget.png",
       "destination": "assets/preview-widget.png",
-      "sha256": "f72730ba08ba07d44d4fec7422c95fb548c5f58cbc863600d44aebb5d8c61266",
+      "sha256": "23a3444f50d89d2ab75a12e02784052c47770b8fa59eddb003d7d2a9f5da1491",
       "mode": "0644",
-      "size": 25588,
+      "size": 23443,
       "install": false
     },
     {
@@ -80,9 +80,9 @@
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "e71bc432192d4d653197f03bb0dbc4e87ad00f906500fc81fcd988a92b3ad718",
+      "sha256": "c1c1906a31a88f6d856f0b229cc92beac794baf030a33818f66ea214a6604070",
       "mode": "0644",
-      "size": 24996,
+      "size": 27645,
       "install": true
     },
     {
@@ -120,9 +120,9 @@
     {
       "source": "lib/hijri.js",
       "destination": "lib/hijri.js",
-      "sha256": "cf09c6d05973cec16cc2099b712ce6a5f1581a65437d3fbbb129b49185b23cc1",
+      "sha256": "7babc57934ef6f9a9094e837993c8153ee8bfae82ccf62b1eab0c5405c9e85f2",
       "mode": "0644",
-      "size": 17035,
+      "size": 17726,
       "install": true
     },
     {
@@ -136,7 +136,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "c926d8488f9783f12e0fa9bf0dc0e9f648f5b99636b7e7ed2b80cf9e991339fc",
+      "sha256": "aff0d6d60d70c6550048569a0a38d63c2ff22095c84f8837495603e020626502",
       "mode": "0644",
       "size": 8734,
       "install": true
@@ -144,17 +144,17 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "173e92180399e8b3aa62e61c606114b1a332550be731fd78e9f065decd89ebf8",
+      "sha256": "a33e775df64d65e20673da5058f1a9f3b12a303ee7cd85f86804fc0df8b2218c",
       "mode": "0644",
-      "size": 11204,
+      "size": 11954,
       "install": true
     },
     {
       "source": "tests/engine-test.js",
       "destination": "tests/engine-test.js",
-      "sha256": "fc005659a84daa554fc986f991ceffc460e267f748f3ba002e5b9b4c71fd5453",
+      "sha256": "5a5b6476587a777ea30c99022114c5ce17b76390fc9124fb26eb5176614fcdae",
       "mode": "0644",
-      "size": 5100,
+      "size": 5747,
       "install": true
     },
     {

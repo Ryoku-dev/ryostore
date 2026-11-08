@@ -30,7 +30,8 @@ Item {
     readonly property var tabs: [
         { value: "today", label: "TODAY" },
         { value: "week", label: "WEEK" },
-        { value: "month", label: "MONTH" }
+        { value: "month", label: "MONTH" },
+        { value: "holidays", label: "HOLIDAYS" }
     ]
 
     readonly property var service: pluginApi ? pluginApi.mainInstance : null
@@ -356,7 +357,7 @@ Item {
                     leftPadding: 8 * (weekTable.scale)
                     color: Theme.faint
                     font.family: Theme.mono
-                    font.pixelSize: 9.5 * weekTable.scale
+                    font.pixelSize: 8.5 * weekTable.scale
                 }
 
                 Repeater {
@@ -366,10 +367,11 @@ Item {
                         width: (weekHeader.width - weekTable.dayCol) / 6
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: Text.AlignRight
+                        rightPadding: 2 * weekTable.scale
                         text: modelData
                         color: Theme.faint
                         font.family: Theme.mono
-                        font.pixelSize: 9.5 * weekTable.scale
+                        font.pixelSize: 8.5 * weekTable.scale
                     }
                 }
             }
@@ -467,7 +469,7 @@ Item {
                             leftPadding: 8 * (monthTable.scale)
                             color: Theme.faint
                             font.family: Theme.mono
-                            font.pixelSize: 9.5 * monthTable.scale
+                            font.pixelSize: 8.5 * monthTable.scale
                         }
 
                         Repeater {
@@ -477,10 +479,11 @@ Item {
                                 width: (monthHeader.width - monthTable.dayCol) / 6
                                 anchors.verticalCenter: parent.verticalCenter
                                 horizontalAlignment: Text.AlignRight
+                                rightPadding: 2 * monthTable.scale
                                 text: modelData
                                 color: Theme.faint
                                 font.family: Theme.mono
-                                font.pixelSize: 9.5 * monthTable.scale
+                                font.pixelSize: 8.5 * monthTable.scale
                             }
                         }
                     }
@@ -595,6 +598,71 @@ Item {
                 }
             }
         }
+
+        // upcoming holidays: the next six, not just the nearest
+        Column {
+            id: holidayView
+            visible: root.tab === "holidays"
+            width: parent.width
+            spacing: 0
+
+            Repeater {
+                model: root.service ? root.service.holidayRows : []
+
+                delegate: Item {
+                    id: holRow
+                    required property var modelData
+                    width: holidayView.width
+                    height: 40 * root.s
+
+                    Rectangle {
+                        x: 1 * root.s
+                        width: 5 * root.s
+                        height: width
+                        radius: width / 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: holRow.modelData.soon ? Theme.gold : Theme.hair
+                    }
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 15 * root.s
+                        anchors.right: parent.right
+                        anchors.rightMargin: 70 * root.s
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 2 * root.s
+
+                        Text {
+                            width: parent.width
+                            text: holRow.modelData.name
+                            color: Theme.bright
+                            font.family: Theme.font
+                            font.pixelSize: 11.5 * root.s
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            width: parent.width
+                            text: holRow.modelData.date + "  \u00b7  " + holRow.modelData.hijri
+                            color: Theme.faint
+                            font.family: Theme.mono
+                            font.pixelSize: 9 * root.s
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    Text {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: holRow.modelData.when
+                        color: holRow.modelData.soon ? Theme.gold : Theme.dim
+                        font.family: Theme.mono
+                        font.pixelSize: 9.5 * root.s
+                    }
+                }
+            }
+        }
+
     }
 
     Text {

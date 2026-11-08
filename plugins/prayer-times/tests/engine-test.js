@@ -107,6 +107,18 @@ ok(PT.compassPoint(45) === "NE" && PT.compassPoint(0) === "N" && PT.compassPoint
 ok(PT.fmt(325, true) === "05:25" && PT.fmt(325, false) === "5:25 AM", "fmt 12h/24h");
 ok(PT.fmt(null, true) === "--:--", "fmt null");
 
+// upcoming holidays: ordered, includes today, and names come from the table
+var up = H.upcoming(2026, 11, 8, 6, 0);
+ok(up.length === 6, "upcoming returns the requested count, got " + up.length);
+var ordered = true;
+for (var ui = 1; ui < up.length; ui++)
+    if (up[ui].inDays <= up[ui - 1].inDays) ordered = false;
+ok(ordered, "upcoming holidays are in date order");
+ok(up[0].name === "Isra & Mi'raj" && up[0].inDays === 58, "first holiday after 8 Nov 2026, got " + up[0].name);
+var d0 = up[0].date;
+var same = H.upcoming(d0.y, d0.m, d0.d, 1, 0)[0];
+ok(same.inDays === 0 && same.name === up[0].name, "a holiday that is today reports inDays 0");
+
 // ---------------------------------------------------------------- report
 console.log(messages.join("\n") || "all checks passed");
 console.log((pass + fail) + " checks, " + pass + " pass, " + fail + " fail");

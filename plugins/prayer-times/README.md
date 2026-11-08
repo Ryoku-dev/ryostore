@@ -36,8 +36,17 @@ ryoku plugin add <git-url> --bar --yes
 | `offsetMaghrib` | int | `0` | Maghrib adjustment in minutes, from -30 to 30. |
 | `offsetIsha` | int | `0` | Isha adjustment in minutes, from -30 to 30. |
 | `display` | choice | `full` | Bar content: `full`, `time` or `name`. |
-| `clock24` | toggle | `true` | Use a 24-hour clock instead of AM/PM. |
+| `clock24` | toggle | `false` | Use a 24-hour clock instead of AM/PM. |
 | `hijriAdjust` | int | `0` | Shift the Hijri date by -1, 0 or 1 day. |
+
+## Panel segments
+
+Clicking the glyph opens a 360 px panel with four segments:
+
+- **TODAY** - countdown ring, the six times, Islamic midnight, last third, Qibla bearing and the next holiday.
+- **WEEK** - the next seven days, one row per day.
+- **MONTH** - the whole Hijri/Gregorian month, today highlighted, holidays dotted, scrolling with a pinned header.
+- **HOLIDAYS** - the next six Islamic holidays with Gregorian date, Hijri date and a day countdown. Holidays within 30 days are marked in gold.
 
 ## Security and privacy
 
