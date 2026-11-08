@@ -6,30 +6,6 @@
   "destination": "ryoku/plugins/prayer-times",
   "files": [
     {
-      "source": ".gitignore",
-      "destination": ".gitignore",
-      "sha256": "f30bf8c5e991b6107580af6cf9a8fcd7e5a7f9c8c34f0d0f88b7d434fb611f45",
-      "mode": "0644",
-      "size": 31,
-      "install": true
-    },
-    {
-      "source": "AGENTS.md",
-      "destination": "AGENTS.md",
-      "sha256": "a94ac1c48c30a2e1ff3114abcf319f72b47b050185dd69cf7a42b6d83379180b",
-      "mode": "0644",
-      "size": 4631,
-      "install": true
-    },
-    {
-      "source": "CLAUDE.md",
-      "destination": "CLAUDE.md",
-      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
-      "mode": "0644",
-      "size": 152,
-      "install": true
-    },
-    {
       "source": "LICENSE",
       "destination": "LICENSE",
       "sha256": "3a7857c238a5754b5380348616d3d187aff6c2517e23bbf301b0a67581c445f8",
@@ -64,9 +40,9 @@
     {
       "source": "bin/prayer-times",
       "destination": "bin/prayer-times",
-      "sha256": "18d37d9e66211cb91515a21a54fd12e1e5093379b206fbd7b224dc4128859451",
+      "sha256": "644eef18badc4543c664eabb7c512f6d1dbbd77f270aac263efcdf95457ada55",
       "mode": "0755",
-      "size": 7688,
+      "size": 8099,
       "install": true
     },
     {
@@ -112,49 +88,49 @@
     {
       "source": "lib/hijri.js",
       "destination": "lib/hijri.js",
-      "sha256": "501fd340dc59d45c80e3d520d7d70f97cf6b780df33aaa4766db519815ceeff6",
+      "sha256": "dac3299862b7ed12afd820c51f27ad85effbf8386eb4d86c4712046f33d0debb",
       "mode": "0644",
-      "size": 18951,
+      "size": 19171,
       "install": true
     },
     {
       "source": "lib/praytimes.js",
       "destination": "lib/praytimes.js",
-      "sha256": "5db568f3010ccef655ce644ad1c5d393a2dd79584c48c8885a2b812e004ab74f",
+      "sha256": "410775fa490c8dfff3a678d58770a6087f8feb8f36a75db0d3e690afe6644472",
       "mode": "0644",
-      "size": 9382,
+      "size": 9640,
       "install": true
     },
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "b9ed4b980c7da7373219af79e5d52b9fdc3332976411baa6f0c0b8b5e2ca3939",
+      "sha256": "a221fd9d207886b2b5d2a1bbfa9883ae9aa75e119b0cac8f717dcb684cd29e0e",
       "mode": "0644",
-      "size": 9866,
+      "size": 9939,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "a185a2f91ca1cbf18808b1fa48b984cf24a7337324994976855389ebac0ab7a4",
+      "sha256": "443c6335f9989158ea4d7eb3130ef0a4188407db605ab84e594595c2ae0c5b97",
       "mode": "0644",
-      "size": 15961,
+      "size": 16227,
       "install": true
     },
     {
       "source": "tests/cli-test.js",
       "destination": "tests/cli-test.js",
-      "sha256": "9d59a5c7d14d1bdb0eaf5b4ffeffb69287022d84338e4b1920ec000cb5d99608",
+      "sha256": "e23cb8d291d9ec7b563d239b1b66fa19ffeba74a0284753b76ee60eb435439d4",
       "mode": "0644",
-      "size": 3160,
+      "size": 3755,
       "install": true
     },
     {
       "source": "tests/engine-test.js",
       "destination": "tests/engine-test.js",
-      "sha256": "041c866ea665d214f0e35742cc62a6e64f70946e500fdc7101e0c0f0c8087e3c",
+      "sha256": "6da30f67636691f7d52455fae42ab7aff2d5ab85384c53f28505db90c38b1ec6",
       "mode": "0644",
-      "size": 17615,
+      "size": 18931,
       "install": true
     },
     {

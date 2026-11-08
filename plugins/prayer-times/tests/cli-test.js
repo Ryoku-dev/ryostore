@@ -47,14 +47,21 @@ ok(wb.class === 'prayer' && /^[\u2600\u263e] /.test(wb.text) && wb.tooltip.index
 // auto detection follows TZ, and an unmapped zone still answers
 var tokyo = JSON.parse(run(['--json', 'auto'], { TZ: 'Asia/Tokyo' }).out);
 ok(tokyo.city === 'tokyo', 'auto uses the system timezone, got ' + tokyo.city);
-var unknown = JSON.parse(run(['--json', 'auto'], { TZ: 'Asia/Kathmandu' }).out);
-ok(unknown.city === 'london', 'an unmapped zone falls back visibly, got ' + unknown.city);
+var unknown = run(['--json', 'auto'], { TZ: 'Asia/Kathmandu' });
+ok(unknown.code === 1 && /no city preset/.test(unknown.out), 'an unmapped zone is refused, not silently London');
 
 // argument handling
 ok(run(['--city', 'nope']).code === 1, 'unknown city exits 1');
 ok(run(['--city', '--json']).code === 1, 'a flag is not accepted as an option value');
 ok(run(['--date', '2026-13-01']).code === 1, 'an impossible date exits 1');
 ok(run(['--method', 'nope']).code === 1, 'an unknown method exits 1');
+// UTC+12 in July: local midnight at UTC noon is the hour-24 trap
+var akl = JSON.parse(run(['--json', '--city', 'auckland', '--date', '2026-07-15']).out);
+// UTC+12 in July puts local midnight at UTC noon, the hour-24 trap in zoneOffsetHours
+ok(akl.city === 'auckland' && akl.date === '2026-07-15' && /1448$/.test(akl.hijri),
+   'a UTC+12 winter date keeps its own date and Hijri day, got ' + akl.date + ' ' + akl.hijri);
+ok(/^6:0\d AM$/.test(akl.times.fajr) && /^12:2\d PM$/.test(akl.times.dhuhr),
+   'Auckland midwinter times are right, got ' + akl.times.fajr + '/' + akl.times.dhuhr);
 ok(run(['--cities']).out.trim().split('\n').length === 45, '--cities lists every preset');
 ok(/--high-lat/.test(run(['--help']).out), '--help documents the flags');
 

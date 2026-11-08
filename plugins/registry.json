@@ -1372,7 +1372,7 @@
         "assets/preview-panel.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "0040a428e013ff1f590c4ae9486a87051121b63042f7cb26974371419bcc279b",
+      "manifestSha256": "85b60943ed678b112176c44f3f11c2b599b6fa1544d145ea170925df977698d6",
       "official": false,
       "tagline": "Prayer times, Hijri dates, holidays and Qibla in the QS Bar. Offline, zero dependencies.",
       "icon": "",

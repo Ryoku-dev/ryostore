@@ -16,7 +16,7 @@ var METHODS = {
     isna:      { fajr: 15.0, isha: 15.0 },
     egypt:     { fajr: 19.5, isha: 17.5 },
     karachi:   { fajr: 18.0, isha: 18.0 },
-    ummalqura: { fajr: 18.5, isha: null, ishaInterval: 90 },
+    ummalqura: { fajr: 18.5, isha: null, ishaInterval: 90, ramadanInterval: 120 },
     // Regional authorities apply their own few-minute tuning on top of the angles;
     // these reproduce AlAdhan's published times for these two methods exactly.
     dubai:     { fajr: 18.2, isha: 18.2, tune: { dhuhr: 3, maghrib: 3 } },
@@ -124,25 +124,25 @@ function times(opts) {
         out[key] = exact[key] === null ? guess : exact[key];
     }
 
-    // Interval-based Isha (Umm al-Qura): 90 minutes after Maghrib.
-    if (ishaInterval && out.maghrib !== null) out.isha = out.maghrib + ishaInterval / 60;
+    // Interval-based Isha (Umm al-Qura): 90 minutes after Maghrib, 120 in Ramadan.
+    if (ishaInterval && out.maghrib !== null) {
+        var interval = opts.ramadan && base.ramadanInterval ? base.ramadanInterval : ishaInterval;
+        out.isha = out.maghrib + interval / 60;
+    }
 
-    // High-latitude fallbacks, applied only where the angle produced nothing.
+    // High-latitude rules: replace a missing angle AND pull back a solvable one that
+    // falls outside the night portion the rule allows (adhan-js does the same).
     var rule = opts.highLat || "none";
     if (rule !== "none" && out.sunrise !== null && out.maghrib !== null) {
         var night = 24 - (out.maghrib - out.sunrise);   // hours between sunset and next sunrise
-        if (out.fajr === null) {
-            if (rule === "middle") out.fajr = out.sunrise - night / 2;
-            else if (rule === "seventh") out.fajr = out.sunrise - night / 7;
-            else if (rule === "angle" && typeof fajrAngle === "number")
-                out.fajr = out.sunrise - night * (fajrAngle / 60);
-        }
-        if (out.isha === null) {
-            if (rule === "middle") out.isha = out.maghrib + night / 2;
-            else if (rule === "seventh") out.isha = out.maghrib + night / 7;
-            else if (rule === "angle" && typeof ishaAngle === "number")
-                out.isha = out.maghrib + night * (ishaAngle / 60);
-        }
+        var fajrPart = rule === "middle" ? night / 2 : rule === "seventh" ? night / 7
+                     : rule === "angle" && typeof fajrAngle === "number" ? night * (fajrAngle / 60) : null;
+        if (fajrPart !== null && (out.fajr === null || out.fajr < out.sunrise - fajrPart))
+            out.fajr = out.sunrise - fajrPart;
+        var ishaPart = rule === "middle" ? night / 2 : rule === "seventh" ? night / 7
+                     : rule === "angle" && typeof ishaAngle === "number" ? night * (ishaAngle / 60) : null;
+        if (!ishaInterval && ishaPart !== null && (out.isha === null || out.isha > out.maghrib + ishaPart))
+            out.isha = out.maghrib + ishaPart;
     }
 
     var off = opts.offsets || {};

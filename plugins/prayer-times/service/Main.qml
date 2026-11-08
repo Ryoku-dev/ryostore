@@ -81,15 +81,14 @@ Item {
         if (timezoneReady)
             return;
         timezoneReady = true;
+        // Some hosts hand us /usr/share/zoneinfo/America/New_York; keep the whole
+        // zone name after the prefix (America/Indiana/Indianapolis is three parts).
         var clean = (tz || "").trim();
-        var parts = clean.split("/");
-        var zone = clean;
-        if (parts.length >= 2)
-            zone = parts[parts.length - 2] + "/" + parts[parts.length - 1];
-        detectedZone = zone;
+        var at = clean.indexOf("zoneinfo/");
+        if (at !== -1)
+            clean = clean.substring(at + "zoneinfo/".length);
+        detectedZone = clean;
         var guessed = C.guess(clean);
-        if (!guessed.matched)                  // try the truncated zone only as a fallback
-            guessed = C.guess(zone);
         detectedCityId = guessed.city.id;
         timezoneExact = guessed.exact;
         timezoneMatched = !!guessed.matched;
@@ -97,7 +96,10 @@ Item {
     }
 
     function timesFor(date, lat, lon, method, asr, highLat, offsets) {
+        var hijri = H.toHijri(date.getFullYear(), date.getMonth() + 1, date.getDate(), hijriAdjust);
         return PT.times({
+            // Umm al-Qura holds Isha 120 minutes in Ramadan instead of 90
+            ramadan: !!hijri && hijri.month === 9,
             year: date.getFullYear(),
             month: date.getMonth() + 1,
             day: date.getDate(),
@@ -291,7 +293,8 @@ Item {
         svc.rows = dayRows;
         svc.hasTimes = anyTime;
         // the sun never reaches the angle: honest about it instead of six "--:--"
-        svc.twilightMissing = todayTimes !== null && (todayTimes.fajr === null || todayTimes.maghrib === null)
+        svc.twilightMissing = todayTimes !== null
+            && (todayTimes.fajr === null || todayTimes.maghrib === null || todayTimes.isha === null)
             && todayTimes.dhuhr !== null;
 
         var weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

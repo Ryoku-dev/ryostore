@@ -18,6 +18,7 @@
     "width": 380
   },
   "files": [
+    "LICENSE",
     "assets/preview-widget.png",
     "assets/preview-panel.png",
     "bin/prayer-times",
@@ -36,6 +37,7 @@
   },
   "dependencies": {
     "commands": [
+      "node",
       "readlink"
     ]
   },
@@ -431,5 +433,8 @@
         "max": 1
       }
     ]
-  }
+  },
+  "commands": [
+    "bin/prayer-times"
+  ]
 }

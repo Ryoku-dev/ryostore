@@ -39,12 +39,12 @@ function fail(message) {
 // another country still prints that country's times.
 function zoneParts(timeZone, instant) {
     const parts = new Intl.DateTimeFormat('en-US', {
-        timeZone, hour12: false,
+        timeZone, hourCycle: 'h23',          // hour12:false yields 24 at midnight on older ICU
         year: 'numeric', month: '2-digit', day: '2-digit',
         hour: '2-digit', minute: '2-digit'
     }).formatToParts(instant);
     const get = (type) => Number(parts.find((p) => p.type === type).value);
-    return { y: get('year'), m: get('month'), d: get('day'), hh: get('hour') % 24, mm: get('minute') };
+    return { y: get('year'), m: get('month'), d: get('day'), hh: get('hour'), mm: get('minute') };
 }
 
 function zoneNow(timeZone) {
@@ -126,7 +126,10 @@ for (let i = 2; i < process.argv.length; ++i) {
     }
 }
 
-const guessed = cityId === null ? C.guess(Intl.DateTimeFormat().resolvedOptions().timeZone) : null;
+const zoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const guessed = cityId === null ? C.guess(zoneName) : null;
+if (guessed && !guessed.matched)
+    fail(`no city preset for timezone ${zoneName} — pass --city <id> (see --cities)`);
 const city = cityId === null ? (guessed && guessed.city) : C.byId(cityId);
 if (!city)
     fail(cityId === null ? 'no preset city for this timezone; pass --city <id> (see --cities)'
@@ -136,7 +139,10 @@ const now = zoneNow(city.tz);
 const date = parseDate(dateValue || now.iso);
 
 function calculate(day) {
+    const hijri = H.toHijri(day.getFullYear(), day.getMonth() + 1, day.getDate(), 0);
     return PT.times({
+        // Umm al-Qura holds Isha 120 minutes in Ramadan instead of 90
+        ramadan: !!hijri && hijri.month === 9,
         year: day.getFullYear(),
         month: day.getMonth() + 1,
         day: day.getDate(),

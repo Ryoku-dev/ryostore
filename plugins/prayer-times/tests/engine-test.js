@@ -70,8 +70,8 @@ FX.forEach(function (f) {
             ok(false, f.name + " " + k + " null, expected " + f.expect[k]);
             return;
         }
-        var diff = Math.abs(have - want);
-        if (diff > 720) diff = 1440 - diff;                      // midnight wrap
+        var diff = Math.abs(have - want) % 1440;                 // wrap before mirroring,
+        if (diff > 720) diff = 1440 - diff;                      // or a 24h error passes as negative
         var tol = k === "asr" ? 2 : 1;
         ok(diff <= tol, f.name + " " + k + " got " + fmt(have) + " want " + f.expect[k]);
     });
@@ -251,6 +251,22 @@ ok(PT.fmt(NaN, true) === "--:--" && PT.fmt(Infinity, true) === "--:--", "fmt rej
 ok(PT.nightInfo(null, 300) === null, "nightInfo(null) is null");
 ok(PT.nightInfo({}, 300) === null, "nightInfo with no maghrib is null");
 ok(PT.nightInfo({ maghrib: 1100 }, null) === null, "nightInfo with no fajr is null");
+
+// Umm al-Qura: Isha is 90 minutes after Maghrib, 120 during Ramadan
+var makkah = { year: 2026, month: 11, day: 8, lat: 21.4225, lon: 39.8262, tzHours: 3, method: "ummalqura" };
+var normal = PT.times(Object.assign({}, makkah, { ramadan: false }));
+var fasted = PT.times(Object.assign({}, makkah, { ramadan: true }));
+ok(Math.round(fasted.isha - fasted.maghrib) === 120, "Ramadan Isha is 120 minutes, got " + Math.round(fasted.isha - fasted.maghrib));
+ok(Math.round(normal.isha - normal.maghrib) === 90, "ordinary Isha stays at 90 minutes");
+ok(Math.round(fasted.maghrib - normal.maghrib) === 0, "only Isha moves in Ramadan");
+
+// a rule must also pull back a solvable but absurdly early Fajr
+var highLat = { year: 2026, month: 6, day: 21, lat: 59.3251, lon: 18.0711, tzHours: 2, method: "mwl", asr: 1 };
+var mid = PT.times(Object.assign({}, highLat, { highLat: "middle" }));
+var nightMin = 1440 - (mid.maghrib - mid.sunrise);          // minutes between sunset and sunrise
+ok(mid.fajr >= mid.sunrise - nightMin / 2 - 1, "middle rule caps Fajr inside the night half");
+ok(mid.isha <= mid.maghrib + nightMin / 2 + 1, "middle rule caps Isha inside the night half");
+ok(mid.fajr < mid.sunrise && mid.isha > mid.maghrib, "caps never invert the day");
 
 var polarNoAngle = PT.times({ year: 2026, month: 6, day: 21, lat: 69.6492, lon: 18.9553,
                               tzHours: 2, method: "mwl", asr: 1, highLat: "angle", ishaAngle: null });

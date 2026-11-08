@@ -192,7 +192,10 @@ var HOLIDAYS = {
 };
 
 function dayIndex(y, m, d) {
-    return Math.floor(Date.UTC(y, m - 1, d) / 86400000) + RJD_EPOCH;
+    var t = new Date(Date.UTC(y, m - 1, d));
+    // Date.UTC rolls 31 February into March and years 0-99 into 19xx: refuse instead
+    if (t.getUTCFullYear() !== y || t.getUTCMonth() + 1 !== m || t.getUTCDate() !== d) return NaN;
+    return Math.floor(t.getTime() / 86400000) + RJD_EPOCH;
 }
 
 function fromIndex(idx) {
