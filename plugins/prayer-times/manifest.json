@@ -1,0 +1,383 @@
+{
+  "id": "prayer-times",
+  "name": "Prayer Times",
+  "version": "1.0.2",
+  "author": "Sweet Pea <sweetpea@mysweetpea.cc>",
+  "description": "Prayer times in the QS Bar: next prayer with a live countdown, a full-day panel with Umm al-Qura Hijri dates, Islamic holidays, a month table and Qibla. Offline, no dependencies.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 360
+  },
+  "files": [
+    "assets/preview-widget.png",
+    "assets/preview-panel.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Prayer Times"
+  },
+  "dependencies": {
+    "commands": [
+      "readlink"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "city",
+        "type": "choice",
+        "label": "City",
+        "group": "Location",
+        "default": "baltimore",
+        "options": [
+          {
+            "value": "baltimore",
+            "label": "Baltimore, US"
+          },
+          {
+            "value": "new-york",
+            "label": "New York, US"
+          },
+          {
+            "value": "chicago",
+            "label": "Chicago, US"
+          },
+          {
+            "value": "houston",
+            "label": "Houston, US"
+          },
+          {
+            "value": "los-angeles",
+            "label": "Los Angeles, US"
+          },
+          {
+            "value": "toronto",
+            "label": "Toronto, CA"
+          },
+          {
+            "value": "london",
+            "label": "London, GB"
+          },
+          {
+            "value": "manchester",
+            "label": "Manchester, GB"
+          },
+          {
+            "value": "birmingham",
+            "label": "Birmingham, GB"
+          },
+          {
+            "value": "paris",
+            "label": "Paris, FR"
+          },
+          {
+            "value": "berlin",
+            "label": "Berlin, DE"
+          },
+          {
+            "value": "amsterdam",
+            "label": "Amsterdam, NL"
+          },
+          {
+            "value": "brussels",
+            "label": "Brussels, BE"
+          },
+          {
+            "value": "stockholm",
+            "label": "Stockholm, SE"
+          },
+          {
+            "value": "oslo",
+            "label": "Oslo, NO"
+          },
+          {
+            "value": "madrid",
+            "label": "Madrid, ES"
+          },
+          {
+            "value": "istanbul",
+            "label": "Istanbul, TR"
+          },
+          {
+            "value": "cairo",
+            "label": "Cairo, EG"
+          },
+          {
+            "value": "mecca",
+            "label": "Mecca, SA"
+          },
+          {
+            "value": "medina",
+            "label": "Medina, SA"
+          },
+          {
+            "value": "dubai",
+            "label": "Dubai, AE"
+          },
+          {
+            "value": "karachi",
+            "label": "Karachi, PK"
+          },
+          {
+            "value": "lahore",
+            "label": "Lahore, PK"
+          },
+          {
+            "value": "delhi",
+            "label": "Delhi, IN"
+          },
+          {
+            "value": "mumbai",
+            "label": "Mumbai, IN"
+          },
+          {
+            "value": "dhaka",
+            "label": "Dhaka, BD"
+          },
+          {
+            "value": "jakarta",
+            "label": "Jakarta, ID"
+          },
+          {
+            "value": "kuala-lumpur",
+            "label": "Kuala Lumpur, MY"
+          },
+          {
+            "value": "singapore",
+            "label": "Singapore, SG"
+          },
+          {
+            "value": "sydney",
+            "label": "Sydney, AU"
+          },
+          {
+            "value": "melbourne",
+            "label": "Melbourne, AU"
+          },
+          {
+            "value": "cape-town",
+            "label": "Cape Town, ZA"
+          },
+          {
+            "value": "lagos",
+            "label": "Lagos, NG"
+          },
+          {
+            "value": "nairobi",
+            "label": "Nairobi, KE"
+          },
+          {
+            "value": "tokyo",
+            "label": "Tokyo, JP"
+          },
+          {
+            "value": "sao-paulo",
+            "label": "Sao Paulo, BR"
+          }
+        ]
+      },
+      {
+        "key": "latitude",
+        "type": "text",
+        "label": "Latitude (overrides city)",
+        "group": "Location",
+        "default": ""
+      },
+      {
+        "key": "longitude",
+        "type": "text",
+        "label": "Longitude (overrides city)",
+        "group": "Location",
+        "default": ""
+      },
+      {
+        "key": "method",
+        "type": "choice",
+        "label": "Calculation method",
+        "group": "Calculation",
+        "default": "auto",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto (from city)"
+          },
+          {
+            "value": "mwl",
+            "label": "Muslim World League"
+          },
+          {
+            "value": "isna",
+            "label": "ISNA (North America)"
+          },
+          {
+            "value": "egypt",
+            "label": "Egyptian Authority"
+          },
+          {
+            "value": "karachi",
+            "label": "Karachi"
+          },
+          {
+            "value": "ummalqura",
+            "label": "Umm al-Qura"
+          },
+          {
+            "value": "dubai",
+            "label": "Dubai"
+          },
+          {
+            "value": "diyanet",
+            "label": "Diyanet (Turkey)"
+          }
+        ]
+      },
+      {
+        "key": "asr",
+        "type": "choice",
+        "label": "Asr (school)",
+        "group": "Calculation",
+        "default": "standard",
+        "options": [
+          {
+            "value": "standard",
+            "label": "Standard (Shafi'i, Maliki, Hanbali)"
+          },
+          {
+            "value": "hanafi",
+            "label": "Hanafi"
+          }
+        ]
+      },
+      {
+        "key": "highLat",
+        "type": "choice",
+        "label": "High-latitude rule",
+        "group": "Calculation",
+        "default": "none",
+        "options": [
+          {
+            "value": "none",
+            "label": "None"
+          },
+          {
+            "value": "middle",
+            "label": "Middle of the night"
+          },
+          {
+            "value": "seventh",
+            "label": "One seventh of the night"
+          },
+          {
+            "value": "angle",
+            "label": "Angle based"
+          }
+        ]
+      },
+      {
+        "key": "offsetFajr",
+        "type": "int",
+        "label": "Fajr offset (min)",
+        "group": "Offsets",
+        "default": 0,
+        "min": -30,
+        "max": 30
+      },
+      {
+        "key": "offsetSunrise",
+        "type": "int",
+        "label": "Sunrise offset (min)",
+        "group": "Offsets",
+        "default": 0,
+        "min": -30,
+        "max": 30
+      },
+      {
+        "key": "offsetDhuhr",
+        "type": "int",
+        "label": "Dhuhr offset (min)",
+        "group": "Offsets",
+        "default": 0,
+        "min": -30,
+        "max": 30
+      },
+      {
+        "key": "offsetAsr",
+        "type": "int",
+        "label": "Asr offset (min)",
+        "group": "Offsets",
+        "default": 0,
+        "min": -30,
+        "max": 30
+      },
+      {
+        "key": "offsetMaghrib",
+        "type": "int",
+        "label": "Maghrib offset (min)",
+        "group": "Offsets",
+        "default": 0,
+        "min": -30,
+        "max": 30
+      },
+      {
+        "key": "offsetIsha",
+        "type": "int",
+        "label": "Isha offset (min)",
+        "group": "Offsets",
+        "default": 0,
+        "min": -30,
+        "max": 30
+      },
+      {
+        "key": "display",
+        "type": "choice",
+        "label": "Bar shows",
+        "group": "Display",
+        "default": "full",
+        "options": [
+          {
+            "value": "full",
+            "label": "Name, time and countdown"
+          },
+          {
+            "value": "time",
+            "label": "Name and time"
+          },
+          {
+            "value": "name",
+            "label": "Name only"
+          }
+        ]
+      },
+      {
+        "key": "clock24",
+        "type": "toggle",
+        "label": "24-hour clock",
+        "group": "Display",
+        "default": true
+      },
+      {
+        "key": "hijriAdjust",
+        "type": "int",
+        "label": "Hijri adjust (days)",
+        "group": "Display",
+        "default": 0,
+        "min": -1,
+        "max": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,139 @@
+#!/usr/bin/env node
+'use strict';
+
+const PT = require('../lib/praytimes.js');
+const C = require('../lib/cities.js');
+
+const keys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+const labels = {
+    fajr: 'Fajr',
+    sunrise: 'Sunrise',
+    dhuhr: 'Dhuhr',
+    asr: 'Asr',
+    maghrib: 'Maghrib',
+    isha: 'Isha'
+};
+
+function fail(message) {
+    console.error(`prayer-times: ${message}`);
+    process.exit(1);
+}
+
+function isoDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+function parseDate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match)
+        fail('date must use YYYY-MM-DD');
+    const y = Number(match[1]);
+    const m = Number(match[2]);
+    const d = Number(match[3]);
+    const date = new Date(y, m - 1, d, 12);
+    if (date.getFullYear() !== y || date.getMonth() !== m - 1 || date.getDate() !== d)
+        fail('invalid date');
+    return date;
+}
+
+let mode = 'json';
+let cityId = 'baltimore';
+let dateValue = isoDate(new Date());
+
+for (let i = 2; i < process.argv.length; ++i) {
+    const arg = process.argv[i];
+    if (arg === '--json' || arg === '--text' || arg === '--waybar') {
+        mode = arg.substring(2);
+    } else if (arg === '--city') {
+        if (++i >= process.argv.length)
+            fail('--city requires an id');
+        cityId = process.argv[i];
+    } else if (arg === '--date') {
+        if (++i >= process.argv.length)
+            fail('--date requires YYYY-MM-DD');
+        dateValue = process.argv[i];
+    } else {
+        fail(`unknown option: ${arg}`);
+    }
+}
+
+const city = C.byId(cityId);
+if (!city)
+    fail(`unknown city: ${cityId}`);
+const date = parseDate(dateValue);
+
+function calculate(day) {
+    return PT.times({
+        year: day.getFullYear(),
+        month: day.getMonth() + 1,
+        day: day.getDate(),
+        lat: city.lat,
+        lon: city.lon,
+        tzHours: -new Date(day.getFullYear(), day.getMonth(), day.getDate(), 12).getTimezoneOffset() / 60,
+        method: city.method,
+        asr: 1,
+        highLat: 'none',
+        offsets: { fajr: 0, sunrise: 0, dhuhr: 0, asr: 0, maghrib: 0, isha: 0 }
+    });
+}
+
+const times = calculate(date);
+const formatted = {};
+for (const key of keys)
+    formatted[key] = PT.fmt(times ? times[key] : null, true);
+
+if (mode === 'json') {
+    console.log(JSON.stringify({
+        city: city.id,
+        name: `${city.name}, ${city.country}`,
+        date: isoDate(date),
+        method: city.method,
+        times: formatted
+    }));
+} else if (mode === 'text') {
+    for (const key of keys)
+        console.log(`${labels[key].padEnd(8)} ${formatted[key]}`);
+} else {
+    let next = null;
+    const now = new Date();
+    if (isoDate(now) === isoDate(date)) {
+        const minutes = now.getHours() * 60 + now.getMinutes();
+        for (const key of keys) {
+            if (times && times[key] !== null && times[key] > minutes) {
+                next = { key, at: times[key] };
+                break;
+            }
+        }
+        if (!next) {
+            const tomorrow = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1, 12);
+            const tomorrowTimes = calculate(tomorrow);
+            for (const key of keys) {
+                if (tomorrowTimes && tomorrowTimes[key] !== null) {
+                    next = { key, at: tomorrowTimes[key] };
+                    break;
+                }
+            }
+        }
+    } else {
+        for (const key of keys) {
+            if (times && times[key] !== null) {
+                next = { key, at: times[key] };
+                break;
+            }
+        }
+    }
+    if (!next)
+        next = { key: 'fajr', at: null };
+    const icon = next.key === 'fajr' || next.key === 'isha' ? '☾' : '☀';
+    const tooltip = [`${city.name}, ${city.country} · ${isoDate(date)}`]
+        .concat(keys.map(key => `${labels[key]} ${formatted[key]}`))
+        .join('\n');
+    console.log(JSON.stringify({
+        text: `${icon} ${labels[next.key]} ${PT.fmt(next.at, true)}`,
+        tooltip,
+        class: 'prayer'
+    }));
+}

@@ -1,0 +1,25 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: engine tests against AlAdhan ground truth
+        run: node tests/engine-test.js
+      - name: manifest sanity
+        run: |
+          node -e "const m=require('./manifest.json');
+          for (const k of ['id','name','version','author','license','hosts','entryPoints','metadata'])
+            if (!m[k]) { console.error('missing manifest key:', k); process.exit(1) }
+          if (m.id !== 'prayer-times') { console.error('id must match the folder name'); process.exit(1) }
+          console.log('manifest ok')"
+      - name: CLI smoke
+        run: node bin/prayer-times --waybar

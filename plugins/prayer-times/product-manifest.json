@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "id": "prayer-times",
+  "category": "plugins",
+  "version": "1.0.2",
+  "destination": "ryoku/plugins/prayer-times",
+  "files": [
+    {
+      "source": ".github/workflows/validate.yml",
+      "destination": ".github/workflows/validate.yml",
+      "sha256": "f01154d462c70721a51ed6a6e625bbffeaa2775d586b62a01dd07f367e11c81f",
+      "mode": "0644",
+      "size": 809,
+      "install": true
+    },
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "f30bf8c5e991b6107580af6cf9a8fcd7e5a7f9c8c34f0d0f88b7d434fb611f45",
+      "mode": "0644",
+      "size": 31,
+      "install": true
+    },
+    {
+      "source": ".oc-tmp/BRIEF.md",
+      "destination": ".oc-tmp/BRIEF.md",
+      "sha256": "0160319aea1299ed4c0ffa8b52141a932565713dd88a9e38ff8a9e8958bdb70c",
+      "mode": "0644",
+      "size": 14284,
+      "install": true
+    },
+    {
+      "source": ".oc-tmp/Widget.scaffold.qml",
+      "destination": ".oc-tmp/Widget.scaffold.qml",
+      "sha256": "33ba8ba47c1695d631c3bd96048a33d182daad5f08a93af1197c15a66b9c13e5",
+      "mode": "0644",
+      "size": 2232,
+      "install": true
+    },
+    {
+      "source": ".oc-tmp/probe.qml",
+      "destination": ".oc-tmp/probe.qml",
+      "sha256": "4b78806aad9fd4c2b9d20b09cad744314b5fd01c4407c242f63580f25b99a3c9",
+      "mode": "0644",
+      "size": 187,
+      "install": true
+    },
+    {
+      "source": ".oc-tmp/run.log",
+      "destination": ".oc-tmp/run.log",
+      "sha256": "710663e72d74c521b3740b8b00c1efdfb581e2ce2f4eaef64371852249f9adec",
+      "mode": "0644",
+      "size": 5718,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "a94ac1c48c30a2e1ff3114abcf319f72b47b050185dd69cf7a42b6d83379180b",
+      "mode": "0644",
+      "size": 4631,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3a7857c238a5754b5380348616d3d187aff6c2517e23bbf301b0a67581c445f8",
+      "mode": "0644",
+      "size": 1066,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "6e3a6c463e373fe890807ccf4958cd29d0e5a7211b973d3aeb8a9b48197f3412",
+      "mode": "0644",
+      "size": 2217,
+      "install": false
+    },
+    {
+      "source": "assets/preview-panel.png",
+      "destination": "assets/preview-panel.png",
+      "sha256": "3db7cfcef7822ef43e804e8a3261555add4eab0a87e9ce99ecd6f39888816b02",
+      "mode": "0644",
+      "size": 36584,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "7d755f1ad9fbc90b07e9d80ac5f9cdbd221d2b04d0677e23c4761d475620ae3f",
+      "mode": "0644",
+      "size": 30237,
+      "install": false
+    },
+    {
+      "source": "bin/prayer-times",
+      "destination": "bin/prayer-times",
+      "sha256": "9161d7635da7238c96511bb1731e673deab4ea84e8be7e6c8b83b18749bce3eb",
+      "mode": "0755",
+      "size": 4171,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "2951e4b6423495a8abfa7de6ed70d4816b69ab16f079d57d8576e3cb593ba7b9",
+      "mode": "0644",
+      "size": 20402,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "7d148251b431c0ad242d3e0c5bbd987c19bf7d68b955bf476e889e5c95c7f17f",
+      "mode": "0644",
+      "size": 3312,
+      "install": true
+    },
+    {
+      "source": "contrib/waybar/README.md",
+      "destination": "contrib/waybar/README.md",
+      "sha256": "42b12dd36b2d0de6e97ed4410743fbfcd11da92254b80b4aea801dbbc26cb73f",
+      "mode": "0644",
+      "size": 206,
+      "install": false
+    },
+    {
+      "source": "contrib/waybar/config.jsonc",
+      "destination": "contrib/waybar/config.jsonc",
+      "sha256": "9645aaba20240d9e2892a38ddc5219ab3b10220c95dbc80b26260aa325ca64bd",
+      "mode": "0644",
+      "size": 163,
+      "install": true
+    },
+    {
+      "source": "lib/cities.js",
+      "destination": "lib/cities.js",
+      "sha256": "33d8e5963e22fdc14919cf41c0b5844e796868a99cca7adea7ed40eae5b7bfec",
+      "mode": "0644",
+      "size": 5490,
+      "install": true
+    },
+    {
+      "source": "lib/hijri.js",
+      "destination": "lib/hijri.js",
+      "sha256": "cf09c6d05973cec16cc2099b712ce6a5f1581a65437d3fbbb129b49185b23cc1",
+      "mode": "0644",
+      "size": 17035,
+      "install": true
+    },
+    {
+      "source": "lib/praytimes.js",
+      "destination": "lib/praytimes.js",
+      "sha256": "37297c03301fff7e93dcd945524f41eb5e7890e52130ad925a9e040ec93f4e5b",
+      "mode": "0644",
+      "size": 7784,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "bef9f166abcf5d67ed497c0a1f9a26516ed438c74f12778a871a6f1c2e96fac6",
+      "mode": "0644",
+      "size": 8640,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "0a9bf3d2985b80aba9f982cf001680cbd28a387d09a47b554cef3f242f43ca4c",
+      "mode": "0644",
+      "size": 10306,
+      "install": true
+    },
+    {
+      "source": "tests/engine-test.js",
+      "destination": "tests/engine-test.js",
+      "sha256": "6168eb49fa243c2e6297e94aecc6dc27e9a23e068337956bf0318747df4aa2c3",
+      "mode": "0644",
+      "size": 5103,
+      "install": true
+    },
+    {
+      "source": "tests/fixtures.json",
+      "destination": "tests/fixtures.json",
+      "sha256": "713bfb8669453699453632c3aac8fea241cbe5cb6a3f9663842b3b2ca03409a2",
+      "mode": "0644",
+      "size": 7620,
+      "install": true
+    }
+  ]
+}

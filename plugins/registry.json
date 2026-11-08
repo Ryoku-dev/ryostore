@@ -250,7 +250,6 @@
       ],
       "lastUpdated": "2026-08-12"
     },
-
     {
       "id": "obsidian",
       "name": "Obsidian",
@@ -1353,6 +1352,34 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-11-05"
+    },
+    {
+      "id": "prayer-times",
+      "name": "Prayer Times",
+      "version": "1.0.2",
+      "path": "plugins/prayer-times",
+      "author": "Sweet Pea <sweetpea@mysweetpea.cc>",
+      "summary": "Prayer times in the QS Bar: next prayer with a live countdown, a full-day panel with Umm al-Qura Hijri dates, Islamic holidays, a month t...",
+      "description": "Prayer times in the QS Bar: next prayer with a live countdown, a full-day panel with Umm al-Qura Hijri dates, Islamic holidays, a month table and Qibla. Offline, no dependencies.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "45dd7cb95579e962bfebcb733d16d4096e67f111683bd25fd7b76612cd201a26",
+      "official": false,
+      "tagline": "Prayer times in the QS Bar: next prayer with a live countdown, a full-day panel with Umm al-Qura Hijri dates, Islamic holidays, a month t...",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-07"
     }
   ]
 }

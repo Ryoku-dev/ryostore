@@ -1,0 +1,527 @@
+[
+ {
+  "name": "baltimore-isna",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": -5.0,
+  "method": "isna",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:25",
+   "sunrise": "06:41",
+   "dhuhr": "11:50",
+   "asr": "14:38",
+   "maghrib": "16:59",
+   "isha": "18:15"
+  }
+ },
+ {
+  "name": "baltimore-mwl",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": -5.0,
+  "method": "mwl",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:09",
+   "sunrise": "06:41",
+   "dhuhr": "11:50",
+   "asr": "14:38",
+   "maghrib": "16:59",
+   "isha": "18:25"
+  }
+ },
+ {
+  "name": "baltimore-egypt",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": -5.0,
+  "method": "egypt",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:02",
+   "sunrise": "06:41",
+   "dhuhr": "11:50",
+   "asr": "14:38",
+   "maghrib": "16:59",
+   "isha": "18:28"
+  }
+ },
+ {
+  "name": "baltimore-karachi",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": -5.0,
+  "method": "karachi",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:09",
+   "sunrise": "06:41",
+   "dhuhr": "11:50",
+   "asr": "14:38",
+   "maghrib": "16:59",
+   "isha": "18:30"
+  }
+ },
+ {
+  "name": "baltimore-ummalqura",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": -5.0,
+  "method": "ummalqura",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:07",
+   "sunrise": "06:41",
+   "dhuhr": "11:50",
+   "asr": "14:38",
+   "maghrib": "16:59",
+   "isha": "18:29"
+  }
+ },
+ {
+  "name": "baltimore-dubai",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": -5.0,
+  "method": "dubai",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:08",
+   "sunrise": "06:41",
+   "dhuhr": "11:53",
+   "asr": "14:38",
+   "maghrib": "17:02",
+   "isha": "18:31"
+  }
+ },
+ {
+  "name": "baltimore-diyanet",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": -5.0,
+  "method": "diyanet",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:09",
+   "sunrise": "06:34",
+   "dhuhr": "11:55",
+   "asr": "14:42",
+   "maghrib": "17:06",
+   "isha": "18:25"
+  }
+ },
+ {
+  "name": "london-isna",
+  "lat": 51.5074,
+  "lon": -0.1278,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 0.0,
+  "method": "isna",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:29",
+   "sunrise": "07:04",
+   "dhuhr": "11:44",
+   "asr": "14:00",
+   "maghrib": "16:23",
+   "isha": "17:59"
+  }
+ },
+ {
+  "name": "london-mwl",
+  "lat": 51.5074,
+  "lon": -0.1278,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 0.0,
+  "method": "mwl",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:10",
+   "sunrise": "07:04",
+   "dhuhr": "11:44",
+   "asr": "14:00",
+   "maghrib": "16:23",
+   "isha": "18:12"
+  }
+ },
+ {
+  "name": "london-egypt",
+  "lat": 51.5074,
+  "lon": -0.1278,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 0.0,
+  "method": "egypt",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:00",
+   "sunrise": "07:04",
+   "dhuhr": "11:44",
+   "asr": "14:00",
+   "maghrib": "16:23",
+   "isha": "18:15"
+  }
+ },
+ {
+  "name": "london-karachi",
+  "lat": 51.5074,
+  "lon": -0.1278,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 0.0,
+  "method": "karachi",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:10",
+   "sunrise": "07:04",
+   "dhuhr": "11:44",
+   "asr": "14:00",
+   "maghrib": "16:23",
+   "isha": "18:18"
+  }
+ },
+ {
+  "name": "london-ummalqura",
+  "lat": 51.5074,
+  "lon": -0.1278,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 0.0,
+  "method": "ummalqura",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:06",
+   "sunrise": "07:04",
+   "dhuhr": "11:44",
+   "asr": "14:00",
+   "maghrib": "16:23",
+   "isha": "17:53"
+  }
+ },
+ {
+  "name": "london-dubai",
+  "lat": 51.5074,
+  "lon": -0.1278,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 0.0,
+  "method": "dubai",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:08",
+   "sunrise": "07:04",
+   "dhuhr": "11:47",
+   "asr": "14:00",
+   "maghrib": "16:26",
+   "isha": "18:19"
+  }
+ },
+ {
+  "name": "london-diyanet",
+  "lat": 51.5074,
+  "lon": -0.1278,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 0.0,
+  "method": "diyanet",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:10",
+   "sunrise": "06:57",
+   "dhuhr": "11:49",
+   "asr": "14:04",
+   "maghrib": "16:30",
+   "isha": "18:12"
+  }
+ },
+ {
+  "name": "karachi-isna",
+  "lat": 24.8547,
+  "lon": 67.0207,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 5.0,
+  "method": "isna",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:38",
+   "sunrise": "06:43",
+   "dhuhr": "12:16",
+   "asr": "15:26",
+   "maghrib": "17:48",
+   "isha": "18:53"
+  }
+ },
+ {
+  "name": "karachi-mwl",
+  "lat": 24.8547,
+  "lon": 67.0207,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 5.0,
+  "method": "mwl",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:25",
+   "sunrise": "06:43",
+   "dhuhr": "12:16",
+   "asr": "15:26",
+   "maghrib": "17:48",
+   "isha": "19:02"
+  }
+ },
+ {
+  "name": "karachi-egypt",
+  "lat": 24.8547,
+  "lon": 67.0207,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 5.0,
+  "method": "egypt",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:18",
+   "sunrise": "06:43",
+   "dhuhr": "12:16",
+   "asr": "15:26",
+   "maghrib": "17:48",
+   "isha": "19:04"
+  }
+ },
+ {
+  "name": "karachi-karachi",
+  "lat": 24.8547,
+  "lon": 67.0207,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 5.0,
+  "method": "karachi",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:25",
+   "sunrise": "06:43",
+   "dhuhr": "12:16",
+   "asr": "15:26",
+   "maghrib": "17:48",
+   "isha": "19:06"
+  }
+ },
+ {
+  "name": "karachi-ummalqura",
+  "lat": 24.8547,
+  "lon": 67.0207,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 5.0,
+  "method": "ummalqura",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:23",
+   "sunrise": "06:43",
+   "dhuhr": "12:16",
+   "asr": "15:26",
+   "maghrib": "17:48",
+   "isha": "19:18"
+  }
+ },
+ {
+  "name": "karachi-dubai",
+  "lat": 24.8547,
+  "lon": 67.0207,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 5.0,
+  "method": "dubai",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:24",
+   "sunrise": "06:43",
+   "dhuhr": "12:19",
+   "asr": "15:26",
+   "maghrib": "17:51",
+   "isha": "19:07"
+  }
+ },
+ {
+  "name": "karachi-diyanet",
+  "lat": 24.8547,
+  "lon": 67.0207,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 5.0,
+  "method": "diyanet",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:25",
+   "sunrise": "06:36",
+   "dhuhr": "12:21",
+   "asr": "15:30",
+   "maghrib": "17:55",
+   "isha": "19:02"
+  }
+ },
+ {
+  "name": "sydney-mwl",
+  "lat": -33.8698,
+  "lon": 151.2083,
+  "date": [
+   2026,
+   11,
+   7
+  ],
+  "tzHours": 11.0,
+  "method": "mwl",
+  "asr": 1,
+  "expect": {
+   "fajr": "04:16",
+   "sunrise": "05:50",
+   "dhuhr": "12:39",
+   "asr": "16:21",
+   "maghrib": "19:28",
+   "isha": "20:56"
+  }
+ },
+ {
+  "name": "newyork-dst-end-isna",
+  "lat": 40.7127,
+  "lon": -74.006,
+  "date": [
+   2026,
+   11,
+   1
+  ],
+  "tzHours": -5.0,
+  "method": "isna",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:10",
+   "sunrise": "06:26",
+   "dhuhr": "11:40",
+   "asr": "14:30",
+   "maghrib": "16:52",
+   "isha": "18:09"
+  }
+ },
+ {
+  "name": "tromso-midsummer-mwl",
+  "lat": 69.6492,
+  "lon": 18.9553,
+  "date": [
+   2026,
+   6,
+   21
+  ],
+  "tzHours": 2.0,
+  "method": "mwl",
+  "asr": 1,
+  "expect": {
+   "fajr": "00:46",
+   "sunrise": "00:46",
+   "dhuhr": "12:46",
+   "asr": "17:58",
+   "maghrib": "00:46",
+   "isha": "00:46"
+  }
+ },
+ {
+  "name": "tromso-midwinter-mwl",
+  "lat": 69.6492,
+  "lon": 18.9553,
+  "date": [
+   2026,
+   12,
+   21
+  ],
+  "tzHours": 1.0,
+  "method": "mwl",
+  "asr": 1,
+  "expect": {
+   "fajr": "06:28",
+   "sunrise": "11:42",
+   "dhuhr": "11:42",
+   "asr": "12:14",
+   "maghrib": "11:42",
+   "isha": "16:44"
+  }
+ }
+]

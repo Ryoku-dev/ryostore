@@ -1,0 +1,7 @@
+{
+  "custom/prayer": {
+    "interval": 60,
+    "return-type": "json",
+    "exec": "node ~/.local/share/ryoku/plugins/prayer-times/bin/prayer-times --waybar"
+  }
+}
