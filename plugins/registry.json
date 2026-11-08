@@ -322,7 +322,7 @@
       "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
       "upstream": "https://github.com/visnudeva/ryostore/tree/main/plugins/smart-brightness",
       "summary": "Max the backlight for fullscreen media, then restore.",
-      "description": "Max the backlight for fullscreen media, then restore. Runs from a desktop widget (or the bar) \u2014 no QS Bar required.",
+      "description": "Max the backlight for fullscreen media, then restore. Runs from a desktop widget (or the bar) — no QS Bar required.",
       "tags": [
         "brightness",
         "media",
@@ -420,12 +420,12 @@
     },
     {
       "id": "public-ip",
-      "name": "IP P\u00fablica",
+      "name": "IP Pública",
       "version": "0.1.0",
       "path": "plugins/public-ip",
       "author": "vampirejsv <vampirejsv@local>",
-      "summary": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
-      "description": "Muestra la IP p\u00fablica actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
+      "summary": "Muestra la IP pública actual (consultando https://checkip.",
+      "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
       "tags": [
         "bar-widget"
       ],
@@ -438,7 +438,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "eced7c39a65f038744a15ea4577d65648243e948521fa46d80b1f107eb9b2cc0",
       "official": false,
-      "tagline": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
+      "tagline": "Muestra la IP pública actual (consultando https://checkip.",
       "icon": "public",
       "hosts": [
         "topbarGlyph"
@@ -1372,7 +1372,7 @@
         "assets/preview-panel.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "1978dedfddcd29ef03ceaa2bb0f3f3e2a4a9aaa33a0e4d71d2fe4897059b65b1",
+      "manifestSha256": "64b6b75af511de031b6bb62ea430c3721c06a4e44b7232811435a006c4f2ed3a",
       "official": false,
       "tagline": "Prayer times, Hijri dates, holidays and Qibla in the QS Bar. Offline, zero dependencies.",
       "icon": "",

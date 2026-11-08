@@ -482,5 +482,47 @@
    "maghrib": "22:08",
    "isha": "23:40"
   }
+ },
+ {
+  "name": "baltimore-equinox",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   3,
+   21
+  ],
+  "tzHours": -4.0,
+  "method": "isna",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:54",
+   "sunrise": "07:08",
+   "dhuhr": "13:14",
+   "asr": "16:40",
+   "maghrib": "19:20",
+   "isha": "20:33"
+  }
+ },
+ {
+  "name": "baltimore-equinox-2",
+  "lat": 39.2909,
+  "lon": -76.6108,
+  "date": [
+   2026,
+   3,
+   22
+  ],
+  "tzHours": -4.0,
+  "method": "isna",
+  "asr": 1,
+  "expect": {
+   "fajr": "05:53",
+   "sunrise": "07:07",
+   "dhuhr": "13:13",
+   "asr": "16:40",
+   "maghrib": "19:21",
+   "isha": "20:35"
+  }
  }
 ]

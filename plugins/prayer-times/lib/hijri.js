@@ -6,6 +6,9 @@
 
 var FIRST_YEAR = 1343;
 var RJD_EPOCH = 40588;   // Math.floor(Date.UTC(y,m-1,d)/86400000) + RJD_EPOCH = RJD
+// the table ends with the START of 1500-12, not a boundary past it; that month
+// is 30 days long (2077-10-18 .. 2077-11-16) and there is nothing after it
+var LAST_MONTH_DAYS = 30;
 
 var MONTH_STARTS = [
     23999, 24029, 24058, 24088, 24118, 24147, 24177, 24207, 24237, 24265, 24295, 24325,
@@ -200,7 +203,9 @@ function fromIndex(idx) {
 // Gregorian -> Hijri. adjust shifts the result by +/-1 day for local moon sighting.
 function toHijri(y, m, d, adjust) {
     var idx = dayIndex(y, m, d) + (adjust || 0);
-    if (idx < MONTH_STARTS[0] || idx >= MONTH_STARTS[MONTH_STARTS.length - 1] + 30) return null;
+    // the table has no terminal boundary row: the last entry starts 1500-12, which
+    // is 30 days long, so the table covers up to and including its day 30
+    if (idx < MONTH_STARTS[0] || idx >= MONTH_STARTS[MONTH_STARTS.length - 1] + LAST_MONTH_DAYS) return null;
     var lo = 0, hi = MONTH_STARTS.length - 1;
     while (lo < hi) {
         var mid = (lo + hi + 1) >> 1;
@@ -211,8 +216,12 @@ function toHijri(y, m, d, adjust) {
 
 // Hijri -> Gregorian.
 function toGregorian(hy, hm, hd) {
+    if (hm < 1 || hm > 12 || hm % 1 !== 0 || hd % 1 !== 0 || hy % 1 !== 0) return null;
     var i = (hy - FIRST_YEAR) * 12 + (hm - 1);
     if (i < 0 || i >= MONTH_STARTS.length) return null;
+    // a day past the month end would otherwise roll into the next month and look valid
+    var length = i === MONTH_STARTS.length - 1 ? LAST_MONTH_DAYS : MONTH_STARTS[i + 1] - MONTH_STARTS[i];
+    if (hd < 1 || hd > length) return null;
     return fromIndex(MONTH_STARTS[i] + hd - 1);
 }
 

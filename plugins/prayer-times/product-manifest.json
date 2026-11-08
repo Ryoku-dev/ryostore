@@ -6,14 +6,6 @@
   "destination": "ryoku/plugins/prayer-times",
   "files": [
     {
-      "source": ".github/workflows/validate.yml",
-      "destination": ".github/workflows/validate.yml",
-      "sha256": "01eec96f9a215443a2c93093b0f055f1e341a5d7ecffcc9d617494144907fbd1",
-      "mode": "0644",
-      "size": 2025,
-      "install": true
-    },
-    {
       "source": ".gitignore",
       "destination": ".gitignore",
       "sha256": "f30bf8c5e991b6107580af6cf9a8fcd7e5a7f9c8c34f0d0f88b7d434fb611f45",
@@ -72,9 +64,9 @@
     {
       "source": "bin/prayer-times",
       "destination": "bin/prayer-times",
-      "sha256": "7423db9fa449f5b54726552d5821723c5e77f40e4db7684fc76254a97a01508f",
+      "sha256": "7c3afbcc9b0a5f8ffd4a6d2274d15e3c22cc07a0b6b627167020849e1dbec4fc",
       "mode": "0755",
-      "size": 6976,
+      "size": 7185,
       "install": true
     },
     {
@@ -112,25 +104,25 @@
     {
       "source": "lib/cities.js",
       "destination": "lib/cities.js",
-      "sha256": "d0434184f86a25e92a2be52c18a64c0584ca5e3027c86686554d4ad70b3157f0",
+      "sha256": "4898cbc266e64643207884cb7ad5635cc7556a787d908cd55b4fa2bd8d79c1fa",
       "mode": "0644",
-      "size": 6629,
+      "size": 7011,
       "install": true
     },
     {
       "source": "lib/hijri.js",
       "destination": "lib/hijri.js",
-      "sha256": "7babc57934ef6f9a9094e837993c8153ee8bfae82ccf62b1eab0c5405c9e85f2",
+      "sha256": "25766a3c5e54a6884e3a42e3d0e8d607d619116a077c18c4d4d789f593e60e21",
       "mode": "0644",
-      "size": 17726,
+      "size": 18406,
       "install": true
     },
     {
       "source": "lib/praytimes.js",
       "destination": "lib/praytimes.js",
-      "sha256": "492b6921f0db7d62610cdd4eefa6a1fe960dad39a57f377f5e8710403af0ba64",
+      "sha256": "bb6b0ee47b3e4003c87b535aa71b9de814039d7adbaf02ac91b84dee1035be4f",
       "mode": "0644",
-      "size": 8886,
+      "size": 9198,
       "install": true
     },
     {
@@ -144,25 +136,25 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "7dd26691db5501c0f62c9024ed35659289dfca5f26b6ff789dabea73743ea373",
+      "sha256": "273de507392afee8887c702e4677dcc2ecd9da347996826f2d39ed7f5d4ce86a",
       "mode": "0644",
-      "size": 15660,
+      "size": 15806,
       "install": true
     },
     {
       "source": "tests/engine-test.js",
       "destination": "tests/engine-test.js",
-      "sha256": "50f9b582b6489b2ec661ce92b9700087d880834f6a540f1a2e6707a2a7d6f099",
+      "sha256": "cc3537de9dd6974f0b71c549308087a9bfade7f2b488b05dfd72ce70ea3c8bdf",
       "mode": "0644",
-      "size": 13856,
+      "size": 16153,
       "install": true
     },
     {
       "source": "tests/fixtures.json",
       "destination": "tests/fixtures.json",
-      "sha256": "223dd732ac89ac6760906089d377c05c0e56b0f193a1db2c001c0c39fc78fb84",
+      "sha256": "ad24792ceade58429de1b5e8d9ead23f686c812a6771fee63ede43c4ea20098a",
       "mode": "0644",
-      "size": 7014,
+      "size": 7630,
       "install": true
     }
   ]

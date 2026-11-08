@@ -111,7 +111,7 @@ for (let i = 2; i < process.argv.length; ++i) {
     } else if (arg === '--city') {
         if (++i >= process.argv.length)
             fail('--city requires an id');
-        cityId = process.argv[i];
+        cityId = process.argv[i] === 'auto' ? null : process.argv[i];
     } else if (arg === '--date') {
         if (++i >= process.argv.length)
             fail('--date requires YYYY-MM-DD');
@@ -121,9 +121,11 @@ for (let i = 2; i < process.argv.length; ++i) {
     }
 }
 
-const city = C.byId(cityId === null ? C.guess(Intl.DateTimeFormat().resolvedOptions().timeZone).city.id : cityId);
+const guessed = cityId === null ? C.guess(Intl.DateTimeFormat().resolvedOptions().timeZone) : null;
+const city = cityId === null ? (guessed && guessed.city) : C.byId(cityId);
 if (!city)
-    fail(`unknown city: ${cityId}`);
+    fail(cityId === null ? 'no preset city for this timezone; pass --city <id> (see --cities)'
+                         : `unknown city: ${cityId}`);
 
 const now = zoneNow(city.tz);
 const date = parseDate(dateValue || now.iso);

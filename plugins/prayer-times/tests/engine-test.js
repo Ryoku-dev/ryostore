@@ -18,6 +18,7 @@
 
 var PT = require("../lib/praytimes.js");
 var H  = require("../lib/hijri.js");
+var C  = require("../lib/cities.js");
 var FX = require("./fixtures.json");
 
 var KEYS = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"];
@@ -132,7 +133,8 @@ function trueCrossing(y, m, d, lat, lon, tz, around, target) {
     ["nairobi", -1.3024, 36.8289, 3, "mwl", 18, 17]
 ].forEach(function (c) {
     var name = c[0], lat = c[1], lon = c[2], tz = c[3], method = c[4];
-    [["2026-11-07", 2026, 11, 7], ["2026-06-21", 2026, 6, 21], ["2027-03-10", 2027, 3, 10]]
+    [["2026-11-07", 2026, 11, 7], ["2026-06-21", 2026, 6, 21], ["2027-03-10", 2027, 3, 10],
+     ["2026-03-21", 2026, 3, 21]]
         .forEach(function (day) {
             var t = PT.times({ year: day[1], month: day[2], day: day[3], lat: lat, lon: lon,
                                tzHours: tz, method: method, asr: 1, highLat: "none" });
@@ -150,6 +152,31 @@ function trueCrossing(y, m, d, lat, lon, tz, around, target) {
                        offSeconds.toFixed(0) + "s from the true " + target + "deg crossing");
                 });
         });
+});
+
+// A time that is out by a full day still looks plausible once it is wrapped into a
+// clock, so check the raw minutes: never negative, and always in order. The March
+// equinox used to shift every event by 24h here (equation of time wrapping).
+[
+    ["baltimore", 39.2909, -76.6108, -4, "isna"],
+    ["london", 51.5074, -0.1278, 0, "mwl"],
+    ["sydney", -33.8698, 151.2083, 11, "mwl"]
+].forEach(function (c) {
+    for (var day = 0; day <= 6; day++) {
+        [[2026, 3, 18], [2026, 9, 20]].forEach(function (start) {
+            var date = new Date(start[0], start[1] - 1, start[2] + day);
+            var t = PT.times({ year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate(),
+                               lat: c[1], lon: c[2], tzHours: c[3], method: c[4], asr: 1 });
+            var label = c[0] + " " + date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+            var negative = KEYS.filter(function (k) { return t[k] !== null && t[k] < 0; });
+            ok(negative.length === 0, label + " has no negative minutes (" + negative.join(",") + ")");
+            var ascending = true;
+            for (var i = 1; i < KEYS.length; i++) {
+                if (t[KEYS[i]] !== null && t[KEYS[i - 1]] !== null && t[KEYS[i]] <= t[KEYS[i - 1]]) ascending = false;
+            }
+            ok(ascending, label + " runs fajr -> isha in order: " + KEYS.map(function (k) { return fmt(t[k]); }).join(" "));
+        });
+    }
 });
 
 // ---------------------------------------------------------------- 3. structure
@@ -201,6 +228,13 @@ ok(badLength === 0, "months are 29/30 days from 1420 AH on, and never absurd bef
        " want " + a[4] + "-" + a[5] + "-" + a[6]);
 });
 
+ok(H.toGregorian(1500, 12, 30) !== null, "last month has a day 30");
+ok(H.toGregorian(1500, 12, 31) === null, "day past the last month is rejected, not rolled over");
+ok(H.toGregorian(1500, 11, 40) === null, "day past a month end is rejected");
+ok(H.toGregorian(1500, 13, 1) === null, "month 13 is rejected");
+ok(H.toGregorian(1500, 0, 1) === null, "month 0 is rejected");
+ok(H.toHijri(2077, 11, 17, 0) === null, "day after the table ends is null, not 1501");
+
 var back = H.toGregorian(1448, 5, 27);
 ok(back && back.y === 2026 && back.m === 11 && back.d === 7, "hijri roundtrip 1448-05-27");
 ok(H.holidayFor({ y: 1448, m: 10, d: 1 }) === "Eid al-Fitr", "holiday 10-1 = Eid al-Fitr");
@@ -217,6 +251,11 @@ ok(ni && ni.lastThird > ni.midnight, "nightInfo lastThird after midnight");
 
 var q = PT.qibla(51.5074, -0.1278);
 ok(q > 117 && q < 121, "qibla from London ~119deg, got " + q.toFixed(1));
+var guessed = C.guess("America/New_York");
+ok(guessed.city !== null && guessed.city.id === "new-york", "zone resolves to a starter city");
+ok(guessed.exact === false, "a timezone guess is never reported as an exact city");
+ok(C.guess("Asia/Kathmandu").exact === false, "unknown zone is estimated");
+
 ok(PT.compassPoint(45) === "NE" && PT.compassPoint(0) === "N" && PT.compassPoint(292.5) === "WNW", "compassPoint");
 
 ok(PT.fmt(325, true) === "05:25" && PT.fmt(325, false) === "5:25 AM", "fmt 12h/24h");

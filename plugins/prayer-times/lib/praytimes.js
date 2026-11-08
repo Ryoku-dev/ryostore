@@ -44,7 +44,12 @@ function sunPosition(jd) {
     var e = 23.439 - 0.00000036 * D;
     var ra = Math.atan2(Math.cos(e * DEG) * Math.sin(L * DEG), Math.cos(L * DEG)) / DEG / 15;
     var decl = Math.asin(Math.sin(e * DEG) * Math.sin(L * DEG)) / DEG;
-    return { decl: decl, eqt: q / 15 - ((ra + 24) % 24) };
+    // q wraps at 360 and right ascension wraps at its own zero, a day apart around
+    // the March equinox: for two days a year the raw difference is out by 24 hours
+    // and every time lands a day off. Fold it into the real -12..12 hour range.
+    var eqt = q / 15 - ((ra + 24) % 24);
+    eqt = ((eqt + 12) % 24 + 24) % 24 - 12;
+    return { decl: decl, eqt: eqt };
 }
 
 // Hours from solar noon to the given depression angle. null when unsolvable.

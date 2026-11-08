@@ -55,16 +55,23 @@ function byId(id) {
     return null;
 }
 
-// Map an IANA zone name (from /etc/localtime) to a preset. Exact match only:
-// a wrong city is worse than an obvious one, so no fuzzy guessing here. When it
-// misses, the caller keeps the fallback and flags the result as estimated so the
-// UI can say "set your city".
+// Map an IANA zone name (from /etc/localtime) to a preset. A zone is not a city:
+// America/New_York covers a thousand miles, so a zone hit is always only a
+// starting point and is reported as estimated. The UI then asks for a real city.
 var FALLBACK = "london";
 
 function guess(tz) {
     if (tz) {
-        for (var i = 0; i < CITIES.length; i++)
-            if (CITIES[i].tz === tz) return { city: CITIES[i], exact: true };
+        // prefer the zone's own namesake: America/New_York should start at New York,
+        // not at whichever preset happens to share the zone first
+        var tail = tz.split("/").pop().toLowerCase().replace(/_/g, "-");
+        var first = null;
+        for (var i = 0; i < CITIES.length; i++) {
+            if (CITIES[i].tz !== tz) continue;
+            if (CITIES[i].id === tail) return { city: CITIES[i], exact: false };
+            if (!first) first = CITIES[i];
+        }
+        if (first) return { city: first, exact: false };
     }
     return { city: byId(FALLBACK), exact: false };
 }

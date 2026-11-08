@@ -231,12 +231,14 @@ Item {
         var cityId = autoCity ? detectedCityId : configuredCity;
         var city = C.byId(cityId) || C.guess("").city;
         svc.cityName = city.name + ", " + city.country;
-        svc.cityEstimated = autoCity && !timezoneExact && timezoneReady;
-        // a city in another zone is rendered on THIS clock (the engine takes the
-        // machine offset), so the countdown stays right and the times read strangely
+        // a timezone is not a city: America/New_York spans a thousand miles, so an
+        // auto-detected city is always a starting point, never an exact answer
+        svc.cityEstimated = autoCity && timezoneReady;
         svc.timezoneMismatch = timezoneReady && !autoCity && detectedZone !== "" && city.tz !== detectedZone;
-        svc.cityHint = svc.cityEstimated ? "Approximate · set your city in Settings"
-                   : (svc.timezoneMismatch ? "Shown on your clock" : "");
+        svc.cityHint = !timezoneReady ? ""
+                     : (autoCity ? (timezoneExact ? "Auto-detected · set your city in Settings"
+                                                 : "No preset for this timezone · set your city")
+                                 : (svc.timezoneMismatch ? "Shown on your clock" : ""));
 
         // settings are a trust boundary: anything outside the valid range falls back
         // to the preset instead of feeding nonsense into the solar math
