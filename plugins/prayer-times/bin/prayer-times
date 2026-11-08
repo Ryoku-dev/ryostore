@@ -40,13 +40,18 @@ function parseDate(value) {
 }
 
 let mode = 'json';
-let cityId = 'baltimore';
+let cityId = null;
+let clock24 = false;
 let dateValue = isoDate(new Date());
 
 for (let i = 2; i < process.argv.length; ++i) {
     const arg = process.argv[i];
     if (arg === '--json' || arg === '--text' || arg === '--waybar') {
         mode = arg.substring(2);
+    } else if (arg === 'auto' || arg === '--auto') {
+        cityId = null;
+    } else if (arg === '--24') {
+        clock24 = true;
     } else if (arg === '--city') {
         if (++i >= process.argv.length)
             fail('--city requires an id');
@@ -60,6 +65,8 @@ for (let i = 2; i < process.argv.length; ++i) {
     }
 }
 
+if (cityId === null)
+    cityId = C.guess(Intl.DateTimeFormat().resolvedOptions().timeZone).city.id;
 const city = C.byId(cityId);
 if (!city)
     fail(`unknown city: ${cityId}`);
@@ -83,7 +90,7 @@ function calculate(day) {
 const times = calculate(date);
 const formatted = {};
 for (const key of keys)
-    formatted[key] = PT.fmt(times ? times[key] : null, true);
+    formatted[key] = PT.fmt(times ? times[key] : null, clock24);
 
 if (mode === 'json') {
     console.log(JSON.stringify({
@@ -132,7 +139,7 @@ if (mode === 'json') {
         .concat(keys.map(key => `${labels[key]} ${formatted[key]}`))
         .join('\n');
     console.log(JSON.stringify({
-        text: `${icon} ${labels[next.key]} ${PT.fmt(next.at, true)}`,
+        text: `${icon} ${labels[next.key]} ${PT.fmt(next.at, clock24)}`,
         tooltip,
         class: 'prayer'
     }));

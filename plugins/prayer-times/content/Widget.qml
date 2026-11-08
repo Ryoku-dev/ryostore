@@ -94,6 +94,10 @@ Item {
         font.pixelSize: 12
     }
 
+    HoverHandler {
+        cursorShape: Qt.PointingHandCursor
+    }
+
     TapHandler {
         onTapped: if (root.pluginApi) root.pluginApi.togglePanel()
     }

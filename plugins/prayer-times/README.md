@@ -23,7 +23,7 @@ ryoku plugin add <git-url> --bar --yes
 
 | Key | Type | Default | Description |
 | --- | --- | --- | --- |
-| `city` | choice | `baltimore` | Preset city and its calculation method. |
+| `city` | choice | `auto` | Preset city, or `auto` to detect from the system timezone. |
 | `latitude` | text | `""` | Latitude override; empty uses the city. |
 | `longitude` | text | `""` | Longitude override; empty uses the city. |
 | `method` | choice | `auto` | Calculation method; `auto` uses the city's method. |

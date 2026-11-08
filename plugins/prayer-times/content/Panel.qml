@@ -159,7 +159,7 @@ Item {
                             var cx = width / 2;
                             var cy = height / 2;
                             var radius = (width - 5 * root.s) / 2;
-                            ctx.lineWidth = 2.5 * root.s;
+                            ctx.lineWidth = 3 * root.s;
                             ctx.lineCap = "round";
                             ctx.beginPath();
                             ctx.arc(cx, cy, radius, 0, Math.PI * 2);
@@ -199,9 +199,9 @@ Item {
                         width: parent.width
                         horizontalAlignment: Text.AlignHCenter
                         text: root.service && root.service.nextLabel ? "to " + root.service.nextLabel : ""
-                        color: Theme.faint
+                        color: Theme.dim
                         font.family: Theme.mono
-                        font.pixelSize: 9.5 * root.s
+                        font.pixelSize: 10 * root.s
                     }
                 }
 
@@ -288,7 +288,7 @@ Item {
 
             Row {
                 id: weekHeader
-                width: parent.width
+                width: parent.width - 6 * weekTable.scale
                 height: 20 * weekTable.scale
 
                 Text {
@@ -326,8 +326,19 @@ Item {
                     Rectangle {
                         anchors.fill: parent
                         visible: weekRow.modelData.today
-                        color: Theme.cardTop
+                        color: Theme.accent
+                        opacity: 0.20
                         radius: Theme.radius
+                    }
+
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 3 * weekTable.scale
+                        height: 13 * weekTable.scale
+                        radius: Theme.radius
+                        visible: weekRow.modelData.today
+                        color: Theme.accent
                     }
 
                     Rectangle {
@@ -348,6 +359,7 @@ Item {
                         color: weekRow.modelData.today ? Theme.bright : Theme.dim
                         font.family: Theme.font
                         font.pixelSize: 10 * weekTable.scale
+                        font.weight: weekRow.modelData.today ? Font.DemiBold : Font.Normal
                         elide: Text.ElideRight
                         maximumLineCount: 1
                     }
@@ -355,7 +367,7 @@ Item {
                     Row {
                         id: weekTimes
                         x: 54 * weekTable.scale
-                        width: parent.width - x
+                        width: parent.width - x - 6 * weekTable.scale
                         height: parent.height
 
                         Repeater {
@@ -397,7 +409,7 @@ Item {
 
                 Row {
                     id: monthHeader
-                    width: parent.width
+                    width: parent.width - 10 * monthTable.scale
                     height: 20 * monthTable.scale
 
                     Text {
@@ -435,8 +447,19 @@ Item {
                         Rectangle {
                             anchors.fill: parent
                             visible: monthRow.modelData.today
-                            color: Theme.cardTop
+                            color: Theme.accent
+                            opacity: 0.20
                             radius: Theme.radius
+                        }
+
+                        Rectangle {
+                            anchors.left: parent.left
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: 3 * monthTable.scale
+                            height: 13 * monthTable.scale
+                            radius: Theme.radius
+                            visible: monthRow.modelData.today
+                            color: Theme.accent
                         }
 
                         Rectangle {
@@ -457,6 +480,7 @@ Item {
                             color: monthRow.modelData.today ? Theme.bright : Theme.dim
                             font.family: Theme.font
                             font.pixelSize: 10 * monthTable.scale
+                            font.weight: monthRow.modelData.today ? Font.DemiBold : Font.Normal
                             elide: Text.ElideRight
                             maximumLineCount: 1
                         }
@@ -464,7 +488,7 @@ Item {
                         Row {
                             id: monthTimes
                             x: 54 * monthTable.scale
-                            width: parent.width - x
+                            width: parent.width - x - 10 * monthTable.scale
                             height: parent.height
 
                             Repeater {

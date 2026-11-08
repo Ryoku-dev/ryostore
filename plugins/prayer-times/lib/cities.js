@@ -50,7 +50,7 @@ function byId(id) {
 // a wrong city is worse than an obvious one, so no fuzzy guessing here. When it
 // misses, the caller keeps the fallback and flags the result as estimated so the
 // UI can say "set your city".
-var FALLBACK = "baltimore";
+var FALLBACK = "london";
 
 function guess(tz) {
     if (tz) {

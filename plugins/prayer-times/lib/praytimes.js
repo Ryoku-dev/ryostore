@@ -156,14 +156,14 @@ function compassPoint(deg) {
 }
 
 // 12h / 24h formatting of a minutes-from-midnight value.
-function fmt(mins, clock24) {
+function fmt(mins, clock24, compact) {
     if (mins === null || mins === undefined) return "--:--";
     var m = ((Math.round(mins) % 1440) + 1440) % 1440;
     var h = Math.floor(m / 60), mm = m % 60;
     if (clock24) return (h < 10 ? "0" : "") + h + ":" + (mm < 10 ? "0" : "") + mm;
     var ap = h < 12 ? "AM" : "PM";
     var h12 = h % 12; if (h12 === 0) h12 = 12;
-    return h12 + ":" + (mm < 10 ? "0" : "") + mm + " " + ap;
+    return h12 + ":" + (mm < 10 ? "0" : "") + mm + (compact ? (h < 12 ? "a" : "p") : " " + ap);
 }
 
 if (typeof module !== "undefined" && module.exports) {

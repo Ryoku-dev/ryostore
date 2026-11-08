@@ -10,7 +10,7 @@ Item {
     id: svc
 
     property var pluginApi
-    property string cityName: "Baltimore, US"
+    property string cityName: ""
     property bool cityEstimated: true
     property var today: ({})
     property var tomorrow: ({})
@@ -81,12 +81,12 @@ Item {
         var hijri = H.toHijri(date.getFullYear(), date.getMonth() + 1, date.getDate(), adjust);
         return {
             day: weekdays[date.getDay()] + " " + date.getDate(),
-            fajr: PT.fmt(values ? values.fajr : null, clock24),
-            sunrise: PT.fmt(values ? values.sunrise : null, clock24),
-            dhuhr: PT.fmt(values ? values.dhuhr : null, clock24),
-            asr: PT.fmt(values ? values.asr : null, clock24),
-            maghrib: PT.fmt(values ? values.maghrib : null, clock24),
-            isha: PT.fmt(values ? values.isha : null, clock24),
+            fajr: PT.fmt(values ? values.fajr : null, clock24, true),
+            sunrise: PT.fmt(values ? values.sunrise : null, clock24, true),
+            dhuhr: PT.fmt(values ? values.dhuhr : null, clock24, true),
+            asr: PT.fmt(values ? values.asr : null, clock24, true),
+            maghrib: PT.fmt(values ? values.maghrib : null, clock24, true),
+            isha: PT.fmt(values ? values.isha : null, clock24, true),
             today: key === todayKey,
             holiday: H.holidayFor(hijri) || ""
         };
@@ -110,9 +110,10 @@ Item {
         currentDayKey = dayKey;
         svc.now = date.getHours() * 60 + date.getMinutes();
 
-        var configuredCity = st.city;
-        var cityId = (configuredCity === undefined && timezoneExact) ? detectedCityId : s("city", "baltimore");
-        var city = C.byId(cityId) || C.byId("baltimore");
+        var configuredCity = s("city", "auto");
+        var autoCity = configuredCity === undefined || configuredCity === "" || configuredCity === "auto";
+        var cityId = autoCity ? detectedCityId : configuredCity;
+        var city = C.byId(cityId) || C.guess("").city;
         svc.cityName = city.name + ", " + city.country;
         svc.cityEstimated = !timezoneExact;
 
