@@ -250,7 +250,6 @@
       ],
       "lastUpdated": "2026-08-12"
     },
-
     {
       "id": "obsidian",
       "name": "Obsidian",
@@ -421,12 +420,12 @@
     },
     {
       "id": "public-ip",
-      "name": "IP P\u00fablica",
+      "name": "IP Pública",
       "version": "0.1.0",
       "path": "plugins/public-ip",
       "author": "vampirejsv <vampirejsv@local>",
-      "summary": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
-      "description": "Muestra la IP p\u00fablica actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
+      "summary": "Muestra la IP pública actual (consultando https://checkip.",
+      "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
       "tags": [
         "bar-widget"
       ],
@@ -439,7 +438,7 @@
       "manifest": "product-manifest.json",
       "manifestSha256": "eced7c39a65f038744a15ea4577d65648243e948521fa46d80b1f107eb9b2cc0",
       "official": false,
-      "tagline": "Muestra la IP p\u00fablica actual (consultando https://checkip.",
+      "tagline": "Muestra la IP pública actual (consultando https://checkip.",
       "icon": "public",
       "hosts": [
         "topbarGlyph"
@@ -1382,7 +1381,7 @@
         "assets/preview-settings.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "744447ddaa10690f585d90c69c3eb1d9eb3b2cce85653086677f03cb5e03c4cf",
+      "manifestSha256": "27ab7e177d1a2d0a00a660abb17257116fa1090025cbff8272c094a3080e640d",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/quickcalc",
       "official": false,
       "tagline": "A fast keyboard calculator: basic, scientific and programmer.",
@@ -1391,7 +1390,7 @@
         "framePopout",
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-11-07"
+      "lastUpdated": "2026-11-08"
     }
   ]
 }
