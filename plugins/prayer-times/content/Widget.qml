@@ -35,6 +35,17 @@ Item {
     implicitWidth: hasTimes ? row.implicitWidth : Math.max(1, unavailable.implicitWidth)
     implicitHeight: 20
 
+    // hover pill: the only affordance a 32px bar slot can offer
+    Rectangle {
+        id: hoverBg
+        anchors.fill: parent
+        anchors.margins: -7
+        radius: Theme.radius
+        color: Theme.ghost
+        opacity: hover.hovered ? 0.7 : 0
+        Behavior on opacity { NumberAnimation { duration: 120 } }
+    }
+
     Row {
         id: row
         anchors.verticalCenter: parent.verticalCenter
@@ -58,6 +69,7 @@ Item {
             color: root.service && root.service.isNow ? Theme.accent : Theme.dim
             font.family: Theme.font
             font.pixelSize: 12
+            font.letterSpacing: 0.2
             elide: Text.ElideRight
             maximumLineCount: 1
         }
@@ -95,6 +107,7 @@ Item {
     }
 
     HoverHandler {
+        id: hover
         cursorShape: Qt.PointingHandCursor
     }
 

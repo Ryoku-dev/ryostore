@@ -25,6 +25,9 @@ Item {
     property string countdownText: ""
     property string nextTimeText: "—"
     property real progress: 0
+    readonly property var prayerKeys: ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"]
+    readonly property var prayerLabels: ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]
+    readonly property var prayerShortLabels: ["FAJR", "SUNRISE", "DHUHR", "ASR", "MAGHRIB", "ISHA"]
     property var rows: []
     property string nightText: ""
     property string qiblaText: ""
@@ -146,8 +149,8 @@ Item {
             maghrib: bounded(s("offsetMaghrib", 0), -30, 30, 0) | 0,
             isha: bounded(s("offsetIsha", 0), -30, 30, 0) | 0
         };
-        var keys = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"];
-        var labels = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
+        var keys = svc.prayerKeys;
+        var labels = svc.prayerLabels;
         var todayDate = new Date(y, m - 1, d, 12);
         var tomorrowDate = new Date(y, m - 1, d + 1, 12);
         var todayTimes = timesFor(todayDate, lat, lon, method, asr, highLat, offsets);
