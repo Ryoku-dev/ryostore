@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Ryoku.PluginKit
 import Ryoku.PluginKit.Singletons
 
 Item {
@@ -24,7 +25,7 @@ Item {
     function labelWidth() {
         if (widthBudget <= 0)
             return label.implicitWidth;
-        var used = glyph.implicitWidth + row.spacing;
+        var used = glyph.width + row.spacing;
         if (timeText.visible)
             used += timeText.implicitWidth + row.spacing;
         if (countdownText.visible)
@@ -52,13 +53,14 @@ Item {
         spacing: 6
         visible: root.hasTimes
 
-        Text {
+        GlyphIcon {
             id: glyph
             anchors.verticalCenter: parent.verticalCenter
-            text: (root.service && root.service.nextIsNight) ? "☾" : "☀"
+            width: 12
+            height: 12
+            name: (root.service && root.service.nextIsNight) ? "moon" : "sun"
             color: (root.service && root.service.nextIsNight) ? Theme.moonGlow : Theme.sunGold
-            font.family: Theme.font
-            font.pixelSize: 12
+            stroke: 2
         }
 
         Text {

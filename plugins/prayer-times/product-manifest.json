@@ -72,17 +72,17 @@
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "aa76c89f1aff2bbb8f730d8462d61c015bd34ed6ba0b1461eeeb25b8c99bec5f",
+      "sha256": "5e9ff9439fb0d7769a450476f22aa07ae750a49fb5328ec5a3a6228655478171",
       "mode": "0644",
-      "size": 33029,
+      "size": 32981,
       "install": true
     },
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "c18ed04ff288f524e23630b0ba0ff1e6b79f2628f3ddbb1ef9f2ac14f389d4e6",
+      "sha256": "5a74e68b82c57cf26aa1132e17e55cad97fe66f6bcb9c876ad2fcbaa13c1f785",
       "mode": "0644",
-      "size": 3729,
+      "size": 3750,
       "install": true
     },
     {
@@ -104,9 +104,9 @@
     {
       "source": "lib/cities.js",
       "destination": "lib/cities.js",
-      "sha256": "4898cbc266e64643207884cb7ad5635cc7556a787d908cd55b4fa2bd8d79c1fa",
+      "sha256": "bbb2330b390d8d29863cfe8e98cdbfe8bba2f6e222ce1360caf8e02dcabdf58d",
       "mode": "0644",
-      "size": 7011,
+      "size": 7057,
       "install": true
     },
     {
@@ -136,17 +136,17 @@
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "273de507392afee8887c702e4677dcc2ecd9da347996826f2d39ed7f5d4ce86a",
+      "sha256": "ce0b546946a1d40f99d7eb7107984b17dd7be7066167f046c7e50ec7889d0715",
       "mode": "0644",
-      "size": 15806,
+      "size": 15897,
       "install": true
     },
     {
       "source": "tests/engine-test.js",
       "destination": "tests/engine-test.js",
-      "sha256": "cc3537de9dd6974f0b71c549308087a9bfade7f2b488b05dfd72ce70ea3c8bdf",
+      "sha256": "bb537194bad42ab36bf9f431dcda6723710fa6906d3e8370566f24cd820eff5a",
       "mode": "0644",
-      "size": 16153,
+      "size": 16294,
       "install": true
     },
     {

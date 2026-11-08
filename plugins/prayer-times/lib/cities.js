@@ -68,12 +68,12 @@ function guess(tz) {
         var first = null;
         for (var i = 0; i < CITIES.length; i++) {
             if (CITIES[i].tz !== tz) continue;
-            if (CITIES[i].id === tail) return { city: CITIES[i], exact: false };
+            if (CITIES[i].id === tail) return { city: CITIES[i], exact: false, matched: true };
             if (!first) first = CITIES[i];
         }
-        if (first) return { city: first, exact: false };
+        if (first) return { city: first, exact: false, matched: true };
     }
-    return { city: byId(FALLBACK), exact: false };
+    return { city: byId(FALLBACK), exact: false, matched: false };
 }
 
 function ids() {

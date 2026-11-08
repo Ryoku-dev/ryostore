@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import Ryoku.PluginKit
 import Ryoku.PluginKit.Singletons
 
 Item {
@@ -22,7 +23,7 @@ Item {
         readonly property real rowH: 22 * s
         readonly property real headH: 18 * s
         readonly property real dayCol: 44 * s
-        readonly property real ring: 92 * s
+        readonly property real ring: 100 * s
         readonly property real gutter: 8 * s
         readonly property int monthRows: 13
     }
@@ -130,11 +131,11 @@ Item {
 
         Item {
             width: parent.width
-            height: 26 * root.s
+            height: 28 * root.s
 
             Row {
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 4 * root.s
+                spacing: 6 * root.s
 
                 Repeater {
                     model: root.tabs
@@ -144,8 +145,8 @@ Item {
                         required property var modelData
                         readonly property bool selected: root.tab === modelData.value
                         readonly property bool hovered: chipHover.hovered
-                        width: chipText.implicitWidth + 22 * root.s
-                        height: 26 * root.s
+                        width: Math.max(chipText.implicitWidth + 26 * root.s, 78 * root.s)
+                        height: 28 * root.s
                         radius: Theme.radius
                         color: selected ? Theme.accent : (hovered ? Theme.ghost : "transparent")
                         border.width: selected ? 0 : 1 * root.s
@@ -245,7 +246,8 @@ Item {
 
                     Column {
                         anchors.centerIn: ring
-                        spacing: 1 * root.s
+                        anchors.verticalCenterOffset: 2 * root.s
+                        spacing: 2 * root.s
 
                         Text {
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -288,8 +290,8 @@ Item {
                         Rectangle {
                             anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                            width: 2 * root.s
-                            height: 18 * root.s
+                            width: 2.5 * root.s
+                            height: 22 * root.s
                             radius: Theme.radius
                             color: Theme.accent
                             visible: prayerRow.rowNext
@@ -316,13 +318,21 @@ Item {
                     }
                 }
 
+                Rectangle {
+                    width: parent.width
+                    height: 1 * root.s
+                    color: Theme.hair
+                    visible: root.service !== null && root.service.nightText.length > 0
+                }
+
                 Text {
                     width: parent.width
                     visible: text.length > 0
+                    topPadding: 4 * root.s
                     text: root.service ? root.service.nightText : ""
-                    color: Theme.faint
+                    color: Theme.dim
                     font.family: Theme.mono
-                    font.pixelSize: 10 * root.s
+                    font.pixelSize: 10.5 * root.s
                     elide: Text.ElideRight
                     maximumLineCount: 1
                 }
@@ -351,27 +361,17 @@ Item {
 
                 Row {
                     width: parent.width
-                    spacing: 8 * root.s
+                    spacing: 14 * root.s
 
                     Item {
-                        width: (parent.width - 8 * root.s) / 2
+                        width: (parent.width - 14 * root.s) / 2
                         height: qiblaLabel.implicitHeight
 
                         Text {
-                            id: qiblaArrow
-                            text: "\u2191"
-                            rotation: root.service ? root.service.qiblaDeg : 0
-                            color: Theme.faint
-                            font.pixelSize: 11 * root.s
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
                             id: qiblaLabel
-                            anchors.left: qiblaArrow.right
-                            anchors.leftMargin: 5 * root.s
+                            anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                            width: parent.width - qiblaArrow.width - 5 * root.s
+                            width: parent.width
                             text: root.service ? root.service.qiblaText : ""
                             color: Theme.faint
                             font.family: Theme.mono
@@ -395,13 +395,14 @@ Item {
                             elide: Text.ElideRight
                         }
 
-                        Text {
+                        GlyphIcon {
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "\u203a"
-                            color: root.holidaySoon ? Theme.gold : Theme.faint
-                            font.family: Theme.mono
-                            font.pixelSize: 13 * root.s
+                            width: 13 * root.s
+                            height: 13 * root.s
+                            name: "chevron-right"
+                            color: root.holidaySoon ? Theme.gold : Theme.dim
+                            stroke: 2.6
                         }
 
                         HoverHandler {

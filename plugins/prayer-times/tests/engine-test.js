@@ -254,7 +254,9 @@ ok(q > 117 && q < 121, "qibla from London ~119deg, got " + q.toFixed(1));
 var guessed = C.guess("America/New_York");
 ok(guessed.city !== null && guessed.city.id === "new-york", "zone resolves to a starter city");
 ok(guessed.exact === false, "a timezone guess is never reported as an exact city");
-ok(C.guess("Asia/Kathmandu").exact === false, "unknown zone is estimated");
+ok(C.guess("America/New_York").matched === true, "a known zone reports a match");
+var unknown = C.guess("Asia/Kathmandu");
+ok(unknown.exact === false && unknown.matched === false, "an unknown zone reports no match");
 
 ok(PT.compassPoint(45) === "NE" && PT.compassPoint(0) === "N" && PT.compassPoint(292.5) === "WNW", "compassPoint");
 
