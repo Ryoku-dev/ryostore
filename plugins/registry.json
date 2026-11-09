@@ -1388,6 +1388,7 @@
       "version": "0.1.16",
       "path": "plugins/zimaos",
       "author": "Felix <eu@leandrofelix.dev.br>",
+      "upstream": "https://github.com/leandrofelix-dev/ryoku-zima-client",
       "summary": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
       "description": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
       "tags": [
