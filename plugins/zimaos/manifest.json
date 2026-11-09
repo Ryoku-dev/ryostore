@@ -1,0 +1,74 @@
+{
+  "id": "zimaos",
+  "name": "ZimaOS",
+  "version": "0.1.16",
+  "author": "Felix <eu@leandrofelix.dev.br>",
+  "description": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
+  "license": "MIT",
+  "upstream": "https://github.com/leandrofelix-dev/ryoku-zima-client",
+  "official": false,
+  "tags": [
+    "zimaos",
+    "nas",
+    "bar-widget"
+  ],
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 380
+  },
+  "files": [
+    "content/I18n.qml",
+    "bin/zima",
+    "assets/preview-widget.png",
+    "content/zima-mark.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "full"
+    ],
+    "network": []
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "icon": "archive",
+    "label": "ZimaOS",
+    "bar": {
+      "section": "right"
+    }
+  },
+  "dependencies": {
+    "commands": [
+      "python3",
+      "xdg-open"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "host",
+        "type": "text",
+        "label": "ZimaOS address",
+        "group": "ZimaOS",
+        "default": "",
+        "placeholder": "192.168.0.180"
+      },
+      {
+        "key": "poll",
+        "type": "int",
+        "label": "Refresh seconds",
+        "group": "ZimaOS",
+        "default": 8,
+        "min": 3,
+        "max": 60
+      }
+    ]
+  }
+}
