@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "quickcalc",
   "category": "plugins",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "destination": "ryoku/plugins/quickcalc",
   "files": [
     {
@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "e90055b0d52e59970d736efadfd9a974ac54fdb984f4788baa36b618d84b506b",
+      "sha256": "a04e020623c56fb10854fa998563b60921d32763629d95cdf2e6782f2d306b77",
       "mode": "0644",
-      "size": 10432,
+      "size": 10732,
       "install": false
     },
     {
@@ -120,33 +120,33 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "ee8261ec3eaa0f4f9f9e4c65ff238ca3740f88a253a78661db78ede66c4feb3b",
+      "sha256": "4401da3a6d53541280407036a63d6f83e25887b538ed92efabf556a5862253d1",
       "mode": "0644",
-      "size": 2785,
+      "size": 3275,
       "install": true
     },
     {
       "source": "service/Engine.js",
       "destination": "service/Engine.js",
-      "sha256": "8fc1b5e132bfbcbb73d2e12e38b9351a09754cda9256b2dcc3a6e5820386c306",
+      "sha256": "974476368bdc358c213e66430eb9e34b7d6e0ecb7ef338f37173ee9ab635751b",
       "mode": "0644",
-      "size": 19332,
+      "size": 19739,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "a90207e958b364f5402db7295ced19b9caa265c40350641c91ada85d56b39a54",
+      "sha256": "d42fb8784e440e64551a4524dccb74156b6fd1d287b90666502070df9427a7f8",
       "mode": "0644",
-      "size": 17941,
+      "size": 23438,
       "install": true
     },
     {
       "source": "tests/engine.test.cjs",
       "destination": "tests/engine.test.cjs",
-      "sha256": "b3f5b718bc6af645b9006810d7fe8e88a5d76a8e3dc7a9439b7a8f856fd67ce3",
+      "sha256": "2a99b51304726ec3844bef4460802f99cfd251dc8a58816dca8940f33ac1ea45",
       "mode": "0644",
-      "size": 8502,
+      "size": 9000,
       "install": true
     }
   ]

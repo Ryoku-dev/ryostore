@@ -38,16 +38,68 @@ Item {
         return Math.max(lo, Math.min(hi, Math.round(v)));
     }
 
-    readonly property string layout: sessionLayout.length > 0 ? sessionLayout
-        : choiceSetting("layout", ["basic", "scientific", "programmer"], "basic")
+    // --- view state: mode, angle unit, base, keypad, shortcut panel.
+    // The Hub settings are the DEFAULTS. Changing one inside the calculator
+    // is remembered in state.json (never saveSetting -- see setLayout) as
+    // { value, setting }: the value chosen, plus the Hub default it was
+    // chosen against. It applies only while that default is unchanged, so
+    // picking a new default in the Hub resets it -- live and on the next
+    // start -- with no ordering race between settings and state loading.
+    readonly property var baseOptions: ({ "hex": 16, "dec": 10, "oct": 8, "bin": 2 })
+    readonly property string defLayout: choiceSetting("layout", ["basic", "scientific", "programmer"], "basic")
+    readonly property string defAngleMode: choiceSetting("angleMode", ["deg", "rad"], "deg")
+    readonly property int defBase: baseOptions[choiceSetting("base", ["hex", "dec", "oct", "bin"], "dec")]
+    readonly property bool defKeypad: boolSetting("showKeypad", false)
+    readonly property bool defHints: boolSetting("showHints", true)
+    property var overrides: ({})    // name -> { value, setting }; see persist()
+    // A changed Hub default kills the matching override now (liveOverrides),
+    // not only at the next calculator change. Only once state is ready:
+    // settings arriving at startup must not queue a save ahead of the load.
+    // Pruned in memory too, not only in the file: otherwise flipping a
+    // toggle default away and back revives the old choice (the keypad switch
+    // in the Hub then seemed to do nothing on its second flip).
+    function defaultChanged() {
+        if (svc.settings) svc.overrides = svc.liveOverrides();
+        if (svc.canPersist) svc.persist();
+    }
+    onDefLayoutChanged: svc.defaultChanged()
+    onDefAngleModeChanged: svc.defaultChanged()
+    onDefBaseChanged: svc.defaultChanged()
+    onDefKeypadChanged: svc.defaultChanged()
+    onDefHintsChanged: svc.defaultChanged()
+    function overridden(name, def) {
+        var o = svc.overrides[name];
+        return (o && o.setting === def) ? o.value : def;
+    }
+    function defaultFor(name) {
+        return name === "layout" ? svc.defLayout : name === "angleMode" ? svc.defAngleMode
+             : name === "base" ? svc.defBase : name === "keypad" ? svc.defKeypad : svc.defHints;
+    }
+    // Overrides whose Hub default has since changed are dead: dropped when
+    // saving, so switching the default away and back later can't revive an
+    // old choice. Only once the shell's settings are in -- before that the
+    // defaults are this file's fallbacks and would drop live entries.
+    function liveOverrides() {
+        if (!svc.settings) return svc.overrides;
+        var o = {};
+        for (var name in svc.overrides)
+            if (svc.overrides[name].setting === svc.defaultFor(name)) o[name] = svc.overrides[name];
+        return o;
+    }
+    function setOverride(name, value) {
+        var o = Object.assign({}, svc.overrides);
+        var def = svc.defaultFor(name);
+        if (value === def) delete o[name];
+        else o[name] = { value: value, setting: def };
+        svc.overrides = o;
+        svc.persist();
+    }
+
+    readonly property string layout: overridden("layout", defLayout)
     readonly property bool programmer: layout === "programmer"
-    // The keypad setting is the default; Ctrl+K / the header button
-    // override it for the session (never saveSetting -- see sessionLayout).
-    property int sessionKeypad: -1   // -1 = follow the setting, 0 = off, 1 = on
-    readonly property bool showKeypad: sessionKeypad >= 0 ? sessionKeypad === 1 : boolSetting("showKeypad", false)
-    // Shortcut panel visibility (Ctrl+H); remembered in state.json.
-    property bool showHints: true
-    readonly property string angleMode: sessionAngleMode.length > 0 ? sessionAngleMode : choiceSetting("angleMode", ["deg", "rad"], "deg")
+    readonly property bool showKeypad: overridden("keypad", defKeypad)
+    readonly property bool showHints: overridden("hints", defHints)
+    readonly property string angleMode: overridden("angleMode", defAngleMode)
     readonly property bool thousandsSeparator: boolSetting("thousandsSeparator", true)
     readonly property int precision: intSetting("precision", 10, 0, 15)
     readonly property int historySize: intSetting("historySize", 50, 0, 200)
@@ -75,7 +127,7 @@ Item {
     property real memory: 0
     property bool hasMemory: false
     property var vars: ({})         // user variables from "name = expr"
-    property int base: 10           // 2 / 8 / 10 / 16; programmer mode only
+    readonly property int base: overridden("base", defBase) // 2 / 8 / 10 / 16; programmer mode only
     readonly property int activeBase: programmer ? base : 10
     // The last result as written back into the input, so chaining keeps its
     // full precision (see Engine.normalizeCtx "carry").
@@ -161,6 +213,9 @@ Item {
             var v = r.value;
             var input = svc.inputText(v);
             var entry = { expr: svc.expression, result: (r.name ? r.name + " = " : "") + svc.fmt(v), input: input };
+            // The value itself, so inserting this result later is written in
+            // the base active then, not the one it was computed in.
+            if (isFinite(v)) entry.value = v;
             svc.history = svc.trimHistory(svc.history.concat([entry]));
             if (r.name) {
                 var nv = Object.assign({}, svc.vars);
@@ -209,6 +264,12 @@ Item {
         var e = svc.history[index];
         if (!e) return;
         var t = e.input !== undefined ? e.input : e.result;
+        if (typeof e.value === "number" && isFinite(e.value)) t = svc.inputText(e.value);
+        else if (e.input !== undefined) {
+            // Entries saved before `value` existed: their input text is
+            // always valid DEC (other bases carry a 0x/0o/0b prefix).
+            try { t = svc.inputText(Engine.evaluate(e.input, {})); } catch (err) {}
+        }
         if (t.length > 0) svc.typeToken(t);
     }
 
@@ -217,21 +278,18 @@ Item {
     function memRecall() { svc.typeToken(svc.inputText(svc.memory)); }
     function memClear() { svc.memory = 0; svc.hasMemory = false; svc.persist(); }
 
-    // Mode and angle are session-local ONLY -- switching them from the
-    // calculator's own tabs never calls pluginApi.saveSetting(). It did
-    // once, and switching modes froze the whole popout/panel solid, Escape
-    // included -- no coredump, no QML error in the logs, the UI thread
-    // itself just never came back. The settings write reloads this very
-    // plugin's component tree (both host files watch the plugin settings and
-    // rebuild on change), which can re-enter while the click handler that
-    // triggered it is still on the stack. Hub's own settings page writes the
-    // same key safely, so persisting a default is still possible from
-    // there -- just not from in here.
-    property string sessionLayout: ""
-    property string sessionAngleMode: ""
+    // Switching mode, angle, base, keypad or shortcut panel from inside the
+    // calculator NEVER calls pluginApi.saveSetting(). It did once, and
+    // switching modes froze the whole popout/panel solid, Escape included --
+    // no coredump, no QML error in the logs, the UI thread itself just never
+    // came back. The settings write reloads this very plugin's component tree
+    // (both host files watch the plugin settings and rebuild on change),
+    // which can re-enter while the click handler that triggered it is still
+    // on the stack. These choices go to state.json instead (setOverride), a
+    // file only this service writes, which reloads nothing.
     function setLayout(v) {
         if (v === svc.layout || ["basic", "scientific", "programmer"].indexOf(v) < 0) return;
-        svc.sessionLayout = v;
+        svc.setOverride("layout", v);
         svc.rerenderResult();
     }
     function cycleLayout() {
@@ -239,11 +297,11 @@ Item {
         svc.setLayout(order[(order.indexOf(svc.layout) + 1) % order.length]);
     }
     function toggleAngleMode() {
-        svc.sessionAngleMode = svc.angleMode === "deg" ? "rad" : "deg";
+        svc.setOverride("angleMode", svc.angleMode === "deg" ? "rad" : "deg");
         svc.updatePreview();
     }
-    function toggleKeypad() { svc.sessionKeypad = svc.showKeypad ? 0 : 1; }
-    function toggleHints() { svc.showHints = !svc.showHints; svc.persist(); }
+    function toggleKeypad() { svc.setOverride("keypad", !svc.showKeypad); }
+    function toggleHints() { svc.setOverride("hints", !svc.showHints); }
     // Ctrl+B: the mode's secondary switch -- base in Programmer, angle unit
     // in Scientific; nothing in Basic.
     function toggleSecondary() {
@@ -251,8 +309,8 @@ Item {
         else if (svc.layout === "scientific") svc.toggleAngleMode();
     }
     function setBase(b) {
-        if (b === svc.base) return;
-        svc.base = b;
+        if (b === svc.base || [2, 8, 10, 16].indexOf(b) < 0) return;
+        svc.setOverride("base", b);
         svc.rerenderResult();
     }
     function cycleBase() {
@@ -305,6 +363,14 @@ Item {
         : ((Quickshell.env("XDG_STATE_HOME") || (Quickshell.env("HOME") + "/.local/state")) + "/ryoku/plugins/quickcalc")
     property bool stateDirReady: false
     property bool loadingState: false
+    // Saving waits for both the state dir (mkdir) and the first read of
+    // state.json -- writing before that read would replace the saved tape
+    // with this session's. A save asked for earlier is kept pending and
+    // written as soon as both are done, never dropped.
+    property bool stateLoaded: false
+    property bool persistPending: false
+    readonly property bool canPersist: stateDirReady && stateLoaded
+    onCanPersistChanged: if (svc.canPersist && svc.persistPending) svc.persist()
 
     Process {
         id: mkdirProc
@@ -321,7 +387,9 @@ Item {
         // write rolled showHints (or history) back. Read once at startup.
         atomicWrites: true
         printErrors: false
-        onLoaded: svc.loadState(text())
+        onLoaded: { svc.loadState(text()); svc.stateLoaded = true; }
+        // No file yet (first run) or unreadable: nothing to merge.
+        onLoadFailed: svc.stateLoaded = true
     }
 
     function loadState(text) {
@@ -338,9 +406,12 @@ Item {
         if (Array.isArray(data.history)) {
             var h = data.history.filter(function (e) {
                 return e && typeof e.expr === "string" && typeof e.result === "string"
-                    && (e.input === undefined || typeof e.input === "string");
+                    && (e.input === undefined || typeof e.input === "string")
+                    && (e.value === undefined || e.value === null || typeof e.value === "number");
             });
-            svc.history = svc.trimHistory(h);
+            // Anything computed before the file finished loading follows
+            // the saved tape instead of being replaced by it.
+            svc.history = svc.trimHistory(h.concat(svc.history));
         }
         if (data.vars && typeof data.vars === "object") {
             var v = {};
@@ -349,14 +420,36 @@ Item {
             for (var k in data.vars)
                 if (/^[a-z_][a-z0-9_]*$/.test(k) && k !== "__proto__" && typeof data.vars[k] === "number")
                     v[k] = data.vars[k];
-            svc.vars = v;
+            svc.vars = Object.assign(v, svc.vars); // this session's assignments win
         }
-        if (typeof data.memory === "number") { svc.memory = data.memory; svc.hasMemory = !!data.hasMemory; }
-        if (typeof data.showHints === "boolean") svc.showHints = data.showHints;
+        // A change made this session before the load (persistPending) wins.
+        if (!svc.persistPending && typeof data.memory === "number") { svc.memory = data.memory; svc.hasMemory = !!data.hasMemory; }
+        var ov = {};
+        if (data.overrides && typeof data.overrides === "object") {
+            var valid = {
+                layout: function (x) { return ["basic", "scientific", "programmer"].indexOf(x) >= 0; },
+                angleMode: function (x) { return x === "deg" || x === "rad"; },
+                base: function (x) { return [2, 8, 10, 16].indexOf(x) >= 0; },
+                keypad: function (x) { return typeof x === "boolean"; },
+                hints: function (x) { return typeof x === "boolean"; }
+            };
+            for (var name in valid) {
+                var o = data.overrides[name];
+                if (o && typeof o === "object" && valid[name](o.value) && valid[name](o.setting))
+                    ov[name] = { value: o.value, setting: o.setting };
+            }
+        } else if (typeof data.showHints === "boolean" && data.showHints !== svc.defHints) {
+            // state.json from before overrides: it kept only showHints, which
+            // had no Hub default then (it was always on).
+            ov.hints = { value: data.showHints, setting: true };
+        }
+        svc.overrides = Object.assign(ov, svc.overrides); // this session's changes win
     }
 
     function persist() {
-        if (svc.loadingState || !svc.stateDirReady) return;
+        if (svc.loadingState) return;
+        if (!svc.canPersist) { svc.persistPending = true; return; }
+        svc.persistPending = false;
         // JSON has no Infinity; such a variable or memory simply isn't kept.
         var v = {};
         for (var k in svc.vars) if (isFinite(svc.vars[k])) v[k] = svc.vars[k];
@@ -366,7 +459,7 @@ Item {
             vars: v,
             memory: isFinite(svc.memory) ? svc.memory : 0,
             hasMemory: svc.hasMemory && isFinite(svc.memory),
-            showHints: svc.showHints
+            overrides: svc.liveOverrides()
         }));
     }
 

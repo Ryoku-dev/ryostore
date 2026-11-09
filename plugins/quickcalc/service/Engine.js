@@ -133,6 +133,15 @@ function tokenize(src, ctx) {
     function isAlnum(c) { return c !== undefined && /[a-zA-Z0-9_]/.test(c); }
     function isSpace(c) { return /\s/.test(c); }
     function nextNonSpace(j) { while (j < n && isSpace(src[j])) j++; return src[j]; }
+    // "word = <something>" at the start of the line: an assignment target.
+    // A bare trailing "=" ("FF=") is not one -- that just evaluates.
+    function assignsAt(j) {
+        while (j < n && isSpace(src[j])) j++;
+        if (src[j] !== "=") return false;
+        j++;
+        while (j < n && isSpace(src[j])) j++;
+        return j < n && src[j] !== "=";
+    }
     function prefixed(re, b, label) {
         i += 2;
         var start = i;
@@ -178,7 +187,7 @@ function tokenize(src, ctx) {
             var word = src.slice(s, i);
             var lower = word.toLowerCase();
             if (base === 16 && /^[0-9a-fA-F]+$/.test(word) && nextNonSpace(i) !== "("
-                    && !has(vars, lower)) {
+                    && !has(vars, lower) && !(toks.length === 0 && assignsAt(i))) {
                 toks.push({ t: "num", v: parseInt(word, 16) });
                 continue;
             }

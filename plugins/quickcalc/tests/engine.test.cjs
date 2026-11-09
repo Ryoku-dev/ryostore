@@ -127,6 +127,12 @@ check("group digits uneven", E.groupDigits("101", 4), "101");
 
 // --- HEX base: a-f are digits, so a bare e is 14, not Euler's number
 check("hex e is a digit", ev("e", hex), 14);
+function stmt(src, ctx) { try { const r = E.evaluateStatement(src, ctx || {}); return r.name + ":" + r.value; } catch (e) { return "ERR " + e.message; } }
+check("hex word assignable", stmt("face=5", hex), "face:5");
+check("hex single letter assignable", stmt("a = 3", hex), "a:3");
+check("hex trailing = still evaluates", stmt("FF=", hex), ":255");
+check("hex trailing == still evaluates", stmt("ff ==", hex), ":255");
+check("hex word in expression still a number", stmt("face+1", hex), ":64207");
 check("hex pi still a constant", ev("pi", hex), 3);
 check("dec e is euler", ev("e"), Math.E);
 

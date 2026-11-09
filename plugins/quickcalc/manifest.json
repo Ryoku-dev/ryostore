@@ -1,7 +1,7 @@
 {
   "id": "quickcalc",
   "name": "QuickCalc",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Buxter <11074827+klopster@users.noreply.github.com>",
   "description": "A fast, keyboard-driven calculator: Basic, Scientific, and Programmer modes, a persistent history tape, variables, memory, and live-preview evaluation. Place it as a bar glyph with a panel, or as a floating window positioned by the popout placer; one keybind toggles either (qs -c shell ipc call quickcalc toggle). Pure, dependency-free arithmetic engine.",
   "license": "MIT",
@@ -57,6 +57,7 @@
         ]
       },
       { "key": "showKeypad", "type": "toggle", "label": "Show on-screen keys", "group": "Calculator", "default": false },
+      { "key": "showHints", "type": "toggle", "label": "Show shortcuts panel", "group": "Calculator", "default": true },
       {
         "key": "angleMode",
         "type": "choice",
@@ -66,6 +67,19 @@
         "options": [
           { "value": "deg", "label": "Degrees" },
           { "value": "rad", "label": "Radians" }
+        ]
+      },
+      {
+        "key": "base",
+        "type": "choice",
+        "label": "Number base",
+        "group": "Programmer",
+        "default": "dec",
+        "options": [
+          { "value": "hex", "label": "HEX" },
+          { "value": "dec", "label": "DEC" },
+          { "value": "oct", "label": "OCT" },
+          { "value": "bin", "label": "BIN" }
         ]
       },
       { "key": "thousandsSeparator", "type": "toggle", "label": "Group thousands", "group": "Calculator", "default": true },

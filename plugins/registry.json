@@ -1385,7 +1385,7 @@
     {
       "id": "quickcalc",
       "name": "QuickCalc",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "path": "plugins/quickcalc",
       "author": "Buxter <11074827+klopster@users.noreply.github.com>",
       "summary": "Keyboard-driven calculator with Basic, Scientific and Programmer modes, live preview, variables, memory and a persistent history; as a bar panel or a floating window with one toggle keybind.",
@@ -1410,7 +1410,7 @@
         "assets/preview-settings.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "2c903f43b32b617ae9213db96c0ea83b8798374c94cdcdc1a3b8d1854bc1d723",
+      "manifestSha256": "56c6643d42174c367650ef6d9793902bba9f93dea9f6db1858985a249f3e8f03",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/quickcalc",
       "official": false,
       "tagline": "A fast keyboard calculator: basic, scientific and programmer.",
@@ -1419,7 +1419,7 @@
         "framePopout",
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-11-08"
+      "lastUpdated": "2026-11-09"
     }
   ]
 }

@@ -62,7 +62,7 @@ take.
 | Ctrl+M           | next mode                                          |
 | Ctrl+B           | next base (Programmer) / degrees-radians (Scientific) |
 | Ctrl+L, Ctrl+L   | clear the history tape (press twice within 3 s)    |
-| Ctrl+K           | show/hide the on-screen keypad (this session)      |
+| Ctrl+K           | show/hide the on-screen keypad (remembered)        |
 | Ctrl+H           | show/hide the shortcut panel (remembered)          |
 | Esc              | close                                              |
 
@@ -158,7 +158,8 @@ commands, both declared in `dependencies.commands`:
 It writes exactly one file,
 `$XDG_STATE_HOME/ryoku/plugins/quickcalc/state.json` (by default
 `~/.local/state/...`), holding the history tape, your variables and the
-memory slot (and whether the shortcut panel is shown), so they survive a
+memory slot, and the mode, angle unit, base, keypad and shortcuts panel you
+last picked, so they survive a
 shell restart. To wipe the history, press Ctrl+L twice, or click "Clear
 history" above the tape twice (the first press only asks). To stop keeping
 history at all, set **History entries kept** to 0. To reset
@@ -174,13 +175,17 @@ the shell passes in.
 | ------------------ | ------ | ------- | -------------------------------- |
 | layout             | choice | basic   | Basic / Scientific / Programmer  |
 | showKeypad         | toggle | false   | Show the on-screen button grid   |
+| showHints          | toggle | true    | Show the shortcuts panel         |
 | angleMode          | choice | deg     | Degrees or radians for trig      |
+| base               | choice | dec     | Programmer base: HEX/DEC/OCT/BIN |
 | thousandsSeparator | toggle | true    | Group large results with commas  |
 | precision          | int    | 10      | Decimal places shown             |
 | historySize        | int    | 50      | History entries kept (0 = none)  |
 
-Switching mode or angle unit inside the calculator lasts for the session;
-the defaults above are changed from the settings page.
+Mode, angle unit, base, keypad and shortcuts panel above are the
+*defaults*. Switch any of them inside the calculator and it is remembered
+across shell restarts; change that default here and the calculator starts
+from the new default again.
 
 ## Develop
 
