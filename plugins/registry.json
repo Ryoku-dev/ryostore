@@ -1381,6 +1381,34 @@
       ],
       "lastUpdated": "2026-11-08",
       "upstream": "https://github.com/mysweetpea/prayer-times"
+    },
+    {
+      "id": "recent-downloads",
+      "name": "Recent Downloads",
+      "version": "0.1.4",
+      "path": "plugins/recent-downloads",
+      "author": "Manish <manish@localhost>",
+      "summary": "A minimal bar button with a quick list of recent files from Downloads.",
+      "description": "A minimal bar button with a quick list of recent files from Downloads.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "18b89844bcd06d16af171483181620270af899d59ea0754030f9195dcaccbd31",
+      "official": false,
+      "tagline": "A minimal bar button with a quick list of recent files from Downloads.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-11"
     }
   ]
 }
