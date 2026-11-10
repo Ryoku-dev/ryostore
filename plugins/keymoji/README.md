@@ -49,7 +49,7 @@ cd plugins/keymoji
 bun test
 ```
 
-app/ contains the window, theme/motion readers, SVG icon component, search and keyboard-navigation helpers. service/ and content/ implement the PluginKit host. bin/keymoji launches/toggles via IPC. tests/ has 25 Bun tests for catalogue/search, insertion guards, theme precedence, motion and navigation. Bun is development-only.
+app/ contains the window, theme/motion readers, SVG icon component, search and keyboard-navigation helpers. service/ and content/ implement the PluginKit host. bin/keymoji launches/toggles via IPC. tests/ has 29 Bun tests for catalogue/search, insertion guards, theme precedence, motion and navigation. Bun is development-only.
 
 See docs/validation.md for live coverage and remaining compatibility checks. The preview is an actual Qt render, not a mockup. The product manifest records hashes, sizes and permissions; development tests/package metadata are not installed.
 
@@ -69,7 +69,7 @@ Run `KEYMOJI_STATE_DIR=<plugin-state-directory> bin/keymoji insert-last` from a 
 
 Holding the local Super+Shift+period shortcut repeats insertion. A resident windowless service serializes requests and cancels the queue on target changes or backend failure. Warm requests have no fixed delay; only the first cold start waits 100 ms for Wayland target discovery.
 
-A local desktop integration may set `KEYMOJI_PASTE_HELPER` to an absolute executable path. The paste service runs that executable, without a shell or arguments, instead of wtype for Ctrl+V. This is useful when modifiers held by a repeating shortcut interfere with virtual-keyboard paste. The helper must send paste to the active application without taking focus. Set it before the paste service starts; restart the service after changing it. The plugin does not invoke compositor-specific IPC itself.
+Last-emoji paste invokes the fixed, manifest-declared `keymoji-paste` command, with no shell or arguments. The bundled `bin/keymoji-paste` uses wtype. The launcher adds the bundled bin directory at the end of PATH, so a user-installed desktop integration with that same declared command name can take precedence. Such an integration must send paste to the active application without taking focus. Restart the paste service after changing the command. No environment variable selects an executable path, and the plugin contains no compositor-specific IPC.
 
 ### Menu actions
 

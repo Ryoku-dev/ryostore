@@ -49,11 +49,13 @@
       "mkdir",
       "env",
       "ryoku-hub",
-      "wl-copy"
+      "wl-copy",
+      "keymoji-paste"
     ]
   },
   "commands": [
-    "bin/keymoji"
+    "bin/keymoji",
+    "bin/keymoji-paste"
   ],
   "metadata": {
     "settings": []
@@ -99,6 +101,7 @@
     "app/shell.qml",
     "assets/preview-widget.png",
     "bin/keymoji",
+    "bin/keymoji-paste",
     "content/Panel.qml",
     "content/Widget.qml",
     "data/emojis.json",

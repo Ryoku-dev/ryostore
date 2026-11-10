@@ -71,7 +71,7 @@ ShellRoot {
     }
     Process {
         id:backend
-        command:Quickshell.env("KEYMOJI_PASTE_HELPER") ? [Quickshell.env("KEYMOJI_PASTE_HELPER")] : ["wtype","-m","logo","-m","shift","-M","ctrl","-k","v","-m","ctrl"]
+        command:["keymoji-paste"]
         onExited:code=>root.finish(code===0?"":"Could not paste last emoji")
     }
 }

@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "20fc49660902003ef09a20dcb18d67eabe2b44f4a3c260481c2e54c79935faa1",
+      "sha256": "4de28197dcafcaf70cb338c5d934e41944dc3fee5a5b1c457129c3717ad9e636",
       "mode": "0644",
-      "size": 8905,
+      "size": 8959,
       "install": true
     },
     {
@@ -288,9 +288,9 @@
     {
       "source": "app/insert-last.qml",
       "destination": "app/insert-last.qml",
-      "sha256": "f16b57556a586e543a6f9e82a6bca3ed466c80e89256b4ac61b0a7503db3c75e",
+      "sha256": "d1228949827ed9ae0c6446c0dcbaef8c25f61b9a7f7cc59a8ff639b997070bf2",
       "mode": "0644",
-      "size": 3190,
+      "size": 3056,
       "install": true
     },
     {
@@ -320,9 +320,17 @@
     {
       "source": "bin/keymoji",
       "destination": "bin/keymoji",
-      "sha256": "46d731cd8088aa8f61a0498af99574fe2d650da2aff51da121e5c92372b17ea7",
+      "sha256": "bf89a200275c6f4e46136812bae9492a3e20c6d46c0706d55132699ab1d7497b",
       "mode": "0755",
-      "size": 896,
+      "size": 1021,
+      "install": true
+    },
+    {
+      "source": "bin/keymoji-paste",
+      "destination": "bin/keymoji-paste",
+      "sha256": "8c877180be73a31709155376d64582f596c7cadaf09ec5b410ca1727f667a2ac",
+      "mode": "0755",
+      "size": 144,
       "install": true
     },
     {
@@ -408,17 +416,17 @@
     {
       "source": "docs/validation.md",
       "destination": "docs/validation.md",
-      "sha256": "52fa7f380ced317faa0ff948fc4737b763028717ccb2b31e448d5b794138ab80",
+      "sha256": "a41ad23ebae80550de235a427bb35d3db83d9eb54f527747fee0ee5d27fbcdc8",
       "mode": "0644",
-      "size": 6471,
+      "size": 7331,
       "install": true
     },
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "2314d81406b1fb42207641e16ba759d3ecc998a54afffd26ece80cc73128a948",
+      "sha256": "4b6bd4133ba434814765a9c2cd3237ea1ab7f135b39a7d849d5f0409d7dfebe6",
       "mode": "0644",
-      "size": 2657,
+      "size": 2730,
       "install": true
     },
     {

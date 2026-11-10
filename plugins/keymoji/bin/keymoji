@@ -4,6 +4,8 @@ root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 state="${KEYMOJI_STATE_DIR:?Defina KEYMOJI_STATE_DIR}"
 mkdir -p -- "$state"
 export KEYMOJI_STATE_DIR="$state"
+# Prefer the declared desktop command; include the bundled portable fallback.
+export PATH="${PATH:-/usr/bin:/bin}:$root/bin"
 case "${1:-toggle}" in
   toggle)
     if qs ipc -p "$root/app" call keymoji toggle 2>/dev/null; then exit 0; fi

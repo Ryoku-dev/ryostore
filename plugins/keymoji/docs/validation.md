@@ -39,3 +39,7 @@ The user reported that the live shortcut reached the service but did not paste: 
 ## Copy-only and select-last menu modes
 
 Native source checks used an isolated state directory with a sentinel last emoji and a wtype stub that fails/logs any insertion attempt. Opening copy mode, choosing with Enter, and reopening select-last through the launcher exercised cold-start mode selection and live IPC switching. Copy matched the chosen emoji and preserved the prior recent item. Select-last persisted the chosen emoji and preserved the clipboard sentinel. Neither invoked the insertion stub. Reopening via normal toggle restored insert mode. All four translations contain the mode/action/error labels.
+
+## Review: declared paste command
+
+Removed executable-path selection through KEYMOJI_PASTE_HELPER. The service now invokes only the fixed keymoji-paste command, listed in manifest dependencies and commands; its portable implementation ships as bin/keymoji-paste. The launcher appends the bundled bin directory to PATH. Local desktop integration uses the same declared command name under normal PATH resolution. A native isolated-state test supplied a recording keymoji-paste plus an unexpected executable in the old environment variable: only the declared command ran and the unexpected executable was untouched. A separate stubbed-wtype check verified the bundled script sends fixed Ctrl+V arguments. The existing user-owned compositor helper was preserved. Obsidian was closed during this update, so its earlier interoperability confirmation was not rerun.
