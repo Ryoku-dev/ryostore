@@ -9,7 +9,11 @@ export function indexCatalog(data,annotations,english={},groupLabels={},language
         const fallback=en.n||(suffix?suffix[1]:it.n);
         const name=annotations?(local.n||fallback):it.n;
         const keywords=annotations?((local.k||'')+' '+(en.n||fallback)+' '+(en.k||'')+' '+(language==='pt'?(it.k||''):'')):(it.k||'');
-        rows.push({e:it.e,n:name,g:id,sub:sub.s,k:keywords,name:fold(name),search:fold(name+' '+keywords+' '+(groupLabels[id]||g.g)+' '+sub.s),code:Array.from(it.e).map(c=>'U+'+c.codePointAt(0).toString(16).toUpperCase()).join(' ')});
+        const searchable=fold(name+' '+keywords+' '+(groupLabels[id]||g.g)+' '+sub.s);
+        const words=Array.from(new Set(searchable.split(/\s+/)));
+        const wordsByLength={};
+        words.forEach(word=>(wordsByLength[word.length]||(wordsByLength[word.length]=[])).push(word));
+        rows.push({words,wordsByLength,e:it.e,n:name,g:id,sub:sub.s,k:keywords,name:fold(name),search:searchable,code:Array.from(it.e).map(c=>'U+'+c.codePointAt(0).toString(16).toUpperCase()).join(' ')});
     })));
     return rows;
 }
@@ -35,13 +39,14 @@ export function search(rows, query, group, favorites, recent) {
         if(group && ['all','favorites','recent'].indexOf(group)<0 && r.g!==group) return null;
         if(!q) return {r,score:group==='recent'?1000-rec.indexOf(r.e):0,i};
         if(r.e===query.trim() || fold(r.code)===q) return {r,score:2000,i};
+        if(r.e.includes(query.trim())) return {r,score:1500,i};
         let score=r.name===q?1000:r.name.indexOf(q)===0?500:0;
-        const words=r.search.split(/\s+/);
+        const words=r.words;
         for(const t of tokens) {
             if(words.indexOf(t)>=0) score+=80;
             else if(words.some(w=>w.indexOf(t)===0))score+=40;
             else if(r.search.indexOf(t)>=0)score+=15;
-            else if(words.some(w=>near(t,w)))score+=5;
+            else if(t.length>=4 && [t.length-1,t.length,t.length+1].some(length=>(r.wordsByLength[length]||[]).some(w=>near(t,w))))score+=5;
             else return null;
         }
         return {r,score,i};

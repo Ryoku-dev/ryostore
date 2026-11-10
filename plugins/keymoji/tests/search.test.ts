@@ -6,3 +6,5 @@ test('acentos, português, inglês e múltiplas palavras',()=>{expect(fold('Cora
 test('emoji exato, unicode, typo e nenhum resultado',()=>{expect(search(rows,'👩🏽‍💻','Todos',[],[])[0].e).toBe('👩🏽‍💻');expect(search(rows,'U+1F600','Todos',[],[])[0].e).toBe('😀');expect(search(rows,'coracoa','Todos',[],[]).length).toBeGreaterThan(0);expect(search(rows,'zzzzzzzzzz','Todos',[],[])).toEqual([]);});
 test('favoritos e recentes',()=>{expect(search(rows,'','Favoritos',['😀'],[]).map(r=>r.e)).toEqual(['😀']);expect(search(rows,'','Recentes',[],['😂','😀']).map(r=>r.e)).toEqual(['😂','😀']);});
 test('nomes exatos superam palavras-chave',()=>{const row=rows.find(r=>r.e==='😀');expect(search(rows,row.n,'Todos',[],[])[0].e).toBe('😀');});
+
+test('emoji base encontra sequências compostas sem perder prioridade exata',()=>{const results=search(rows,'👩','all',[],[]);expect(results[0].e).toBe('👩');expect(results.some(r=>r.e==='👩🏽‍💻')).toBe(true);expect(search(rows,'💻','all',[],[]).some(r=>r.e==='👩🏽‍💻')).toBe(true);});

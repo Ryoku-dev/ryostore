@@ -104,9 +104,9 @@
     {
       "source": "app/Search.mjs",
       "destination": "app/Search.mjs",
-      "sha256": "7afd8d979f4a0d6a35719a99bf5dc4e9b8a572397d2ff8b81128e109172ad4b2",
+      "sha256": "fc0a168742d604fe1165148368a4fd127c20d6ebc2dc6c3df7afb31433b6aa41",
       "mode": "0644",
-      "size": 3190,
+      "size": 3584,
       "install": true
     },
     {
@@ -296,9 +296,9 @@
     {
       "source": "app/shell.qml",
       "destination": "app/shell.qml",
-      "sha256": "e23589379a6054a70e0ca01d2e112d779312926ca4b707218c4f7ade9dc8af88",
+      "sha256": "c84ac1c74b8e38986244375ebbce8feb9568571b090dd9e9f1446517f1b2f036",
       "mode": "0644",
-      "size": 17177,
+      "size": 17635,
       "install": true
     },
     {
@@ -432,9 +432,9 @@
     {
       "source": "tests/i18n.test.ts",
       "destination": "tests/i18n.test.ts",
-      "sha256": "223f157fa97b63e5883685c31bceadd436bfa8398872692afc620df3cff1270f",
+      "sha256": "6e4ad3c4b53b395818f9ca4aeb9e1b536ee31af4c9fb103bc931ac95f967a151",
       "mode": "0644",
-      "size": 2957,
+      "size": 3165,
       "install": false
     },
     {
@@ -472,9 +472,9 @@
     {
       "source": "tests/search.test.ts",
       "destination": "tests/search.test.ts",
-      "sha256": "028dfce1d2e1813f2a266cbab4c91eceaeb10fd003ee1630192aaf1618146138",
+      "sha256": "457c6905c86cc2f6987039a2c6802cf22fd8d3bb94379f8f1246405b8d90e3ad",
       "mode": "0644",
-      "size": 1478,
+      "size": 1789,
       "install": false
     }
   ]

@@ -144,15 +144,29 @@ ShellRoot {
     Timer {
         id: release; interval: 100
         onTriggered: {
-            try { inject.error=""; inject.command=Input.command(root.pending,root.target,ToplevelManager.activeToplevel,root.searching); inject.running=true; }
+            try { inject.error=""; inject.command=Input.command(root.pending,root.target,ToplevelManager.activeToplevel,root.searching); startGuard.restart(); inject.running=true; }
             catch(e){root.reportInputError(e);root.busy=false;root.pending="";}
+        }
+    }
+    // Process exposes started/exited, but no process-start error signal.
+    Timer {
+        id: startGuard; interval: 2000
+        onTriggered: {
+            if(!root.busy)return;
+            inject.running=false;
+            root.busy=false;
+            root.pending="";
+            root.setStatus("error.insert");
         }
     }
     Process {
         id: inject
         property string error: ""
         stderr: StdioCollector { onStreamFinished: inject.error=text.trim() }
+        onStarted: startGuard.stop()
         onExited: (code) => {
+            startGuard.stop();
+            if(!root.busy)return;
             root.busy=false;
             if(code===0){root.remember(root.pending);root.setStatus("sent",{emoji:root.pending});}
             else root.setStatus(inject.error?"error.backend":"error.insert",{detail:inject.error});
