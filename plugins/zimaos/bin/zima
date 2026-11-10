@@ -1,0 +1,776 @@
+#!/usr/bin/env python3
+"""Talk to one ZimaOS box the way its own web UI does.
+
+Paths were taken from the UI shipped on the Zotac (ZimaOS v1.8):
+  GET  /v2/zimaos/device/info                 public device card
+  GET  /v2/zimaos/device/image              product render (type=client)
+  POST /v1/users/login                        username + password -> session
+  POST /v1/users/refresh                      {"refresh_token"}
+  GET  /v1/sys/utilization                    cpu, memory, interface counters
+  GET  /v2/zimaos/network/interfaces          interface name and IPv4
+  GET  /v2/zimaos/network/connection-status   path in use: LAN, Remote, Thunderbolt
+  GET  /v2/local_storage/storages             pools such as ZimaOS-HD
+  GET  /v2/app_management/web/appgrid         installed apps, for a Backup link
+  GET  /modules/icewhale_peerdrop/           PeerDrop page opened from the card
+
+Authorization is the raw access token, the same header the dashboard sends.
+The session file is only written when its path is the plugin state file.
+"""
+
+import json
+import os
+import re
+import ssl
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+TIMEOUT = 4
+STORAGE_TIMEOUT = 6
+
+
+def die(message, code=1):
+    sys.stdout.write(json.dumps({"ok": False, "error": message}, ensure_ascii=False))
+    sys.stdout.write("\n")
+    raise SystemExit(code)
+
+
+def normalize_host(raw):
+    text = (raw or "").strip()
+    # A typed LAN host has no scheme and stays http. https:// is opt-in and
+    # keeps certificate verification. Anything else is rejected.
+    scheme = ""
+    lowered = text.lower()
+    if lowered.startswith("https://"):
+        scheme = "https"
+        text = text[8:]
+    elif lowered.startswith("http://"):
+        scheme = "http"
+        text = text[7:]
+    if text == "" or "@" in text or "://" in text or "/" in text or "\\" in text or " " in text:
+        die("invalid address")
+    host, port = text, None
+    if host.startswith("["):
+        end = host.find("]")
+        if end < 0:
+            die("invalid address")
+        port = host[end + 1 :]
+        host = host[: end + 1]
+        if port.startswith(":"):
+            port = port[1:]
+        elif port != "":
+            die("invalid address")
+    elif host.count(":") == 1:
+        host, port = host.split(":", 1)
+    elif host.count(":") > 1:
+        die("invalid address")
+    ipv4 = re.fullmatch(r"(?:\d{1,3}\.){3}\d{1,3}", host or "")
+    name = re.fullmatch(
+        r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*",
+        host or "",
+    )
+    if ipv4:
+        parts = [int(p) for p in host.split(".")]
+        if any(p > 255 for p in parts):
+            die("invalid address")
+    elif not name:
+        die("invalid address")
+    if port is not None and port != "":
+        if not re.fullmatch(r"\d{1,5}", port) or not (1 <= int(port) <= 65535):
+            die("invalid address")
+        location = host + ":" + str(int(port))
+    else:
+        location = host
+    if scheme == "https":
+        return "https://" + location
+    return location
+
+
+def request_origin(host):
+    """Return (scheme, location) for a host from normalize_host.
+
+    A bare address is http, so a LAN host such as 192.168.0.180 is not upgraded.
+    An explicit http:// prefix is the same. https:// keeps the scheme so the
+    default TLS context can verify the server.
+    """
+    if host.startswith("https://"):
+        return "https", host[len("https://") :]
+    if host.startswith("http://"):
+        return "http", host[len("http://") :]
+    return "http", host
+
+
+def origin_base(host):
+    scheme, location = request_origin(host)
+    return scheme + "://" + location
+
+
+def state_path(raw):
+    path = os.path.realpath(raw or "")
+    marker = "/ryoku/plugins/zimaos/"
+    if marker not in path or not path.endswith("/session.json"):
+        die("refusing to touch a file outside the plugin state directory")
+    parent = os.path.dirname(path)
+    if not os.path.isdir(parent):
+        os.makedirs(parent, mode=0o700, exist_ok=True)
+    return path
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """Do not follow redirects. urllib would resend Authorization to the new host."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+    def http_error_302(self, req, fp, code, msg, headers):
+        return fp
+
+    http_error_301 = http_error_303 = http_error_307 = http_error_308 = http_error_302
+
+
+# Default context verifies certificates. It is only used when a URL is https.
+# LAN hosts stay http:// — ZimaOS on the local network does not speak TLS.
+_HTTPS = ssl.create_default_context()
+
+
+def _opener():
+    return urllib.request.build_opener(
+        _NoRedirect(),
+        urllib.request.HTTPSHandler(context=_HTTPS),
+    )
+
+
+def request_bytes(host, method, path, token=None, body=None, timeout=TIMEOUT):
+    # Same opener for both schemes: redirects stay off, so Authorization is not
+    # forwarded, and HTTPS uses the default context (verify the certificate).
+    if not path.startswith("/"):
+        path = "/" + path
+    url = origin_base(host) + path
+    data = None
+    headers = {"Accept": "*/*"}
+    if body is not None:
+        data = json.dumps(body).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    if token:
+        headers["Authorization"] = token
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    try:
+        with _opener().open(req, timeout=timeout) as res:
+            return res.status, res.read()
+    except urllib.error.HTTPError as exc:
+        return exc.code, exc.read()
+    except Exception:
+        return 0, b""
+
+
+def request(host, method, path, token=None, body=None, timeout=TIMEOUT):
+    status, raw = request_bytes(host, method, path, token=token, body=body, timeout=timeout)
+    if status == 0:
+        return 0, {"_error": "no route to ZimaOS"}
+    if not raw:
+        return status, None
+    try:
+        return status, json.loads(raw.decode("utf-8", "replace"))
+    except json.JSONDecodeError:
+        return status, {"_error": "not json", "_body": raw[:180].decode("utf-8", "replace")}
+
+
+def unwrap(payload):
+    if isinstance(payload, dict) and "data" in payload and (
+        "success" in payload or "Success" in payload or "message" in payload
+    ):
+        return payload.get("data")
+    return payload
+
+
+def as_number(value):
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return None
+
+
+def first(obj, keys):
+    if not isinstance(obj, dict):
+        return None
+    for key in keys:
+        if key in obj and obj[key] not in (None, ""):
+            return obj[key]
+    return None
+
+
+def load_session(path):
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            data = json.load(handle)
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def save_session(path, data):
+    stored = {key: value for key, value in data.items() if key != "password"}
+    tmp = path + ".tmp"
+    fd = os.open(tmp, os.O_CREAT | os.O_WRONLY | os.O_TRUNC, 0o600)
+    owned = True
+    try:
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            owned = False
+            json.dump(stored, handle, ensure_ascii=False)
+            handle.write("\n")
+    except Exception:
+        if owned:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+    os.replace(tmp, path)
+    os.chmod(path, 0o600)
+
+
+def session_for_host(path, host):
+    """Return the session only when it was issued for this host.
+
+    A token saved for another server is discarded and never sent. The password
+    is never kept in the file.
+    """
+    session = load_session(path)
+    if not session:
+        return {}
+    had_password = "password" in session
+    session.pop("password", None)
+    if session.get("host") != host:
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+        return {}
+    if had_password:
+        save_session(path, session)
+    return session
+
+
+def dig_token(payload):
+    if not isinstance(payload, dict):
+        return None
+    if "access_token" in payload and payload.get("access_token"):
+        return payload
+    nested = payload.get("token")
+    if isinstance(nested, dict) and nested.get("access_token"):
+        return nested
+    data = payload.get("data")
+    if isinstance(data, dict):
+        return dig_token(data)
+    return None
+
+
+def message_of(payload):
+    if isinstance(payload, dict):
+        for key in ("message", "Message", "_error"):
+            if payload.get(key):
+                return str(payload[key])
+        data = payload.get("data")
+        if isinstance(data, dict):
+            return message_of(data)
+    return "request failed"
+
+
+def login(host, path):
+    try:
+        incoming = json.loads(sys.stdin.read() or "{}")
+    except json.JSONDecodeError:
+        die("invalid login payload")
+    username = str(incoming.get("username") or "").strip()
+    password = str(incoming.get("password") or "")
+    if username == "" or password == "":
+        die("username and password are required")
+    status, payload = request(
+        host,
+        "POST",
+        "/v1/users/login",
+        body={"username": username, "password": password},
+    )
+    token = dig_token(payload)
+    if status != 200 or not token:
+        die(message_of(payload) or "login failed")
+    save_session(
+        path,
+        {
+            "host": host,
+            "username": username,
+            "access_token": token.get("access_token") or "",
+            "refresh_token": token.get("refresh_token") or "",
+        },
+    )
+    sys.stdout.write(json.dumps({"ok": True, "username": username}, ensure_ascii=False))
+    sys.stdout.write("\n")
+
+
+def logout(path):
+    try:
+        os.remove(path)
+    except FileNotFoundError:
+        pass
+    sys.stdout.write(json.dumps({"ok": True}) + "\n")
+
+
+def refresh(host, session):
+    refresh_token = session.get("refresh_token") or ""
+    if not refresh_token:
+        return False
+    status, payload = request(
+        host, "POST", "/v1/users/refresh", body={"refresh_token": refresh_token}
+    )
+    token = dig_token(payload)
+    if status != 200 or not token or not token.get("access_token"):
+        return False
+    session["access_token"] = token.get("access_token") or ""
+    if token.get("refresh_token"):
+        session["refresh_token"] = token.get("refresh_token")
+    return True
+
+
+def authed_get(host, path, session, timeout=TIMEOUT):
+    token = session.get("access_token") or ""
+    if not token:
+        return 401, None
+    status, payload = request(host, "GET", path, token=token, timeout=timeout)
+    if status != 401:
+        return status, payload
+    if not refresh(host, session):
+        session["access_token"] = ""
+        session["refresh_token"] = ""
+        return 401, payload
+    status, payload = request(
+        host, "GET", path, token=session.get("access_token") or "", timeout=timeout
+    )
+    return status, payload
+
+
+def device_view(payload):
+    data = unwrap(payload)
+    if not isinstance(data, dict):
+        return None
+    name = first(data, ("device_name", "name", "hostname"))
+    if not name:
+        return None
+    memory = data.get("memory") if isinstance(data.get("memory"), dict) else {}
+    cpu = data.get("cpu") if isinstance(data.get("cpu"), dict) else {}
+    model = str(data.get("device_model") or "")
+    if model.strip("X") == "" or model.lower() in ("unknown", "generic"):
+        model = ""
+    return {
+        "deviceName": str(name),
+        "osVersion": str(data.get("os_version") or ""),
+        "deviceModel": model,
+        "cpuModel": str(cpu.get("model") or ""),
+        "memoryBytes": as_number(memory.get("total_byte")),
+    }
+
+
+def pick_ipv4(value):
+    if isinstance(value, str) and re.fullmatch(r"(?:\d{1,3}\.){3}\d{1,3}", value):
+        return value
+    if isinstance(value, list):
+        for item in value:
+            found = pick_ipv4(item if not isinstance(item, dict) else first(item, ("address", "ip", "ipv4")))
+            if found:
+                return found
+    if isinstance(value, dict):
+        return pick_ipv4(first(value, ("address", "ip", "ipv4", "ipv4_address")))
+    return ""
+
+
+def iface_label(item):
+    text = str(first(item, ("connection", "connection_name", "label", "type", "name")) or "")
+    lowered = text.lower()
+    if lowered in ("ethernet", "lan", "wired"):
+        return "Ethernet"
+    if "wi" in lowered or "wlan" in lowered:
+        return "Wi-Fi"
+    return text or "LAN"
+
+
+def iface_address(item):
+    return pick_ipv4(first(item, ("ipv4", "ip", "address", "addresses", "ipv4_address", "addr"))) or ""
+
+
+def connect_kind(item):
+    text = str(item.get("connect_type") or "").lower()
+    name = str(item.get("name") or "").lower()
+    if "thunder" in text or "thunder" in name:
+        return "thunderbolt"
+    if "remote" in text or name.startswith("zt"):
+        return "remote"
+    if "wi" in text or "wlan" in name or name.startswith("wl"):
+        return "wifi"
+    if "ethernet" in text or name.startswith("eth") or name.startswith("en"):
+        return "ethernet"
+    return ""
+
+
+def counter_kind(name):
+    low = str(name or "").lower()
+    if low.startswith("wlan") or low.startswith("wl") or "wifi" in low:
+        return "wifi"
+    if "thunder" in low:
+        return "thunderbolt"
+    if low.startswith("eth") or low.startswith("en"):
+        return "ethernet"
+    return ""
+
+
+def link_up(item, states):
+    name = str(item.get("name") or "")
+    state = states.get(name, "")
+    if state == "down":
+        return False
+    if state == "up":
+        return True
+    if iface_address(item):
+        return True
+    speed = as_number(item.get("negotiated_speed"))
+    return speed is not None and speed > 0
+
+
+def network_view(payload, counters, connection):
+    data = unwrap(payload)
+    items = data if isinstance(data, list) else []
+    if isinstance(data, dict):
+        for key in ("interfaces", "list", "nets"):
+            if isinstance(data.get(key), list):
+                items = data[key]
+                break
+    nets = [net for net in (counters or []) if isinstance(net, dict)]
+    states = {}
+    for net in nets:
+        name = str(net.get("name") or "")
+        if name:
+            states[name] = str(net.get("state") or "").lower()
+    remote = wifi = ethernet = thunderbolt = False
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        kind = connect_kind(item)
+        if kind and link_up(item, states):
+            if kind == "remote":
+                remote = True
+            elif kind == "wifi":
+                wifi = True
+            elif kind == "ethernet":
+                ethernet = True
+            elif kind == "thunderbolt":
+                thunderbolt = True
+    for name, state in states.items():
+        if state != "up":
+            continue
+        kind = counter_kind(name)
+        if kind == "wifi":
+            wifi = True
+        elif kind == "ethernet":
+            ethernet = True
+        elif kind == "thunderbolt":
+            thunderbolt = True
+    conn = unwrap(connection)
+    if not isinstance(conn, dict):
+        conn = {}
+    status = str(conn.get("status") or "")
+    active = ""
+    if status == "Remote":
+        active = "remote"
+        remote = True
+    elif status == "Thunderbolt":
+        active = "thunderbolt"
+        thunderbolt = True
+    elif status == "LAN":
+        if ethernet and not wifi:
+            active = "ethernet"
+        elif ethernet and wifi:
+            active = "lan"
+        else:
+            active = "wifi"
+            wifi = True
+    chosen = None
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        if iface_address(item):
+            chosen = item
+            break
+    if chosen is None and items and isinstance(items[0], dict):
+        chosen = items[0]
+    label = status if status in ("LAN", "Remote", "Thunderbolt") else (iface_label(chosen) if chosen else "LAN")
+    ip = pick_ipv4(conn.get("ip")) or (iface_address(chosen) if chosen else "")
+    wanted = active if active in ("wifi", "ethernet", "thunderbolt") else ""
+    preferred = None
+    for net in nets:
+        name = str(net.get("name") or "")
+        if name in ("lo", "docker0"):
+            continue
+        if wanted and counter_kind(name) == wanted and states.get(name) == "up":
+            preferred = net
+            break
+        if preferred is None:
+            preferred = net
+    sent = recv = stamp = None
+    if preferred:
+        sent = as_number(first(preferred, ("bytesSent", "bytes_sent", "tx", "transmit")))
+        recv = as_number(first(preferred, ("bytesRecv", "bytes_recv", "rx", "receive")))
+        stamp = as_number(first(preferred, ("time", "timestamp")))
+    return {
+        "label": label,
+        "ip": ip,
+        "bytesSent": sent,
+        "bytesRecv": recv,
+        "time": stamp,
+        "remote": remote,
+        "wifi": wifi,
+        "ethernet": ethernet,
+        "thunderbolt": thunderbolt,
+        "active": active,
+    }
+
+
+def storage_bytes(item):
+    total = as_number(first(item, ("size", "total", "total_size", "bytes", "capacity")))
+    avail = as_number(first(item, ("avail", "available", "free", "free_size")))
+    used = as_number(first(item, ("used", "used_size", "usage")))
+    if total is None and used is not None and avail is not None:
+        total = used + avail
+    if used is None and total is not None and avail is not None:
+        used = max(0, total - avail)
+    return total, used, avail
+
+
+def storage_view(payload):
+    data = unwrap(payload)
+    items = []
+    if isinstance(data, list):
+        items = data
+    elif isinstance(data, dict):
+        for key in ("storages", "disks", "list", "children"):
+            if isinstance(data.get(key), list):
+                items = data[key]
+                break
+        if not items and first(data, ("name", "label", "mount_point")):
+            items = [data]
+    best = None
+    best_size = -1
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        name = str(first(item, ("name", "label", "mount_point")) or "")
+        if name in ("", "/", "loop"):
+            continue
+        total, used, avail = storage_bytes(item)
+        size = total if total is not None else -1
+        if size >= best_size:
+            best = {"name": name, "total": total, "used": used, "avail": avail}
+            best_size = size
+    return best
+
+
+def find_backup(payload, host):
+    found = []
+    scheme, location = request_origin(host)
+
+    def walk(node):
+        if isinstance(node, dict):
+            bits = []
+            for key in ("name", "id", "app", "scheme", "hostname", "title", "en_us", "en_US"):
+                value = node.get(key)
+                if isinstance(value, str):
+                    bits.append(value)
+            title = node.get("title")
+            if isinstance(title, dict):
+                bits.extend(str(v) for v in title.values() if isinstance(v, str))
+            blob = " ".join(bits).lower()
+            url = node.get("url") if isinstance(node.get("url"), str) else ""
+            if not url.startswith("http"):
+                index = node.get("index") if isinstance(node.get("index"), str) else ""
+                port = node.get("port") or node.get("port_map")
+                raw_host = node.get("hostname") if isinstance(node.get("hostname"), str) else location
+                if "://" not in raw_host and "/" not in raw_host and "\\" not in raw_host:
+                    if raw_host.startswith("[") and "]" in raw_host:
+                        bare = raw_host[: raw_host.find("]") + 1]
+                    else:
+                        bare = raw_host.split(":")[0]
+                    if bare and isinstance(port, str) and port.isdigit() and index.startswith("/"):
+                        url = scheme + "://" + bare + ":" + port + index
+                    elif bare and isinstance(port, int) and index.startswith("/"):
+                        url = scheme + "://" + bare + ":" + str(port) + index
+            if "backup" in blob and url.startswith("http"):
+                found.append(url)
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+
+    walk(payload)
+    return found[0] if found else ""
+
+
+def utilization_view(payload):
+    data = unwrap(payload)
+    if not isinstance(data, dict):
+        return {}
+    cpu = data.get("cpu") if isinstance(data.get("cpu"), dict) else {}
+    mem = data.get("mem") if isinstance(data.get("mem"), dict) else {}
+    return {
+        "cpuPercent": as_number(first(cpu, ("percent", "usage", "usedPercent"))),
+        "memPercent": as_number(first(mem, ("usedPercent", "percent", "usage"))),
+        "memUsed": as_number(first(mem, ("used", "used_bytes"))),
+        "memTotal": as_number(first(mem, ("total", "total_bytes"))),
+        "net": data.get("net") if isinstance(data.get("net"), list) else [],
+    }
+
+
+def client_image_path(payload):
+    data = unwrap(payload)
+    if not isinstance(data, dict):
+        return ""
+    raw = data.get("device_image") or data.get("device_image_path") or ""
+    if not isinstance(raw, str):
+        return ""
+    parsed = urllib.parse.urlparse(raw)
+    if parsed.scheme or parsed.netloc or parsed.path != "/v2/zimaos/device/image":
+        return ""
+    query = urllib.parse.parse_qs(parsed.query, keep_blank_values=False)
+    model = (query.get("model") or [""])[0]
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", model):
+        return ""
+    return "/v2/zimaos/device/image?model=" + model + "&type=client"
+
+
+def ensure_device_image(host, info_payload, session_file):
+    rel = client_image_path(info_payload)
+    parent = os.path.dirname(session_file)
+    dest = os.path.join(parent, "device.png")
+    stamp = os.path.join(parent, "device-image.txt")
+    if not rel:
+        return dest if os.path.isfile(dest) else ""
+    try:
+        if os.path.isfile(dest) and os.path.getsize(dest) > 32:
+            with open(stamp, "r", encoding="utf-8") as handle:
+                if handle.read().strip() == rel:
+                    return dest
+    except OSError:
+        pass
+    status, raw = request_bytes(host, "GET", rel, timeout=8)
+    if status != 200 or not raw.startswith(b"\x89PNG\r\n\x1a\n"):
+        return dest if os.path.isfile(dest) else ""
+    tmp = dest + ".tmp"
+    with open(tmp, "wb") as handle:
+        handle.write(raw)
+    os.chmod(tmp, 0o644)
+    os.replace(tmp, dest)
+    with open(stamp, "w", encoding="utf-8") as handle:
+        handle.write(rel + "\n")
+    return dest
+
+
+def status(host, path):
+    code, payload = request(host, "GET", "/v2/zimaos/device/info")
+    device = device_view(payload) if code == 200 else None
+    if not device:
+        detail = message_of(payload) if isinstance(payload, dict) else "no route to ZimaOS"
+        die(detail or "ZimaOS did not answer")
+    session = session_for_host(path, host)
+    result = {
+        "ok": True,
+        "authed": False,
+        "authError": "",
+        "username": session.get("username") or "",
+        "dashboardUrl": origin_base(host) + "/",
+        "filesUrl": origin_base(host) + "/modules/icewhale_files/",
+        "peerDropUrl": origin_base(host) + "/modules/icewhale_peerdrop/",
+        "backupUrl": "",
+    }
+    result.update(device)
+    result["deviceImage"] = ensure_device_image(host, payload, path)
+    if not session.get("access_token") and not session.get("refresh_token"):
+        sys.stdout.write(json.dumps(result, ensure_ascii=False) + "\n")
+        return
+    u_code, u_payload = authed_get(host, "/v1/sys/utilization", session)
+    n_code, n_payload = authed_get(host, "/v2/zimaos/network/interfaces", session)
+    c_code, c_payload = authed_get(host, "/v2/zimaos/network/connection-status", session)
+    s_code, s_payload = authed_get(
+        host, "/v2/local_storage/storages", session, timeout=STORAGE_TIMEOUT
+    )
+    if u_code == 401 or n_code == 401 or c_code == 401:
+        result["authError"] = "session expired"
+        if session.get("access_token"):
+            save_session(path, session)
+        sys.stdout.write(json.dumps(result, ensure_ascii=False) + "\n")
+        return
+    result["authed"] = True
+    usage = utilization_view(u_payload if u_code == 200 else {})
+    net = network_view(
+        n_payload if n_code == 200 else {},
+        usage.pop("net", []),
+        c_payload if c_code == 200 else {},
+    )
+    result.update(usage)
+    result["network"] = net
+    storage = storage_view(s_payload) if s_code == 200 else None
+    if storage:
+        result["storage"] = storage
+    g_code, g_payload = authed_get(host, "/v2/app_management/web/appgrid", session)
+    if g_code == 200:
+        result["backupUrl"] = find_backup(g_payload, host)
+    # App grid is the last authenticated call and can rotate the refresh token.
+    # Persist after it, or the next poll keeps the tokens from before that call.
+    if session.get("access_token"):
+        save_session(path, session)
+    sys.stdout.write(json.dumps(result, ensure_ascii=False) + "\n")
+
+
+def main(argv):
+    if len(argv) < 2:
+        die("usage: zima device|login|logout|status")
+    cmd = argv[1]
+    if cmd == "device":
+        if len(argv) != 3:
+            die("usage: zima device <host>")
+        host = normalize_host(argv[2])
+        code, payload = request(host, "GET", "/v2/zimaos/device/info")
+        device = device_view(payload) if code == 200 else None
+        if not device:
+            die(message_of(payload) if isinstance(payload, dict) else "ZimaOS did not answer")
+        device["ok"] = True
+        sys.stdout.write(json.dumps(device, ensure_ascii=False) + "\n")
+        return
+    if cmd == "login":
+        if len(argv) != 4:
+            die("usage: zima login <host> <session>")
+        login(normalize_host(argv[2]), state_path(argv[3]))
+        return
+    if cmd == "logout":
+        if len(argv) != 3:
+            die("usage: zima logout <session>")
+        logout(state_path(argv[2]))
+        return
+    if cmd == "status":
+        if len(argv) != 4:
+            die("usage: zima status <host> <session>")
+        status(normalize_host(argv[2]), state_path(argv[3]))
+        return
+    die("unknown command")
+
+
+if __name__ == "__main__":
+    main(sys.argv)

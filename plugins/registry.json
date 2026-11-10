@@ -1381,6 +1381,36 @@
       ],
       "lastUpdated": "2026-11-08",
       "upstream": "https://github.com/mysweetpea/prayer-times"
+    },
+    {
+      "id": "zimaos",
+      "name": "ZimaOS",
+      "version": "0.1.16",
+      "path": "plugins/zimaos",
+      "author": "Felix <eu@leandrofelix.dev.br>",
+      "upstream": "https://github.com/leandrofelix-dev/ryoku-zima-client",
+      "summary": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
+      "description": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
+      "tags": [
+        "zimaos",
+        "nas",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "60419e62d301345829f8579a2e3f2cb86c42be55252659cf00e0b0e298916fa8",
+      "official": false,
+      "tagline": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
+      "icon": "archive",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-09"
     }
   ]
 }
