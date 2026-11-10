@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "ef3a34a3b9ff6e629dd5a17d33d0376fdf3241c296a119c32ee10c95016cf3cb",
+      "sha256": "20fc49660902003ef09a20dcb18d67eabe2b44f4a3c260481c2e54c79935faa1",
       "mode": "0644",
-      "size": 8300,
+      "size": 8905,
       "install": true
     },
     {
@@ -128,9 +128,9 @@
     {
       "source": "app/i18n/Messages.mjs",
       "destination": "app/i18n/Messages.mjs",
-      "sha256": "3f908b1c16f1cfd4f7b9be4fd8c7a41bf6b61361577985ee886869d5d656c1be",
+      "sha256": "f5819e6e27426f9fd9abb0f844cbdd677668362fa0487db50bc6581b525b8a52",
       "mode": "0644",
-      "size": 7768,
+      "size": 8718,
       "install": true
     },
     {
@@ -304,9 +304,9 @@
     {
       "source": "app/shell.qml",
       "destination": "app/shell.qml",
-      "sha256": "c84ac1c74b8e38986244375ebbce8feb9568571b090dd9e9f1446517f1b2f036",
+      "sha256": "7eff4e339a63b85e644e762a87b1db21096b1f32f9f96e2dafc51f9bdae6fc6c",
       "mode": "0644",
-      "size": 17635,
+      "size": 18883,
       "install": true
     },
     {
@@ -320,9 +320,9 @@
     {
       "source": "bin/keymoji",
       "destination": "bin/keymoji",
-      "sha256": "94f26f1826caa4dd899b1cba6bddb076929061adf587c2b32a2d0367f369af00",
+      "sha256": "46d731cd8088aa8f61a0498af99574fe2d650da2aff51da121e5c92372b17ea7",
       "mode": "0755",
-      "size": 705,
+      "size": 896,
       "install": true
     },
     {
@@ -408,9 +408,9 @@
     {
       "source": "docs/validation.md",
       "destination": "docs/validation.md",
-      "sha256": "ce607f149464e4f24f0ff1e1aee777723d7263c1eb85083fc765933fcc92b750",
+      "sha256": "52fa7f380ced317faa0ff948fc4737b763028717ccb2b31e448d5b794138ab80",
       "mode": "0644",
-      "size": 5855,
+      "size": 6471,
       "install": true
     },
     {

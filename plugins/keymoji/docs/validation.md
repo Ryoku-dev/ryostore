@@ -35,3 +35,7 @@ The Obsidian-specific pointer-only-opening change was reverted. The separate ins
 ### Held-modifier paste correction
 
 The user reported that the live shortcut reached the service but did not paste: 34 backend completions were not proof of application insertion. Added an optional external paste helper; the local user configuration selects a helper that sends Ctrl+V through the compositor instead of a virtual keyboard. Five sequential helper-backed pastes into the disposable Obsidian input preserved complete Unicode and focus; measured backend latency was 7 ms on the last request. The user then explicitly confirmed the physical shortcut works in the intended field. Compositor integration lives solely in user-owned local configuration/helper files.
+
+## Copy-only and select-last menu modes
+
+Native source checks used an isolated state directory with a sentinel last emoji and a wtype stub that fails/logs any insertion attempt. Opening copy mode, choosing with Enter, and reopening select-last through the launcher exercised cold-start mode selection and live IPC switching. Copy matched the chosen emoji and preserved the prior recent item. Select-last persisted the chosen emoji and preserved the clipboard sentinel. Neither invoked the insertion stub. Reopening via normal toggle restored insert mode. All four translations contain the mode/action/error labels.

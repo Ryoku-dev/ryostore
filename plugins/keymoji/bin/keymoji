@@ -9,11 +9,16 @@ case "${1:-toggle}" in
     if qs ipc -p "$root/app" call keymoji toggle 2>/dev/null; then exit 0; fi
     exec qs -d -n -p "$root/app"
     ;;
+  copy|select-last)
+    if qs ipc -p "$root/app" call keymoji openMode "$1" 2>/dev/null; then exit 0; fi
+    export KEYMOJI_MODE="$1"
+    exec qs -d -n -p "$root/app"
+    ;;
   open) exec qs -d -n -p "$root/app" ;;
   insert-last)
     if qs ipc -p "$root/app/insert-last.qml" call keymoji-last insert 2>/dev/null; then exit 0; fi
     exec qs -d -n -p "$root/app/insert-last.qml"
     ;;
   close) exec qs ipc -p "$root/app" call keymoji hide ;;
-  *) echo 'Uso: keymoji [toggle|open|close|insert-last]' >&2; exit 2 ;;
+  *) echo 'Uso: keymoji [toggle|open|close|insert-last|copy|select-last]' >&2; exit 2 ;;
 esac

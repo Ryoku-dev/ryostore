@@ -70,3 +70,11 @@ Run `KEYMOJI_STATE_DIR=<plugin-state-directory> bin/keymoji insert-last` from a 
 Holding the local Super+Shift+period shortcut repeats insertion. A resident windowless service serializes requests and cancels the queue on target changes or backend failure. Warm requests have no fixed delay; only the first cold start waits 100 ms for Wayland target discovery.
 
 A local desktop integration may set `KEYMOJI_PASTE_HELPER` to an absolute executable path. The paste service runs that executable, without a shell or arguments, instead of wtype for Ctrl+V. This is useful when modifiers held by a repeating shortcut interfere with virtual-keyboard paste. The helper must send paste to the active application without taking focus. Set it before the paste service starts; restart the service after changing it. The plugin does not invoke compositor-specific IPC itself.
+
+### Menu actions
+
+- `keymoji copy` (local Super+Ctrl+period): choose an emoji to copy, without typing or changing the last-used emoji.
+- `keymoji select-last` (local Super+Alt+period): choose an emoji to make it the latest recent item, without typing or changing the clipboard. Use Super+Shift+period afterward to paste it.
+- `keymoji toggle` (local Super+period): normal insertion mode.
+
+The menu header identifies its action. Copy and select-last close after a successful selection; opening normally restores insertion mode. These desktop shortcuts are configured locally, not installed by the plugin.

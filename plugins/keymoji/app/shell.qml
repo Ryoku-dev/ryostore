@@ -13,7 +13,8 @@ ShellRoot {
     property bool shown: false
     readonly property bool mapped: shown
     property var restoreTarget: null
-    Component.onCompleted: Qt.callLater(root.open)
+    property string actionMode: "insert"
+    Component.onCompleted: Qt.callLater(function(){root.open(Quickshell.env("KEYMOJI_MODE"));})
     property bool searching: false
     property bool busy: false
     property var target: null
@@ -78,8 +79,9 @@ ShellRoot {
     }
     function remember(e) { history.recent = [e].concat(history.recent.filter(x=>x!==e)).slice(0,48); store.writeAdapter(); apply(); }
     function favorite(e) { history.favorites = history.favorites.indexOf(e)>=0 ? history.favorites.filter(x=>x!==e) : history.favorites.concat([e]); store.writeAdapter(); apply(); }
-    function open() {
+    function open(mode) {
         if(busy)return;
+        actionMode=["copy","select-last"].indexOf(mode)>=0?mode:"insert";
         target=ToplevelManager.activeToplevel;
         restoreFocus.stop();restoreTarget=null;shown=true;searching=true;Motion.refresh();
         keyboardNavigation=false;
@@ -103,10 +105,18 @@ ShellRoot {
     function hide() {
         if(!shown)return;
         release.stop();shown=false;releaseFocus();target=null;
-        if(!inject.running){busy=false;pending="";}
+        if(!inject.running&&!copyEmoji.running){busy=false;pending="";}
     }
     function pick(e) {
-        if(busy) return;
+        if(busy||!shown)return;
+        if(actionMode==="select-last") {
+            remember(e);setStatus("selected",{emoji:e});hide();return;
+        }
+        if(actionMode==="copy") {
+            busy=true;pending=e;
+            copyEmoji.command=["wl-copy","--type","text/plain;charset=utf-8","--",e];
+            copyGuard.restart();copyEmoji.running=true;return;
+        }
         if(!searching) target=ToplevelManager.activeToplevel;
         busy=true; pending=e; releaseFocus(); release.start();
     }
@@ -117,7 +127,7 @@ ShellRoot {
         searching=true;
         searchBox.forceActiveFocus();
     }
-    IpcHandler { target: "keymoji"; function toggle(): void { if(root.shown)root.hide();else root.open(); } function hide(): void {root.hide();} function setLanguage(code: string): void {i18n.setLanguage(code);} function state(): string {return JSON.stringify({language:i18n.language,languagePreference:i18n.requestedLanguage,languageSource:i18n.source,localizedReady:root.localizedReady,sampleName:root.rows.length?root.rows[0].n:null,tagline:i18n.t("tagline"),visible:root.shown,mapped:root.mapped,windowVisible:panel.visible,backingVisible:panel.backingWindowVisible,inputRegion:{width:panel.mask.width,height:panel.mask.height},pointerInput:root.shown,searchFocused:searchBox.activeFocus,selectedIndex:root.selectedIndex,selectedEmoji:root.selectedItem?root.selectedItem.e:null,keyboardNavigation:root.keyboardNavigation,columns:grid.columns,scrollY:grid.contentY,resultCount:root.results.length,searching:root.searching,motionOwner:"compositor",motion:Motion.settings,adaptiveTheme:Theme.adaptive,colors:Theme.roles});} }
+    IpcHandler { target: "keymoji"; function toggle(): void { if(root.shown)root.hide();else root.open(); } function openMode(mode: string): void {root.open(mode);} function hide(): void {root.hide();} function setLanguage(code: string): void {i18n.setLanguage(code);} function state(): string {return JSON.stringify({actionMode:root.actionMode,statusKey:root.statusKey,lastEmoji:history.recent.length?history.recent[0]:null,language:i18n.language,languagePreference:i18n.requestedLanguage,languageSource:i18n.source,localizedReady:root.localizedReady,sampleName:root.rows.length?root.rows[0].n:null,tagline:i18n.t("tagline"),visible:root.shown,mapped:root.mapped,windowVisible:panel.visible,backingVisible:panel.backingWindowVisible,inputRegion:{width:panel.mask.width,height:panel.mask.height},pointerInput:root.shown,searchFocused:searchBox.activeFocus,selectedIndex:root.selectedIndex,selectedEmoji:root.selectedItem?root.selectedItem.e:null,keyboardNavigation:root.keyboardNavigation,columns:grid.columns,scrollY:grid.contentY,resultCount:root.results.length,searching:root.searching,motionOwner:"compositor",motion:Motion.settings,adaptiveTheme:Theme.adaptive,colors:Theme.roles});} }
     FileView {
         path: Quickshell.shellPath("../data/emojis.json")
         onLoaded: {
@@ -173,6 +183,20 @@ ShellRoot {
             root.pending="";
         }
     }
+    Timer {
+        id:copyGuard;interval:2000
+        onTriggered:{copyEmoji.running=false;root.busy=false;root.pending="";root.setStatus("error.copy");}
+    }
+    Process {
+        id:copyEmoji
+        onExited:code=>{
+            copyGuard.stop();
+            if(!root.busy)return;
+            const emoji=root.pending;root.busy=false;root.pending="";
+            if(code===0){root.setStatus("copied",{emoji:emoji});root.hide();}
+            else root.setStatus("error.copy");
+        }
+    }
     PanelWindow {
         id: panel
         visible: root.mapped
@@ -202,7 +226,7 @@ ShellRoot {
                         Layout.fillWidth:true;Layout.minimumWidth:0
                         spacing: 3
                         Text { text: "keymoji"; color: Theme.accent; font.pixelSize: 25; font.weight: Font.DemiBold }
-                        Text { Layout.fillWidth:true;elide:Text.ElideRight;text:i18n.t("tagline"); color: Theme.muted; font.pixelSize: 9; font.letterSpacing: 2 }
+                        Text { Layout.fillWidth:true;elide:Text.ElideRight;text:i18n.t("mode."+root.actionMode); color: Theme.muted; font.pixelSize: 9; font.letterSpacing: 2 }
                     }
                     LanguagePicker {i18n:root.localization;onChosen:Qt.callLater(function(){if(root.searching)searchBox.forceActiveFocus();})}
                     Key { icon: "x"; accessibleLabel:i18n.t("close"); onClicked: root.hide() }
@@ -279,7 +303,7 @@ ShellRoot {
                     Text {Layout.fillWidth:true;text:root.activeItem?root.activeItem.e+"  "+root.activeItem.n:i18n.t("footer");color:Theme.ink;font.pixelSize:12;elide:Text.ElideRight}
                     Key {icon:"star";selected:!!root.activeItem&&history.favorites.indexOf(root.activeItem.e)>=0;accessibleLabel:i18n.t("favorite.toggle");onClicked:if(root.activeItem)root.favorite(root.activeItem.e)}
                 }
-                Text {Layout.fillWidth:true;text:root.busy?i18n.t("inserting"):root.status;color:Theme.muted;font.pixelSize:11;wrapMode:Text.Wrap;maximumLineCount:3;elide:Text.ElideRight}
+                Text {Layout.fillWidth:true;text:root.busy?i18n.t(root.actionMode==="copy"?"copying":"inserting"):root.status;color:Theme.muted;font.pixelSize:11;wrapMode:Text.Wrap;maximumLineCount:3;elide:Text.ElideRight}
             }
         }
     }
