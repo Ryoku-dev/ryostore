@@ -266,7 +266,7 @@ Orbit.OrbitPopup {
                         Image {
                             id: art
                             anchors.fill: parent
-                            source: root.player ? (root.player.trackArtUrl || "") : ""
+                            source: root.player ? Music.artUrl : ""
                             asynchronous: true
                             cache: true
                             smooth: true

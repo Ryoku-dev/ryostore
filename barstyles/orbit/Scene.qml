@@ -468,7 +468,7 @@ Scope {
                     Image {
                         id: coreArt
                         anchors.fill: parent
-                        source: root.mediaPlayer ? (root.mediaPlayer.trackArtUrl || "") : ""
+                        source: root.mediaPlayer ? Music.artUrl : ""
                         asynchronous: true
                         smooth: true
                         cache: true
