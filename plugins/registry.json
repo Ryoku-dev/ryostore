@@ -1381,6 +1381,39 @@
       ],
       "lastUpdated": "2026-11-08",
       "upstream": "https://github.com/mysweetpea/prayer-times"
+    },
+    {
+      "id": "keymoji",
+      "name": "Keymoji",
+      "path": "plugins/keymoji",
+      "version": "0.4.0",
+      "author": "Eduardo Augusto <eduardoaugustolb@users.noreply.github.com>",
+      "upstream": "https://github.com/eduardoaugustolb/ryostore/tree/main/plugins/keymoji",
+      "official": false,
+      "summary": "Offline emoji keyboard with localized search and insertion into the active field.",
+      "accent": "#c7f285",
+      "surface": "#151d18",
+      "description": "Offline emoji keyboard with localized search and insertion into the active field.",
+      "tagline": "Emojis no seu fluxo",
+      "tags": [
+        "bar-widget",
+        "emoji",
+        "keyboard",
+        "search",
+        "i18n",
+        "portuguese"
+      ],
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "icon": "keyboard",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "lastUpdated": "2026-11-07",
+      "manifest": "product-manifest.json",
+      "manifestSha256": "a5462815fad7589cfc1f8d85fbcc4aa95a23b28f95db826471601f55d0e89433"
     }
   ]
 }

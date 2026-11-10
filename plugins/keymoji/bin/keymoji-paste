@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Portable implementation of the declared paste command.
+exec wtype -m logo -m shift -M ctrl -k v -m ctrl
