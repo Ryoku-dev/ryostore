@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "9595cd6bea535526e40f021652ca4d1cfcc4a6f3c876595bc842dd65ae451158",
+      "sha256": "ef3a34a3b9ff6e629dd5a17d33d0376fdf3241c296a119c32ee10c95016cf3cb",
       "mode": "0644",
-      "size": 7798,
+      "size": 8300,
       "install": true
     },
     {
@@ -288,9 +288,9 @@
     {
       "source": "app/insert-last.qml",
       "destination": "app/insert-last.qml",
-      "sha256": "4a78bbeacc8f95d725d876ca2d132dc31e93a01bbf480fc71ef6134775e6a6ab",
+      "sha256": "f16b57556a586e543a6f9e82a6bca3ed466c80e89256b4ac61b0a7503db3c75e",
       "mode": "0644",
-      "size": 3106,
+      "size": 3190,
       "install": true
     },
     {
@@ -408,9 +408,9 @@
     {
       "source": "docs/validation.md",
       "destination": "docs/validation.md",
-      "sha256": "1135f17400ef2efdeb4070a24d349b6b4fd1c640bb19f1f4e079af89bff720e9",
+      "sha256": "ce607f149464e4f24f0ff1e1aee777723d7263c1eb85083fc765933fcc92b750",
       "mode": "0644",
-      "size": 5180,
+      "size": 5855,
       "install": true
     },
     {
