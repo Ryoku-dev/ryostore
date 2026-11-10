@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""Print a compact JSON snapshot of recent files in the user's Downloads dir."""
+
+import json
+import os
+import subprocess
+
+
+def downloads_dir():
+    value = os.environ.get("XDG_DOWNLOAD_DIR")
+    if value:
+        return os.path.abspath(os.path.expandvars(os.path.expanduser(value)))
+    try:
+        result = subprocess.run(
+            ["xdg-user-dir", "DOWNLOAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+        value = result.stdout.strip()
+        if value:
+            return os.path.abspath(os.path.expandvars(os.path.expanduser(value)))
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return os.path.join(os.path.expanduser("~"), "Downloads")
+
+
+def main():
+    folder = downloads_dir()
+    items = []
+    try:
+        with os.scandir(folder) as entries:
+            for entry in entries:
+                if entry.name.startswith(".") or entry.name.lower().endswith(
+                    (".part", ".crdownload", ".download", ".tmp")
+                ):
+                    continue
+                try:
+                    if not entry.is_file(follow_symlinks=False):
+                        continue
+                    stat = entry.stat(follow_symlinks=False)
+                    items.append(
+                        {
+                            "name": entry.name,
+                            "path": entry.path,
+                            "size": stat.st_size,
+                            "modified": int(stat.st_mtime),
+                        }
+                    )
+                except OSError:
+                    continue
+        items.sort(key=lambda item: item["modified"], reverse=True)
+        payload = {"dir": folder, "items": items[:10]}
+    except OSError:
+        payload = {
+            "dir": folder,
+            "items": [],
+            "error": "Downloads folder is unavailable or unreadable.",
+        }
+    print(json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
+
+
+if __name__ == "__main__":
+    main()
