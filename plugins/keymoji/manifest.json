@@ -48,7 +48,8 @@
       "dirname",
       "mkdir",
       "env",
-      "ryoku-hub"
+      "ryoku-hub",
+      "wl-copy"
     ]
   },
   "commands": [
@@ -93,6 +94,7 @@
     "app/icons/source.json",
     "app/icons/star.svg",
     "app/icons/x.svg",
+    "app/insert-last.qml",
     "app/qmldir",
     "app/shell.qml",
     "assets/preview-widget.png",

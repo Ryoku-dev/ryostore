@@ -26,6 +26,8 @@ Live checks distinguished layers=400 ms/ryokuRiceEase from fadeLayersIn/Out=700 
 
 The shell.json language reference in Localization.qml is read-only, like the palette lookup in Theme.qml. The standalone preference writer uses only stateDir/settings.json. Both read-only host references are disclosed for static-screen review; no policy exception is added by this contribution.
 
-## Focus preservation fix
+## Last-emoji paste and repeat
 
-Opening now leaves layer keyboard focus at None; only clicking search switches it to Exclusive. Pointer-only selection/dismissal does not request target activation. The previous automatic-search-focus checks above describe the old behavior. Search focus can still dismiss transient application fields; use pointer-only selection for those fields. Obsidian rename insertion requires a manual application interoperability check.
+The Obsidian-specific pointer-only-opening change was reverted. The separate insert-last command uses a resident, windowless service: wl-copy followed by Ctrl+V, with target guards and a bounded, serialized repeat queue. The user shortcut is Super+Shift+period with compositor key repeat.
+
+29 Bun tests passed. A disposable input in the running Obsidian received five complete emoji through the installed service, retained document focus, and recorded zero field blur events. The first cold invocation took 279 ms including launcher/service startup; four warm invocations took 174 ms total; the last service copy/paste operation took 11 ms. Synthetic wtype modifier chords did not reproduce the physical shortcut (they typed periods), so holding the physical chord is configured and its live bind is verified, but is not claimed as a successful synthetic chord test.

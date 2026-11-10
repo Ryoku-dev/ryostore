@@ -7,7 +7,7 @@ Offline emoji keyboard with localized search and insertion into the original tex
 ## What it does
 
 - Searches 3,944 Emoji 17.0 sequences by localized names and keywords, multiple terms, emoji or Unicode code points; ignores accents and tolerates simple typos.
-- Opens without taking keyboard focus, preserving transient inputs such as Obsidian file rename. Click an emoji to insert it into the active field. Click search explicitly to enable search and keyboard navigation; taking search focus can close transient fields. Does not modify the clipboard.
+- Focuses search when opened, remembers the originating window and releases the keyboard before insertion through wtype. Does not modify the clipboard.
 - Supports arrow navigation, visible selection, automatic scrolling, Home/End, PageUp/PageDown and Enter to insert the selected result. Typing returns to search; left/right still edit a non-empty query before entering the grid.
 - Keeps local favorites and 48 recent sequences. Skin tones, flags and ZWJ sequences are preserved.
 - Closes with Escape while search has focus, the close button or an outside click. Input capture is removed immediately, independently of the exit animation.
@@ -24,7 +24,7 @@ ryoku plugin add "$PWD/plugins/keymoji" --bar --yes --allow-findings
 
 The local Ryoku validator flags the read-only shell.json lookups as config-write. Theme.qml reads palette and Localization.qml reads desktop language; neither writes Ryoku configuration. The language preference writer targets only the plugin’s own state directory; review that specific finding before using the explicit local exception. No security policy/scanner exceptions are added by this submission.
 
-Requires qs (Quickshell), wtype, bash, dirname, mkdir, env and ryoku-hub; Noto Color Emoji is recommended. The compositor must support layer-shell, foreign-toplevel management and virtual-keyboard. Launch from the QS Bar mark → Open keyboard, or bind the installed bin/keymoji with KEYMOJI_STATE_DIR set to the plugin's state directory. The standalone keyboard lives in its own layer-shell so the bar host does not dictate input focus.
+Requires qs (Quickshell), wtype, wl-copy (for insert-last), bash, dirname, mkdir, env and ryoku-hub; Noto Color Emoji is recommended. The compositor must support layer-shell, foreign-toplevel management and virtual-keyboard. Launch from the QS Bar mark → Open keyboard, or bind the installed bin/keymoji with KEYMOJI_STATE_DIR set to the plugin's state directory. The standalone keyboard lives in its own layer-shell so the bar host does not dictate input focus.
 
 ## How it plugs in
 
@@ -62,3 +62,9 @@ MIT code, with the original hypruser catalogue notice retained in LICENSE. Portu
 Choose Auto, Português, English, Español or Français in the keyboard header. Priority is the saved Keymoji preference, then Ryoku’s shell language, then the process locale (LC_ALL, LANGUAGE, LC_MESSAGES, LANG, Qt), with English fallback for unsupported locales. Auto restores the environment default. The preference is stored in settings.json under the plugin state directory; the QS Bar panel watches the same preference. The app never changes the environment language.
 
 Each bundled CLDR locale has names/keywords for all 3,944 sequences. The active locale drives interface labels, categories, emoji names and keyword ranking. English terms remain a search fallback. Accent/ligature folding supports queries such as coracao, corazon and coeur. Stable category IDs and Unicode identities preserve filters, favorites and recents across locale changes. Revision and upstream source hashes are pinned in data/i18n/source.json; runtime remains entirely offline. Only English plus the selected locale are loaded, not every dictionary.
+
+### Insert the last emoji without opening the keyboard
+
+Run `KEYMOJI_STATE_DIR=<plugin-state-directory> bin/keymoji insert-last` from a desktop shortcut. The local shortcut is Super+Shift+period. This headless command reads the first recent emoji and copies it with wl-copy, then sends Ctrl+V through wtype without opening a window or taking focus. This replaces the clipboard contents and avoids non-BMP Unicode typing issues in Electron clients. Empty/malformed history and a changed or missing target cancel insertion. No shortcut is installed automatically by the plugin.
+
+Holding the local Super+Shift+period shortcut repeats insertion. A resident windowless service serializes requests and cancels the queue on target changes or backend failure. Warm requests have no fixed delay; only the first cold start waits 100 ms for Wayland target discovery.
