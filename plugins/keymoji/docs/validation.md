@@ -25,3 +25,7 @@ Live checks distinguished layers=400 ms/ryokuRiceEase from fadeLayersIn/Out=700 
 25 unit tests also cover language precedence, POSIX/Qt locale normalization, English fallback, message-key and placeholder completeness, four CLDR dictionaries covering every sequence, localized ranking and accent/ligature folding. Native checks switched PT/EN/ES/FR, matched displayed emoji names to CLDR, verified override persistence across restart, restored Auto, and confirmed dismissal still removes input capture. An isolated test state directory kept the user preference unchanged. The compact French UI was rendered at 320×480; the standard preview shows Auto/PT under Ryoku.
 
 The shell.json language reference in Localization.qml is read-only, like the palette lookup in Theme.qml. The standalone preference writer uses only stateDir/settings.json. Both read-only host references are disclosed for static-screen review; no policy exception is added by this contribution.
+
+## Focus preservation fix
+
+Opening now leaves layer keyboard focus at None; only clicking search switches it to Exclusive. Pointer-only selection/dismissal does not request target activation. The previous automatic-search-focus checks above describe the old behavior. Search focus can still dismiss transient application fields; use pointer-only selection for those fields. Obsidian rename insertion requires a manual application interoperability check.

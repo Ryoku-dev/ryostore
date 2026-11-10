@@ -7,7 +7,7 @@ Offline emoji keyboard with localized search and insertion into the original tex
 ## What it does
 
 - Searches 3,944 Emoji 17.0 sequences by localized names and keywords, multiple terms, emoji or Unicode code points; ignores accents and tolerates simple typos.
-- Focuses search when opened, remembers the originating window and releases the keyboard before insertion through wtype. Does not modify the clipboard.
+- Opens without taking keyboard focus, preserving transient inputs such as Obsidian file rename. Click an emoji to insert it into the active field. Click search explicitly to enable search and keyboard navigation; taking search focus can close transient fields. Does not modify the clipboard.
 - Supports arrow navigation, visible selection, automatic scrolling, Home/End, PageUp/PageDown and Enter to insert the selected result. Typing returns to search; left/right still edit a non-empty query before entering the grid.
 - Keeps local favorites and 48 recent sequences. Skin tones, flags and ZWJ sequences are preserved.
 - Closes with Escape while search has focus, the close button or an outside click. Input capture is removed immediately, independently of the exit animation.

@@ -81,12 +81,14 @@ ShellRoot {
     function open() {
         if(busy)return;
         target=ToplevelManager.activeToplevel;
-        restoreFocus.stop();restoreTarget=null;shown=true;searching=true;Motion.refresh();
+        restoreFocus.stop();restoreTarget=null;shown=true;searching=false;Motion.refresh();
         keyboardNavigation=false;
-        setStatus("hint.navigation");
-        Qt.callLater(function(){if(root.shown)searchBox.forceActiveFocus();});
+        // Transient fields (such as Obsidian rename) disappear on keyboard blur.
+        // Only an explicit click on search may take keyboard focus.
+        setStatus("hint.ready");
     }
     function releaseFocus() {
+        if(!searching)return;
         searching=false;
         searchBox.focus=false;
         restoreTarget=target;
@@ -96,7 +98,7 @@ ShellRoot {
         id: restoreFocus; interval: 35
         onTriggered: {
             const active=ToplevelManager.activeToplevel;
-            if(!root.searching&&root.restoreTarget&&(!active||active===root.restoreTarget))root.restoreTarget.activate();
+            if(!root.searching&&root.restoreTarget&&!active)root.restoreTarget.activate();
             root.restoreTarget=null;
         }
     }
