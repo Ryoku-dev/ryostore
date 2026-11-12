@@ -1387,6 +1387,7 @@
       "name": "Happ",
       "version": "0.2.0",
       "path": "plugins/happ-status",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/happ-status",
       "author": "Apersant1 <44946280+Apersant1@users.noreply.github.com>",
       "summary": "Happ VPN status on the bar: connection state, exit country and IP.",
       "description": "Happ VPN status on the bar: connection state, exit country and IP.",
