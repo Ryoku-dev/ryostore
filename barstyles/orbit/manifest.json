@@ -25,8 +25,8 @@
       "source": "Scene.qml",
       "destination": "Scene.qml",
       "mode": "0644",
-      "size": 23383,
-      "sha256": "08ad65b0bc4b9cf22e44b429d7505f4ba19fe0f1487bb8e1aab088c998b7edf3",
+      "size": 23359,
+      "sha256": "33ff055248483c276a2e189e46a50be03e6db058e7d806764a6b8b7648105c59",
       "install": true
     },
     {
@@ -129,8 +129,8 @@
       "source": "popouts/MediaPopout.qml",
       "destination": "popouts/MediaPopout.qml",
       "mode": "0644",
-      "size": 19550,
-      "sha256": "5612898e5bfe3a97ba328950739672b62bf718a3993037551931dc68a39705fa",
+      "size": 19531,
+      "sha256": "335322d1fd02e1fddd7090eb1da8512992749a7c033e54d3119982933e541109",
       "install": true
     },
     {
