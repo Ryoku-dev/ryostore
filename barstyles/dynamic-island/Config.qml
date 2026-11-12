@@ -53,6 +53,7 @@ Singleton {
         path: root.dir + "/settings.json"
         watchChanges: true
         blockLoading: true
+        printErrors: false
         onFileChanged: reload()
         onAdapterUpdated: if (!root.resetting) writeAdapter()
         onLoadFailed: err => {

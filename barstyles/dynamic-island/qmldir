@@ -21,7 +21,9 @@ NotifCard 1.0 NotifCard.qml
 NotificationCenter 1.0 NotificationCenter.qml
 singleton Notifs 1.0 Notifs.qml
 Ring 1.0 Ring.qml
+Scene 1.0 Scene.qml
 Segmented 1.0 Segmented.qml
+ShellShortcut 1.0 ShellShortcut.qml
 SettingsWindow 1.0 SettingsWindow.qml
 SliderBar 1.0 SliderBar.qml
 singleton Theme 1.0 Theme.qml

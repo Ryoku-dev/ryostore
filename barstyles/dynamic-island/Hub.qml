@@ -799,8 +799,6 @@ Singleton {
     property bool wifiOn: false
     property string netName: ""
     property string netType: ""
-    property bool caffeine: false
-    property bool nightLight: false
     readonly property bool wiredUp: netType === "802-3-ethernet" || netType === "ethernet"
     readonly property string wifiSub: !wifiOn ? (wiredUp ? "Ethernet" : "Off")
                                      : (netType === "802-11-wireless" && netName !== "") ? netName
@@ -1115,8 +1113,8 @@ Singleton {
         function next(): void { root.nextTrack(); }
         function previous(): void { root.prevTrack(); }
     }
-    GlobalShortcut { name: "islandLauncher"; description: "App launcher in the island"; onPressed: root.toggleLauncher() }
-    GlobalShortcut { name: "islandToggle"; description: "Toggle the dynamic island"; onPressed: root.toggle("") }
-    GlobalShortcut { name: "islandCenter"; description: "Notification Center"; onPressed: Notifs.toggleCenter() }
-    GlobalShortcut { name: "islandSettings"; description: "Island settings"; onPressed: root.openSettings() }
+    ShellShortcut { name: "islandLauncher"; description: "App launcher in the island"; onPressed: root.toggleLauncher() }
+    ShellShortcut { name: "islandToggle"; description: "Toggle the dynamic island"; onPressed: root.toggle("") }
+    ShellShortcut { name: "islandCenter"; description: "Notification Center"; onPressed: Notifs.toggleCenter() }
+    ShellShortcut { name: "islandSettings"; description: "Island settings"; onPressed: root.openSettings() }
 }

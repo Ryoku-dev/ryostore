@@ -57,8 +57,8 @@
       "source": "Config.qml",
       "destination": "Config.qml",
       "mode": "0644",
-      "size": 6523,
-      "sha256": "35c00aa62ab64460b46c9b22b8bfaa972b34eb72e362882119a01eb3433adeaa",
+      "size": 6550,
+      "sha256": "2c9b2da4fcaaed94ebbf3c230ac3355e7ba8f60934fd2346c57d42d1fa7e297c",
       "install": true
     },
     {
@@ -89,8 +89,8 @@
       "source": "Hub.qml",
       "destination": "Hub.qml",
       "mode": "0644",
-      "size": 53778,
-      "sha256": "a932aee450b08df1bb6b0b36404d1e9ed77012e57d544c97d72c5e21c240b6cb",
+      "size": 53704,
+      "sha256": "b80a3c4e0b57318d5fa1ff5d917fd3d38f2ccf2af3ffe03fa51f18fe6d3277ad",
       "install": true
     },
     {
@@ -137,8 +137,8 @@
       "source": "LauncherPage.qml",
       "destination": "LauncherPage.qml",
       "mode": "0644",
-      "size": 13210,
-      "sha256": "b7fb01983282307b95a8c512fe016876e4380b4efb707f0c13f3aa41c27bb740",
+      "size": 13237,
+      "sha256": "353b0b50c022cdf0a88690f2ab449f8b61d8d398a72befa71f6a775eddd9a69a",
       "install": true
     },
     {
@@ -238,6 +238,14 @@
       "install": true
     },
     {
+      "source": "ShellShortcut.qml",
+      "destination": "ShellShortcut.qml",
+      "mode": "0644",
+      "size": 1799,
+      "sha256": "b21211f8fedee28d776c800017687be110eed641bf2053c2def3b74d0c828b81",
+      "install": true
+    },
+    {
       "source": "SliderBar.qml",
       "destination": "SliderBar.qml",
       "mode": "0644",
@@ -321,8 +329,8 @@
       "source": "qmldir",
       "destination": "qmldir",
       "mode": "0644",
-      "size": 936,
-      "sha256": "1d317a2e93b07bb1d9c4198b2f6d66b9dcaa9834a9bc70c88f71111a535eefdd",
+      "size": 992,
+      "sha256": "84c2aae677ff3f9b360ec8a748bc81dc537a647feefb82ed3d98e7f08a0a60c6",
       "install": true
     }
   ],

@@ -37,6 +37,7 @@ Item {
         id: histFile
         path: Config.dir + "/launcher-history.json"
         blockLoading: true
+        printErrors: false
         onAdapterUpdated: writeAdapter()
         onLoadFailed: writeAdapter()
         JsonAdapter {
