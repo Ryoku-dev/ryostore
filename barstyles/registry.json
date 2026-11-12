@@ -148,8 +148,8 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "434e0f6da7dce44976d866d29e5d9a59962232f06b6eff7eef04444a6b55388a",
-      "lastUpdated": "2026-10-02",
+      "manifestSha256": "e0013151b194e240f3128d36745ddced8bd547cf35840d688f54f219ba29552c",
+      "lastUpdated": "2026-11-10",
       "official": false,
       "license": "GPL-3.0-only"
     },
