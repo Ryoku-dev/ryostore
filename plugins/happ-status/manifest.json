@@ -1,0 +1,95 @@
+{
+  "id": "happ-status",
+  "name": "Happ",
+  "version": "0.2.0",
+  "author": "Apersant1 <44946280+Apersant1@users.noreply.github.com>",
+  "description": "Happ VPN status on the bar: connection state, exit country and IP.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 320
+  },
+  "files": [
+    "assets/preview-widget.png",
+    "bin/happ-status"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ],
+    "network": [
+      "ipinfo.io"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Happ"
+  },
+  "dependencies": {
+    "commands": [
+      "curl",
+      "jq",
+      "pgrep",
+      "gettext",
+      "/opt/happ/bin/Happ",
+      "Happ"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "countryStyle",
+        "type": "choice",
+        "label": "Country",
+        "group": "Happ",
+        "default": "name",
+        "options": [
+          {
+            "value": "name",
+            "label": "Name"
+          },
+          {
+            "value": "code",
+            "label": "Code (DE)"
+          },
+          {
+            "value": "none",
+            "label": "Hidden"
+          }
+        ]
+      },
+      {
+        "key": "showFlag",
+        "type": "toggle",
+        "label": "Show flag",
+        "group": "Happ",
+        "default": true
+      },
+      {
+        "key": "showIp",
+        "type": "toggle",
+        "label": "Show exit IP",
+        "group": "Happ",
+        "default": true
+      },
+      {
+        "key": "geoInterval",
+        "type": "int",
+        "label": "Re-check exit every (s)",
+        "group": "Happ",
+        "default": 120,
+        "min": 30,
+        "max": 900
+      }
+    ]
+  }
+}

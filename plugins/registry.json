@@ -1381,6 +1381,33 @@
       ],
       "lastUpdated": "2026-11-08",
       "upstream": "https://github.com/mysweetpea/prayer-times"
+    },
+    {
+      "id": "happ-status",
+      "name": "Happ",
+      "version": "0.2.0",
+      "path": "plugins/happ-status",
+      "author": "Apersant1 <44946280+Apersant1@users.noreply.github.com>",
+      "summary": "Happ VPN status on the bar: connection state, exit country and IP.",
+      "description": "Happ VPN status on the bar: connection state, exit country and IP.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "b5b47c8447d34083d615ecc434142b127c0fdb82bfd1116024005637f64eb214",
+      "official": false,
+      "tagline": "Happ VPN status on the bar: connection state, exit country and IP.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-12"
     }
   ]
 }

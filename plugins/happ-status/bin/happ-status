@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# happ-status: print one line of JSON describing Happ's state.
+#   happ-status local   -> {"running":bool,"tun":bool,"server":"..."}  (no network)
+#   happ-status geo     -> {"ok":bool,"ip":"..","country":"..","cc":"..","city":"..","isp":".."}
+# Reads only: /sys/class/net/<iface>, the process table, and the lastServerName
+# line of ~/.config/Happ.conf. Writes nothing.
+set -u
+mode="${1:-local}"
+iface="${HAPP_IFACE:-happ-xray}"
+
+case "$mode" in
+local)
+    running=false; tun=false; server=""
+    pgrep -x happd >/dev/null 2>&1 && running=true
+    if [ -e "/sys/class/net/$iface" ]; then
+        state=$(cat "/sys/class/net/$iface/operstate" 2>/dev/null)
+        flags=$(cat "/sys/class/net/$iface/flags" 2>/dev/null || echo 0)
+        # TUN devices report operstate "unknown"; trust the IFF_UP bit instead.
+        if [ "$state" = "up" ] || [ $(( flags & 1 )) -eq 1 ]; then tun=true; fi
+    fi
+    conf="${XDG_CONFIG_HOME:-$HOME/.config}/Happ.conf"
+    if [ -r "$conf" ]; then
+        server=$(grep -m1 '^lastServerName=' "$conf" | cut -d= -f2-)
+    fi
+    jq -cn --argjson running "$running" --argjson tun "$tun" --arg server "$server" \
+        '{running:$running,tun:$tun,server:$server}'
+    ;;
+geo)
+    # HTTPS on purpose: some Happ subscriptions route plain HTTP through a
+    # different node, so an HTTP lookup can report the wrong exit.
+    out=$(curl -fsS --max-time 8 'https://ipinfo.io/json' 2>/dev/null)
+    if [ -z "$out" ] || ! jq -e '.ip' >/dev/null 2>&1 <<<"$out"; then
+        echo '{"ok":false}'; exit 0
+    fi
+    cc=$(jq -r '.country // ""' <<<"$out")
+    country="$cc"
+    iso=/usr/share/iso-codes/json/iso_3166-1.json
+    if [ -n "$cc" ] && [ -r "$iso" ]; then
+        en=$(jq -r --arg cc "$cc" '.["3166-1"][] | select(.alpha_2==$cc) | (.common_name // .name)' "$iso" | head -n1)
+        if [ -n "$en" ]; then
+            country="$en"
+            if command -v gettext >/dev/null 2>&1; then
+                # Follows the system locale; HAPP_LANG overrides it (e.g. HAPP_LANG=de).
+                if [ -n "${HAPP_LANG:-}" ]; then
+                    tr=$(LANGUAGE="$HAPP_LANG" gettext -d iso_3166-1 "$en" 2>/dev/null)
+                else
+                    tr=$(gettext -d iso_3166-1 "$en" 2>/dev/null)
+                fi
+                [ -n "$tr" ] && country="$tr"
+            fi
+        fi
+    fi
+    jq -c --arg country "$country" \
+        '{ok:true,ip:.ip,cc:(.country // ""),country:$country,city:(.city // ""),isp:((.org // "") | sub("^AS[0-9]+ ";""))}' <<<"$out"
+    ;;
+*)
+    echo "usage: happ-status local|geo" >&2; exit 2 ;;
+esac
