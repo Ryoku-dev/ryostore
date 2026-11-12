@@ -1,0 +1,338 @@
+{
+  "schema": 1,
+  "id": "dynamic-island",
+  "category": "barstyles",
+  "version": "1.0.0",
+  "destination": "ryoku/barstyles/dynamic-island",
+  "files": [
+    {
+      "source": "AppIcon.qml",
+      "destination": "AppIcon.qml",
+      "mode": "0644",
+      "size": 1339,
+      "sha256": "2277cedc683aaaf2c0a18c8dcbed382aa4d1a7082ae2a7008ad87c4a0c954c0f",
+      "install": true
+    },
+    {
+      "source": "ArtImage.qml",
+      "destination": "ArtImage.qml",
+      "mode": "0644",
+      "size": 756,
+      "sha256": "7e35fbefd49e1854eb0473291b382d269d5dfe405453e5d74c548777d2e7e8a4",
+      "install": true
+    },
+    {
+      "source": "BannerStack.qml",
+      "destination": "BannerStack.qml",
+      "mode": "0644",
+      "size": 5955,
+      "sha256": "3a879e7977bcea8c47de27f94a224c1dc548c147949b8ba82b13ecba8c2c4c1b",
+      "install": true
+    },
+    {
+      "source": "BluetoothPage.qml",
+      "destination": "BluetoothPage.qml",
+      "mode": "0644",
+      "size": 6375,
+      "sha256": "b8bb151ffff5bc2ee6e20320be57c7f760fd208d8ef42939ebad45ae2f56412f",
+      "install": true
+    },
+    {
+      "source": "CCButton.qml",
+      "destination": "CCButton.qml",
+      "mode": "0644",
+      "size": 1804,
+      "sha256": "77cd5425dc43a36f6213220929b3640896bd565076d6fb0cd49a38140ac57df5",
+      "install": true
+    },
+    {
+      "source": "CCPill.qml",
+      "destination": "CCPill.qml",
+      "mode": "0644",
+      "size": 2454,
+      "sha256": "417dc88145550412f15608ac0ad402de27ea79132037d0c768e2547510d69592",
+      "install": true
+    },
+    {
+      "source": "Config.qml",
+      "destination": "Config.qml",
+      "mode": "0644",
+      "size": 6550,
+      "sha256": "2c9b2da4fcaaed94ebbf3c230ac3355e7ba8f60934fd2346c57d42d1fa7e297c",
+      "install": true
+    },
+    {
+      "source": "ControlsTab.qml",
+      "destination": "ControlsTab.qml",
+      "mode": "0644",
+      "size": 10205,
+      "sha256": "e4b6ecae2786376fc8235854e4a1e343c3b08fead7466c40fd41170e742c4214",
+      "install": true
+    },
+    {
+      "source": "Glass.qml",
+      "destination": "Glass.qml",
+      "mode": "0644",
+      "size": 10544,
+      "sha256": "51694337582ee58867dab3bab306bb06fdb98df80b673bc7c23c9ee9d4f9bff3",
+      "install": true
+    },
+    {
+      "source": "HomeTab.qml",
+      "destination": "HomeTab.qml",
+      "mode": "0644",
+      "size": 15419,
+      "sha256": "eb8f5f073c2a229c218b256000f3a17e5352206b9a337d95b1e2c0f4bcc41b0f",
+      "install": true
+    },
+    {
+      "source": "Hub.qml",
+      "destination": "Hub.qml",
+      "mode": "0644",
+      "size": 53704,
+      "sha256": "b80a3c4e0b57318d5fa1ff5d917fd3d38f2ccf2af3ffe03fa51f18fe6d3277ad",
+      "install": true
+    },
+    {
+      "source": "Icon.qml",
+      "destination": "Icon.qml",
+      "mode": "0644",
+      "size": 638,
+      "sha256": "993d3eb2d51da1fe476b00dcfbddc2949d87a3eb7823061ea73dc9eb2f941c46",
+      "install": true
+    },
+    {
+      "source": "IconButton.qml",
+      "destination": "IconButton.qml",
+      "mode": "0644",
+      "size": 1119,
+      "sha256": "7f04f7c6d27b9d641641a5094cb4e49974f0a60a88f8d169661d664e57b46794",
+      "install": true
+    },
+    {
+      "source": "IosSwitch.qml",
+      "destination": "IosSwitch.qml",
+      "mode": "0644",
+      "size": 1115,
+      "sha256": "a0035d01bb7aaead1b236e861f165acfc7805833387d4631ab12f61b86c41755",
+      "install": true
+    },
+    {
+      "source": "Island.qml",
+      "destination": "Island.qml",
+      "mode": "0644",
+      "size": 39914,
+      "sha256": "989a4276190aaaf1bcbe466b6b1b01a11eb503c0e9c4b315419555b676a9dc37",
+      "install": true
+    },
+    {
+      "source": "IslandWindow.qml",
+      "destination": "IslandWindow.qml",
+      "mode": "0644",
+      "size": 5261,
+      "sha256": "f554d811ebb389b31fddd2b51208e9dc1a53518b85e5423cdc79fddb542d4524",
+      "install": true
+    },
+    {
+      "source": "LauncherPage.qml",
+      "destination": "LauncherPage.qml",
+      "mode": "0644",
+      "size": 13237,
+      "sha256": "353b0b50c022cdf0a88690f2ab449f8b61d8d398a72befa71f6a775eddd9a69a",
+      "install": true
+    },
+    {
+      "source": "Marquee.qml",
+      "destination": "Marquee.qml",
+      "mode": "0644",
+      "size": 1250,
+      "sha256": "b521689bc29f21bfb9322b84e590e2952423dd73c38fd9db1705b8cef2624975",
+      "install": true
+    },
+    {
+      "source": "MediaTab.qml",
+      "destination": "MediaTab.qml",
+      "mode": "0644",
+      "size": 7160,
+      "sha256": "f9ff44beebac4fe8f938e3d18194d208c2827e32ab3b2a8b97eabb04ef91c665",
+      "install": true
+    },
+    {
+      "source": "MenuRow.qml",
+      "destination": "MenuRow.qml",
+      "mode": "0644",
+      "size": 3462,
+      "sha256": "2abc944fd28390babb308a90821e469ba59b9aca9c994b1d9f6b3ada8ebef120",
+      "install": true
+    },
+    {
+      "source": "NotifCard.qml",
+      "destination": "NotifCard.qml",
+      "mode": "0644",
+      "size": 21228,
+      "sha256": "2a6b91942c56b2b00fd1fe8779a7c3a870f41b2eb68642c588297bfd1d768fc6",
+      "install": true
+    },
+    {
+      "source": "NotificationCenter.qml",
+      "destination": "NotificationCenter.qml",
+      "mode": "0644",
+      "size": 10295,
+      "sha256": "66ccea61ff85438d41f20c33c5d4e2d44da0f48731ab74e538c6f5da48663c36",
+      "install": true
+    },
+    {
+      "source": "Notifs.qml",
+      "destination": "Notifs.qml",
+      "mode": "0644",
+      "size": 10810,
+      "sha256": "1460b15fa95d6241b3b0d2364869b402dc30f0dac5a328403f6f425619b8df93",
+      "install": true
+    },
+    {
+      "source": "PROVENANCE.txt",
+      "destination": "PROVENANCE.txt",
+      "mode": "0644",
+      "size": 2607,
+      "sha256": "e3ec3e8ee8c1e10eca2a31b6f1c8d927db503c98c8faa16163edd01f27afddf7",
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "mode": "0644",
+      "size": 3997,
+      "sha256": "76bab0f3da693938a40ea16c6fc399151c1a719ca9464fa0f0b870c3d55472ba",
+      "install": true
+    },
+    {
+      "source": "Ring.qml",
+      "destination": "Ring.qml",
+      "mode": "0644",
+      "size": 1324,
+      "sha256": "4c8aeec82b549391a5e85aca3232b6b8cab9866a1784d977eccf9a16b0cb093f",
+      "install": true
+    },
+    {
+      "source": "Scene.qml",
+      "destination": "Scene.qml",
+      "mode": "0644",
+      "size": 1815,
+      "sha256": "9b810dfb5399fedd014d12e3d8de1640675b74da750efa75cc3317f9c7d3ec85",
+      "install": true
+    },
+    {
+      "source": "Segmented.qml",
+      "destination": "Segmented.qml",
+      "mode": "0644",
+      "size": 2379,
+      "sha256": "1166bead71d788113c4ad3b8df210c0ccc9904d44d72a7da5b401297a82ced5d",
+      "install": true
+    },
+    {
+      "source": "SettingsWindow.qml",
+      "destination": "SettingsWindow.qml",
+      "mode": "0644",
+      "size": 36774,
+      "sha256": "fcb345f58776123dcb6ee57c9c1856343e944a81e3237e7b273e445e3ee613c2",
+      "install": true
+    },
+    {
+      "source": "ShellShortcut.qml",
+      "destination": "ShellShortcut.qml",
+      "mode": "0644",
+      "size": 1799,
+      "sha256": "b21211f8fedee28d776c800017687be110eed641bf2053c2def3b74d0c828b81",
+      "install": true
+    },
+    {
+      "source": "SliderBar.qml",
+      "destination": "SliderBar.qml",
+      "mode": "0644",
+      "size": 2871,
+      "sha256": "4a68cab527a7029362b046efc490e9b310e79d059fa8e7d8655a5d5fe78f8853",
+      "install": true
+    },
+    {
+      "source": "Theme.qml",
+      "destination": "Theme.qml",
+      "mode": "0644",
+      "size": 14916,
+      "sha256": "e3236a17a410db2d6665e1d1c911c92c8bf86c2491bc58180d9cff1cb437310a",
+      "install": true
+    },
+    {
+      "source": "TimerTab.qml",
+      "destination": "TimerTab.qml",
+      "mode": "0644",
+      "size": 7035,
+      "sha256": "f1f5873bb96b997c4b3dbc318e0c747efc3f445d3784d6d70b309faafc07492f",
+      "install": true
+    },
+    {
+      "source": "TrayStrip.qml",
+      "destination": "TrayStrip.qml",
+      "mode": "0644",
+      "size": 4384,
+      "sha256": "c3989464623cca6f7ebe42481c040db4cf87a018011ad6fd5e11f5b4a05fc5c8",
+      "install": true
+    },
+    {
+      "source": "Txt.qml",
+      "destination": "Txt.qml",
+      "mode": "0644",
+      "size": 452,
+      "sha256": "0943ebdbc06f1dab30072009a57febb7d9f0c54af6ae1dbf4e44edbb09096d4b",
+      "install": true
+    },
+    {
+      "source": "Visualizer.qml",
+      "destination": "Visualizer.qml",
+      "mode": "0644",
+      "size": 1231,
+      "sha256": "f4cbadf54bf0446c34948d2d3954635538e2d77e1dbd2ad97c4dcea47df2cbd4",
+      "install": true
+    },
+    {
+      "source": "Widget.qml",
+      "destination": "Widget.qml",
+      "mode": "0644",
+      "size": 937,
+      "sha256": "883bbb9601febb2dd5a9b2fc7b88512287f5499a75c16d019d2ba43a901cdb99",
+      "install": true
+    },
+    {
+      "source": "WifiPage.qml",
+      "destination": "WifiPage.qml",
+      "mode": "0644",
+      "size": 8548,
+      "sha256": "93868b266b09b26331fddf3dfaf0ad1656c7e8d41b839a6da48937c6f1cd969b",
+      "install": true
+    },
+    {
+      "source": "assets/preview.png",
+      "destination": "assets/preview.png",
+      "mode": "0644",
+      "size": 72177,
+      "sha256": "65d1ba636bc7063351b6f3283f06dda8e260d72099206d0e11bf53f3efd23dcf",
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "mode": "0644",
+      "size": 7830,
+      "sha256": "063caaf9289cdff74a61ab8b9db1775cdffb3ea2515ca2f488b4fb0bd8e5109d",
+      "install": false
+    },
+    {
+      "source": "qmldir",
+      "destination": "qmldir",
+      "mode": "0644",
+      "size": 992,
+      "sha256": "84c2aae677ff3f9b360ec8a748bc81dc537a647feefb82ed3d98e7f08a0a60c6",
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}
