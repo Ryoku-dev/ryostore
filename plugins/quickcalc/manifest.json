@@ -1,0 +1,90 @@
+{
+  "id": "quickcalc",
+  "name": "QuickCalc",
+  "version": "0.3.0",
+  "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+  "description": "A fast, keyboard-driven calculator: Basic, Scientific, and Programmer modes, a persistent history tape, variables, memory, and live-preview evaluation. Place it as a bar glyph with a panel, or as a floating window positioned by the popout placer; one keybind toggles either (qs -c shell ipc call quickcalc toggle). Pure, dependency-free arithmetic engine.",
+  "license": "MIT",
+  "official": false,
+  "tags": ["calculator", "math", "productivity", "frame-popout", "bar-widget"],
+  "hosts": ["framePopout", "topbarGlyph"],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": { "width": 360 },
+  "files": [
+    "service/Engine.js",
+    "content/CalculatorView.qml",
+    "content/Keypad.qml",
+    "content/Panel.qml",
+    "content/FloatingWindow.qml",
+    "tests/engine.test.cjs",
+    "assets/preview-popout.png",
+    "assets/preview-programmer.png",
+    "assets/preview-compact.png",
+    "assets/preview-bar.png",
+    "assets/preview-bar-shortcuts.png",
+    "assets/preview-bar-compact.png",
+    "assets/preview-settings.png"
+  ],
+  "capabilities": {
+    "densities": ["glyph", "full"]
+  },
+  "defaults": {
+    "host": "framePopout",
+    "framePopout": { "edge": "right", "align": "start" },
+    "bar": { "section": "right" },
+    "icon": "calculate",
+    "label": "Calculator"
+  },
+  "dependencies": {
+    "commands": ["wl-copy", "mkdir"]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "layout",
+        "type": "choice",
+        "label": "Mode",
+        "group": "Calculator",
+        "default": "basic",
+        "options": [
+          { "value": "basic", "label": "Basic" },
+          { "value": "scientific", "label": "Scientific" },
+          { "value": "programmer", "label": "Programmer" }
+        ]
+      },
+      { "key": "showKeypad", "type": "toggle", "label": "Show on-screen keys", "group": "Calculator", "default": false },
+      { "key": "showHints", "type": "toggle", "label": "Show shortcuts panel", "group": "Calculator", "default": true },
+      {
+        "key": "angleMode",
+        "type": "choice",
+        "label": "Angle unit",
+        "group": "Scientific",
+        "default": "deg",
+        "options": [
+          { "value": "deg", "label": "Degrees" },
+          { "value": "rad", "label": "Radians" }
+        ]
+      },
+      {
+        "key": "base",
+        "type": "choice",
+        "label": "Number base",
+        "group": "Programmer",
+        "default": "dec",
+        "options": [
+          { "value": "hex", "label": "HEX" },
+          { "value": "dec", "label": "DEC" },
+          { "value": "oct", "label": "OCT" },
+          { "value": "bin", "label": "BIN" }
+        ]
+      },
+      { "key": "thousandsSeparator", "type": "toggle", "label": "Group thousands", "group": "Calculator", "default": true },
+      { "key": "precision", "type": "int", "label": "Decimal places", "group": "Calculator", "default": 10, "min": 0, "max": 15 },
+      { "key": "historySize", "type": "int", "label": "History entries kept", "group": "Calculator", "default": 50, "min": 0, "max": 200 }
+    ]
+  }
+}
