@@ -11,7 +11,13 @@ import Quickshell.Io
 // marks any device (or its descendants) that reports rm/hotplug, or a usb
 // transport, as a "removable" drive. Actions (unmount / eject) run
 // `udisksctl`, which handles its own polkit authorization for the logged-in
-// user's own mounts -- no sudo/pkexec needed here.
+// user's own mounts -- no sudo/pkexec needed here. An unlocked encrypted
+// container (LUKS, BitLocker, VeraCrypt/TrueCrypt: anything with an open
+// `crypt` mapping) is locked (`udisksctl lock`) after its filesystem is
+// unmounted, so Eject never leaves an open mapping behind. When an unmount or
+// lock is refused, the notification says why: the processes `lsof` sees
+// holding it, a permission problem, or active LVM volumes. A missing command
+// is reported, never left hanging.
 Item {
     id: svc
 
@@ -27,6 +33,7 @@ Item {
     //   model, tran, removable }
     property var drives: []
     property string lastError: ""
+    readonly property string readErrorPrefix: "Could not read drives: "
     property string lastAction: ""
     property bool busy: false
 
@@ -92,12 +99,21 @@ Item {
     function refresh() {
         if (lsblkProc.running)
             return;
+        lsblkProc.didStart = false;
         lsblkProc.running = true;
     }
 
     Process {
         id: lsblkProc
         command: ["lsblk", "-J", "-b", "-o", "NAME,PATH,TRAN,RM,HOTPLUG,MOUNTPOINT,SIZE,FSTYPE,LABEL,TYPE,MODEL"]
+        // See cmdComponent: a binary that cannot start only flips `running`
+        // back to false, without `started` or `exited`.
+        property bool didStart: false
+        onStarted: didStart = true
+        onRunningChanged: {
+            if (!running && !didStart)
+                svc.lastError = svc.readErrorPrefix + "lsblk is not installed (it ships with util-linux).";
+        }
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
@@ -107,9 +123,12 @@ Item {
                     for (var i = 0; i < devices.length; i++)
                         svc.flatten(devices[i], "", false, out);
                     svc.drives = out;
-                    svc.lastError = "";
+                    // Only clear a read error; an unmount/lock failure must
+                    // stay on the panel after the refresh that follows it.
+                    if (svc.lastError.indexOf(svc.readErrorPrefix) === 0)
+                        svc.lastError = "";
                 } catch (e) {
-                    svc.lastError = "Could not read drives: " + e;
+                    svc.lastError = svc.readErrorPrefix + e;
                 }
             }
         }
@@ -123,24 +142,51 @@ Item {
         onTriggered: svc.refresh()
     }
 
-    // One-shot command runner: fire-and-forget argv, call onDone(exitCode) when
-    // it exits, then destroy itself. Never built from an interpolated string
-    // (R9) -- argv arrays only.
+    // One-shot command runner: fire-and-forget argv, call
+    // onDone(exitCode, stderr, stdout, missing) when it ends, then destroy
+    // itself. Never built from an interpolated string (R9) -- argv arrays
+    // only.
+    //
+    // A binary that is not installed never emits `started` or `exited` in
+    // Quickshell; `running` just drops back to false. That case still calls
+    // onDone, with missing = true, so no action is left waiting forever
+    // (which used to leave `busy` set and every panel button disabled).
     Component {
         id: cmdComponent
         Process {
+            id: proc
             property var onDone: null
             property string errText: ""
-            stdout: StdioCollector {}
-            stderr: StdioCollector {
-                onStreamFinished: parent.errText = text
+            property string outText: ""
+            property bool didStart: false
+            property bool finished: false
+            stdout: StdioCollector {
+                onStreamFinished: proc.outText = text
             }
-            onExited: function (exitCode, exitStatus) {
+            stderr: StdioCollector {
+                onStreamFinished: proc.errText = text
+            }
+            function finish(code, err, out, missing) {
+                if (finished)
+                    return;
+                finished = true;
                 var cb = onDone;
-                var err = errText;
                 destroy();
                 if (cb)
-                    cb(exitCode, err);
+                    cb(code, err, out, missing);
+            }
+            onStarted: didStart = true
+            onExited: function (exitCode, exitStatus) {
+                finish(exitCode, errText, outText, false);
+            }
+            onRunningChanged: {
+                if (running || didStart)
+                    return;
+                // Leave the signal handler before destroying this object.
+                var name = command.length > 0 ? command[0] : "command";
+                Qt.callLater(function () {
+                    proc.finish(-1, name + " is not installed", "", true);
+                });
             }
         }
     }
@@ -171,39 +217,230 @@ Item {
         runCmd(argv, null);
     }
 
-    function unmountOne(path, after) {
-        var drive = svc.driveByPath(path);
-        if (svc.busy || !drive || !drive.removable || drive.mountpoint === "")
+    function childrenOf(path) {
+        var out = [];
+        for (var i = 0; i < svc.drives.length; i++) {
+            if (svc.drives[i].parentPath === path)
+                out.push(svc.drives[i]);
+        }
+        return out;
+    }
+
+    // An encrypted container is unlocked while lsblk still shows a `crypt`
+    // mapping under it. Unmounting the filesystem inside does not remove that
+    // node; only `udisksctl lock` does. Keyed on the mapping, not on the
+    // container's FSTYPE: blkid says `crypto_LUKS` or `BitLocker`, and
+    // nothing at all for VeraCrypt/TrueCrypt, yet every dm-crypt mapping is
+    // TYPE `crypt`. A `crypt` node is never a container itself: in a
+    // VeraCrypt cipher cascade the stack is locked through the device under
+    // it.
+    function isUnlockedContainer(d) {
+        if (!d || d.type === "crypt")
+            return false;
+        return svc.cryptChildPath(d.path) !== "";
+    }
+
+    // The open crypt mapping directly under a container ("" if locked).
+    function cryptChildPath(containerPath) {
+        var kids = svc.childrenOf(containerPath);
+        for (var i = 0; i < kids.length; i++) {
+            if (kids[i].type === "crypt")
+                return kids[i].path;
+        }
+        return "";
+    }
+
+    // The container a decrypted filesystem lives in: climb through any
+    // stacked `crypt` mappings to the real device underneath. Returns ""
+    // for a filesystem that is not on an encrypted mapping.
+    function containerOf(d) {
+        if (!d || d.type !== "crypt")
+            return "";
+        var cur = d;
+        while (cur && cur.type === "crypt")
+            cur = svc.driveByPath(cur.parentPath);
+        return svc.isUnlockedContainer(cur) ? cur.path : "";
+    }
+
+    // Ask lsof which processes keep `target` (a mountpoint or a device node)
+    // open: cb(holders, hint). holders is a short "name (pid), ..." line, or
+    // "" when none are visible (lsof only sees this user's processes). hint
+    // is set when lsof itself is missing, so the user knows how to get the
+    // holder names next time.
+    function findHolders(target, cb) {
+        if (!target) {
+            cb("", "");
             return;
-        svc.busy = true;
-        svc.lastError = "";
-        svc.lastAction = "Unmounting " + path;
-        runCmd(["udisksctl", "unmount", "-b", path], function (code, err) {
-            svc.busy = false;
-            svc.lastAction = "";
-            if (code !== 0) {
-                svc.lastError = "Could not unmount " + path + (err ? ": " + err : "");
-                svc.notify("Unmount failed", path + (err ? "\n" + err : ""), true);
-            } else {
-                svc.notify("Unmounted", path + " can be removed.");
+        }
+        runCmd(["lsof", "-w", "-F", "pc", "--", target], function (code, err, out, missing) {
+            if (missing) {
+                cb("", "Install lsof to see which program is using it.");
+                return;
             }
-            svc.refresh();
-            if (after)
-                after(code);
+            var seen = {};
+            var list = [];
+            var pid = "";
+            var lines = (out || "").split("\n");
+            for (var i = 0; i < lines.length; i++) {
+                var l = lines[i];
+                if (l.charAt(0) === "p") {
+                    pid = l.substring(1);
+                } else if (l.charAt(0) === "c" && pid !== "" && !seen[pid]) {
+                    seen[pid] = true;
+                    list.push(l.substring(1) + " (" + pid + ")");
+                }
+            }
+            var maxShown = 6;
+            var text = list.slice(0, maxShown).join(", ");
+            if (list.length > maxShown)
+                text += ", +" + (list.length - maxShown) + " more";
+            cb(text, "");
         });
     }
 
-    function unmountSequence(paths, idx, done) {
-        if (idx >= paths.length) {
-            done(0, "", "");
+    // Turn the udisks refusals a user can act on into plain words; "" for
+    // anything else, which is then shown as udisks printed it.
+    //  - NotAuthorized*: polkit refused. udisks lets a user lock/unmount
+    //    without a password only what that user unlocked/mounted through
+    //    udisks; a container opened by another user, crypttab or
+    //    `cryptsetup open` needs `encrypted-lock-others` (admin).
+    //  - "is not an encrypted device": udisks does not manage the container
+    //    at all, typically a volume mounted with the VeraCrypt app.
+    function explainUdisksError(verb, err) {
+        var e = err || "";
+        if (e.indexOf("NotAuthorizedDismissed") !== -1)
+            return "The password prompt was cancelled.";
+        if (e.indexOf("NotAuthorized") !== -1) {
+            if (verb === "lock")
+                return "This volume was unlocked outside your session (by another user, the system's crypttab, or cryptsetup), so locking it needs an administrator password.";
+            return "It was mounted by another user or by the system (e.g. through fstab), so this needs an administrator password.";
+        }
+        if (e.indexOf("is not an encrypted device") !== -1)
+            return "It was opened by another tool (such as the VeraCrypt app or cryptsetup) that udisks does not manage. Close it in that tool, then eject again.";
+        return "";
+    }
+
+    // LVM logical volumes stacked on a container's decrypted mapping. While
+    // active they hold the mapping open from inside the kernel, so a lock is
+    // refused and lsof has no process to name. udisksctl cannot deactivate
+    // a volume group, so the plugin only explains this.
+    function lvmVolumesOn(containerPath) {
+        var names = [];
+        var mapping = svc.cryptChildPath(containerPath);
+        if (mapping === "")
+            return names;
+        var kids = svc.childrenOf(mapping);
+        for (var i = 0; i < kids.length; i++) {
+            if (kids[i].type === "lvm")
+                names.push(kids[i].name);
+        }
+        return names;
+    }
+
+    function explainLvm(verb, path) {
+        if (verb !== "lock")
+            return "";
+        var names = svc.lvmVolumesOn(path);
+        if (names.length === 0)
+            return "";
+        return "It holds LVM volumes that are still active (" + names.join(", ") + "). Deactivate their volume group first, as root (vgchange -an <group>), then eject again.";
+    }
+
+    function publishError(title, verb, path, why) {
+        svc.lastError = "Could not " + verb + " " + path + (why ? ": " + why.replace(/\n/g, " ") : "");
+        svc.notify(title, "Could not " + verb + " " + path + (why ? "\n" + why : ""), true);
+    }
+
+    // Report a refused unmount/lock/power-off: name the holding processes
+    // when lsof can see them, so a user knows what to close instead of
+    // guessing. `missing` means udisksctl itself is not installed, so
+    // there is nothing to look up.
+    function reportBusy(title, verb, path, holderTarget, err, missing, after) {
+        if (missing) {
+            svc.publishError(title, verb, path, err);
+            after();
             return;
         }
-        runCmd(["udisksctl", "unmount", "-b", paths[idx]], function (code, err) {
+        // A permission or ownership refusal, or a kernel holder such as an
+        // active LVM volume, is not about open files; asking lsof would
+        // only add noise.
+        var explained = svc.explainUdisksError(verb, err);
+        if (explained === "")
+            explained = svc.explainLvm(verb, path);
+        if (explained !== "") {
+            svc.publishError(title, verb, path, explained);
+            after();
+            return;
+        }
+        svc.findHolders(holderTarget, function (holders, hint) {
+            var why = holders !== "" ? "In use by: " + holders : (err ? err.trim() : "");
+            if (holders === "" && hint)
+                why += (why ? "\n" : "") + hint;
+            svc.publishError(title, verb, path, why);
+            after();
+        });
+    }
+
+    function failAction(title, verb, path, holderTarget, err, missing) {
+        svc.reportBusy(title, verb, path, holderTarget, err, missing, function () {
+            svc.busy = false;
+            svc.lastAction = "";
+            svc.refresh();
+        });
+    }
+
+    function unmountOne(path) {
+        var drive = svc.driveByPath(path);
+        if (svc.busy || !drive || !drive.removable || drive.mountpoint === "")
+            return;
+        // A filesystem inside an unlocked encrypted container: lock the
+        // container once the filesystem is unmounted, so "Unmount" really
+        // leaves it safe and does not hide a still-decrypted volume.
+        var containerPath = svc.containerOf(drive);
+        var mountpoint = drive.mountpoint;
+        svc.busy = true;
+        svc.lastError = "";
+        svc.lastAction = "Unmounting " + path;
+        runCmd(["udisksctl", "unmount", "-b", path], function (code, err, out, missing) {
             if (code !== 0) {
-                done(code, paths[idx], err);
+                svc.failAction("Unmount failed", "unmount", path, mountpoint, err, missing);
                 return;
             }
-            svc.unmountSequence(paths, idx + 1, done);
+            if (containerPath === "") {
+                svc.busy = false;
+                svc.lastAction = "";
+                svc.notify("Unmounted", path + " can be removed.");
+                svc.refresh();
+                return;
+            }
+            svc.lastAction = "Locking " + containerPath;
+            runCmd(["udisksctl", "lock", "-b", containerPath], function (lcode, lerr, lout, lmissing) {
+                if (lcode !== 0) {
+                    svc.failAction("Lock failed", "lock", containerPath, path, lerr, lmissing);
+                    return;
+                }
+                svc.busy = false;
+                svc.lastAction = "";
+                svc.notify("Unmounted and locked", containerPath + " is locked and can be removed.");
+                svc.refresh();
+            });
+        });
+    }
+
+    // Run `udisksctl <verb> -b <path>` over each step in order, stopping at
+    // the first failure: done(code, failedStep, err, missing). A step is
+    // { path, holder } where holder is what lsof checks if it is refused.
+    function udisksSequence(verb, steps, idx, done) {
+        if (idx >= steps.length) {
+            done(0, null, "", false);
+            return;
+        }
+        runCmd(["udisksctl", verb, "-b", steps[idx].path], function (code, err, out, missing) {
+            if (code !== 0) {
+                done(code, steps[idx], err, missing);
+                return;
+            }
+            svc.udisksSequence(verb, steps, idx + 1, done);
         });
     }
 
@@ -231,28 +468,42 @@ Item {
         var disk = svc.driveByPath(diskPath);
         if (svc.busy || !disk || !disk.removable || disk.type !== "disk")
             return;
+        // Deepest first, so a filesystem goes before the container it
+        // lives in. Both lists are captured now: unmounting does not remove
+        // the crypt node, so the container list is still right afterwards,
+        // and it also covers a container whose filesystem was unmounted by
+        // hand while its mapping was left open.
         var descendants = svc.descendantPaths(diskPath);
-        var parts = [];
-        if (disk.mountpoint !== "")
-            parts.push(disk.path);
-        for (var i = descendants.length - 1; i >= 0; i--) {
-            if (descendants[i].mountpoint !== "")
-                parts.push(descendants[i].path);
+        var ordered = descendants.slice().reverse();
+        ordered.push(disk);
+        var mounts = [];
+        var locks = [];
+        for (var i = 0; i < ordered.length; i++) {
+            var d = ordered[i];
+            if (d.mountpoint !== "")
+                mounts.push({ path: d.path, holder: d.mountpoint });
+            if (svc.isUnlockedContainer(d))
+                locks.push({ path: d.path, holder: svc.cryptChildPath(d.path) });
         }
         svc.busy = true;
         svc.lastError = "";
         svc.lastAction = "Ejecting " + diskPath;
-        svc.unmountSequence(parts, 0, function (code, failedPath, err) {
+        svc.udisksSequence("unmount", mounts, 0, function (code, failed, err, missing) {
             if (code !== 0) {
-                svc.busy = false;
-                svc.lastAction = "";
-                svc.lastError = "Could not unmount " + failedPath + (err ? ": " + err : "");
-                svc.notify("Eject stopped", failedPath + " is still mounted.", true);
-                svc.refresh();
+                svc.failAction("Eject stopped", "unmount", failed.path, failed.holder, err, missing);
                 return;
             }
-            settleTimer.diskPath = diskPath;
-            settleTimer.restart();
+            if (locks.length > 0)
+                svc.lastAction = "Locking encrypted volumes on " + diskPath;
+            svc.udisksSequence("lock", locks, 0, function (lcode, lfailed, lerr, lmissing) {
+                if (lcode !== 0) {
+                    svc.failAction("Eject stopped", "lock", lfailed.path, lfailed.holder, lerr, lmissing);
+                    return;
+                }
+                svc.lastAction = "Ejecting " + diskPath;
+                settleTimer.diskPath = diskPath;
+                settleTimer.restart();
+            });
         });
     }
 
@@ -262,15 +513,15 @@ Item {
         interval: 400
         repeat: false
         onTriggered: {
-            runCmd(["udisksctl", "power-off", "-b", diskPath], function (code, err) {
+            var path = diskPath;
+            svc.runCmd(["udisksctl", "power-off", "-b", path], function (code, err, out, missing) {
+                if (code !== 0) {
+                    svc.failAction("Eject failed", "power off", path, path, err, missing);
+                    return;
+                }
                 svc.busy = false;
                 svc.lastAction = "";
-                if (code !== 0) {
-                    svc.lastError = "Could not power off " + diskPath + (err ? ": " + err : "");
-                    svc.notify("Eject failed", diskPath + (err ? "\n" + err : ""), true);
-                } else {
-                    svc.notify("Safe to remove", diskPath + " was ejected.");
-                }
+                svc.notify("Safe to remove", path + " was ejected.");
                 svc.refresh();
             });
         }

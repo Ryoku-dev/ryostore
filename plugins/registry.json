@@ -1296,7 +1296,7 @@
     {
       "id": "removable-drives",
       "name": "Removable Drives",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "path": "plugins/removable-drives",
       "author": "Buxter <11074827+klopster@users.noreply.github.com>",
       "summary": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
@@ -1312,7 +1312,7 @@
         "assets/mounted-devices.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "7a053360ae0ce1301041f9947e6f50159fc022f0486195b5cb6b99d24ee0a246",
+      "manifestSha256": "c0b7b23eb93185ec441bf04455b9af1a54a0c88b43c57f0927e469324d051009",
       "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/removable-drives",
       "official": false,
       "tagline": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
@@ -1320,7 +1320,7 @@
       "hosts": [
         "topbarGlyph"
       ],
-      "lastUpdated": "2026-11-01"
+      "lastUpdated": "2026-11-14"
     },
     {
       "id": "medkit-guide",
