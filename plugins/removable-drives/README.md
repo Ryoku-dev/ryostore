@@ -19,8 +19,12 @@ HDD and SSD enclosures report `RM=0`.
 The service exposes the flat drive list, the number of mounted removable
 filesystems, and three actions:
 
-- `unmountOne(path)` unmounts one filesystem. If the filesystem sits inside an
-  unlocked encrypted container, it then locks the container.
+- `unmountOne(path)` unmounts one filesystem. If the filesystem sits directly
+  on an unlocked encrypted container, it then locks the container. If it is an
+  LVM volume or a partition inside the container, the container stays
+  unlocked and the notification says why. The notification only says the
+  drive can be removed when nothing else on that disk is still mounted or
+  unlocked; otherwise it names what is left.
 - `ejectDisk(diskPath)` unmounts every mounted filesystem under that disk, at
   any depth. It locks every encrypted container on the disk that is still
   unlocked, including one whose filesystem you already unmounted by hand. It

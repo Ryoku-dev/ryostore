@@ -250,16 +250,63 @@ Item {
         return "";
     }
 
-    // The container a decrypted filesystem lives in: climb through any
-    // stacked `crypt` mappings to the real device underneath. Returns ""
-    // for a filesystem that is not on an encrypted mapping.
+    // The container a filesystem lives in, at any depth: find the nearest
+    // `crypt` mapping at or above it (an LVM volume or a partition can sit
+    // on the mapping), then climb through any stacked mappings (a VeraCrypt
+    // cascade) to the real device underneath. Returns "" for a filesystem
+    // that is not inside an encrypted mapping.
     function containerOf(d) {
-        if (!d || d.type !== "crypt")
-            return "";
         var cur = d;
+        while (cur && cur.type !== "crypt")
+            cur = svc.driveByPath(cur.parentPath);
         while (cur && cur.type === "crypt")
             cur = svc.driveByPath(cur.parentPath);
         return svc.isUnlockedContainer(cur) ? cur.path : "";
+    }
+
+    // The top-level disk a device belongs to.
+    function topDiskOf(d) {
+        var cur = d;
+        while (cur && cur.parentPath) {
+            var up = svc.driveByPath(cur.parentPath);
+            if (!up)
+                break;
+            cur = up;
+        }
+        return cur ? cur.path : "";
+    }
+
+    // What on the same disk as `d` is still open once `d` is unmounted and
+    // `lockedPath` (if any) is locked: "" when the drive can be pulled, or
+    // a sentence naming what remains. Computed from the drive list before
+    // the action runs, so the paths being acted on are skipped explicitly.
+    function stillOpenOnDisk(d, lockedPath) {
+        var disk = svc.topDiskOf(d);
+        var mounted = [];
+        var unlocked = [];
+        for (var i = 0; i < svc.drives.length; i++) {
+            var x = svc.drives[i];
+            if (x.path === d.path || svc.topDiskOf(x) !== disk)
+                continue;
+            if (x.mountpoint !== "")
+                mounted.push(x.path);
+            else if (x.path !== lockedPath && svc.isUnlockedContainer(x))
+                unlocked.push(x.path);
+        }
+        var parts = [];
+        if (mounted.length > 0)
+            parts.push(mounted.join(", ") + (mounted.length > 1 ? " are" : " is") + " still mounted");
+        if (unlocked.length > 0)
+            parts.push(unlocked.join(", ") + (unlocked.length > 1 ? " are" : " is") + " still unlocked");
+        return parts.join(" and ");
+    }
+
+    // Why a container stays unlocked after a volume nested inside its
+    // mapping is unmounted.
+    function whyStillUnlocked(containerPath) {
+        if (svc.lvmVolumesOn(containerPath).length > 0)
+            return "its LVM volumes are still active. To lock it, deactivate their volume group as root (vgchange -an <group>), then use Eject.";
+        return "other volumes inside it keep it open. Use Eject to lock it and power the drive off.";
     }
 
     // Ask lsof which processes keep `target` (a mountpoint or a device node)
@@ -393,10 +440,17 @@ Item {
         var drive = svc.driveByPath(path);
         if (svc.busy || !drive || !drive.removable || drive.mountpoint === "")
             return;
-        // A filesystem inside an unlocked encrypted container: lock the
+        // A filesystem directly on an unlocked encrypted mapping: lock the
         // container once the filesystem is unmounted, so "Unmount" really
-        // leaves it safe and does not hide a still-decrypted volume.
+        // leaves it safe and does not hide a still-decrypted volume. One
+        // nested deeper (an LVM volume, a partition inside the mapping)
+        // shares the mapping with its siblings, so a lock would only be
+        // refused; say the container is still unlocked instead.
         var containerPath = svc.containerOf(drive);
+        var lockIt = containerPath !== "" && drive.type === "crypt";
+        var nested = containerPath !== "" && !lockIt;
+        var leftOpen = svc.stillOpenOnDisk(drive, lockIt ? containerPath : "");
+        var useEject = leftOpen !== "" ? " " + leftOpen + "; use Eject before removing the drive." : "";
         var mountpoint = drive.mountpoint;
         svc.busy = true;
         svc.lastError = "";
@@ -406,10 +460,15 @@ Item {
                 svc.failAction("Unmount failed", "unmount", path, mountpoint, err, missing);
                 return;
             }
-            if (containerPath === "") {
+            if (!lockIt) {
                 svc.busy = false;
                 svc.lastAction = "";
-                svc.notify("Unmounted", path + " can be removed.");
+                if (nested)
+                    svc.notify("Unmounted", path + " is unmounted, but " + containerPath + " is still unlocked: " + svc.whyStillUnlocked(containerPath));
+                else if (leftOpen !== "")
+                    svc.notify("Unmounted", path + " is unmounted." + useEject);
+                else
+                    svc.notify("Unmounted", path + " can be removed.");
                 svc.refresh();
                 return;
             }
@@ -421,7 +480,10 @@ Item {
                 }
                 svc.busy = false;
                 svc.lastAction = "";
-                svc.notify("Unmounted and locked", containerPath + " is locked and can be removed.");
+                if (leftOpen !== "")
+                    svc.notify("Unmounted and locked", containerPath + " is locked." + useEject);
+                else
+                    svc.notify("Unmounted and locked", containerPath + " is locked and can be removed.");
                 svc.refresh();
             });
         });
