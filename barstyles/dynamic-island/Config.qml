@@ -43,7 +43,7 @@ Singleton {
         notifications: true, notifStyle: "banner", bannerTimeout: 5,
         previews: "always", notifSound: false, soundFile: "/usr/share/sounds/freedesktop/stereo/message.oga",
         groupByApp: true, dndAllowCritical: true,
-        weather: true, locationMode: "auto", manualLat: 0, manualLon: 0,
+        weather: false, locationMode: "auto", manualLat: 0, manualLon: 0,
         manualName: "", units: "metric",
         ccAccent: true, nightLightTemp: 4000, osdPopups: false, osdTimeout: 1600, confirmPower: true
     })
@@ -113,7 +113,7 @@ Singleton {
             property bool dndAllowCritical: true    // critical banners pass through the shell's own Focus
 
             // ── Weather + location ──
-            property bool weather: true
+            property bool weather: false            // off until you turn it on: it contacts Open-Meteo and a geolocation service
             property string locationMode: "auto"    // auto (GeoClue → IP) | ip | manual
             property real manualLat: 0
             property real manualLon: 0

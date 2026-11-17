@@ -57,8 +57,8 @@
       "source": "Config.qml",
       "destination": "Config.qml",
       "mode": "0644",
-      "size": 6550,
-      "sha256": "2c9b2da4fcaaed94ebbf3c230ac3355e7ba8f60934fd2346c57d42d1fa7e297c",
+      "size": 6641,
+      "sha256": "286d924788c54eff852c47df9bf02be0c0186a3b43510353f7a2f8639205d821",
       "install": true
     },
     {
@@ -89,8 +89,8 @@
       "source": "Hub.qml",
       "destination": "Hub.qml",
       "mode": "0644",
-      "size": 53704,
-      "sha256": "b80a3c4e0b57318d5fa1ff5d917fd3d38f2ccf2af3ffe03fa51f18fe6d3277ad",
+      "size": 53671,
+      "sha256": "3b49141e99f788f275fd63038ab827730a7506874ec81ad7a2662ffa311089d8",
       "install": true
     },
     {
@@ -131,6 +131,14 @@
       "mode": "0644",
       "size": 5261,
       "sha256": "f554d811ebb389b31fddd2b51208e9dc1a53518b85e5423cdc79fddb542d4524",
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "mode": "0644",
+      "size": 1067,
+      "sha256": "055aeb4d33b97b531d78a1f8d67515fa53fdea00a904048cf06b46eeba4ca987",
       "install": true
     },
     {
@@ -185,8 +193,8 @@
       "source": "Notifs.qml",
       "destination": "Notifs.qml",
       "mode": "0644",
-      "size": 10810,
-      "sha256": "1460b15fa95d6241b3b0d2364869b402dc30f0dac5a328403f6f425619b8df93",
+      "size": 10786,
+      "sha256": "6152e46a4bc47f62938c7684206d73c43e6dfed86ddf2b9b930be5f97264a016",
       "install": true
     },
     {
@@ -201,8 +209,8 @@
       "source": "README.md",
       "destination": "README.md",
       "mode": "0644",
-      "size": 3997,
-      "sha256": "76bab0f3da693938a40ea16c6fc399151c1a719ca9464fa0f0b870c3d55472ba",
+      "size": 4372,
+      "sha256": "aef9dfed6b740e7e05a81a6e3499a6bfe2d080ce702e1cf6e617c410577b0c5e",
       "install": true
     },
     {
@@ -233,8 +241,8 @@
       "source": "SettingsWindow.qml",
       "destination": "SettingsWindow.qml",
       "mode": "0644",
-      "size": 36774,
-      "sha256": "fcb345f58776123dcb6ee57c9c1856343e944a81e3237e7b273e445e3ee613c2",
+      "size": 36885,
+      "sha256": "a0d829c819e3a0e12094d76f3f058f12081974b5f9c5defdecedc9f91e1d4a21",
       "install": true
     },
     {

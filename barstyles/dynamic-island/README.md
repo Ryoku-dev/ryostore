@@ -84,4 +84,12 @@ edits everything live. Changes persist under:
   server advertises it; the shell's daemon does not, so the reply field
   stays hidden while actions still work.
 
+## Network
+
+Nothing leaves the machine until you turn *Show Weather* on in Settings →
+Weather. Then the island asks Open-Meteo for the forecast, and in
+Automatic or IP Only mode looks your position up through ipinfo.io or
+ipapi.co (GeoClue first, if installed). Pick Manual to choose a city and
+skip the position lookup. Notification icons are only read from local files.
+
 See `PROVENANCE.txt` for what was carried and what was rewritten.

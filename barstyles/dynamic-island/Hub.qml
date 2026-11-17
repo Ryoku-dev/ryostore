@@ -489,7 +489,7 @@ Singleton {
             }
         }
     }
-    Timer { interval: 3000; repeat: true; triggeredOnStart: true; running: true; onTriggered: privacyProc.running = true }
+    Timer { interval: 3000; repeat: true; triggeredOnStart: true; running: Config.s.showPrivacy; onTriggered: privacyProc.running = true }
     Timer { interval: 1000; repeat: true; running: root.recording; onTriggered: root.recordSeconds++ }
     Connections {
         target: Shell.Recorder
@@ -574,7 +574,7 @@ Singleton {
     Process {
         id: ipProc
         command: ["sh", "-c",
-            "curl -sf --max-time 8 https://ipinfo.io/json || curl -sf --max-time 8 https://ipapi.co/json/ || curl -sf --max-time 8 http://ip-api.com/json/"]
+            "curl -sf --max-time 8 https://ipinfo.io/json || curl -sf --max-time 8 https://ipapi.co/json/"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {

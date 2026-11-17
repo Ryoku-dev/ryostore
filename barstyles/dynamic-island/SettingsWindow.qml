@@ -607,7 +607,7 @@ FloatingWindow {
         Column {
             width: parent ? parent.width : 0
             Section {
-                footer: "Automatic tries GeoClue (Wi-Fi positioning, accurate to a street) and falls back to your IP address, which is often only right to the nearest big city. If it's off, pick your city below. Weather from Open-Meteo."
+                footer: "Off by default. Turning it on sends your position to Open-Meteo for the forecast. Automatic tries GeoClue (Wi-Fi positioning, accurate to a street) and falls back to your IP address through ipinfo.io or ipapi.co, which is often only right to the nearest big city. Pick Manual to choose a city yourself and skip the lookup."
                 SwitchRow { label: "Show Weather"; key: "weather" }
                 SegRow { label: "Location"; key: "locationMode"; segWidth: 300; options: [{ label: "Automatic", value: "auto" }, { label: "IP Only", value: "ip" }, { label: "Manual", value: "manual" }] }
                 SegRow { label: "Units"; key: "units"; segWidth: 200; options: [{ label: "°C", value: "metric" }, { label: "°F", value: "imperial" }] }

@@ -162,7 +162,7 @@ Singleton {
     function resolveIcon(s) {
         if (!s) return "";
         if (s.startsWith("/")) return "file://" + s;
-        if (s.startsWith("file:") || s.startsWith("image:") || s.startsWith("qrc:") || s.startsWith("http")) return s;
+        if (s.startsWith("file:") || s.startsWith("image:") || s.startsWith("qrc:")) return s;
         return Quickshell.iconPath(s, true);
     }
     function appIcon(n) {
