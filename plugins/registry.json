@@ -1408,6 +1408,96 @@
       "lastUpdated": "2026-11-07",
       "manifest": "product-manifest.json",
       "manifestSha256": "a5462815fad7589cfc1f8d85fbcc4aa95a23b28f95db826471601f55d0e89433"
+    },
+    {
+      "id": "recent-downloads",
+      "name": "Recent Downloads",
+      "version": "0.1.4",
+      "path": "plugins/recent-downloads",
+      "author": "Manish <159711477+mannish01@users.noreply.github.com>",
+      "upstream": "https://github.com/mannish01/Recent-Downloads",
+      "summary": "A minimal bar button with a quick list of recent files from Downloads.",
+      "description": "Browse recently downloaded files directly from the Ryoku QS Bar. Open files with their default applications or open the Downloads folder.",
+      "license": "MIT",
+      "tags": [
+        "bar-widget",
+        "downloads",
+        "file-management"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "bad3770df0d352674fd8694a80f1668076b7d31d690c3325a33fbae6f46dda77",
+      "official": false,
+      "tagline": "Your latest downloads, one click away.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-11"
+    },
+    {
+      "id": "happ-status",
+      "name": "Happ",
+      "version": "0.2.0",
+      "path": "plugins/happ-status",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/happ-status",
+      "author": "Apersant1 <44946280+Apersant1@users.noreply.github.com>",
+      "summary": "Happ VPN status on the bar: connection state, exit country and IP.",
+      "description": "Happ VPN status on the bar: connection state, exit country and IP.",
+      "tags": [
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "0c27c9dc4074bb1f81c4a3ed1aa70997aa53488f2dca2c8117b9566fc8363b36",
+      "official": false,
+      "tagline": "Happ VPN status on the bar: connection state, exit country and IP.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-12"
+    },
+    {
+      "id": "zimaos",
+      "name": "ZimaOS",
+      "version": "0.1.16",
+      "path": "plugins/zimaos",
+      "author": "Felix <eu@leandrofelix.dev.br>",
+      "upstream": "https://github.com/leandrofelix-dev/ryoku-zima-client",
+      "summary": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
+      "description": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
+      "tags": [
+        "zimaos",
+        "nas",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "bed7d85422e35d7f8b49f6ef9145098d05929b866f9065754977a32aa57e51cb",
+      "official": false,
+      "tagline": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
+      "icon": "archive",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-09"
     }
   ]
 }
