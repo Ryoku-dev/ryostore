@@ -45,8 +45,8 @@ Item {
     readonly property bool invert: config.invert === true
     readonly property bool ready: stock ? stockImage.status === Image.Ready
         : customImage.status === Image.Ready || stockImage.status === Image.Ready
-    // a custom picture that never loaded shows the stock figure instead
-    readonly property bool showStock: !hasOverride && (stock || customImage.status === Image.Error)
+    // a picture that never loaded shows the stock figure instead
+    readonly property bool showStock: stock || customImage.status === Image.Error
 
     clip: true
 

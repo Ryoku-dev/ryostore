@@ -1,13 +1,13 @@
 #!/bin/sh
 # bin/dossier — the system dossier the card prints: 20 base lines from the
-# ryoku-sysinfo helper, 11 extended lines from ryoku-profile-stats, and 2
-# identity lines (dbus machine id, `ryoku --version`).
+# ryoku-sysinfo helper, 11 extended lines from ryoku-profile-stats, and 4
+# identity lines (dbus machine id, `ryoku --version`, edition, os-release ID).
 # The helpers are read-only Ryoku tools; this script only locates and runs
 # them. When a helper is absent it falls back to direct /proc, /sys and
 # os-release reads for the same fields; fields only the helpers can answer
-# (WM version, monitors, AUR count, cursor, palette, codename) print "-" or
-# empty and the card shows them as unknown. Compositor state is never probed
-# here. Writes nothing.
+# (package counts, WM version, monitors, AUR count, cursor, palette,
+# codename) print "-" or empty and the card shows them as unknown.
+# Compositor state is never probed here. Writes nothing.
 
 find_path() {
     # $1: helper name. Sets the global H to its PATH location, if any. The
@@ -49,7 +49,6 @@ fallback_base() {
     up="-"
     [ -r /proc/uptime ] && up=$(awk '{s=int($1);printf "%dh %dm", int(s/3600), int((s%3600)/60)}' /proc/uptime)
     pkgs="-"
-    command -v pacman >/dev/null && pkgs=$(pacman -Q | wc -l)
     hostn="?"
     [ -r /proc/sys/kernel/hostname ] && hostn=$(cat /proc/sys/kernel/hostname)
     echo "${USER:-$(id -un)}"
@@ -99,7 +98,6 @@ fallback_extra() {
         [ "$(cat "$e")" = enabled ] && mon=$((mon + 1))
     done
     exp="-"
-    command -v pacman >/dev/null && exp=$(pacman -Qqe | wc -l)
     echo "${load:--}"
     echo "$temp"
     echo "$procs"
@@ -127,10 +125,20 @@ identity() {
     cache=$(ls ~/.local/state/ryoku/release-cache/channel-*.json 2>/dev/null | head -1)
     [ -n "$cache" ] && rel=$(grep -o '"name":"[^"]*"' "$cache" | head -1 | cut -d'"' -f4)
     echo "$rel"
+    # the distro id the card code salts with, from the vendor os-release
+    # (the file /etc/os-release points at)
+    did=""
+    if [ -r /usr/lib/os-release ]; then
+        while IFS= read -r line; do
+            case "$line" in ID=*) did=${line#ID=}; break ;; esac
+        done < /usr/lib/os-release
+    fi
+    did=${did#[\"\']}
+    echo "${did%[\"\']}"
 }
 
 find_path ryoku-sysinfo
-if [ -n "$H" ]; then bash "$H" || fallback_base; else fallback_base; fi
+if [ -n "$H" ] && out=$(bash "$H" && echo x); then printf '%s' "${out%x}"; else fallback_base; fi
 find_path ryoku-profile-stats
-if [ -n "$H" ]; then bash "$H" || fallback_extra; else fallback_extra; fi
+if [ -n "$H" ] && out=$(bash "$H" && echo x); then printf '%s' "${out%x}"; else fallback_extra; fi
 identity

@@ -46,7 +46,6 @@
     "commands": [
       "bash",
       "stat",
-      "lsb_release",
       "ryoku-hub"
     ]
   },

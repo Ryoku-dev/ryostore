@@ -63,7 +63,7 @@ Item {
     property string installDate: ""
 
     // ---- the collectible face: rarity, code, mark ----
-    property string distroId: ""         // lsb_release's id, the code's --distro
+    property string distroId: ""         // os-release ID, the code's --distro
     property string markText: "力"       // brand.json's mark
     property var code: null              // `ryoku-hub profile code` JSON
     readonly property string serial: code && /^[0-9a-f]{16}$/.test(String(code.cardId))
@@ -109,23 +109,9 @@ Item {
                 }
             }
         }
-    }
-    // the distro id for the code: from lsb_release, which reads os-release
-    // itself; a machine without it still gets a card code, just not the
-    // distro's own salt
-    Process {
-        id: distroIdProbe
-        running: true
-        command: ["lsb_release", "-i", "-s"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                svc.distroId = this.text.trim().toLowerCase();
-                distroIdProbe.running = false;
-            }
-        }
         onExited: function (exitCode, exitStatus) {
-            if (exitCode !== 0 && svc.distroId === "")
-                svc.distroId = "linux";
+            if (exitCode !== 0)
+                svc.code = null;
         }
     }
     // the set's mark word
@@ -203,6 +189,7 @@ Item {
                 svc.machineId = (l[31] || "").trim();
                 svc.ryokuVersion = (l[32] || "").trim();
                 svc.releaseName = (l[33] || "").trim();
+                svc.distroId = (l[34] || "").trim() || "linux";
                 dossier.running = false;
             }
         }
@@ -276,6 +263,8 @@ Item {
     // ---------------- hero figure config + hub card store ----------------
     FileView {
         path: svc.configDir + "/profile.json"
+        watchChanges: true
+        onFileChanged: reload()
         onLoaded: {
             try {
                 const j = JSON.parse(text());
@@ -285,6 +274,8 @@ Item {
                 svc.cardStore = {};
                 svc.heroConfig = {};
             }
+            if (svc.codeArgv.length > 0)
+                codeSettle.restart();
         }
     }
 }

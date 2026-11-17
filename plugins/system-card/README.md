@@ -39,10 +39,10 @@ menu and settings.
 - `service/Main.qml` — the data layer, the plugin's twin of the hub's
   `SysInfo` + `LiveStats`. It runs `bin/dossier` once a minute while the tile
   is mounted, `bin/poll` every `pollMs` (default 1500) while mounted, reads
-  `/etc/machine-id`, `/etc/os-release`, `/etc/ryoku-release` and your
-  `profile.json` hero settings, and probes the root filesystem's creation
-  time with `stat` for the install date. Nothing polls while the tile is
-  unmounted.
+  your `profile.json` hero settings (reloaded when Settings saves it), runs
+  `ryoku-hub profile code` for the trading card's code rulers, and probes the
+  root filesystem's creation time with `stat` for the install date. Nothing
+  polls while the tile is unmounted.
 - `content/Widget.qml` — the poster. The host sets `widthBudget`; the card
   draws at design size and scales to fit. All motion is gated on `active`
   and the `motion` setting.
@@ -53,30 +53,45 @@ menu and settings.
 - `bin/dossier` — runs the read-only `ryoku-sysinfo` and
   `ryoku-profile-stats` helpers shipped by Ryoku (searching
   `~/.local/bin`, `/usr/local/bin`, `/usr/bin`, then `PATH`); when a helper
-  is absent it falls back to direct `/proc`, `/sys`, `os-release` and
-  `pacman -Q` reads, with fields only the helpers answer printed as `-`.
+  is absent or fails it falls back to direct `/proc`, `/sys` and
+  `os-release` reads, with fields only the helpers answer (package counts
+  included) printed as `-`.
   It never probes the compositor itself.
 - `bin/poll` — one telemetry sample: two `/proc/stat` and `/proc/net/dev`
   reads 0.3 s apart give CPU percent and network rates; RAM percent and load
-  average come from `/proc`; the CPU temperature from `sensors` (optional) or
-  `thermal_zone0`; the GPU from `nvidia-smi` **only while the card is not in
-  runtime suspend** (the probe never wakes it), or from amdgpu sysfs.
+  average come from `/proc`; the CPU temperature from the `k10temp` /
+  `coretemp` hwmon sensor or `thermal_zone0`; the GPU from `nvidia-smi`
+  **only while every NVIDIA card is out of runtime suspend** (the probe never
+  wakes one), or from amdgpu/i915/xe sysfs. A sample is shell builtins plus
+  one `nvidia-smi` call.
 
 ## What it reads and writes
 
 - **Runs:** `bin/dossier`, `bin/poll` (bash/awk/shell tools and the two
   read-only ryoku helpers above; `sensors` and `nvidia-smi` are optional and
-  used only when present and awake), `stat -c %W /`, and `ryoku --version`.
+  used only when present and awake), `stat -c %W /`, `ryoku --version`, and
+  `ryoku-hub profile code` (hardware numbers in, the card code's tick levels
+  out; no shell, every argument is its own argv entry). The trading card
+  face needs a Ryoku Settings that has `profile code`; without it the card
+  prints without the code rulers.
 - **Reads:** `/proc/stat`, `/proc/meminfo`, `/proc/uptime`, `/proc/loadavg`,
   `/proc/net/dev`, `/proc/cpuinfo`, `/proc/sys/kernel/{hostname,osrelease}`,
-  `/var/lib/dbus/machine-id`,
-  `/sys/class/thermal`, `/sys/class/drm`, `/sys/bus/pci/drivers/nvidia`,
-  `/sys/class/power_supply`, `~/.config/ryoku/profile.json` (the hero figure
-  config), and `~/.config/ryoku/profile/hero.*` (your own picture). Every
-  one of these reads is read-only.
-- **Writes:** nothing. No file, no setting outside `plugins.json` (through
-  the host), no state directory.
+  `/usr/lib/os-release`, `/var/lib/dbus/machine-id` (only hashed into the
+  edition number, never shown),
+  `/sys/class/thermal`, `/sys/class/hwmon`, `/sys/class/drm`,
+  `/sys/bus/pci/drivers/nvidia`, `/sys/class/power_supply`,
+  `~/.config/ryoku/profile.json`, `~/.config/ryoku/brand.json`, and
+  `~/.config/ryoku/profile/hero.*` (your own picture). Every one of these
+  reads is read-only.
+- **Writes:** nothing of its own. No file, no setting outside `plugins.json`
+  (through the host), no state directory. The first `ryoku-hub profile code`
+  run makes Settings create its own device key file if it does not exist yet,
+  exactly as opening Settings > About does.
 - **Network:** none. **Privileged actions:** none.
+- **Shown only:** the tile draws the local user's own card. It has no share,
+  save, upload or badge feature, and it does not carry any card design other
+  than the stock one and what Settings > About > Customise already saved on
+  this computer.
 
 ## Settings
 

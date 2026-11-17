@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "d25926aeac07b4dce9704b41b813c7e02a45a9c1c33d4234657fad6ff0b1aa7b",
+      "sha256": "709910231fdb7b9ca302dafabbe0f2693cdac6002c9c87ef77690e8704ed2474",
       "mode": "0644",
-      "size": 6146,
+      "size": 7080,
       "install": false
     },
     {
@@ -40,17 +40,17 @@
     {
       "source": "bin/dossier",
       "destination": "bin/dossier",
-      "sha256": "98ea8ffe0b55c094ddd17050eda66f6a3aab7c1c9ecb1bc15266c5484a489a64",
+      "sha256": "7fe55064eaad55499fdead0e23687baeadc92f816ce567d9bf83f471e25b85f7",
       "mode": "0755",
-      "size": 5004,
+      "size": 5327,
       "install": true
     },
     {
       "source": "bin/poll",
       "destination": "bin/poll",
-      "sha256": "d9cc62968c183af6ced4f989ab0a07ab96a2984a6698980d333e5062a53a6d1a",
+      "sha256": "af2131325bd04e6bccd27a28a9bdf5f3c7d0a82b1598572ab02e5f9be6fcdd3a",
       "mode": "0755",
-      "size": 3258,
+      "size": 3579,
       "install": true
     },
     {
@@ -80,9 +80,9 @@
     {
       "source": "content/Figure.qml",
       "destination": "content/Figure.qml",
-      "sha256": "aeba238ac81d7aedeb660390279cb3deb6551c02f71060fd76d02252512ce081",
+      "sha256": "8b2448435a932cc8ca6582f62613d2393ff3f1eed25f711fb4e489139ed78c72",
       "mode": "0644",
-      "size": 6180,
+      "size": 6155,
       "install": true
     },
     {
@@ -120,17 +120,17 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "58651f45bd61aa9b011cb22387037f748adfca2d07301aff17366bbd5c9a2f6d",
+      "sha256": "8a925de00d34a4fa907bae16aa2c1166d28daf9e29c79a01f44a96c2e0c7ece9",
       "mode": "0644",
-      "size": 6145,
+      "size": 6124,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "864dc62eb941c9cdc49a2f1e16ee0db5ad0e4bc2b70440eef82ebb2a20713ac1",
+      "sha256": "59b32341c527f9ea006b302cc196b545334102510ba4780c297ae31fa6939b03",
       "mode": "0644",
-      "size": 11666,
+      "size": 11349,
       "install": true
     }
   ]
