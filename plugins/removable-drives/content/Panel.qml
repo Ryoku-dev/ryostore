@@ -28,40 +28,46 @@ Item {
     readonly property string lastAction: service ? service.lastAction : ""
     readonly property bool busy: service ? service.busy : false
 
-    // Group the flat drive list into removable disks + their mounted
-    // partitions (or the disk itself, if it has no partition table).
+    // Group the flat drive list into removable disks + every mounted
+    // filesystem under them (or the disk itself, if it has no partition
+    // table). A filesystem is filed under its top-level disk, not its direct
+    // parent: an unlocked LUKS volume's parent is the partition, and a card
+    // keyed on that would offer an Eject that cannot act on a partition.
     readonly property var groups: {
+        var byDevice = {};
+        for (var k = 0; k < root.drives.length; k++)
+            byDevice[root.drives[k].path] = root.drives[k];
+        function topDisk(d) {
+            var cur = d;
+            var hops = 0;
+            while (cur.parentPath !== "" && byDevice[cur.parentPath] && hops < 16) {
+                cur = byDevice[cur.parentPath];
+                hops += 1;
+            }
+            return cur;
+        }
         var byPath = {};
         var order = [];
+        function group(disk) {
+            if (!byPath[disk.path]) {
+                byPath[disk.path] = {
+                    diskPath: disk.path,
+                    model: disk.model || disk.name,
+                    sizeLabel: disk.sizeLabel,
+                    rows: []
+                };
+                order.push(disk.path);
+            }
+            return byPath[disk.path];
+        }
         for (var i = 0; i < root.drives.length; i++) {
             var d = root.drives[i];
             if (!d.removable)
                 continue;
-            if (d.type === "disk") {
-                if (!byPath[d.path]) {
-                    byPath[d.path] = {
-                        diskPath: d.path,
-                        model: d.model || d.name,
-                        sizeLabel: d.sizeLabel,
-                        rows: []
-                    };
-                    order.push(d.path);
-                }
-                if (d.mountpoint !== "")
-                    byPath[d.path].rows.push(d);
-            } else if (d.mountpoint !== "") {
-                var parent = d.parentPath;
-                if (!byPath[parent]) {
-                    byPath[parent] = {
-                        diskPath: parent,
-                        model: parent,
-                        sizeLabel: "",
-                        rows: []
-                    };
-                    order.push(parent);
-                }
-                byPath[parent].rows.push(d);
-            }
+            if (d.type === "disk")
+                group(d);
+            if (d.mountpoint !== "")
+                group(topDisk(d)).rows.push(d);
         }
         var out = [];
         for (var j = 0; j < order.length; j++)
