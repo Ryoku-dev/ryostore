@@ -1498,6 +1498,37 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-11-09"
+    },
+    {
+      "id": "system-card",
+      "name": "System Card",
+      "version": "0.7.0",
+      "path": "plugins/system-card",
+      "author": "DivinusX",
+      "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/plugins/system-card",
+      "summary": "The Ryoku Hub System Card as a desktop tile, in two live faces: the poster and the collectible trading card. CPU, GPU and memory read like a system monitor, graded for any machine, tinted from your wallpaper.",
+      "description": "The Ryoku Hub System Card as a desktop tile, in two live faces: the poster and the collectible trading card. CPU, GPU and memory read like a system monitor, graded for any machine, tinted from your wallpaper. The card face tilts and its foils chase the cursor; readings, specs and temperatures poll live.",
+      "tags": [
+        "desktop-widget",
+        "monitor",
+        "system-info",
+        "trading-card"
+      ],
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "official": false,
+      "tagline": "Your machine as a collectible card: two live faces, holo foils under the cursor, specs and temperatures tinted from your wallpaper.",
+      "icon": "extension",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-11-17",
+      "manifestSha256": "066f3f7488cc714594e45a407ed07d96c68ad761a3b67619447e1598514bd47f",
+      "accent": "#8f8378",
+      "surface": "#101010"
     }
   ]
 }

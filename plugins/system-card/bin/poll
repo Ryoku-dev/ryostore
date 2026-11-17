@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# bin/poll — one live telemetry sample, printed as a single line:
+#   cpu ram cpuTemp load netDown netUp [gpuUtil gpuTemp vramUsed vramTotal]
+# Reads /proc and /sys only; probes nvidia-smi only when the card is awake
+# (a suspended discrete GPU counts as absent, so this never wakes it);
+# reads amdgpu sysfs when there is no NVIDIA answer. Every field falls to
+# zero when its source is absent. Writes nothing.
+s1=$(awk '/^cpu /{i=$5+$6;t=0;for(j=2;j<=NF;j++)t+=$j;print t,i}' /proc/stat)
+n1=$(awk 'NR>2{gsub(/:/,"",$1);if($1!="lo"){rx+=$2;tx+=$10}}END{print rx+0,tx+0}' /proc/net/dev)
+sleep 0.3
+s2=$(awk '/^cpu /{i=$5+$6;t=0;for(j=2;j<=NF;j++)t+=$j;print t,i}' /proc/stat)
+n2=$(awk 'NR>2{gsub(/:/,"",$1);if($1!="lo"){rx+=$2;tx+=$10}}END{print rx+0,tx+0}' /proc/net/dev)
+cpu=$(awk -v a="$s1" -v b="$s2" 'BEGIN{split(a,x);split(b,y);dt=y[1]-x[1];di=y[2]-x[2];print (dt>0)?int(100*(dt-di)/dt+0.5):0}')
+dn=$(awk -v a="$n1" -v b="$n2" 'BEGIN{split(a,x);split(b,y);d=(y[1]-x[1])/0.3;print (d>0)?int(d):0}')
+up=$(awk -v a="$n1" -v b="$n2" 'BEGIN{split(a,x);split(b,y);d=(y[2]-x[2])/0.3;print (d>0)?int(d):0}')
+ram=$(awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{print int(100*(t-a)/t+0.5)}' /proc/meminfo)
+ld=$(awk '{print $1}' /proc/loadavg)
+ct=$(sensors 2>/dev/null | awk '/Tctl/{v=$2;gsub(/[^0-9.]/,"",v);print int(v);exit}')
+[ -z "$ct" ] && ct=$(awk '{print int($1/1000)}' /sys/class/thermal/thermal_zone0/temp 2>/dev/null)
+asleep=0
+for st in /sys/bus/pci/drivers/nvidia/*/power/runtime_status; do
+  [ -r "$st" ] || continue
+  IFS= read -r s < "$st"
+  [ "$s" = suspended ] && asleep=1
+  break
+done
+if [ "$asleep" = 1 ]; then g=""
+else g=$(nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits 2>/dev/null | sort -t, -k4 -n | tail -1 | tr ',' ' ')
+fi
+# the primary GPU, on any vendor, degrading quietly when nothing answers:
+# 1) NVIDIA via nvidia-smi, but only while the card is awake (the runtime
+#    status guard above); with several cards, the one with the most memory.
+# 2) AMD or Intel via sysfs: every amdgpu/i915/xe card that reports
+#    gpu_busy_percent, and the one with the biggest VRAM wins — so a
+#    discrete card is chosen over the processor's built-in graphics.
+#    (Built-in graphics report 0 or no VRAM, so they lose the tie.)
+if [ -z "$g" ]; then
+  best_d=""; best_vt=0
+  for d in /sys/class/drm/card*/device; do
+    drv=$(basename "$(readlink -f "$d/driver" 2>/dev/null)")
+    case "$drv" in amdgpu|i915|xe) ;; *) continue ;; esac
+    [ -r "$d/gpu_busy_percent" ] || continue
+    vt=0
+    [ -r "$d/mem_info_vram_total" ] && vt=$(awk '{print int($1/1048576)}' "$d/mem_info_vram_total")
+    if [ "$vt" -gt "$best_vt" ]; then best_vt=$vt; best_d=$d; fi
+    [ -n "$best_d" ] || best_d=$d
+  done
+  if [ -n "$best_d" ]; then
+    gu=$(cat "$best_d/gpu_busy_percent" 2>/dev/null)
+    gt=0
+    for h in "$best_d"/hwmon/hwmon*/temp1_input; do
+      [ -r "$h" ] && { gt=$(awk '{print int($1/1000)}' "$h"); break; }
+    done
+    vu=0
+    [ -r "$best_d/mem_info_vram_used" ] && vu=$(awk '{print int($1/1048576)}' "$best_d/mem_info_vram_used")
+    [ "$best_vt" -gt 0 ] || best_vt=1
+    [ -n "$gu" ] && g="$gu $gt $vu $best_vt"
+  fi
+fi
+echo "$cpu $ram $ct $ld $dn $up $g"

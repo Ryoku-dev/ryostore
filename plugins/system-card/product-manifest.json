@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "id": "system-card",
+  "category": "plugins",
+  "version": "0.7.0",
+  "destination": "ryoku/plugins/system-card",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mode": "0644",
+      "size": 35149,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "d25926aeac07b4dce9704b41b813c7e02a45a9c1c33d4234657fad6ff0b1aa7b",
+      "mode": "0644",
+      "size": 6146,
+      "install": false
+    },
+    {
+      "source": "assets/caracalla.png",
+      "destination": "assets/caracalla.png",
+      "sha256": "ebac11958bb85d598b9e165d4708edc8f71003080b9407362b743105884a1089",
+      "mode": "0644",
+      "size": 48737,
+      "install": true
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "129bcf99c51ac5fd73c1b04a0b47f7fdbe9210a76e1dee2be9a4436735731ebd",
+      "mode": "0644",
+      "size": 94674,
+      "install": false
+    },
+    {
+      "source": "bin/dossier",
+      "destination": "bin/dossier",
+      "sha256": "98ea8ffe0b55c094ddd17050eda66f6a3aab7c1c9ecb1bc15266c5484a489a64",
+      "mode": "0755",
+      "size": 5004,
+      "install": true
+    },
+    {
+      "source": "bin/poll",
+      "destination": "bin/poll",
+      "sha256": "d9cc62968c183af6ced4f989ab0a07ab96a2984a6698980d333e5062a53a6d1a",
+      "mode": "0755",
+      "size": 3258,
+      "install": true
+    },
+    {
+      "source": "content/Barcode.qml",
+      "destination": "content/Barcode.qml",
+      "sha256": "df0c925cfb39b26a21ea4ea3181bfc2a732a1465729dde516e64b5aed37051fa",
+      "mode": "0644",
+      "size": 2535,
+      "install": true
+    },
+    {
+      "source": "content/Card.qml",
+      "destination": "content/Card.qml",
+      "sha256": "2710ece858cfb307f56262249cde0ac904963add208e382d723f9c6e7df98e2e",
+      "mode": "0644",
+      "size": 19936,
+      "install": true
+    },
+    {
+      "source": "content/CutRect.qml",
+      "destination": "content/CutRect.qml",
+      "sha256": "6454ec1caa09c0db8898030afc889a34c0888b8f0b29090bfedf775783aaca83",
+      "mode": "0644",
+      "size": 2188,
+      "install": true
+    },
+    {
+      "source": "content/Figure.qml",
+      "destination": "content/Figure.qml",
+      "sha256": "aeba238ac81d7aedeb660390279cb3deb6551c02f71060fd76d02252512ce081",
+      "mode": "0644",
+      "size": 6180,
+      "install": true
+    },
+    {
+      "source": "content/Foil.qml",
+      "destination": "content/Foil.qml",
+      "sha256": "2cb043ff0436f210ffd4ebfac63505eb6301a5bcfeb12a264b8bfaff2c4dbd2f",
+      "mode": "0644",
+      "size": 4800,
+      "install": true
+    },
+    {
+      "source": "content/Label.qml",
+      "destination": "content/Label.qml",
+      "sha256": "59432ae9f7dc746620f8a983984d8dc0057ee86f16030ef67177b72c67a6db70",
+      "mode": "0644",
+      "size": 1636,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "718fcd73b70fefa54d5879c1e8bf5d7dcf434f8aee078e24cc7da4def1ecfe00",
+      "mode": "0644",
+      "size": 40897,
+      "install": true
+    },
+    {
+      "source": "lib/rarity.js",
+      "destination": "lib/rarity.js",
+      "sha256": "f725497fef81aa033d8031d8a6df93fead797b7a3e08f50ae27dc902f22eda17",
+      "mode": "0644",
+      "size": 4905,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "58651f45bd61aa9b011cb22387037f748adfca2d07301aff17366bbd5c9a2f6d",
+      "mode": "0644",
+      "size": 6145,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "864dc62eb941c9cdc49a2f1e16ee0db5ad0e4bc2b70440eef82ebb2a20713ac1",
+      "mode": "0644",
+      "size": 11666,
+      "install": true
+    }
+  ]
+}

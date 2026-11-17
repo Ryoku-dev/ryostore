@@ -1,0 +1,136 @@
+#!/bin/sh
+# bin/dossier — the system dossier the card prints: 20 base lines from the
+# ryoku-sysinfo helper, 11 extended lines from ryoku-profile-stats, and 2
+# identity lines (dbus machine id, `ryoku --version`).
+# The helpers are read-only Ryoku tools; this script only locates and runs
+# them. When a helper is absent it falls back to direct /proc, /sys and
+# os-release reads for the same fields; fields only the helpers can answer
+# (WM version, monitors, AUR count, cursor, palette, codename) print "-" or
+# empty and the card shows them as unknown. Compositor state is never probed
+# here. Writes nothing.
+
+find_path() {
+    # $1: helper name. Sets the global H to its PATH location, if any. The
+    # shell service's PATH includes ~/.local/bin, /usr/local/bin and /usr/bin.
+    H=$(command -v "$1" 2>/dev/null)
+}
+
+fallback_base() {
+    distro=""
+    arch=$(uname -m)
+    kernel="?"
+    [ -r /proc/sys/kernel/osrelease ] && kernel=$(cat /proc/sys/kernel/osrelease)
+    shellname=$(basename "${SHELL:-sh}")
+    cpu="?"
+    [ -r /proc/cpuinfo ] && cpu=$(awk -F': ' '/^model name/{print $2; exit}' /proc/cpuinfo)
+    n=0
+    [ -r /proc/cpuinfo ] && n=$(grep -c ^processor /proc/cpuinfo)
+    cores="${n}C"
+    gpu="-"
+    if command -v lspci >/dev/null; then
+        gpu=$(lspci | grep -iE 'vga compatible|3d controller|display controller' | sed -n '1p' \
+            | sed -E 's/^[^ ]+ [^:]*: //; s/ \(rev [0-9a-f]+\)//; s/NVIDIA Corporation //; s/Advanced Micro Devices, Inc\. //; s/Intel Corporation //; s/\[AMD\/ATI\] //; s/.*\[([^]]+)\].*/\1/' | xargs)
+        [ -n "$gpu" ] || gpu="-"
+    fi
+    ramused="- / -"
+    rampct=0
+    if [ -r /proc/meminfo ]; then
+        ramline=$(awk '/MemTotal/{t=$2}/MemAvailable/{a=$2}END{if(t>0)printf "%dG / %dG %d", int((t-a)/1048576+0.5), int(t/1048576+0.5), int(100*(t-a)/t+0.5)}' /proc/meminfo)
+        ramused=$(echo "$ramline" | cut -d' ' -f1,3)
+        rampct=$(echo "$ramline" | cut -d' ' -f4)
+    fi
+    disk="- / -"
+    diskpct=0
+    dfout=$(df -Pk / 2>/dev/null | sed -n 2p)
+    if [ -n "$dfout" ]; then
+        disk=$(echo "$dfout" | awk '{printf "%dG / %dG", int($3/1048576+0.5), int($2/1048576+0.5)}')
+        diskpct=$(df -P / | sed -n 2p | awk '{gsub(/%/,"",$5);print $5}')
+    fi
+    up="-"
+    [ -r /proc/uptime ] && up=$(awk '{s=int($1);printf "%dh %dm", int(s/3600), int((s%3600)/60)}' /proc/uptime)
+    pkgs="-"
+    command -v pacman >/dev/null && pkgs=$(pacman -Q | wc -l)
+    hostn="?"
+    [ -r /proc/sys/kernel/hostname ] && hostn=$(cat /proc/sys/kernel/hostname)
+    echo "${USER:-$(id -un)}"
+    echo "$hostn"
+    echo "${distro:-Linux}"
+    echo "${arch:-x86_64}"
+    echo "${kernel:--}"
+    echo "${shellname:-sh}"
+    echo "${cpu:--}"
+    echo "$cores"
+    echo "$gpu"
+    echo ""
+    echo "${ramused:-- / -}"
+    echo "${rampct:-0}"
+    echo "${disk:-- / -}"
+    echo "${diskpct:-0}"
+    echo "${up:--}"
+    echo "$pkgs"
+    echo "-"
+    echo ""
+    echo "-"
+    echo "-"
+}
+
+fallback_extra() {
+    load="-"
+    [ -r /proc/loadavg ] && load=$(awk '{print $1}' /proc/loadavg)
+    temp="-"
+    t0="-"
+    [ -r /sys/class/thermal/thermal_zone0/temp ] && t0=$(awk '{print int($1/1000)}' /sys/class/thermal/thermal_zone0/temp)
+    command -v sensors >/dev/null && temp=$(sensors | awk '/Tctl/{v=$2;gsub(/[^0-9.]/,"",v);print int(v);exit}')
+    [ -n "$temp" ] && temp="${temp}°" || temp="${t0}°"
+    procs=$(find /proc -maxdepth 1 -name '[0-9]*' | wc -l)
+    swap="0%"
+    if [ -r /proc/meminfo ]; then
+        swap=$(awk '/SwapTotal/{t=$2}/SwapFree/{f=$2}END{if(t>0)print int(100*(t-f)/t)"%";else print "0%"}' /proc/meminfo)
+    fi
+    bat="-"
+    for b in /sys/class/power_supply/BAT*; do
+        [ -e "$b/capacity" ] || continue
+        bat=$(cat "$b/capacity")%
+        break
+    done
+    mon=0
+    for e in /sys/class/drm/card*-*/enabled; do
+        [ -r "$e" ] || continue
+        [ "$(cat "$e")" = enabled ] && mon=$((mon + 1))
+    done
+    exp="-"
+    command -v pacman >/dev/null && exp=$(pacman -Qqe | wc -l)
+    echo "${load:--}"
+    echo "$temp"
+    echo "$procs"
+    echo "$swap"
+    echo "$bat"
+    echo "-"
+    echo "$mon"
+    echo "$exp"
+    echo "-"
+    echo "-"
+    echo ""
+}
+
+identity() {
+    # machine fingerprint: the dbus copy of the machine id (a plain read).
+    mid=""
+    [ -r /var/lib/dbus/machine-id ] && mid=$(cat /var/lib/dbus/machine-id 2>/dev/null)
+    echo "$mid"
+    # platform version, from the tool that owns it.
+    ver=""
+    command -v ryoku >/dev/null && ver=$(ryoku --version 2>/dev/null | head -1)
+    echo "$ver"
+    # the edition name, from the updater's own state cache.
+    rel=""
+    cache=$(ls ~/.local/state/ryoku/release-cache/channel-*.json 2>/dev/null | head -1)
+    [ -n "$cache" ] && rel=$(grep -o '"name":"[^"]*"' "$cache" | head -1 | cut -d'"' -f4)
+    echo "$rel"
+}
+
+find_path ryoku-sysinfo
+if [ -n "$H" ]; then bash "$H" || fallback_base; else fallback_base; fi
+find_path ryoku-profile-stats
+if [ -n "$H" ]; then bash "$H" || fallback_extra; else fallback_extra; fi
+identity
