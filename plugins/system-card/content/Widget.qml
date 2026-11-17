@@ -374,11 +374,9 @@ Item {
             ink: Theme.bright
             height: root.tight ? 400 : parent.height + 96
             width: height * 900 / 1157
-            anchors.verticalCenter: root.tight ? undefined : parent.verticalCenter
-            anchors.horizontalCenter: root.tight ? undefined : parent.horizontalCenter
-            anchors.horizontalCenterOffset: 240 * root.heroDir
-            x: root.tight ? (root.heroLeft ? 40 : poster.width - width - 40) : 0
-            y: root.tight ? 30 : 0
+            x: root.tight ? (root.heroLeft ? 40 : poster.width - width - 40)
+                          : (poster.width - width) / 2 + 240 * root.heroDir
+            y: root.tight ? 30 : (poster.height - height) / 2
         }
 
         // a slow scan down the figure

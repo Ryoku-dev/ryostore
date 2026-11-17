@@ -104,9 +104,9 @@
     {
       "source": "content/Widget.qml",
       "destination": "content/Widget.qml",
-      "sha256": "718fcd73b70fefa54d5879c1e8bf5d7dcf434f8aee078e24cc7da4def1ecfe00",
+      "sha256": "e7b9d43497f47b712767d5445bfe020dfe396d6e45d503cd589ad76b07a0be58",
       "mode": "0644",
-      "size": 40897,
+      "size": 40763,
       "install": true
     },
     {
