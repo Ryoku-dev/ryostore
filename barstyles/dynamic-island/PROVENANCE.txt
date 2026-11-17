@@ -1,0 +1,42 @@
+Dynamic Island Ryoku Bar Style
+
+Upstream: quickshell-DynamicIsland, https://github.com/Alan-Betty/quickshell-DynamicIsland
+Landed from RyoStore issue #207 ("[Submit]: Dynamic Island Rich with Features").
+Upstream license: MIT; see LICENSE (Alan Betty).
+
+All upstream QML is carried (36 files: shell surfaces, island, banner stack,
+notification center and cards, launcher, settings window, widgets) with the
+following Ryoku rewrites:
+
+- shell.qml is replaced by Scene.qml, the Ryoku bar product entry: one island
+  overlay per screen, singletons armed on the primary, and the desktop's
+  surface bus routes `launcher` and `settings` to the island's surfaces.
+- IslandWindow.qml: Hyprland monitor/fullscreen state moves to the neutral Wm
+  facade (Wm.focusedOutput, Wm.outputHasFullscreen). The hyprctl gaps_out
+  probe becomes an "Outer gaps" setting. HyprlandFocusGrab is replaced by a
+  neutral full-window input mask plus a click-away underlay.
+- Island.qml: focusedMonitor lookup replaced by Wm.focusedOutput.
+- Hub.qml: focusedScreen uses Wm; workspace ids/dots come from Wm.workspaces;
+  session actions delegate to shell.services SessionActions; screen
+  recording delegates to shell.services Recorder; screenshots delegate to
+  shell.services Capture; Night Shift delegates to shell.services Nightlight
+  (the hyprsunset process and the hyprctl session fallback are gone).
+- Notifs.qml: rewritten as a wrapper over the shell's notification server
+  (shell.services Notifs). The upstream daemon takeover (pkill of mako,
+  dunst, swaync, fnott plus the bus-owner watcher) is removed; arrivals,
+  grouping, banners, expiry and the Notification Center bookkeeping stay.
+- Theme.qml: the hyprctl border accent source is replaced by a "ryoku"
+  source reading shell.services Theme.primary; the hyprpaper wallpaper probe
+  is replaced by a ryogami probe. Matugen, pywal, GTK and wallpaper sources
+  stay as upstream.
+- Config.qml: settings move to ~/.config/ryoku/dynamic-island/settings.json;
+  reset applies mirrored defaults in place instead of reloading the shell.
+  notification takeover and island-notifications-by-default sound knobs are
+  re-defaulted as documented in the README.
+- SettingsWindow.qml: daemon status/overwrite rows replaced by the shared
+  daemon wording, the Hyprland binds page becomes the global-shortcut list,
+  "Reload Island" (a whole-shell reload) is dropped.
+
+Honest degradations are listed in README.md. Everything else — the glass
+surface, springs, tabs, media, timer, launcher, weather and Bluetooth
+pages — is carried unchanged from the pinned upstream main branch.

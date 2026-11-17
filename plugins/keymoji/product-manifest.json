@@ -1,0 +1,497 @@
+{
+  "schema": 1,
+  "id": "keymoji",
+  "category": "plugins",
+  "version": "0.4.0",
+  "destination": "ryoku/plugins/keymoji",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "a3523a5770ecc1ded365819338ff6f1dab56bafe38b5bfa089d8a7f0a78157e4",
+      "mode": "0644",
+      "size": 1192,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "4de28197dcafcaf70cb338c5d934e41944dc3fee5a5b1c457129c3717ad9e636",
+      "mode": "0644",
+      "size": 8959,
+      "install": true
+    },
+    {
+      "source": "app/Icon.qml",
+      "destination": "app/Icon.qml",
+      "sha256": "eafe2a35cf5a2fab3a984577e102b95e52841844196baa8d9dc18f44859b277c",
+      "mode": "0644",
+      "size": 421,
+      "install": true
+    },
+    {
+      "source": "app/Icons.mjs",
+      "destination": "app/Icons.mjs",
+      "sha256": "06ed6d1a7b570f4dff2e60f1ea82f6655d73b41b5bbe8e6e181d20148fdddb28",
+      "mode": "0644",
+      "size": 9542,
+      "install": true
+    },
+    {
+      "source": "app/Input.mjs",
+      "destination": "app/Input.mjs",
+      "sha256": "5994203a1d108c207761ae7f2f6257e78589fa9cfdc4d653b95e5778608ab60f",
+      "mode": "0644",
+      "size": 564,
+      "install": true
+    },
+    {
+      "source": "app/Key.qml",
+      "destination": "app/Key.qml",
+      "sha256": "d4d0d618b143b1f640e07acb9c8fa772ae9b29840768e0ad4e7fd35e185ac628",
+      "mode": "0644",
+      "size": 1211,
+      "install": true
+    },
+    {
+      "source": "app/LanguagePicker.qml",
+      "destination": "app/LanguagePicker.qml",
+      "sha256": "256169a673aa525150dbf0d005a133e0f7067e5d8700eaf2b498e04a8a079681",
+      "mode": "0644",
+      "size": 1051,
+      "install": true
+    },
+    {
+      "source": "app/Localization.qml",
+      "destination": "app/Localization.qml",
+      "sha256": "1ba438156d1e6737e879c695bbda6f1bc207282980023a9a489d211d25b7ce2c",
+      "mode": "0644",
+      "size": 2090,
+      "install": true
+    },
+    {
+      "source": "app/Motion.qml",
+      "destination": "app/Motion.qml",
+      "sha256": "b8cf4400f5645180bc1defaac6040f64024bde74914f688274284934dc920f93",
+      "mode": "0644",
+      "size": 1753,
+      "install": true
+    },
+    {
+      "source": "app/MotionConfig.mjs",
+      "destination": "app/MotionConfig.mjs",
+      "sha256": "9ec00ee008c0da5f0931a600255f85941a7732a2b10577fb78328d54c493fc8d",
+      "mode": "0644",
+      "size": 1723,
+      "install": true
+    },
+    {
+      "source": "app/Navigation.mjs",
+      "destination": "app/Navigation.mjs",
+      "sha256": "48af6114fe6c2f02ce33d891f713475f7f15665c24ed443d645fd1569bc9e933",
+      "mode": "0644",
+      "size": 800,
+      "install": true
+    },
+    {
+      "source": "app/Palette.mjs",
+      "destination": "app/Palette.mjs",
+      "sha256": "227568e5c393bd0a13a30d3931583e9a43885c86080b7bf84e5a121df6abd4be",
+      "mode": "0644",
+      "size": 589,
+      "install": true
+    },
+    {
+      "source": "app/Search.mjs",
+      "destination": "app/Search.mjs",
+      "sha256": "fc0a168742d604fe1165148368a4fd127c20d6ebc2dc6c3df7afb31433b6aa41",
+      "mode": "0644",
+      "size": 3584,
+      "install": true
+    },
+    {
+      "source": "app/Theme.qml",
+      "destination": "app/Theme.qml",
+      "sha256": "fa7396c0a6d596288c149591b2527ee5520f715bde3bf53877156d63f4a99072",
+      "mode": "0644",
+      "size": 1810,
+      "install": true
+    },
+    {
+      "source": "app/i18n/Locale.mjs",
+      "destination": "app/i18n/Locale.mjs",
+      "sha256": "7c279871d26bff8963a5143540fb8fe3370d5451ebf0874ee98a7034f3346306",
+      "mode": "0644",
+      "size": 1198,
+      "install": true
+    },
+    {
+      "source": "app/i18n/Messages.mjs",
+      "destination": "app/i18n/Messages.mjs",
+      "sha256": "f5819e6e27426f9fd9abb0f844cbdd677668362fa0487db50bc6581b525b8a52",
+      "mode": "0644",
+      "size": 8718,
+      "install": true
+    },
+    {
+      "source": "app/icons/LICENSE",
+      "destination": "app/icons/LICENSE",
+      "sha256": "b740a1d46122672da62833e97f7e7c8a13fa85cbc7445b584b297cc00dde93db",
+      "mode": "0644",
+      "size": 1073,
+      "install": true
+    },
+    {
+      "source": "app/icons/apple.svg",
+      "destination": "app/icons/apple.svg",
+      "sha256": "50db86a52b9566ed3ce80a0a29382b0d976f8ed3dc56261f1a898cbd7ca2dc08",
+      "mode": "0644",
+      "size": 778,
+      "install": true
+    },
+    {
+      "source": "app/icons/ball-football.svg",
+      "destination": "app/icons/ball-football.svg",
+      "sha256": "8890c599c511f2393b46be9b78a7d9f68dfd765868dae5f563f10fa2575a235d",
+      "mode": "0644",
+      "size": 581,
+      "install": true
+    },
+    {
+      "source": "app/icons/bulb.svg",
+      "destination": "app/icons/bulb.svg",
+      "sha256": "4f4688352f60a3d65ca9abb8cebc9fc3c3d3b9f2fbc47784b44b22008a69f0fc",
+      "mode": "0644",
+      "size": 530,
+      "install": true
+    },
+    {
+      "source": "app/icons/check.svg",
+      "destination": "app/icons/check.svg",
+      "sha256": "e206067a7d570997b5b3a7d30ab287c0b15a492787649a8b96dff8fad2862fbe",
+      "mode": "0644",
+      "size": 389,
+      "install": true
+    },
+    {
+      "source": "app/icons/clock.svg",
+      "destination": "app/icons/clock.svg",
+      "sha256": "971b0b2d3b5b17ae240cd3aac1a09710ab680d8c41900f1a37a0e430994d7fda",
+      "mode": "0644",
+      "size": 445,
+      "install": true
+    },
+    {
+      "source": "app/icons/flag.svg",
+      "destination": "app/icons/flag.svg",
+      "sha256": "91c224b828fd0716ef8617633a714ef6764a16618fe222becbcf0a4b83b35b9e",
+      "mode": "0644",
+      "size": 446,
+      "install": true
+    },
+    {
+      "source": "app/icons/hand-stop.svg",
+      "destination": "app/icons/hand-stop.svg",
+      "sha256": "4a434c0cf83b70d5b7900b12a7531c7759e1467927a611454cb4e71b7140e377",
+      "mode": "0644",
+      "size": 706,
+      "install": true
+    },
+    {
+      "source": "app/icons/heart.svg",
+      "destination": "app/icons/heart.svg",
+      "sha256": "332be1c5c3a67df766c69da053a0eb29a11aa74a262f4422b82bceaaf098b1e8",
+      "mode": "0644",
+      "size": 442,
+      "install": true
+    },
+    {
+      "source": "app/icons/keyboard.svg",
+      "destination": "app/icons/keyboard.svg",
+      "sha256": "9e290c3ff26878fad5fcf338eb5c8dc203651a20cc1806fd6d6f40625668c90b",
+      "mode": "0644",
+      "size": 626,
+      "install": true
+    },
+    {
+      "source": "app/icons/layout-grid.svg",
+      "destination": "app/icons/layout-grid.svg",
+      "sha256": "91f923bcca6e9201ccedd2a10bb5d5a7eb3dbb5fa5a26af394d362f35c935237",
+      "mode": "0644",
+      "size": 707,
+      "install": true
+    },
+    {
+      "source": "app/icons/leaf.svg",
+      "destination": "app/icons/leaf.svg",
+      "sha256": "ca3b92ae35e9b8e7e94746cc4e51301ee2f85b4760a03a62250eb418f39a063a",
+      "mode": "0644",
+      "size": 486,
+      "install": true
+    },
+    {
+      "source": "app/icons/math-symbols.svg",
+      "destination": "app/icons/math-symbols.svg",
+      "sha256": "132763232e7d82be715f51eef9b4113fb0a33cb4ca4ea29bff845bf9211587e0",
+      "mode": "0644",
+      "size": 605,
+      "install": true
+    },
+    {
+      "source": "app/icons/mood-smile.svg",
+      "destination": "app/icons/mood-smile.svg",
+      "sha256": "9a695309e620af65351ab5f311b0c7e15378faf9c1b80e088d0ebb5f9f9e53d5",
+      "mode": "0644",
+      "size": 512,
+      "install": true
+    },
+    {
+      "source": "app/icons/plane.svg",
+      "destination": "app/icons/plane.svg",
+      "sha256": "7cb6e6178e90920f87b2bba22886921457ffbb84a5719db8b870d72d03803bf7",
+      "mode": "0644",
+      "size": 464,
+      "install": true
+    },
+    {
+      "source": "app/icons/search.svg",
+      "destination": "app/icons/search.svg",
+      "sha256": "3dd53b9606283dfa0adcb0b10a7d9a4432369d4bebcfacf67f80fbe358381c34",
+      "mode": "0644",
+      "size": 433,
+      "install": true
+    },
+    {
+      "source": "app/icons/source.json",
+      "destination": "app/icons/source.json",
+      "sha256": "8026289a557b3e4b4bdc6ec65ad9a39333efa77488837f10388800c27b11c932",
+      "mode": "0644",
+      "size": 383,
+      "install": true
+    },
+    {
+      "source": "app/icons/star.svg",
+      "destination": "app/icons/star.svg",
+      "sha256": "c0b4afc60d311585f7c79c2ffd68d58eb5c1e3a3cd6d626cdc7792c5d3bbb49b",
+      "mode": "0644",
+      "size": 481,
+      "install": true
+    },
+    {
+      "source": "app/icons/x.svg",
+      "destination": "app/icons/x.svg",
+      "sha256": "9350785360414c39450c3505f17d1745e55a7534edace8548e30cf49e3727d43",
+      "mode": "0644",
+      "size": 406,
+      "install": true
+    },
+    {
+      "source": "app/insert-last.qml",
+      "destination": "app/insert-last.qml",
+      "sha256": "d1228949827ed9ae0c6446c0dcbaef8c25f61b9a7f7cc59a8ff639b997070bf2",
+      "mode": "0644",
+      "size": 3056,
+      "install": true
+    },
+    {
+      "source": "app/qmldir",
+      "destination": "app/qmldir",
+      "sha256": "343bea76a3100ca833ed902057db345207ece3d9a3be002ea2d729d49508bb79",
+      "mode": "0644",
+      "size": 168,
+      "install": true
+    },
+    {
+      "source": "app/shell.qml",
+      "destination": "app/shell.qml",
+      "sha256": "7eff4e339a63b85e644e762a87b1db21096b1f32f9f96e2dafc51f9bdae6fc6c",
+      "mode": "0644",
+      "size": 18883,
+      "install": true
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "9d4a83cd10cd3f739eddf3315fcb7f5524b1e1671fd93979e811164e9c2b0e99",
+      "mode": "0644",
+      "size": 83335,
+      "install": false
+    },
+    {
+      "source": "bin/keymoji",
+      "destination": "bin/keymoji",
+      "sha256": "bf89a200275c6f4e46136812bae9492a3e20c6d46c0706d55132699ab1d7497b",
+      "mode": "0755",
+      "size": 1021,
+      "install": true
+    },
+    {
+      "source": "bin/keymoji-paste",
+      "destination": "bin/keymoji-paste",
+      "sha256": "8c877180be73a31709155376d64582f596c7cadaf09ec5b410ca1727f667a2ac",
+      "mode": "0755",
+      "size": 144,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "27c0b1310426f2041380b1eac7085ec801abe5ebbf17942f6c10118ef1424368",
+      "mode": "0644",
+      "size": 1129,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "6b6b5e18d97c4222ed1daa030ef66581d866ef34306a6ab66bad93e3f6c346b4",
+      "mode": "0644",
+      "size": 512,
+      "install": true
+    },
+    {
+      "source": "data/emojis.json",
+      "destination": "data/emojis.json",
+      "sha256": "655a100cef9a09c0867b068e6381a61cbf2d032eda08253415fe780814a1eaae",
+      "mode": "0644",
+      "size": 626948,
+      "install": true
+    },
+    {
+      "source": "data/i18n/en.json",
+      "destination": "data/i18n/en.json",
+      "sha256": "7458c7215d4fec05e8b849ab21640197b64aee2b0e7e257d4dae53f009807b27",
+      "mode": "0644",
+      "size": 463474,
+      "install": true
+    },
+    {
+      "source": "data/i18n/es.json",
+      "destination": "data/i18n/es.json",
+      "sha256": "9aa8c02ea0b7782973b7d2a632ab822347783b8812a94860a02faad61c1c23b3",
+      "mode": "0644",
+      "size": 476281,
+      "install": true
+    },
+    {
+      "source": "data/i18n/fr.json",
+      "destination": "data/i18n/fr.json",
+      "sha256": "133b81f36775a6b0bf862d8195b83034f17d3e7c2965cdedb70483420c4b866a",
+      "mode": "0644",
+      "size": 541286,
+      "install": true
+    },
+    {
+      "source": "data/i18n/pt.json",
+      "destination": "data/i18n/pt.json",
+      "sha256": "9351f6cfab2a07157122158f4c6f5d589db814c9fc9b59c024801de6e98f0444",
+      "mode": "0644",
+      "size": 477447,
+      "install": true
+    },
+    {
+      "source": "data/i18n/source.json",
+      "destination": "data/i18n/source.json",
+      "sha256": "d569d64f7ace531e389116747061e06f42974d06d78484f9d4943ca0095ba072",
+      "mode": "0644",
+      "size": 2372,
+      "install": true
+    },
+    {
+      "source": "docs/UNICODE-LICENSE.txt",
+      "destination": "docs/UNICODE-LICENSE.txt",
+      "sha256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96",
+      "mode": "0644",
+      "size": 1995,
+      "install": true
+    },
+    {
+      "source": "docs/data.md",
+      "destination": "docs/data.md",
+      "sha256": "e4cde3861b35d9efd806b6b6b383557712b2751b8e79a7b814f15fa677caf49d",
+      "mode": "0644",
+      "size": 1794,
+      "install": true
+    },
+    {
+      "source": "docs/validation.md",
+      "destination": "docs/validation.md",
+      "sha256": "a41ad23ebae80550de235a427bb35d3db83d9eb54f527747fee0ee5d27fbcdc8",
+      "mode": "0644",
+      "size": 7331,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "4b6bd4133ba434814765a9c2cd3237ea1ab7f135b39a7d849d5f0409d7dfebe6",
+      "mode": "0644",
+      "size": 2730,
+      "install": true
+    },
+    {
+      "source": "package.json",
+      "destination": "package.json",
+      "sha256": "69755e96c98f3b523f0c6adf47d2209a1a0058263bbf2c94ad123e30cab6cc98",
+      "mode": "0644",
+      "size": 143,
+      "install": false
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "8477509708f6f40aee74adf722f17f8b9b1a1ebf3a5588c5c542b77d7f82ac57",
+      "mode": "0644",
+      "size": 534,
+      "install": true
+    },
+    {
+      "source": "tests/i18n.test.ts",
+      "destination": "tests/i18n.test.ts",
+      "sha256": "6e4ad3c4b53b395818f9ca4aeb9e1b536ee31af4c9fb103bc931ac95f967a151",
+      "mode": "0644",
+      "size": 3165,
+      "install": false
+    },
+    {
+      "source": "tests/input.test.ts",
+      "destination": "tests/input.test.ts",
+      "sha256": "d02fd847ff2403b17db6aa6d17831164621251203818fa75bd5d228e798e7a85",
+      "mode": "0644",
+      "size": 1157,
+      "install": false
+    },
+    {
+      "source": "tests/motion.test.ts",
+      "destination": "tests/motion.test.ts",
+      "sha256": "97815c9a6f057fbac15cce62e25edd3824c332f18e28aef6ea7c9d009184d2fd",
+      "mode": "0644",
+      "size": 1658,
+      "install": false
+    },
+    {
+      "source": "tests/navigation.test.ts",
+      "destination": "tests/navigation.test.ts",
+      "sha256": "dd65c9e803dad0b73a3983751960412b0409ee1f7b490ac73a9d7d053ff96ee2",
+      "mode": "0644",
+      "size": 948,
+      "install": false
+    },
+    {
+      "source": "tests/palette.test.ts",
+      "destination": "tests/palette.test.ts",
+      "sha256": "050a687c066f709f738a4c264fc9599fe2013497b753c2180cbf5497d8d48ff9",
+      "mode": "0644",
+      "size": 787,
+      "install": false
+    },
+    {
+      "source": "tests/search.test.ts",
+      "destination": "tests/search.test.ts",
+      "sha256": "457c6905c86cc2f6987039a2c6802cf22fd8d3bb94379f8f1246405b8d90e3ad",
+      "mode": "0644",
+      "size": 1789,
+      "install": false
+    }
+  ]
+}

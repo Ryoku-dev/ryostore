@@ -1,0 +1,23 @@
+{
+  "repository": "https://github.com/tabler/tabler-icons",
+  "revision": "ed177a085b652fe04ec4f37ced867c94621e7840",
+  "icons": [
+    "x",
+    "search",
+    "star",
+    "keyboard",
+    "clock",
+    "layout-grid",
+    "check",
+    "mood-smile",
+    "leaf",
+    "apple",
+    "plane",
+    "ball-football",
+    "bulb",
+    "math-symbols",
+    "flag",
+    "hand-stop",
+    "heart"
+  ]
+}

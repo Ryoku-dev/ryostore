@@ -1,0 +1,6 @@
+singleton Theme 1.0 Theme.qml
+Icon 1.0 Icon.qml
+Key 1.0 Key.qml
+singleton Motion 1.0 Motion.qml
+Localization 1.0 Localization.qml
+LanguagePicker 1.0 LanguagePicker.qml
