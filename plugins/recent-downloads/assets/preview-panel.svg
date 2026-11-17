@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" role="img" aria-labelledby="title desc">
+  <title id="title">Recent Downloads popup preview</title>
+  <desc id="desc">An illustrative dark popup showing the latest downloaded files, their size and age, a refresh action, and an Open Downloads folder button.</desc>
+  <defs>
+    <linearGradient id="backdrop" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#20262d"/>
+      <stop offset="1" stop-color="#12161a"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#252a30"/>
+      <stop offset="1" stop-color="#1d2227"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
+      <feOffset dy="12"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="660" rx="30" fill="url(#backdrop)"/>
+  <circle cx="1100" cy="90" r="210" fill="#a9c9a2" opacity=".05"/>
+  <text x="56" y="62" fill="#c9dec4" font-family="sans-serif" font-size="14" font-weight="700" letter-spacing="3">QUICKSHELL BAR PANEL · ILLUSTRATIVE PREVIEW</text>
+  <g filter="url(#shadow)">
+    <rect x="346" y="86" width="508" height="480" rx="28" fill="url(#card)" stroke="#ffffff" stroke-opacity=".11"/>
+    <text x="382" y="137" fill="#f1f2f3" font-family="sans-serif" font-size="20" font-weight="700" letter-spacing="1.3">RECENT DOWNLOADS</text>
+    <text x="382" y="165" fill="#a6adb4" font-family="monospace" font-size="13">~/Downloads</text>
+    <rect x="792" y="112" width="34" height="34" rx="11" fill="#30363d" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="801" y="136" fill="#e2e5e7" font-family="sans-serif" font-size="22">↻</text>
+    <path d="M382 190h436" stroke="#ffffff" stroke-opacity=".11"/>
+
+    <g font-family="sans-serif">
+      <rect x="374" y="201" width="452" height="40" rx="11" fill="#a9c9a2" fill-opacity=".07"/>
+      <text x="391" y="227" fill="#c9dec4" font-size="18">↓</text>
+      <text x="422" y="219" fill="#f0f2f3" font-size="13" font-weight="600">design-notes.pdf</text>
+      <text x="422" y="234" fill="#9da5ad" font-family="monospace" font-size="9">2.4 MB  ·  5m ago</text>
+
+      <rect x="374" y="243" width="452" height="40" rx="11" fill="#ffffff" fill-opacity=".025"/>
+      <text x="391" y="269" fill="#c9dec4" font-size="18">↓</text>
+      <text x="422" y="261" fill="#f0f2f3" font-size="13" font-weight="600">project-backup.zip</text>
+      <text x="422" y="276" fill="#9da5ad" font-family="monospace" font-size="9">18.7 MB  ·  1h ago</text>
+
+      <rect x="374" y="285" width="452" height="40" rx="11" fill="#ffffff" fill-opacity=".025"/>
+      <text x="391" y="311" fill="#c9dec4" font-size="18">↓</text>
+      <text x="422" y="303" fill="#f0f2f3" font-size="13" font-weight="600">wallpaper-pack.tar</text>
+      <text x="422" y="318" fill="#9da5ad" font-family="monospace" font-size="9">64.2 MB  ·  yesterday</text>
+
+      <rect x="374" y="327" width="452" height="40" rx="11" fill="#ffffff" fill-opacity=".025"/>
+      <text x="391" y="353" fill="#c9dec4" font-size="18">↓</text>
+      <text x="422" y="345" fill="#f0f2f3" font-size="13" font-weight="600">meeting-audio.wav</text>
+      <text x="422" y="360" fill="#9da5ad" font-family="monospace" font-size="9">8.1 MB  ·  yesterday</text>
+
+      <rect x="374" y="369" width="452" height="40" rx="11" fill="#ffffff" fill-opacity=".025"/>
+      <text x="391" y="395" fill="#c9dec4" font-size="18">↓</text>
+      <text x="422" y="387" fill="#f0f2f3" font-size="13" font-weight="600">reference-image.png</text>
+      <text x="422" y="402" fill="#9da5ad" font-family="monospace" font-size="9">1.2 MB  ·  2d ago</text>
+
+      <rect x="374" y="411" width="452" height="40" rx="11" fill="#ffffff" fill-opacity=".025"/>
+      <text x="391" y="437" fill="#c9dec4" font-size="18">↓</text>
+      <text x="422" y="429" fill="#f0f2f3" font-size="13" font-weight="600">source-code.tar.gz</text>
+      <text x="422" y="444" fill="#9da5ad" font-family="monospace" font-size="9">3.8 MB  ·  3d ago</text>
+    </g>
+
+    <rect x="374" y="479" width="452" height="42" rx="13" fill="#30363d" stroke="#ffffff" stroke-opacity=".08"/>
+    <text x="507" y="505" fill="#e4e7e9" font-family="monospace" font-size="13" font-weight="600">Open Downloads folder</text>
+  </g>
+  <text x="56" y="620" fill="#a6adb4" font-family="sans-serif" font-size="14">Example filenames are illustrative; the live panel reads your XDG Downloads folder.</text>
+</svg>

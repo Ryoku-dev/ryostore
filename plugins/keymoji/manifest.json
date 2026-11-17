@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "id": "keymoji",
+  "category": "plugins",
+  "destination": "ryoku/plugins/keymoji",
+  "name": "Keymoji",
+  "version": "0.4.0",
+  "author": "Eduardo Augusto <eduardoaugustolb@users.noreply.github.com>",
+  "description": "Offline emoji keyboard with localized search and insertion into the active field.",
+  "license": "MIT",
+  "official": false,
+  "tags": [
+    "bar-widget",
+    "emoji",
+    "keyboard",
+    "search",
+    "portuguese",
+    "i18n"
+  ],
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 320
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Keymoji",
+    "icon": "keyboard"
+  },
+  "capabilities": {
+    "densities": [
+      "glyph"
+    ],
+    "network": [],
+    "privileged": []
+  },
+  "dependencies": {
+    "commands": [
+      "qs",
+      "wtype",
+      "bash",
+      "dirname",
+      "mkdir",
+      "env",
+      "ryoku-hub",
+      "wl-copy",
+      "keymoji-paste"
+    ]
+  },
+  "commands": [
+    "bin/keymoji",
+    "bin/keymoji-paste"
+  ],
+  "metadata": {
+    "settings": []
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "app/Icon.qml",
+    "app/Icons.mjs",
+    "app/Input.mjs",
+    "app/Key.qml",
+    "app/LanguagePicker.qml",
+    "app/Localization.qml",
+    "app/Motion.qml",
+    "app/MotionConfig.mjs",
+    "app/Navigation.mjs",
+    "app/Palette.mjs",
+    "app/Search.mjs",
+    "app/Theme.qml",
+    "app/i18n/Locale.mjs",
+    "app/i18n/Messages.mjs",
+    "app/icons/LICENSE",
+    "app/icons/apple.svg",
+    "app/icons/ball-football.svg",
+    "app/icons/bulb.svg",
+    "app/icons/check.svg",
+    "app/icons/clock.svg",
+    "app/icons/flag.svg",
+    "app/icons/hand-stop.svg",
+    "app/icons/heart.svg",
+    "app/icons/keyboard.svg",
+    "app/icons/layout-grid.svg",
+    "app/icons/leaf.svg",
+    "app/icons/math-symbols.svg",
+    "app/icons/mood-smile.svg",
+    "app/icons/plane.svg",
+    "app/icons/search.svg",
+    "app/icons/source.json",
+    "app/icons/star.svg",
+    "app/icons/x.svg",
+    "app/insert-last.qml",
+    "app/qmldir",
+    "app/shell.qml",
+    "assets/preview-widget.png",
+    "bin/keymoji",
+    "bin/keymoji-paste",
+    "content/Panel.qml",
+    "content/Widget.qml",
+    "data/emojis.json",
+    "data/i18n/en.json",
+    "data/i18n/es.json",
+    "data/i18n/fr.json",
+    "data/i18n/pt.json",
+    "data/i18n/source.json",
+    "docs/UNICODE-LICENSE.txt",
+    "docs/data.md",
+    "docs/validation.md",
+    "package.json",
+    "service/Main.qml",
+    "tests/i18n.test.ts",
+    "tests/input.test.ts",
+    "tests/motion.test.ts",
+    "tests/navigation.test.ts",
+    "tests/palette.test.ts",
+    "tests/search.test.ts"
+  ]
+}
