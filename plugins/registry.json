@@ -1405,7 +1405,7 @@
         "assets/preview-panel.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "c98f751561137a5891af8780c185378f2218ca82dd66b5c0ce7760a5aeb6ba2b",
+      "manifestSha256": "bad3770df0d352674fd8694a80f1668076b7d31d690c3325a33fbae6f46dda77",
       "official": false,
       "tagline": "Your latest downloads, one click away.",
       "icon": "",

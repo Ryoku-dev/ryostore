@@ -36,16 +36,5 @@
       "xdg-user-dir",
       "xdg-open"
     ]
-  },
-  "metadata": {
-    "settings": [
-      {
-        "key": "showCount",
-        "type": "toggle",
-        "label": "Show the tick count",
-        "group": "Recent Downloads",
-        "default": true
-      }
-    ]
   }
 }

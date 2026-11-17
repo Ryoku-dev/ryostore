@@ -85,6 +85,7 @@ Item {
                     font.family: root.monoFont
                     font.pixelSize: 10 * root.s
                     elide: Text.ElideMiddle
+                    textFormat: Text.PlainText
                 }
             }
             Rectangle {
@@ -151,6 +152,7 @@ Item {
                             font.family: root.monoFont
                             font.pixelSize: 11 * root.s
                             elide: Text.ElideMiddle
+                            textFormat: Text.PlainText
                         }
                         Text {
                             text: root.formatSize(modelData.size) + "  ·  " + root.timeAgo(modelData.modified)
