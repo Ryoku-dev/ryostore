@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "id": "zimaos",
+  "category": "plugins",
+  "version": "0.1.16",
+  "destination": "ryoku/plugins/zimaos",
+  "files": [
+    {
+      "source": ".gitignore",
+      "destination": ".gitignore",
+      "sha256": "6b9f20b26bcd5a7db7411faba95d63155e7a096902e18b9de8e4d9876ddba6ee",
+      "mode": "0644",
+      "size": 41,
+      "install": true
+    },
+    {
+      "source": "AGENTS.md",
+      "destination": "AGENTS.md",
+      "sha256": "e311f126eec8ad68644db0704a6ba815d915f90ab8dcf537d58a90df1c06a5da",
+      "mode": "0644",
+      "size": 4625,
+      "install": true
+    },
+    {
+      "source": "CLAUDE.md",
+      "destination": "CLAUDE.md",
+      "sha256": "09ffb8ebdb8adf50bf4bde26dfe2109b4af3a4a8cc3f30cc536be42bb912c033",
+      "mode": "0644",
+      "size": 152,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "97483adbcfff65229fdf21ea76178690f1bfe3ccd5fbde97e344e04d625dc4bd",
+      "mode": "0644",
+      "size": 1062,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "effedc9bd5ab9b8a75596923bd23a59e1ba8b8679132a1d65d1503144d3afb55",
+      "mode": "0644",
+      "size": 3215,
+      "install": false
+    },
+    {
+      "source": "assets/preview-widget.png",
+      "destination": "assets/preview-widget.png",
+      "sha256": "8a91b27c6503c5a750b00784b3d1e0652e28c244fa6da11c2945e41172991e87",
+      "mode": "0644",
+      "size": 161842,
+      "install": false
+    },
+    {
+      "source": "bin/zima",
+      "destination": "bin/zima",
+      "sha256": "eaeab05fd5f39c6dc7ff20023745269346c67f9051c5e79f988de62e709c72c9",
+      "mode": "0755",
+      "size": 26747,
+      "install": true
+    },
+    {
+      "source": "content/I18n.qml",
+      "destination": "content/I18n.qml",
+      "sha256": "74ff808ff4ef20ca385e9bbd72ef4ae003751f9801482e96d93404ead611111c",
+      "mode": "0644",
+      "size": 3013,
+      "install": true
+    },
+    {
+      "source": "content/Panel.qml",
+      "destination": "content/Panel.qml",
+      "sha256": "9f2973be4b64ce1b6dc216ddc6ed3b9c9f208fdd614be266e997a88733ca7496",
+      "mode": "0644",
+      "size": 25417,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "6ec38de78f22de1fc528cdd16df076f1b2d8b4c1c094e740378c68937be02c01",
+      "mode": "0644",
+      "size": 2271,
+      "install": true
+    },
+    {
+      "source": "content/zima-mark.png",
+      "destination": "content/zima-mark.png",
+      "sha256": "e67752d7533cee5453c398ca5aaf19ee25e17c4b36f5896904d771623997cd70",
+      "mode": "0644",
+      "size": 6014,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "8f73fc3b4d69c94b9ac7cd45b5e2715b30ce881d57d082d95aa7694c936a412f",
+      "mode": "0644",
+      "size": 1450,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "e99ad7e8e128450a7b072a8bbb4cb2c4ccfc10cfb69c752a63c88f62713e25ef",
+      "mode": "0644",
+      "size": 17806,
+      "install": true
+    }
+  ]
+}
