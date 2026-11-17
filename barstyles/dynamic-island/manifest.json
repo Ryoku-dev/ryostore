@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "dynamic-island",
   "category": "barstyles",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/barstyles/dynamic-island",
   "files": [
     {
@@ -121,8 +121,8 @@
       "source": "Island.qml",
       "destination": "Island.qml",
       "mode": "0644",
-      "size": 39914,
-      "sha256": "989a4276190aaaf1bcbe466b6b1b01a11eb503c0e9c4b315419555b676a9dc37",
+      "size": 39924,
+      "sha256": "0a866d4abc986ec18c60ba9fdeb6e9c2b6440a0a739201dfc649a0af2d35fd92",
       "install": true
     },
     {
@@ -201,8 +201,8 @@
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
       "mode": "0644",
-      "size": 2607,
-      "sha256": "e3ec3e8ee8c1e10eca2a31b6f1c8d927db503c98c8faa16163edd01f27afddf7",
+      "size": 3220,
+      "sha256": "5e960b15cc54df2be85fdbaa1af12119d1b364ecd31274fc4adfa5f4b9b425a9",
       "install": true
     },
     {
@@ -265,8 +265,8 @@
       "source": "Theme.qml",
       "destination": "Theme.qml",
       "mode": "0644",
-      "size": 14916,
-      "sha256": "e3236a17a410db2d6665e1d1c911c92c8bf86c2491bc58180d9cff1cb437310a",
+      "size": 15377,
+      "sha256": "a8483f7705864a55b4cdddf0cb7cdfd3712dbe34949935a6049d490883ba1772",
       "install": true
     },
     {

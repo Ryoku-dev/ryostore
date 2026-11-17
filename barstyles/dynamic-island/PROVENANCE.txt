@@ -40,3 +40,14 @@ following Ryoku rewrites:
 Honest degradations are listed in README.md. Everything else — the glass
 surface, springs, tabs, media, timer, launcher, weather and Bluetooth
 pages — is carried unchanged from the pinned upstream main branch.
+
+1.0.1: idle fixes.
+- Island.qml: the recording pulse dot only animates while it is visible. It ran
+  from the moment the island loaded, which kept the shell's main thread waking
+  about 70 times a second with nothing on screen.
+- Theme.qml: the long-lived `gsettings monitor` is started under
+  `setpriv --pdeathsig TERM`, so it ends with the shell instead of outliving a
+  switch to another bar style.
+- Theme.qml: the wallpaper probe (a shell process every 15 s) runs only while
+  the accent source can use it: the wallpaper source is chosen, nothing else
+  provides an accent, or the settings window is open.
