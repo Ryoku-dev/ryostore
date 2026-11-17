@@ -1,0 +1,73 @@
+{
+  "repository": "https://github.com/unicode-org/cldr-json",
+  "revision": "7d2b9cb11cec08f4d333ad73209deb3df0711c3b",
+  "date": "2026-11-07",
+  "sources": [
+    {
+      "language": "en",
+      "type": "annotations",
+      "path": "cldr-json/cldr-annotations-full/annotations/en/annotations.json",
+      "sha256": "6b6b6e0e5f211bc31cf3fa39f385d80dea6cd19ee19bbc6db9071fce3ae5d360"
+    },
+    {
+      "language": "en",
+      "type": "annotationsDerived",
+      "path": "cldr-json/cldr-annotations-derived-full/annotationsDerived/en/annotations.json",
+      "sha256": "7aad034f689cb6553f8d7366bfee8c4ea2818c7776907bc5118aab575223dea3"
+    },
+    {
+      "language": "es",
+      "type": "annotations",
+      "path": "cldr-json/cldr-annotations-full/annotations/es/annotations.json",
+      "sha256": "f4149459f74207b235e673f62f5671c06ac97ae53f2c1d100e1eae40e54c5306"
+    },
+    {
+      "language": "es",
+      "type": "annotationsDerived",
+      "path": "cldr-json/cldr-annotations-derived-full/annotationsDerived/es/annotations.json",
+      "sha256": "d504c1a0db44fd17431b61bc4bcf07cf26ff1159d7d9fff9b7164736016bffd7"
+    },
+    {
+      "language": "fr",
+      "type": "annotations",
+      "path": "cldr-json/cldr-annotations-full/annotations/fr/annotations.json",
+      "sha256": "8448e38ec2e5a377dbaa0b9a552b46cb1d1674c972208836ab5ab52311600f1d"
+    },
+    {
+      "language": "fr",
+      "type": "annotationsDerived",
+      "path": "cldr-json/cldr-annotations-derived-full/annotationsDerived/fr/annotations.json",
+      "sha256": "3d059cc0b6fd6b9f47f600b5e55e1c2940a42eafc554f346e1e23362bfb7a9b5"
+    },
+    {
+      "language": "pt",
+      "type": "annotations",
+      "path": "cldr-json/cldr-annotations-full/annotations/pt/annotations.json",
+      "sha256": "a64a01f9906ec754487d4d903caa6fb62ee9613047a1c8cfd1c82a0216f0df5e"
+    },
+    {
+      "language": "pt",
+      "type": "annotationsDerived",
+      "path": "cldr-json/cldr-annotations-derived-full/annotationsDerived/pt/annotations.json",
+      "sha256": "61e65e2bde4519835701c58382d8ca531216ad4fa1d8bc3804577a5d9f4a01f1"
+    }
+  ],
+  "coverage": {
+    "en": {
+      "translated": 3944,
+      "total": 3944
+    },
+    "es": {
+      "translated": 3944,
+      "total": 3944
+    },
+    "pt": {
+      "translated": 3944,
+      "total": 3944
+    },
+    "fr": {
+      "translated": 3944,
+      "total": 3944
+    }
+  }
+}
