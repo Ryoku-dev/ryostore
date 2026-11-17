@@ -41,7 +41,9 @@ QtObject {
             "Thunderbolt": "Thunderbolt",
             "In use": "Em uso",
             "Available": "Disponível",
-            "storage": "armazenamento"
+            "storage": "armazenamento",
+            "free of": "livres de",
+            "Plain http: the password and session travel unencrypted on your network.": "http simples: a palavra-passe e a sessão viajam sem encriptação pela sua rede."
         },
         "pt_BR": {
             "Go to Dashboard": "Ir ao painel",
@@ -70,7 +72,9 @@ QtObject {
             "Thunderbolt": "Thunderbolt",
             "In use": "Em uso",
             "Available": "Disponível",
-            "storage": "armazenamento"
+            "storage": "armazenamento",
+            "free of": "livres de",
+            "Plain http: the password and session travel unencrypted on your network.": "http simples: a senha e a sessão viajam sem criptografia pela sua rede."
         }
     })
 

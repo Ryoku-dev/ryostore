@@ -1463,7 +1463,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "60419e62d301345829f8579a2e3f2cb86c42be55252659cf00e0b0e298916fa8",
+      "manifestSha256": "bed7d85422e35d7f8b49f6ef9145098d05929b866f9065754977a32aa57e51cb",
       "official": false,
       "tagline": "QS Bar card for a ZimaOS server: device name, link rate, storage, and a shortcut to the dashboard.",
       "icon": "archive",

@@ -177,6 +177,7 @@ Item {
                 font.pixelSize: 18 * root.s
                 font.weight: Font.Medium
                 elide: Text.ElideRight
+                textFormat: Text.PlainText
             }
 
             GlyphIcon {
@@ -226,6 +227,7 @@ Item {
             font.family: Theme.mono
             font.pixelSize: 11 * root.s
             wrapMode: Text.WordWrap
+            textFormat: Text.PlainText
         }
 
         Column {
@@ -247,6 +249,7 @@ Item {
                     font.family: Theme.mono
                     font.pixelSize: 12 * root.s
                     font.weight: Font.Medium
+                    textFormat: Text.PlainText
                 }
 
                 Row {
@@ -276,6 +279,7 @@ Item {
                     font.family: Theme.mono
                     font.pixelSize: 12 * root.s
                     elide: Text.ElideRight
+                    textFormat: Text.PlainText
                 }
 
                 Rectangle {
@@ -308,6 +312,14 @@ Item {
                     }
                 }
             }
+
+            Text {
+                width: parent.width
+                text: root.service ? "\u2193 " + root.service.downText + "/s    \u2191 " + root.service.upText + "/s" : ""
+                color: root.sumi
+                font.family: Theme.mono
+                font.pixelSize: 11 * root.s
+            }
         }
 
         Card {
@@ -332,6 +344,25 @@ Item {
                 font.family: Theme.mono
                 font.pixelSize: 13 * root.s
                 font.weight: Font.Medium
+                elide: Text.ElideRight
+                textFormat: Text.PlainText
+            }
+
+            Text {
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                anchors.right: folderMark.left
+                anchors.leftMargin: 42 * root.s
+                anchors.bottomMargin: 14 * root.s
+                anchors.rightMargin: 8 * root.s
+                visible: root.service && root.service.storageAvail >= 0 && root.service.storageTotal >= 0
+                text: root.service
+                      ? root.service.formatBytes(root.service.storageAvail) + " " + i18n.tr("free of") + " "
+                        + root.service.formatBytes(root.service.storageTotal)
+                      : ""
+                color: root.sumi
+                font.family: Theme.mono
+                font.pixelSize: 11 * root.s
                 elide: Text.ElideRight
             }
 
@@ -484,6 +515,7 @@ Item {
                 font.family: Theme.mono
                 font.pixelSize: 11 * root.s
                 wrapMode: Text.WordWrap
+                textFormat: Text.PlainText
             }
 
             Text {
@@ -512,6 +544,16 @@ Item {
                     border.color: ipField.activeFocus ? root.seal : root.sep
                 }
                 onAccepted: root.submitLogin()
+            }
+
+            Text {
+                width: parent.width
+                visible: ipField.text.trim().toLowerCase().indexOf("http://") === 0
+                text: i18n.tr("Plain http: the password and session travel unencrypted on your network.")
+                color: Theme.sun
+                font.family: Theme.mono
+                font.pixelSize: 10 * root.s
+                wrapMode: Text.WordWrap
             }
 
             Text {
@@ -610,6 +652,7 @@ Item {
                 font.pixelSize: 10 * root.s
                 font.letterSpacing: 1
                 elide: Text.ElideRight
+                textFormat: Text.PlainText
             }
 
             Text {

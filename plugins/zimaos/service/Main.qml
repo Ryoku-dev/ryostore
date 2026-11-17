@@ -20,6 +20,8 @@ Item {
                 ? ("" + settings.host).trim() : "";
         return raw;
     }
+    // a host picked on the login screen only lasts until the setting changes
+    onSavedHostChanged: svc.activeHost = ""
     readonly property string host: svc.activeHost.length > 0 ? svc.activeHost : svc.savedHost
     readonly property bool hostReady: svc.normalizeHost(svc.host).length > 0
     readonly property int pollSec: {
@@ -133,9 +135,7 @@ Item {
 
     function normalizeHost(raw) {
         var text = (raw || "").trim();
-        // Bare LAN addresses stay http on the Python side. https:// is kept so
-        // that call verifies the certificate. http:// is stored without a scheme
-        // so an existing session for the same host still matches.
+        // same rules as bin/zima: bare means https, plain http only when typed
         var scheme = "";
         var lower = text.toLowerCase();
         if (lower.indexOf("https://") === 0) {
@@ -186,9 +186,9 @@ Item {
             var n = Number(port);
             if (n < 1 || n > 65535)
                 return "";
-            return scheme === "https" ? ("https://" + host + ":" + n) : (host + ":" + n);
+            return (scheme === "http" ? "http://" : "https://") + host + ":" + n;
         }
-        return scheme === "https" ? ("https://" + host) : host;
+        return (scheme === "http" ? "http://" : "https://") + host;
     }
 
     function useHost(raw) {

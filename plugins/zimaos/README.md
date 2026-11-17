@@ -19,7 +19,7 @@ Depois do login, no ZimaOS 1.8:
 
 ## O que corre, lê e escreve
 
-- `bin/zima` (Python 3, biblioteca padrão). Um IP ou nome da rede local, sem esquema, continua em HTTP (por exemplo `192.168.0.180`). `http://` é o mesmo. `https://` usa HTTPS e verifica o certificado; a verificação não é desligada. Recusa caminho, `@` e qualquer outro esquema. Não segue redirecionamentos, para o token não ir para outro host.
+- `bin/zima` (Python 3, biblioteca padrão). Um IP ou nome sem esquema (por exemplo `192.168.0.180`) usa HTTPS e verifica o certificado; a verificação não é desligada. HTTP simples só é usado quando você digita `http://` de propósito, para um servidor sem TLS, e o painel avisa que a senha e a sessão viajam sem criptografia. Recusa caminho, `@` e qualquer outro esquema. Não segue redirecionamentos, para o token não ir para outro host, e o link de Backup só pode apontar para o próprio servidor.
 - Caminhos: `POST /v1/users/login`, `POST /v1/users/refresh`, `GET /v1/sys/utilization`, `GET /v2/zimaos/network/interfaces`, `GET /v2/zimaos/network/connection-status`, `GET /v2/local_storage/storages`, `GET /v2/app_management/web/appgrid` e o device info acima.
 - `xdg-open`, só quando você clica num atalho.
 - O endereço é gravado com `pluginApi.saveSetting` na chave `host`. A senha não é gravada nem registrada.
