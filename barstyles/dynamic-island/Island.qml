@@ -172,7 +172,7 @@ Item {
         width: 8; height: 8; radius: 4
         SequentialAnimation on opacity {
             loops: Animation.Infinite
-            running: true
+            running: parent.visible
             NumberAnimation { to: 0.25; duration: 750; easing.type: Easing.InOutSine }
             NumberAnimation { to: 1; duration: 750; easing.type: Easing.InOutSine }
         }

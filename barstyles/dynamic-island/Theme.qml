@@ -47,7 +47,8 @@ Singleton {
     Process {
         id: gtkMonitor
         running: true
-        command: ["gsettings", "monitor", "org.gnome.desktop.interface"]
+        command: ["sh", "-c", "if command -v setpriv >/dev/null; then exec setpriv --pdeathsig TERM -- \"$@\"; else exec \"$@\"; fi",
+                  "sh", "gsettings", "monitor", "org.gnome.desktop.interface"]
         stdout: SplitParser { onRead: l => root.parseGtk(l) }
     }
     readonly property var gtkAccents: ({
@@ -130,7 +131,10 @@ Singleton {
             }
         }
     }
-    Timer { interval: 15000; repeat: true; running: true; triggeredOnStart: true; onTriggered: wallProc.running = true }
+    // Ryoku's palette answers first, so the wallpaper probe only runs when something reads it
+    readonly property bool wallpaperWanted: Config.s.accentSource === "wallpaper" || Hub.settingsOpen
+        || (Config.s.accentSource === "auto" && ryokuAccent === "" && matAccent === "" && walAccent === "")
+    Timer { interval: 15000; repeat: true; running: root.wallpaperWanted; triggeredOnStart: true; onTriggered: wallProc.running = true }
     Connections { target: Config.s; function onWallpaperPathChanged() { wallProc.running = true; } }
     ColorQuantizer {
         id: wallQuant
