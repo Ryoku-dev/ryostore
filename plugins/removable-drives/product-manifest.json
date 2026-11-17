@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "removable-drives",
   "category": "plugins",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "destination": "ryoku/plugins/removable-drives",
   "files": [
     {
@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "c1ba192fe4c4a6bbc110a132ee565467cc938fa25f0b11c12eec817ab02521ce",
+      "sha256": "b8010aa0d893f5ddbdb9f6e59e86258a01bfb58fecc241e75688bd72c888230b",
       "mode": "0644",
-      "size": 3058,
+      "size": 5601,
       "install": false
     },
     {
@@ -40,9 +40,9 @@
     {
       "source": "content/Panel.qml",
       "destination": "content/Panel.qml",
-      "sha256": "34e1d53841dbc1728a5a34c34d89d29e8d5d86adfd7adef33597ac1715a94b82",
+      "sha256": "6bf8391b2a0d1e0a1fda0f3cdbd9e8f1e7a63c7c37c567edfafdea7e04a0c5c1",
       "mode": "0644",
-      "size": 10039,
+      "size": 10323,
       "install": true
     },
     {
@@ -56,17 +56,17 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "d3513ce69f6cd7836a0799beac17172266d7015997820039556d42dce651caa9",
+      "sha256": "0fd6e1b461af3e44c8bc4a08766a4755dc60385ed75c068c256687e1d67e318e",
       "mode": "0644",
-      "size": 1217,
+      "size": 1231,
       "install": true
     },
     {
       "source": "service/Main.qml",
       "destination": "service/Main.qml",
-      "sha256": "eae5f42b56286d9a70bb2689e484bfb53cbdb2a059186a41d11d1d238a6a0fff",
+      "sha256": "af7110eba729da2a52eee4f4c44d36bd47ba2c19b9204b7aff2bb80b876e11c0",
       "mode": "0644",
-      "size": 9878,
+      "size": 24653,
       "install": true
     }
   ]

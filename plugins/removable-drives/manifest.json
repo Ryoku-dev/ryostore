@@ -1,7 +1,7 @@
 {
   "id": "removable-drives",
   "name": "Removable Drives",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Buxter <11074827+klopster@users.noreply.github.com>",
   "description": "Lists mounted removable/USB drives and lets you safely unmount or eject them from the QS Bar.",
   "license": "MIT",
@@ -32,7 +32,8 @@
     "commands": [
       "lsblk",
       "udisksctl",
-      "notify-send"
+      "notify-send",
+      "lsof"
     ]
   },
   "metadata": {
