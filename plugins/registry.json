@@ -1381,6 +1381,45 @@
       ],
       "lastUpdated": "2026-11-08",
       "upstream": "https://github.com/mysweetpea/prayer-times"
+    },
+    {
+      "id": "quickcalc",
+      "name": "QuickCalc",
+      "version": "0.3.0",
+      "path": "plugins/quickcalc",
+      "author": "Buxter <11074827+klopster@users.noreply.github.com>",
+      "summary": "Keyboard-driven calculator with Basic, Scientific and Programmer modes, live preview, variables, memory and a persistent history; as a bar panel or a floating window with one toggle keybind.",
+      "description": "Keyboard-driven calculator with Basic, Scientific and Programmer modes, live preview, variables, memory and a persistent history; as a bar panel or a floating window with one toggle keybind.",
+      "tags": [
+        "calculator",
+        "math",
+        "productivity",
+        "frame-popout",
+        "bar-widget"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-popout.png",
+      "screenshots": [
+        "assets/preview-popout.png",
+        "assets/preview-programmer.png",
+        "assets/preview-compact.png",
+        "assets/preview-bar.png",
+        "assets/preview-bar-shortcuts.png",
+        "assets/preview-bar-compact.png",
+        "assets/preview-settings.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "56c6643d42174c367650ef6d9793902bba9f93dea9f6db1858985a249f3e8f03",
+      "upstream": "https://github.com/Ryoku-dev/ryostore/tree/main/plugins/quickcalc",
+      "official": false,
+      "tagline": "A fast keyboard calculator: basic, scientific and programmer.",
+      "icon": "calculate",
+      "hosts": [
+        "framePopout",
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-09"
     }
   ]
 }
