@@ -1,0 +1,51 @@
+{
+  "id": "recent-downloads",
+  "name": "Recent Downloads",
+  "version": "0.1.4",
+  "author": "Manish <159711477+mannish01@users.noreply.github.com>",
+  "description": "A minimal bar button with a quick list of recent files from Downloads.",
+  "license": "MIT",
+  "official": false,
+  "hosts": [
+    "topbarGlyph"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml",
+    "panel": "content/Panel.qml"
+  },
+  "panel": {
+    "width": 320
+  },
+  "files": [
+    "bin/recent-downloads"
+  ],
+  "capabilities": {
+    "densities": [
+      "glyph",
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "topbarGlyph",
+    "label": "Recent Downloads"
+  },
+  "dependencies": {
+    "commands": [
+      "python3",
+      "xdg-user-dir",
+      "xdg-open"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "showCount",
+        "type": "toggle",
+        "label": "Show the tick count",
+        "group": "Recent Downloads",
+        "default": true
+      }
+    ]
+  }
+}

@@ -1381,6 +1381,38 @@
       ],
       "lastUpdated": "2026-11-08",
       "upstream": "https://github.com/mysweetpea/prayer-times"
+    },
+    {
+      "id": "recent-downloads",
+      "name": "Recent Downloads",
+      "version": "0.1.4",
+      "path": "plugins/recent-downloads",
+      "author": "Manish <159711477+mannish01@users.noreply.github.com>",
+      "upstream": "https://github.com/mannish01/Recent-Downloads",
+      "summary": "A minimal bar button with a quick list of recent files from Downloads.",
+      "description": "Browse recently downloaded files directly from the Ryoku QS Bar. Open files with their default applications or open the Downloads folder.",
+      "license": "MIT",
+      "tags": [
+        "bar-widget",
+        "downloads",
+        "file-management"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png",
+        "assets/preview-panel.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "c98f751561137a5891af8780c185378f2218ca82dd66b5c0ce7760a5aeb6ba2b",
+      "official": false,
+      "tagline": "Your latest downloads, one click away.",
+      "icon": "",
+      "hosts": [
+        "topbarGlyph"
+      ],
+      "lastUpdated": "2026-11-11"
     }
   ]
 }
