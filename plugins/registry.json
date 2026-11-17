@@ -1433,7 +1433,7 @@
         "assets/preview-widget.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "b5b47c8447d34083d615ecc434142b127c0fdb82bfd1116024005637f64eb214",
+      "manifestSha256": "0c27c9dc4074bb1f81c4a3ed1aa70997aa53488f2dca2c8117b9566fc8363b36",
       "official": false,
       "tagline": "Happ VPN status on the bar: connection state, exit country and IP.",
       "icon": "",

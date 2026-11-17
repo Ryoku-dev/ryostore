@@ -38,6 +38,7 @@ Item {
             font.family: Theme.font
             font.pixelSize: 13 * root.s
             wrapMode: Text.Wrap
+            textFormat: Text.PlainText
         }
     }
 
@@ -78,6 +79,7 @@ Item {
             color: Theme.bright
             font.family: Theme.display
             font.pixelSize: 16 * root.s
+            textFormat: Text.PlainText
         }
 
         Field { k: col.t("Server", "Сервер"); v: col.sv ? col.sv.server : "" }

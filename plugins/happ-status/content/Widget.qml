@@ -69,6 +69,7 @@ Item {
             font.family: Theme.font
             font.pixelSize: 13 * root.s
             elide: Text.ElideRight
+            textFormat: Text.PlainText
             width: root.widthBudget > 0 ? Math.min(implicitWidth, root.widthBudget - 40 * root.s) : implicitWidth
         }
     }
