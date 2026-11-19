@@ -1,0 +1,335 @@
+#!/usr/bin/env python3
+"""ai-usage-collect — the collector for the `ai-usage` plugin (R6/R9).
+
+Reads the `ai-usagebar usage --json` report (schema_version 1) and emits a
+NORMALIZED model on stdout, which `service/Main.qml` consumes.
+
+Plugin contract rules this script obeys:
+- R9: NEVER `sh -c`. Every external command is an argv array (`subprocess.run([...])`).
+- R6: the only external program is `ai-usagebar` (listed in dependencies.commands).
+- R7: NO network of its own — the network belongs to `ai-usagebar`, never to us.
+- R8: NOTHING is written by this script. No state, no cache, no file.
+
+Modes:
+  ai-usage-collect                  reads the real binary (may touch the network via upstream)
+  ai-usage-collect --from-file F    reads a fixture — for tests and for the smoke
+                                    without depending on the installed binary
+
+The normalized model is NOT the raw report: it splits `vendor@account`, finds the
+`metric` that qualifies as the headline (never guesses — it follows the
+`headline:` the report itself declares), and carries `status`/`stale` as data,
+never as a colour inference.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from typing import Any
+
+EXPECTED_SCHEMA = 1
+
+# Exit codes. The channel between collector, service and view is the CODE, not
+# the text: the diagnostic is prose meant for a terminal and the UI is English
+# (R11), so matching text would be fragile. `RC_FAILED` is the generic case and
+# was already the rc of every failure; `RC_DEP_MISSING` is the only case the view
+# needs to tell apart, because the way out of it is DIFFERENT (install the
+# binary) rather than "the upstream broke".
+# One constant for the limit AND the message: a hard-coded 60 inside the string
+# would drift the moment the limit changed, and the user would be told the wrong
+# number.
+TIMEOUT_SECS = 60
+
+RC_OK = 0
+RC_FAILED = 1
+RC_DEP_MISSING = 3
+
+
+def _parse_args(argv: list[str]) -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="collect and normalize usage --json")
+    p.add_argument("--from-file", metavar="PATH",
+                   help="read the report from a file instead of the binary")
+    p.add_argument("--primary", metavar="ID",
+                   help="override the primary provider (the plugin's 'primary' setting)")
+    p.add_argument("--order", choices=("upstream", "highest", "lowest", "alphabetical",
+                                       "manual"),
+                   default="upstream", help="provider order and choice of the highlight")
+    p.add_argument("--sequence", metavar="IDS",
+                   help="with --order manual: comma-separated ids, in the desired "
+                        "order (e.g. 'anthropic,openai'). The first READY id "
+                        "becomes the highlight.")
+    p.add_argument("--max-secondary", type=int, default=6, metavar="N",
+                   help="how many secondary providers the detail shows (default 6)")
+    args = p.parse_args(argv)
+    # Cross validation: --sequence only exists for manual mode, and manual mode
+    # makes no sense without it. A usage error is rc 2 (the argparse convention),
+    # not a collection failure — which is why it does not collide with the rc 3
+    # of a missing dependency.
+    if args.order == "manual" and args.sequence is None:
+        p.error("--order manual requires --sequence")
+    if args.sequence is not None and args.order != "manual":
+        p.error("--sequence is only valid with --order manual")
+    return args
+
+
+def _load_report(args: argparse.Namespace) -> dict[str, Any]:
+    """Load the report. In any mode, rc != 0 is a FAILURE — we never degrade
+    silently: the widget has to say 'no data', not invent it."""
+    if args.from_file:
+        try:
+            with open(args.from_file, encoding="utf-8") as fh:
+                return json.load(fh)
+        except OSError as e:
+            raise SystemExit(f"FAILED: cannot read the report from {args.from_file}: {e}")
+        except json.JSONDecodeError as e:
+            # The file EXISTS and was read — it is malformed. Saying "cannot read"
+            # here would lie about what happened; the reason is the JSON, not the
+            # access.
+            raise SystemExit(f"FAILED: report from {args.from_file} is not valid JSON: {e}")
+    try:
+        r = subprocess.run(["ai-usagebar", "usage", "--json"],
+                           capture_output=True, text=True, timeout=TIMEOUT_SECS)
+    except FileNotFoundError:
+        # A missing dependency is the ONLY case the view needs to handle
+        # differently: the user can fix it by installing the binary, while an
+        # upstream failure has no fix on their side. Its own rc — see RC_*.
+        print("FAILED: ai-usagebar is not on PATH", file=sys.stderr)
+        raise SystemExit(RC_DEP_MISSING)
+    except subprocess.TimeoutExpired:
+        # Names what to DO, not only what happened. A timeout here is almost always
+        # a stalled network path (a VPN that drops packets rather than refusing
+        # them), and the user's next step is to check the connection — not to
+        # reinstall anything. Measured 2026-10-29: with the route dropped, the
+        # upstream has no timeout of its own and hangs until this one fires.
+        raise SystemExit(
+            "FAILED: ai-usagebar did not answer within %ds \u2014 the network "
+            "looks stalled. Check the connection; the last reading is kept."
+            % TIMEOUT_SECS)
+    if r.returncode != 0:
+        tail = (r.stdout or r.stderr or "").strip().splitlines()
+        raise SystemExit(f"FAILED: ai-usagebar rc={r.returncode} "
+                         + (tail[-1][:200] if tail else ""))
+    try:
+        return json.loads(r.stdout)
+    except json.JSONDecodeError as e:
+        raise SystemExit(f"FAILED: ai-usagebar output is not JSON: {e}")
+
+
+def _split_account(entry_id: str) -> tuple[str, str | None]:
+    """`vendor@account` -> (vendor, account). No `@` -> implicit account None.
+
+    `@` is the upstream's documented separator (the id is `vendor@account` when
+    an `accounts` array is present). A vendor never contains `@`, so the first
+    `@` is the split point.
+    """
+    if "@" in entry_id:
+        vendor, _, account = entry_id.partition("@")
+        return vendor, account or None
+    return entry_id, None
+
+
+def _normalize_metric(metric: dict[str, Any]) -> dict[str, Any]:
+    """One metric ready to draw.
+
+    `headline` is what the report DECLARES — if it is "percent", it becomes a bar;
+    if it is "value", it becomes text. No guessing from the label.
+    """
+    headline = str(metric.get("headline", "percent"))
+    percent = metric.get("percent")
+    try:
+        percent_i = max(0, min(100, int(percent))) if percent is not None else None
+    except (TypeError, ValueError):
+        percent_i = None
+
+    severity = str(metric.get("severity", "low"))
+    if severity not in ("low", "high", "critical"):
+        severity = "low"
+
+    reset_at = metric.get("reset_at")
+    try:
+        window_secs = int(metric["window_secs"]) if metric.get("window_secs") else None
+    except (TypeError, ValueError):
+        window_secs = None
+
+    return {
+        "label": str(metric.get("label", "")),
+        "headline": headline,
+        # "bar" when the headline is a percentage, "text" when it is an absolute value
+        "kind": "bar" if headline == "percent" else "text",
+        "percent": percent_i,
+        # text ready to draw; the upstream already formatted it ("91%", "80.05 of 1000")
+        "value": str(metric.get("value", "")),
+        "severity": severity,
+        "detail": str(metric.get("detail", "")),
+        "reset_at": reset_at,
+        "window_secs": window_secs,
+    }
+
+
+def _normalize_provider(entry: dict[str, Any]) -> dict[str, Any]:
+    """One entry -> one provider ready for the widget.
+
+    `status: error` comes with `metrics: []`, and an empty `metrics` is a
+    LEGITIMATE state (not an error): the widget has to draw the provider with the
+    warning, without a bar.
+    """
+    raw_id = str(entry.get("id", ""))
+    vendor, account = _split_account(raw_id)
+
+    status = str(entry.get("status", "ready"))
+    if status not in ("ready", "error"):
+        status = "error" if entry.get("error") else "ready"
+
+    raw_metrics = entry.get("metrics")
+    metrics = [_normalize_metric(m) for m in (raw_metrics or [])
+               if isinstance(m, dict)]
+
+    # The provider's main bar: the metric with the highest percent (the fullest),
+    # tie-broken by the report's order. If none has a percent, None.
+    with_percent = [m for m in metrics if m["percent"] is not None]
+    headline_metric = max(with_percent, key=lambda m: m["percent"]) if with_percent else None
+
+    plan = entry.get("plan")
+    error = entry.get("error")
+
+    return {
+        "id": raw_id,
+        "vendor": vendor,
+        "account": account,
+        "display_name": str(entry.get("display_name") or entry.get("name") or vendor),
+        "short_name": str(entry.get("short_name") or ""),
+        "icon": str(entry.get("icon") or ""),
+        "plan": str(plan) if plan else "",
+        "status": status,
+        "stale": bool(entry.get("stale", False)),
+        "fetched_at": entry.get("fetched_at"),
+        # raw vendor message (the upstream's .last_error) — we NEVER parse it
+        "error": str(error) if error else "",
+        "metrics": metrics,
+        "headline_metric": headline_metric,
+        "has_reset_credits": bool(entry.get("reset_credits")),
+    }
+
+
+def _parse_sequence(raw: str | None) -> list[str]:
+    """`" anthropic , OpenAI ,, anthropic "` -> `["anthropic", "openai"]`.
+
+    Case-insensitive (the report's ids are lowercase) and deduplicated (the FIRST
+    occurrence wins). An empty input is valid and means "no preference" — it is
+    not an error: the UI may have the setting on manual with the field blank, and
+    that has to degrade to the report's order, not break.
+    """
+    if not raw:
+        return []
+    seen: list[str] = []
+    for piece in raw.split(","):
+        pid = piece.strip().lower()
+        if pid and pid not in seen:
+            seen.append(pid)
+    return seen
+
+
+def _sort_providers(providers: list[dict[str, Any]], order: str,
+                    sequence: list[str] | None = None) -> list[dict[str, Any]]:
+    """Stable order; numeric modes put ready providers with percentages first."""
+    if order == "manual":
+        # Cited ones first, in the requested order; the rest after, in the
+        # report's order. `sorted` is stable, so the uncited keep their relative
+        # position. A cited id that does not exist simply finds no target — it is
+        # ignored silently, without creating a provider or breaking the screen.
+        position = {pid: i for i, pid in enumerate(sequence or [])}
+        return sorted(providers,
+                      key=lambda p: position.get(str(p["id"]).lower(), len(position)))
+    if order == "alphabetical":
+        return sorted(providers, key=lambda p: p["display_name"].casefold())
+    if order not in ("highest", "lowest"):
+        return providers
+
+    def key(provider: dict[str, Any]) -> tuple[bool, bool, int]:
+        metric = provider["headline_metric"]
+        percent = metric["percent"] if metric else None
+        unavailable = provider["status"] != "ready"
+        missing = percent is None
+        score = percent or 0
+        if order == "highest":
+            score = -score
+        return unavailable, missing, score
+
+    return sorted(providers, key=key)
+
+
+def normalize(report: dict[str, Any], primary: str | None,
+              max_secondary: int, order: str = "upstream",
+              sequence: list[str] | None = None) -> dict[str, Any]:
+    """Raw report -> widget model.
+
+    The order preserves the report's (the upstream already sorts by relevance).
+    `primary` (the plugin's setting, or the report's `primary`) chooses the
+    EXPANDED card; it does not reorder the list — each provider's position comes
+    from the order (or from `--sequence`, in manual mode).
+    """
+    schema = report.get("schema_version")
+    if schema != EXPECTED_SCHEMA:
+        raise SystemExit(f"FAILED: schema_version {schema!r} != {EXPECTED_SCHEMA}")
+
+    entries = report.get("entries")
+    if not isinstance(entries, list):
+        raise SystemExit("FAILED: report has no `entries[]`")
+
+    providers = [_normalize_provider(e) for e in entries if isinstance(e, dict)]
+    providers = _sort_providers(providers, order, sequence)
+
+    # Non-upstream order deliberately lets the first ready provider become the
+    # expanded card; the upstream's `primary` applies only in its own mode.
+    primary_id = primary or (report.get("primary") if order == "upstream" else None)
+    primary_provider = None
+    if primary_id:
+        target_vendor, target_account = _split_account(str(primary_id))
+        for p in providers:
+            if p["id"] == primary_id or (
+                    p["vendor"] == target_vendor and p["account"] == target_account):
+                # A pinned primary that fell into `error` (expired token, rejected
+                # quota, degraded vendor) does NOT get the highlight tile: an empty
+                # card as the highlight is worse than the next healthy provider. The
+                # explicit request counts as ORDER, not as blindness — if the
+                # requested one is ready, honour it; if not, fall back to the next
+                # ready one and the widget still shows the requested one in `all`.
+                if p["status"] == "ready":
+                    primary_provider = p
+                break
+
+    # No declared/found primary: the first "ready" one with a bar becomes the
+    # highlight. An explicit choice, not a silent one — if nothing is ready, it
+    # stays None and the tile says so.
+    if primary_provider is None:
+        primary_provider = next((p for p in providers
+                                 if p["status"] == "ready" and p["headline_metric"]), None)
+
+    others = [p for p in providers if p is not primary_provider]
+    secondary = others[:max(0, max_secondary)]
+
+    return {
+        "schema": EXPECTED_SCHEMA,
+        "primary": primary_provider,
+        "secondary": secondary,
+        # for the detail view: ALL of them, including those that do not fit
+        "all": providers,
+        "total_providers": len(providers),
+        "with_issues": sum(1 for p in providers
+                           if p["status"] == "error" or p["stale"]),
+    }
+
+
+def main(argv: list[str]) -> int:
+    args = _parse_args(argv)
+    report = _load_report(args)
+    model = normalize(report, args.primary, args.max_secondary, args.order,
+                      _parse_sequence(args.sequence))
+    json.dump(model, sys.stdout, ensure_ascii=False)
+    sys.stdout.write("\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
