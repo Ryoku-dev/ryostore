@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "id": "ai-usage",
+  "category": "plugins",
+  "version": "0.5.1",
+  "destination": "ryoku/plugins/ai-usage",
+  "files": [
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "53cc5bf309033436a1628c5d2115e6c015ac2f03c634be5f3389e843e09d8abb",
+      "mode": "0644",
+      "size": 1070,
+      "install": false
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "981fa3c2240f75a1cf2f88b785302dbe639af53b9f3ca62e9f2a794a432293fe",
+      "mode": "0644",
+      "size": 17639,
+      "install": false
+    },
+    {
+      "source": "assets/preview-drawer.png",
+      "destination": "assets/preview-drawer.png",
+      "sha256": "5af3874af4cd43951bc3f7938a6009a2b0054e0cce0d24d68c445e90b771bb15",
+      "mode": "0644",
+      "size": 216350,
+      "install": false
+    },
+    {
+      "source": "assets/preview-popout.png",
+      "destination": "assets/preview-popout.png",
+      "sha256": "1889754e57118208bb704a7d2267fa80bc7a90713a686f0dbb1ecddf4f4108a6",
+      "mode": "0644",
+      "size": 205003,
+      "install": false
+    },
+    {
+      "source": "bin/ai-usage-collect",
+      "destination": "bin/ai-usage-collect",
+      "sha256": "12ee7ad8c97c88b5d196dee210070021eb5f9e09afa579f89d98216816f36d8c",
+      "mode": "0755",
+      "size": 34521,
+      "install": true
+    },
+    {
+      "source": "content/Widget.qml",
+      "destination": "content/Widget.qml",
+      "sha256": "9990b5b14d9deb92ccc985d807d16facccd676a80dd95b2cb07ae67d8fee8404",
+      "mode": "0644",
+      "size": 106535,
+      "install": true
+    },
+    {
+      "source": "content/i18n/en.json",
+      "destination": "content/i18n/en.json",
+      "sha256": "bbb635f4e5252da5768b719329aab4a0f033dad213c16d79dcbfdb750ba354c5",
+      "mode": "0644",
+      "size": 1893,
+      "install": true
+    },
+    {
+      "source": "content/i18n/es.json",
+      "destination": "content/i18n/es.json",
+      "sha256": "020e347e4f2eb7427d8635c71db67a6e2d7b848205fa688950c5a4595c49dab4",
+      "mode": "0644",
+      "size": 2017,
+      "install": true
+    },
+    {
+      "source": "content/i18n/fr.json",
+      "destination": "content/i18n/fr.json",
+      "sha256": "4f9080d41765d80ada81ec563c5ca81fb79fdd8a75acd651871ea8d48328a9f2",
+      "mode": "0644",
+      "size": 2097,
+      "install": true
+    },
+    {
+      "source": "content/i18n/pt.json",
+      "destination": "content/i18n/pt.json",
+      "sha256": "ec9467bef43fa5bc34b666fdb2973df928ce57ac7bdafb7482782f32107d086f",
+      "mode": "0644",
+      "size": 1997,
+      "install": true
+    },
+    {
+      "source": "content/i18n/pt_BR.json",
+      "destination": "content/i18n/pt_BR.json",
+      "sha256": "3e217000cc4239ba03fc366d147333e734737fcd3e21c16d1ff57f9b47eb2df1",
+      "mode": "0644",
+      "size": 1957,
+      "install": true
+    },
+    {
+      "source": "manifest.json",
+      "destination": "manifest.json",
+      "sha256": "f6594afc04beda20fe939894ef7ab5fdd4e23500c59a9937bc78ebc46efe921c",
+      "mode": "0644",
+      "size": 7731,
+      "install": true
+    },
+    {
+      "source": "service/Main.qml",
+      "destination": "service/Main.qml",
+      "sha256": "38f119af525d278e1fc8d17f016fa8995f1c878b090a4f475e241968cbf2eedf",
+      "mode": "0644",
+      "size": 14475,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}
