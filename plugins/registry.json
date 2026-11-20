@@ -1502,7 +1502,7 @@
     {
       "id": "ai-usage",
       "name": "AI Usage",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "path": "plugins/ai-usage",
       "author": "Danilo Heroso <danmaxis@gmail.com>",
       "upstream": "https://github.com/danmaxis/ryoku-ai-usage-widget",
@@ -1523,14 +1523,14 @@
         "assets/preview-drawer.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "3ce9b55fa393a32b13802862c9da5553478cf88f78d0a521ee09a30dbf46fc79",
+      "manifestSha256": "2ad0853adb57d69ae120a1d0698f86eb5bbe3632229c728780c504dba3d0ddc3",
       "official": false,
       "tagline": "Every AI plan quota at a glance, with pace against the clock.",
       "icon": "data_usage",
       "hosts": [
         "framePopout"
       ],
-      "lastUpdated": "2026-11-19"
+      "lastUpdated": "2026-11-20"
     }
   ]
 }

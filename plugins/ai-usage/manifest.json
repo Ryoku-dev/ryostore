@@ -1,7 +1,7 @@
 {
   "id": "ai-usage",
   "name": "AI Usage",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "Danilo Heroso <danmaxis@gmail.com>",
   "description": "AI plan usage on the Ryoku desktop: the primary provider in full, every other provider as a pill in a 2-4 column grid, and a drawer with the full detail of the one you click. Opens from the frame edge or a keybind. Read-only over the local `ai-usagebar usage --json` report or, without it, over the cache files of Ryoku's built-in AI usage monitor; no credentials, no network of its own.",
   "license": "MIT",

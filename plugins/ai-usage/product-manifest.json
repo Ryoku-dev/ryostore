@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "ai-usage",
   "category": "plugins",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "destination": "ryoku/plugins/ai-usage",
   "files": [
     {
@@ -16,9 +16,9 @@
     {
       "source": "README.md",
       "destination": "README.md",
-      "sha256": "95976e48df7be4255527e00d73b86d64ca839683e2d8d2786d8c04a06abec2ad",
+      "sha256": "981fa3c2240f75a1cf2f88b785302dbe639af53b9f3ca62e9f2a794a432293fe",
       "mode": "0644",
-      "size": 17543,
+      "size": 17639,
       "install": false
     },
     {
@@ -40,9 +40,9 @@
     {
       "source": "bin/ai-usage-collect",
       "destination": "bin/ai-usage-collect",
-      "sha256": "267d2def603c771354ab9b756366d195a69a816c3559e5479f7860f9b66345aa",
+      "sha256": "12ee7ad8c97c88b5d196dee210070021eb5f9e09afa579f89d98216816f36d8c",
       "mode": "0755",
-      "size": 31553,
+      "size": 34521,
       "install": true
     },
     {
@@ -96,7 +96,7 @@
     {
       "source": "manifest.json",
       "destination": "manifest.json",
-      "sha256": "ab9322047aa69a21c43e2f8f32bc081331860e4cf8672511ca314a5d9e748511",
+      "sha256": "f6594afc04beda20fe939894ef7ab5fdd4e23500c59a9937bc78ebc46efe921c",
       "mode": "0644",
       "size": 7731,
       "install": true

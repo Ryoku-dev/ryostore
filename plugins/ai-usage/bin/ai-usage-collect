@@ -151,52 +151,130 @@ def _stop_group(proc: subprocess.Popen) -> None:
         pass
 
 
-def _guard_against_hard_kill(proc: subprocess.Popen) -> None:
-    """Leave a small guardian behind that stops the child if WE are killed.
+class _Guardian:
+    """A small watcher that stops the child's group if WE are killed outright.
 
     A signal handler cannot answer SIGKILL, and the shell does send it: its
     process object kills, not terminates, when the plugin is unloaded or the
     shell reloads. Without this, that path left the same orphan the cancel path
-    used to. The guardian is a fork of this script that does nothing but watch:
-    when its parent is gone and the child's group is still there, it stops the
-    group; when the group is gone, it leaves. No shell, no extra program.
+    used to.
+
+    The guardian is a fork of this script, made BEFORE the child is launched,
+    so there is no moment in which the child exists and nobody watches it:
+
+    - the child tells the guardian its own pid between fork and exec
+      (`announce`, run as the `preexec_fn`), so the guardian knows the group
+      even if we die before `Popen` returns;
+    - the guardian then sleeps in a read on a pipe only we hold. One byte means
+      "we finished in order, nothing to do" (`release`). End-of-file with no
+      byte means we died, and it stops the group.
+
+    It never polls, and we reap it in `release`, so it is neither a zombie
+    while we run nor a leftover when we are done. No shell, no extra program.
     """
-    parent = os.getpid()
+
+    def __init__(self) -> None:
+        self.pid: int | None = None
+        self._alive_w = -1
+        self._pid_w = -1
+        try:
+            alive_r, alive_w = os.pipe()
+            pid_r, pid_w = os.pipe()
+        except OSError:
+            return  # no guardian is the old behaviour, not a failure of the read
+        try:
+            pid = os.fork()
+        except OSError:
+            for fd in (alive_r, alive_w, pid_r, pid_w):
+                os.close(fd)
+            return
+        if pid == 0:
+            _guardian_main(alive_r, pid_r, keep_closed=(alive_w, pid_w))
+        os.close(alive_r)
+        os.close(pid_r)
+        self.pid, self._alive_w, self._pid_w = pid, alive_w, pid_w
+
+    def announce(self) -> None:
+        """Runs in the CHILD, after it got its own session and before exec."""
+        if self._pid_w >= 0:
+            os.write(self._pid_w, b"%d\n" % os.getpid())
+
+    def launched(self) -> None:
+        """Our copy of the pid pipe is no longer needed once `Popen` returned
+        (or failed): closing it lets the guardian see end-of-file if no child
+        ever announced itself."""
+        if self._pid_w >= 0:
+            os.close(self._pid_w)
+            self._pid_w = -1
+
+    def release(self) -> None:
+        """We are leaving in order and already dealt with the child: tell the
+        guardian to go, and reap it."""
+        self.launched()
+        if self.pid is None:
+            return
+        try:
+            os.write(self._alive_w, b"k")
+        except OSError:
+            pass
+        try:
+            os.close(self._alive_w)
+        except OSError:
+            pass
+        deadline = time.monotonic() + 1.0
+        while time.monotonic() < deadline:
+            try:
+                done, _status = os.waitpid(self.pid, os.WNOHANG)
+            except ChildProcessError:
+                break
+            if done:
+                break
+            time.sleep(0.01)
+        self.pid = None
+
+
+def _guardian_main(alive_r: int, pid_r: int, keep_closed: tuple[int, ...]) -> None:
+    """The guardian's whole life. Never returns."""
     try:
-        pid = os.fork()
-    except OSError:
-        return  # no guardian is the old behaviour, not a failure of the read
-    if pid:
-        return
-    try:
+        for fd in keep_closed:
+            os.close(fd)
         os.setsid()
         # Let go of every pipe: the service waits for EOF on our stdout, and a
         # guardian holding it open would stall every collection.
         devnull = os.open(os.devnull, os.O_RDWR)
         for fd in (0, 1, 2):
             os.dup2(devnull, fd)
-        os.closerange(3, 256)
+        for fd in range(3, 256):
+            if fd not in (alive_r, pid_r):
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
         for sig in CANCEL_SIGNALS:
             signal.signal(sig, signal.SIG_IGN)
-        pgid = proc.pid
-        while True:
+        announced = b""
+        while not announced.endswith(b"\n"):
+            chunk = os.read(pid_r, 32)
+            if not chunk:
+                break
+            announced += chunk
+        os.close(pid_r)
+        if not announced.endswith(b"\n"):
+            os._exit(0)  # no child was ever launched
+        pgid = int(announced)
+        if os.read(alive_r, 1):
+            os._exit(0)  # released: the collector finished in order
+        # End-of-file with no release: the collector is gone. Stop the group.
+        os.killpg(pgid, signal.SIGTERM)
+        deadline = time.monotonic() + STOP_GRACE_SECS
+        while time.monotonic() < deadline:
             try:
                 os.killpg(pgid, 0)
             except (ProcessLookupError, PermissionError):
-                break  # the child finished or was stopped: nothing to guard
-            if os.getppid() != parent:
-                os.killpg(pgid, signal.SIGTERM)
-                deadline = time.monotonic() + STOP_GRACE_SECS
-                while time.monotonic() < deadline:
-                    try:
-                        os.killpg(pgid, 0)
-                    except (ProcessLookupError, PermissionError):
-                        break
-                    time.sleep(0.05)
-                else:
-                    os.killpg(pgid, signal.SIGKILL)
                 break
-            time.sleep(0.2)
+            time.sleep(0.05)
+        else:
+            os.killpg(pgid, signal.SIGKILL)
     except BaseException:  # noqa: BLE001 - a guardian must never surface
         pass
     finally:
@@ -229,11 +307,20 @@ def _run_upstream() -> dict[str, Any]:
 
     for sig in CANCEL_SIGNALS:
         signal.signal(sig, on_cancel)
+    guardian = _Guardian()  # before the child exists, so it is never unwatched
+    try:
+        return _collect_upstream(state, guardian)
+    finally:
+        guardian.release()
+
+
+def _collect_upstream(state: dict[str, Any], guardian: _Guardian) -> dict[str, Any]:
     try:
         proc = subprocess.Popen(
             ["ai-usagebar", "usage", "--json"],
             stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, text=True, start_new_session=True)
+            stderr=subprocess.PIPE, text=True, start_new_session=True,
+            preexec_fn=guardian.announce)
     except FileNotFoundError:
         # A missing dependency is the ONLY case the view needs to handle
         # differently: the user can fix it by installing the binary, while an
@@ -246,7 +333,7 @@ def _run_upstream() -> dict[str, Any]:
             signal.signal(sig, signal.SIG_IGN)
         _stop_group(proc)
         raise SystemExit(128 + state["signum"])
-    _guard_against_hard_kill(proc)
+    guardian.launched()
     try:
         out, err = proc.communicate(timeout=TIMEOUT_SECS)
     except subprocess.TimeoutExpired:

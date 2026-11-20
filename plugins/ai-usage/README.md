@@ -142,9 +142,10 @@ setting cancels the read in flight; the collector then stops `ai-usagebar` and
 anything it started before it exits, so no orphan is left waiting on a stalled
 network. For the case where the collector itself is killed outright — the
 shell does that when the plugin is unloaded or the shell reloads — the
-collector leaves a guardian behind: a fork of itself that only watches, stops
-`ai-usagebar` when its parent is gone, and exits as soon as there is nothing
-left to guard.
+collector starts a guardian before it starts `ai-usagebar`: a fork of itself
+that only waits. If the collector disappears without saying it is done, the
+guardian stops `ai-usagebar`; when the collector finishes in order, it tells
+the guardian to leave and reaps it.
 
 ## Settings
 
