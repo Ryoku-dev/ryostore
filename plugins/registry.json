@@ -1502,12 +1502,12 @@
     {
       "id": "ai-usage",
       "name": "AI Usage",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "path": "plugins/ai-usage",
       "author": "Danilo Heroso <danmaxis@gmail.com>",
       "upstream": "https://github.com/danmaxis/ryoku-ai-usage-widget",
-      "summary": "AI plan usage from ai-usagebar in a frame popout: the primary provider in full, every other provider as a pill in a 2-4 column grid, and a drawer with the full detail of the one you click. Read-only over the local `ai-usagebar usage --json` report; no credentials, no network of its own.",
-      "description": "AI plan usage from ai-usagebar in a frame popout: the primary provider in full, every other provider as a pill in a 2-4 column grid, and a drawer with the full detail of the one you click. Read-only over the local `ai-usagebar usage --json` report; no credentials, no network of its own.",
+      "summary": "AI plan usage in a frame popout, from ai-usagebar or from Ryoku's built-in AI usage monitor: the primary provider in full, every other provider as a pill, and a drawer with the detail of the one you click. Read-only; no credentials, no network of its own.",
+      "description": "AI plan usage in a frame popout, from ai-usagebar or from Ryoku's built-in AI usage monitor: the primary provider in full, every other provider as a pill, and a drawer with the detail of the one you click. Read-only; no credentials, no network of its own.",
       "license": "MIT",
       "tags": [
         "frame-popout",
@@ -1523,7 +1523,7 @@
         "assets/preview-drawer.png"
       ],
       "manifest": "product-manifest.json",
-      "manifestSha256": "7ccd4198a3863a41dc789a8fefaab4f6a2f186954e8da98713bc8469acf50871",
+      "manifestSha256": "3ce9b55fa393a32b13802862c9da5553478cf88f78d0a521ee09a30dbf46fc79",
       "official": false,
       "tagline": "Every AI plan quota at a glance, with pace against the clock.",
       "icon": "data_usage",

@@ -39,5 +39,8 @@
   "Expanded": "Expanded",
   "Collapse": "Collapse",
   "Copied": "Copied",
-  "Copy keybind": "Copy keybind"
+  "Copy keybind": "Copy keybind",
+  "source: %1": "source: %1",
+  "Ryoku's AI usage monitor has not written anything yet (Claude Code, Codex, OpenCode).": "Ryoku's AI usage monitor has not written anything yet (Claude Code, Codex, OpenCode).",
+  "about %1% of an estimated cap, not a real quota": "about %1% of an estimated cap, not a real quota"
 }

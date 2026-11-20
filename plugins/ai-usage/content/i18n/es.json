@@ -39,5 +39,8 @@
   "Expanded": "Expandido",
   "Collapse": "Contraer",
   "Copied": "Copiado",
-  "Copy keybind": "Copiar atajo"
+  "Copy keybind": "Copiar atajo",
+  "source: %1": "fuente: %1",
+  "Ryoku's AI usage monitor has not written anything yet (Claude Code, Codex, OpenCode).": "El monitor de uso de IA de Ryoku aún no ha escrito datos (Claude Code, Codex, OpenCode).",
+  "about %1% of an estimated cap, not a real quota": "cerca del %1% de un tope estimado, no una cuota real"
 }

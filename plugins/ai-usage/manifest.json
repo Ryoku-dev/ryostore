@@ -1,9 +1,9 @@
 {
   "id": "ai-usage",
   "name": "AI Usage",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": "Danilo Heroso <danmaxis@gmail.com>",
-  "description": "AI plan usage on the Ryoku desktop, from ai-usagebar: the primary provider in full, every other provider as a pill in a 2-4 column grid, and a drawer with the full detail of the one you click. Opens from the frame edge or a keybind. Read-only over the local `ai-usagebar usage --json` report; no credentials, no network of its own.",
+  "description": "AI plan usage on the Ryoku desktop: the primary provider in full, every other provider as a pill in a 2-4 column grid, and a drawer with the full detail of the one you click. Opens from the frame edge or a keybind. Read-only over the local `ai-usagebar usage --json` report or, without it, over the cache files of Ryoku's built-in AI usage monitor; no credentials, no network of its own.",
   "license": "MIT",
   "official": false,
   "tags": [
@@ -103,6 +103,28 @@
             "label": "Monochrome"
           }
         ]
+      },
+      {
+        "key": "source",
+        "type": "choice",
+        "label": "Data source",
+        "group": "Data",
+        "default": "auto",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "ai-usagebar",
+            "label": "ai-usagebar"
+          },
+          {
+            "value": "ryoku",
+            "label": "Ryoku built-in"
+          }
+        ],
+        "description": "Auto uses ai-usagebar when it is installed, otherwise the cache files of Ryoku's own AI usage monitor (Claude Code, Codex, OpenCode). The two are never mixed."
       },
       {
         "key": "order",

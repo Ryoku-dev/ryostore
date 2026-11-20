@@ -70,6 +70,11 @@ Item {
     }
     readonly property string lastError: service ? service.lastError : ""
     readonly property string errorKind: service ? (service.errorKind || "") : ""
+    // The source the user ASKED for (setting) and the one the data CAME from
+    // (model). They differ in auto, and after a source change until the next read.
+    readonly property string dataSource: service ? (service.dataSource || "auto") : "auto"
+    readonly property string modelSource:
+        service && service.model && service.model.source ? String(service.model.source) : ""
 
     // The numbers on screen come from an earlier read, and the LATEST read failed.
     // Keeping the last good model is deliberate (a transient failure must not blank
@@ -665,6 +670,11 @@ Item {
         for (var i = 0; i < providers.length; i++) {
             var p = providers[i];
             if (!p || p.status === "error") continue;
+            // An ESTIMATE is not a quota: its percentage is measured against a
+            // cap somebody made up (OpenCode in the Ryoku source). "Exhausted"
+            // and "above 80%" would both be claims about a limit that does not
+            // exist, so the summary leaves it out.
+            if (p.estimate === true) continue;
             var metrics = p.metrics ? p.metrics : [];
             for (var j = 0; j < metrics.length; j++) {
                 var m = metrics[j];
@@ -860,9 +870,13 @@ Item {
         var out = [];
         var pct = metric.percent;
         var hasPct = pct !== null && pct !== undefined && isFinite(Number(pct));
+        // An estimate has no quota behind it; saying "of the quota" would
+        // invent one.
         if (hasPct)
             out.push({ kind: "usage", label: root.tr("Usage"),
-                       value: root.tr("%1% of the quota", Math.round(Number(pct))) });
+                       value: metric.estimate === true
+                           ? root.tr("about %1% of an estimated cap, not a real quota", Math.round(Number(pct)))
+                           : root.tr("%1% of the quota", Math.round(Number(pct))) });
         var el = root.elapsedRatio(metric, nowEpoch);
         if (el.valid)
             out.push({ kind: "elapsed", label: root.tr("Elapsed"),
@@ -1071,7 +1085,12 @@ Item {
             color: Theme.bright
             font.family: Theme.mono
             font.pixelSize: med.valueFontSize
-            text: med.metric ? (med.metric.value || "") : ""
+            // `~` in front of an estimate, here as in the pills and the drawer.
+            text: {
+                if (!med.metric) return "";
+                var v = med.metric.value || "";
+                return (med.metric.estimate === true && v !== "") ? "~" + v : v;
+            }
         }
         Rectangle {
             id: track
@@ -1239,8 +1258,12 @@ Item {
                     text: {
                         if (!pil.provider) return "";
                         if (pil.isError || !pil.hasMetrics) return "";
-                        return pil.hasPercent ? (Math.round(Number(pil.lead.percent)) + "%")
-                                              : "\u2014";
+                        // `~` marks an estimate: a number with no real limit
+                        // behind it must not read like a measured quota.
+                        return pil.hasPercent
+                            ? ((pil.provider.estimate === true ? "~" : "")
+                               + Math.round(Number(pil.lead.percent)) + "%")
+                            : "\u2014";
                     }
                 }
                 Rectangle {
@@ -1353,7 +1376,12 @@ Item {
                 color: Theme.bright
                 font.family: Theme.mono
                 font.pixelSize: root.fsTitle
-                text: "ai-usagebar " + root.tr("not found. Install it with:") + "\nparu -S ai-usagebar-bin"
+                text: {
+                    var ryoku = root.tr("Ryoku's AI usage monitor has not written anything yet (Claude Code, Codex, OpenCode).");
+                    if (root.dataSource === "ryoku") return ryoku;
+                    var install = "ai-usagebar " + root.tr("not found. Install it with:") + "\nparu -S ai-usagebar-bin";
+                    return root.dataSource === "auto" ? install + "\n" + ryoku : install;
+                }
             }
         }
 
@@ -1710,7 +1738,8 @@ Item {
                                         var v = modelData.percent;
                                         if (v === null || v === undefined || !isFinite(Number(v)))
                                             return "\u2014";
-                                        return Math.round(Number(v)) + "%";
+                                        return (modelData.estimate === true ? "~" : "")
+                                               + Math.round(Number(v)) + "%";
                                     }
                                 }
                                 Text {
@@ -1914,6 +1943,11 @@ Item {
                         partes.push(root.tr("1 provider with a problem"));
                     else if (root.troubledProviders > 1)
                         partes.push(root.tr("%1 providers with a problem", root.troubledProviders));
+                    // Two sources can feed this popout; say which one did.
+                    if (root.modelSource === "ryoku")
+                        partes.push(root.tr("source: %1", "Ryoku"));
+                    else if (root.modelSource !== "")
+                        partes.push(root.tr("source: %1", root.modelSource));
                     return partes.join(" · ");
                 }
             }

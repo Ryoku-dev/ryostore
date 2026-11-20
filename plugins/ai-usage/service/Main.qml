@@ -32,8 +32,9 @@ Item {
     // Error DISCRIMINATOR, not prose. `lastError` carries the collector's
     // diagnostic, the UI is English — matching text would be fragile. The stable
     // channel is the collector's EXIT CODE:
-    //   "dep-missing" — rc exactly 3: the `ai-usagebar` binary is not on the
-    //                   PATH. There is a way out on the user's side (install it).
+    //   "dep-missing" — rc exactly 3: the chosen source is not there (no
+    //                   `ai-usagebar` on the PATH, no Ryoku cache files, or
+    //                   neither in auto). There is a way out on the user's side.
     //   "upstream"    — any other rc != 0, or rc 0 with no model: the upstream
     //                   failed. There is nothing for the user to install.
     //   ""            — no error.
@@ -58,6 +59,14 @@ Item {
     readonly property int intervalSec: {
         var v = settings ? Number(settings.pollSeconds) : NaN;
         return isFinite(v) && v >= 60 ? Math.min(v, 3600) : 300;
+    }
+
+    // Where the numbers come from. `auto` lets the collector decide:
+    // `ai-usagebar` when it is installed, otherwise the cache files Ryoku's own
+    // AI usage monitor keeps. The two are never mixed.
+    readonly property string dataSource: {
+        var v = settings ? String(settings.source || "auto") : "auto";
+        return ["auto", "ai-usagebar", "ryoku"].indexOf(v) >= 0 ? v : "auto";
     }
 
     readonly property string providerOrder: {
@@ -104,6 +113,7 @@ Item {
     // serializing, so the secondary slider really responds.
     readonly property var collectorCmd: {
         var a = [svc.collectorPath];
+        if (svc.dataSource !== "auto") a.push("--source", svc.dataSource);
         if (svc.maxSecondary !== 6) a.push("--max-secondary", String(svc.maxSecondary));
         if (svc.providerOrder !== "upstream") a.push("--order", svc.providerOrder);
         // `--order manual` REQUIRES `--sequence` (rc 2 without it). The service
@@ -178,6 +188,7 @@ Item {
     // refresh on the spot is what makes the slider respond while you drag it.
     onMaxSecondaryChanged: refreshNow()
     onProviderOrderChanged: refreshNow()
+    onDataSourceChanged: refreshNow()
     onOrderSequenceChanged: {
         // Re-collect only if the sequence matters right now; changing the text in
         // another mode must not spawn a process.

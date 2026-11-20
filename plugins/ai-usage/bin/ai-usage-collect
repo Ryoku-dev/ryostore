@@ -1,17 +1,27 @@
 #!/usr/bin/env python3
 """ai-usage-collect — the collector for the `ai-usage` plugin (R6/R9).
 
-Reads the `ai-usagebar usage --json` report (schema_version 1) and emits a
-NORMALIZED model on stdout, which `service/Main.qml` consumes.
+Reads ONE of two sources and emits a NORMALIZED model on stdout, which
+`service/Main.qml` consumes:
+
+- `ai-usagebar`: the `ai-usagebar usage --json` report (schema_version 1);
+- `ryoku`: the cache files Ryoku's built-in AI usage monitor already keeps for
+  the QS Bar widget (`claude-usage.json`, `codex-usage.json`,
+  `opencode-usage.json` in the user's cache directory).
+
+The two are never mixed into one report.
 
 Plugin contract rules this script obeys:
-- R9: NEVER `sh -c`. Every external command is an argv array (`subprocess.run([...])`).
-- R6: the only external program is `ai-usagebar` (listed in dependencies.commands).
+- R9: NEVER `sh -c`. Every external command is an argv array.
+- R6: the only external program is `ai-usagebar`, and only for that source.
 - R7: NO network of its own — the network belongs to `ai-usagebar`, never to us.
-- R8: NOTHING is written by this script. No state, no cache, no file.
+- R8: NOTHING is written by this script. No state, no cache, no file. The Ryoku
+  cache files are opened read-only; this script never refreshes them.
 
 Modes:
-  ai-usage-collect                  reads the real binary (may touch the network via upstream)
+  ai-usage-collect                  --source auto: `ai-usagebar` when it is on
+                                    PATH, otherwise the Ryoku cache files
+  ai-usage-collect --source S       auto | ai-usagebar | ryoku
   ai-usage-collect --from-file F    reads a fixture — for tests and for the smoke
                                     without depending on the installed binary
 
@@ -24,8 +34,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
+import os
+import shutil
+import signal
 import subprocess
 import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 EXPECTED_SCHEMA = 1
@@ -45,11 +62,42 @@ RC_OK = 0
 RC_FAILED = 1
 RC_DEP_MISSING = 3
 
+# How long the child gets to leave after SIGTERM before it is killed outright.
+STOP_GRACE_SECS = 2.0
+CANCEL_SIGNALS = (signal.SIGTERM, signal.SIGINT, signal.SIGHUP)
+
+SOURCE_UPSTREAM = "ai-usagebar"
+SOURCE_RYOKU = "ryoku"
+
+# The Ryoku monitor refreshes every 5 minutes; the shell's own reader calls a
+# cache older than 15 minutes not fresh. Same threshold here, so the popout and
+# the bar never disagree about what is stale.
+RYOKU_STALE_SECS = 900
+RYOKU_FUTURE_SLOP_SECS = 120
+# (id, cache file stem, display name). The ids match the ones `ai-usagebar`
+# reports for the same vendors, so a pinned provider keeps working when the
+# source changes.
+RYOKU_AGENTS = (
+    ("anthropic", "claude", "Claude"),
+    ("openai", "codex", "Codex"),
+    ("opencode", "opencode", "OpenCode"),
+)
+NO_SOURCE_MESSAGE = (
+    "FAILED: no usage source available: ai-usagebar is not on PATH and the "
+    "Ryoku AI usage monitor has written no cache files")
+
 
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="collect and normalize usage --json")
     p.add_argument("--from-file", metavar="PATH",
                    help="read the report from a file instead of the binary")
+    p.add_argument("--source", choices=("auto", SOURCE_UPSTREAM, SOURCE_RYOKU),
+                   default="auto",
+                   help="where the data comes from; auto = ai-usagebar when it "
+                        "is on PATH, otherwise the Ryoku cache files")
+    p.add_argument("--ryoku-cache-dir", metavar="DIR",
+                   help="directory holding the Ryoku cache files "
+                        "(default: the user's cache directory)")
     p.add_argument("--primary", metavar="ID",
                    help="override the primary provider (the plugin's 'primary' setting)")
     p.add_argument("--order", choices=("upstream", "highest", "lowest", "alphabetical",
@@ -73,30 +121,136 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     return args
 
 
-def _load_report(args: argparse.Namespace) -> dict[str, Any]:
-    """Load the report. In any mode, rc != 0 is a FAILURE — we never degrade
-    silently: the widget has to say 'no data', not invent it."""
-    if args.from_file:
-        try:
-            with open(args.from_file, encoding="utf-8") as fh:
-                return json.load(fh)
-        except OSError as e:
-            raise SystemExit(f"FAILED: cannot read the report from {args.from_file}: {e}")
-        except json.JSONDecodeError as e:
-            # The file EXISTS and was read — it is malformed. Saying "cannot read"
-            # here would lie about what happened; the reason is the JSON, not the
-            # access.
-            raise SystemExit(f"FAILED: report from {args.from_file} is not valid JSON: {e}")
+def _stop_group(proc: subprocess.Popen) -> None:
+    """End the child AND whatever it started: SIGTERM to its process group, a
+    short grace, then SIGKILL to whatever is left.
+
+    The child runs in its own session (`start_new_session`), so its pid is the
+    group id and nothing of ours is in that group.
+    """
+    pgid = proc.pid
     try:
-        r = subprocess.run(["ai-usagebar", "usage", "--json"],
-                           capture_output=True, text=True, timeout=TIMEOUT_SECS)
+        os.killpg(pgid, signal.SIGTERM)
+    except (ProcessLookupError, PermissionError):
+        return
+    deadline = time.monotonic() + STOP_GRACE_SECS
+    while time.monotonic() < deadline:
+        proc.poll()  # reap the child, or it stays a zombie and the group "lives"
+        try:
+            os.killpg(pgid, 0)
+        except (ProcessLookupError, PermissionError):
+            return
+        time.sleep(0.05)
+    try:
+        os.killpg(pgid, signal.SIGKILL)
+    except (ProcessLookupError, PermissionError):
+        pass
+    try:
+        proc.wait(timeout=1)
+    except subprocess.TimeoutExpired:
+        pass
+
+
+def _guard_against_hard_kill(proc: subprocess.Popen) -> None:
+    """Leave a small guardian behind that stops the child if WE are killed.
+
+    A signal handler cannot answer SIGKILL, and the shell does send it: its
+    process object kills, not terminates, when the plugin is unloaded or the
+    shell reloads. Without this, that path left the same orphan the cancel path
+    used to. The guardian is a fork of this script that does nothing but watch:
+    when its parent is gone and the child's group is still there, it stops the
+    group; when the group is gone, it leaves. No shell, no extra program.
+    """
+    parent = os.getpid()
+    try:
+        pid = os.fork()
+    except OSError:
+        return  # no guardian is the old behaviour, not a failure of the read
+    if pid:
+        return
+    try:
+        os.setsid()
+        # Let go of every pipe: the service waits for EOF on our stdout, and a
+        # guardian holding it open would stall every collection.
+        devnull = os.open(os.devnull, os.O_RDWR)
+        for fd in (0, 1, 2):
+            os.dup2(devnull, fd)
+        os.closerange(3, 256)
+        for sig in CANCEL_SIGNALS:
+            signal.signal(sig, signal.SIG_IGN)
+        pgid = proc.pid
+        while True:
+            try:
+                os.killpg(pgid, 0)
+            except (ProcessLookupError, PermissionError):
+                break  # the child finished or was stopped: nothing to guard
+            if os.getppid() != parent:
+                os.killpg(pgid, signal.SIGTERM)
+                deadline = time.monotonic() + STOP_GRACE_SECS
+                while time.monotonic() < deadline:
+                    try:
+                        os.killpg(pgid, 0)
+                    except (ProcessLookupError, PermissionError):
+                        break
+                    time.sleep(0.05)
+                else:
+                    os.killpg(pgid, signal.SIGKILL)
+                break
+            time.sleep(0.2)
+    except BaseException:  # noqa: BLE001 - a guardian must never surface
+        pass
+    finally:
+        os._exit(0)
+
+
+def _run_upstream() -> dict[str, Any]:
+    """Run `ai-usagebar usage --json` and return its report.
+
+    The service cancels a collection by sending SIGTERM to THIS process. Dying
+    on the default handler left `ai-usagebar` running as an orphan, and the
+    timeout that would have stopped it died with us. So a cancel signal is
+    caught here and the child's whole group goes first.
+    """
+    state: dict[str, Any] = {"proc": None, "signum": None}
+
+    def on_cancel(signum: int, _frame: Any) -> None:
+        proc = state["proc"]
+        if proc is None:
+            # Arrived before the child exists: remember it, act right after.
+            state["signum"] = signum
+            return
+        # One teardown, however many signals arrive: the service sends one
+        # SIGTERM per forced refresh, and re-entering here would restart the
+        # grace period every time.
+        for sig in CANCEL_SIGNALS:
+            signal.signal(sig, signal.SIG_IGN)
+        _stop_group(proc)
+        raise SystemExit(128 + signum)
+
+    for sig in CANCEL_SIGNALS:
+        signal.signal(sig, on_cancel)
+    try:
+        proc = subprocess.Popen(
+            ["ai-usagebar", "usage", "--json"],
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, text=True, start_new_session=True)
     except FileNotFoundError:
         # A missing dependency is the ONLY case the view needs to handle
         # differently: the user can fix it by installing the binary, while an
         # upstream failure has no fix on their side. Its own rc — see RC_*.
         print("FAILED: ai-usagebar is not on PATH", file=sys.stderr)
         raise SystemExit(RC_DEP_MISSING)
+    state["proc"] = proc
+    if state["signum"] is not None:
+        for sig in CANCEL_SIGNALS:
+            signal.signal(sig, signal.SIG_IGN)
+        _stop_group(proc)
+        raise SystemExit(128 + state["signum"])
+    _guard_against_hard_kill(proc)
+    try:
+        out, err = proc.communicate(timeout=TIMEOUT_SECS)
     except subprocess.TimeoutExpired:
+        _stop_group(proc)
         # Names what to DO, not only what happened. A timeout here is almost always
         # a stalled network path (a VPN that drops packets rather than refusing
         # them), and the user's next step is to check the connection — not to
@@ -106,14 +260,278 @@ def _load_report(args: argparse.Namespace) -> dict[str, Any]:
             "FAILED: ai-usagebar did not answer within %ds \u2014 the network "
             "looks stalled. Check the connection; the last reading is kept."
             % TIMEOUT_SECS)
-    if r.returncode != 0:
-        tail = (r.stdout or r.stderr or "").strip().splitlines()
-        raise SystemExit(f"FAILED: ai-usagebar rc={r.returncode} "
+    finally:
+        for sig in CANCEL_SIGNALS:
+            signal.signal(sig, signal.SIG_DFL)
+    if proc.returncode != 0:
+        tail = (out or err or "").strip().splitlines()
+        raise SystemExit(f"FAILED: ai-usagebar rc={proc.returncode} "
                          + (tail[-1][:200] if tail else ""))
     try:
-        return json.loads(r.stdout)
+        return json.loads(out)
     except json.JSONDecodeError as e:
         raise SystemExit(f"FAILED: ai-usagebar output is not JSON: {e}")
+
+
+def _fraction(value: Any) -> float | None:
+    """A cache utilization (`"0.4200"`, 0.42) -> float, or None for "no data".
+
+    An empty string is how the Ryoku collectors say "this window is not
+    reported". It must never become 0%: an empty bar would claim a reading.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, str) and not value.strip():
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(number):
+        return None
+    # Clamped here, so nothing downstream multiplies a huge number.
+    return max(0.0, min(1.0, number))
+
+
+def _epoch_iso(value: Any) -> str | None:
+    """Epoch seconds (`"1763590000"`, 1763590000) -> ISO-8601 UTC, or None.
+
+    `0` is how the OpenCode collector says "there is no reset".
+    """
+    if isinstance(value, bool):
+        return None
+    try:
+        epoch = int(float(value))
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if epoch <= 0:
+        return None
+    try:
+        return datetime.fromtimestamp(epoch, tz=timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ")
+    except (OverflowError, OSError, ValueError):
+        return None
+
+
+def _text(value: Any) -> str:
+    """A cache string, or "" for anything that is not one. A dict or a list in
+    a label field must not reach the screen as its Python repr."""
+    return value if isinstance(value, str) else ""
+
+
+def _window_label(minutes: int, label: str = "") -> str:
+    if minutes == 300:
+        return "Session (5h)"
+    if minutes == 10080:
+        return "Weekly (7d)"
+    if label:
+        return label
+    if minutes > 0 and minutes % 1440 == 0:
+        return f"{minutes // 1440}d"
+    if minutes > 0 and minutes % 60 == 0:
+        return f"{minutes // 60}h"
+    return f"{minutes}m" if minutes > 0 else "Window"
+
+
+def _ryoku_metric(label: str, utilization: Any, reset: Any = None,
+                  minutes: int = 0) -> dict[str, Any] | None:
+    """One cache window -> one metric in the report shape, or None for no data."""
+    fraction = _fraction(utilization)
+    if fraction is None:
+        return None
+    percent = round(fraction * 100)
+    return {
+        "label": label,
+        "percent": percent,
+        "value": f"{percent}%",
+        "headline": "percent",
+        "severity": ("critical" if percent >= 85
+                     else "high" if percent >= 60 else "low"),
+        "detail": "",
+        "reset_at": _epoch_iso(reset),
+        "window_secs": minutes * 60 if minutes > 0 else None,
+    }
+
+
+def _legacy_metrics(data: dict[str, Any], timed: bool = True) -> list[dict[str, Any]]:
+    """The fixed `5h-*` / `7d-*` keys. `timed=False` drops reset and window:
+    that is the OpenCode case, whose percentages are measured against a cap its
+    collector made up, so there is no window to be ahead of or behind."""
+    out = []
+    for key, minutes in (("5h", 300), ("7d", 10080)):
+        metric = _ryoku_metric(
+            _window_label(minutes), data.get(f"{key}-utilization"),
+            data.get(f"{key}-reset") if timed else None,
+            minutes if timed else 0)
+        if metric:
+            out.append(metric)
+    return out
+
+
+def _window_metrics(windows: Any, prefix: str = "") -> list[dict[str, Any]]:
+    out = []
+    for window in windows if isinstance(windows, list) else []:
+        if not isinstance(window, dict):
+            continue
+        try:
+            minutes = int(window.get("minutes") or 0)
+        except (TypeError, ValueError, OverflowError):
+            minutes = 0
+        label = _window_label(minutes, _text(window.get("label")))
+        metric = _ryoku_metric(prefix + label, window.get("utilization"),
+                               window.get("reset"), minutes)
+        if metric:
+            out.append(metric)
+    return out
+
+
+def _codex_metrics(data: dict[str, Any]) -> list[dict[str, Any]]:
+    """Codex can report several independent limit buckets. The general one goes
+    first, unprefixed; every other bucket is labelled with its own name."""
+    try:
+        schema = int(data.get("schemaVersion") or 0)
+    except (TypeError, ValueError, OverflowError):
+        schema = 0
+    if schema == 3 and isinstance(data.get("buckets"), list):
+        general: list[dict[str, Any]] = []
+        extra: list[dict[str, Any]] = []
+        for bucket in data["buckets"]:
+            if not isinstance(bucket, dict):
+                continue
+            if bucket.get("isGeneral") is True or bucket.get("id") == "codex":
+                general += _window_metrics(bucket.get("windows"))
+            else:
+                name = (_text(bucket.get("label")) or _text(bucket.get("id"))).strip()
+                extra += _window_metrics(bucket.get("windows"),
+                                         f"{name} \u00b7 " if name else "")
+        if not general:
+            general = _window_metrics(data.get("windows"))
+        return general + extra
+    if schema in (2, 3) and isinstance(data.get("windows"), list):
+        return _window_metrics(data["windows"])
+    return _legacy_metrics(data)
+
+
+def _ryoku_entry(entry_id: str, stem: str, name: str, path: Path,
+                 now: float) -> dict[str, Any]:
+    entry: dict[str, Any] = {
+        "id": entry_id, "name": stem, "display_name": name, "plan": None,
+        "status": "ready", "error": None, "stale": False, "fetched_at": None,
+        "metrics": [],
+    }
+    try:
+        modified = path.stat().st_mtime
+        entry["fetched_at"] = _epoch_iso(modified)
+        data = _read_cache(path)
+        # Not fresh, by the same three tests Ryoku's own reader applies: the
+        # collector said so, the file is old, or its clock is in the future.
+        entry["stale"] = (data.get("_source") == "stale"
+                          or data.get("_stale") is True
+                          or now - modified > RYOKU_STALE_SECS
+                          or modified - now > RYOKU_FUTURE_SLOP_SECS)
+        if stem == "codex":
+            entry["metrics"] = _codex_metrics(data)
+            entry["plan"] = _text(data.get("_plan")) or None
+        elif stem == "opencode":
+            entry["metrics"] = _legacy_metrics(data, timed=False)
+            # Marked on the provider AND on each metric, so every place that
+            # draws the number can draw it as an estimate.
+            for metric in entry["metrics"]:
+                metric["estimate"] = True
+            entry["plan"] = "local estimate"
+            entry["estimate"] = True
+        else:
+            entry["metrics"] = _legacy_metrics(data)
+    except (OSError, ValueError, TypeError, OverflowError, RecursionError) as e:
+        # Whatever is wrong with THIS file stays with this provider. The other
+        # two are still good readings and must reach the screen.
+        entry["status"] = "error"
+        entry["stale"] = False
+        entry["metrics"] = []
+        entry["plan"] = None
+        entry.pop("estimate", None)
+        entry["error"] = f"{path.name} could not be read: {e}"[:200]
+    return entry
+
+
+def _read_cache(path: Path) -> dict[str, Any]:
+    """One cache file as a dict. Ryoku's collectors do not all write atomically,
+    so a read can land in the middle of a write: one short retry before calling
+    the file broken."""
+    for attempt in (0, 1):
+        try:
+            with open(path, encoding="utf-8") as fh:
+                data = json.load(fh)
+            if not isinstance(data, dict):
+                raise ValueError("not a JSON object")
+            return data
+        except ValueError:
+            if attempt:
+                raise
+            time.sleep(0.1)
+    raise ValueError("unreachable")
+
+
+def _ryoku_cache_dir(args: argparse.Namespace) -> Path:
+    if args.ryoku_cache_dir:
+        return Path(args.ryoku_cache_dir)
+    return Path.home() / ".cache"
+
+
+def _ryoku_present(cache_dir: Path) -> list[tuple[str, str, str, Path]]:
+    found = []
+    for entry_id, stem, name in RYOKU_AGENTS:
+        path = cache_dir / f"{stem}-usage.json"
+        if path.is_file():
+            found.append((entry_id, stem, name, path))
+    return found
+
+
+def _load_ryoku(cache_dir: Path) -> dict[str, Any]:
+    """The Ryoku cache files -> a report in the shape `normalize` already reads.
+
+    Read-only. A missing file means that agent is not installed, so it is simply
+    absent; a broken file is that one provider in error, never the whole report.
+    """
+    present = _ryoku_present(cache_dir)
+    if not present:
+        print("FAILED: the Ryoku AI usage monitor has written no cache files in "
+              f"{cache_dir}", file=sys.stderr)
+        raise SystemExit(RC_DEP_MISSING)
+    now = time.time()
+    entries = [_ryoku_entry(*item, now) for item in present]
+    return {"schema_version": EXPECTED_SCHEMA,
+            "primary": entries[0]["id"], "entries": entries}
+
+
+def _load_report(args: argparse.Namespace) -> tuple[dict[str, Any], str]:
+    """Load the report and say which source it came from. In any mode, rc != 0
+    is a FAILURE — we never degrade silently: the widget has to say 'no data',
+    not invent it."""
+    if args.from_file:
+        try:
+            with open(args.from_file, encoding="utf-8") as fh:
+                return json.load(fh), SOURCE_UPSTREAM
+        except OSError as e:
+            raise SystemExit(f"FAILED: cannot read the report from {args.from_file}: {e}")
+        except json.JSONDecodeError as e:
+            # The file EXISTS and was read — it is malformed. Saying "cannot read"
+            # here would lie about what happened; the reason is the JSON, not the
+            # access.
+            raise SystemExit(f"FAILED: report from {args.from_file} is not valid JSON: {e}")
+    source = args.source
+    if source == "auto":
+        cache_dir = _ryoku_cache_dir(args)
+        if shutil.which("ai-usagebar"):
+            source = SOURCE_UPSTREAM
+        elif _ryoku_present(cache_dir):
+            source = SOURCE_RYOKU
+        else:
+            print(NO_SOURCE_MESSAGE, file=sys.stderr)
+            raise SystemExit(RC_DEP_MISSING)
+    if source == SOURCE_RYOKU:
+        return _load_ryoku(_ryoku_cache_dir(args)), SOURCE_RYOKU
+    return _run_upstream(), SOURCE_UPSTREAM
 
 
 def _split_account(entry_id: str) -> tuple[str, str | None]:
@@ -164,6 +582,8 @@ def _normalize_metric(metric: dict[str, Any]) -> dict[str, Any]:
         "detail": str(metric.get("detail", "")),
         "reset_at": reset_at,
         "window_secs": window_secs,
+        # True when the percentage is against a cap that is not a real quota.
+        "estimate": metric.get("estimate") is True,
     }
 
 
@@ -209,6 +629,10 @@ def _normalize_provider(entry: dict[str, Any]) -> dict[str, Any]:
         "metrics": metrics,
         "headline_metric": headline_metric,
         "has_reset_credits": bool(entry.get("reset_credits")),
+        # True when the percentages are against a cap that is not a real quota
+        # (OpenCode in the Ryoku source). The view marks it and keeps it out of
+        # the "exhausted / above 80%" summary.
+        "estimate": entry.get("estimate") is True,
     }
 
 
@@ -246,7 +670,7 @@ def _sort_providers(providers: list[dict[str, Any]], order: str,
     if order not in ("highest", "lowest"):
         return providers
 
-    def key(provider: dict[str, Any]) -> tuple[bool, bool, int]:
+    def key(provider: dict[str, Any]) -> tuple[bool, bool, bool, int]:
         metric = provider["headline_metric"]
         percent = metric["percent"] if metric else None
         unavailable = provider["status"] != "ready"
@@ -254,7 +678,9 @@ def _sort_providers(providers: list[dict[str, Any]], order: str,
         score = percent or 0
         if order == "highest":
             score = -score
-        return unavailable, missing, score
+        # An estimate is not comparable with a real quota: it ranks after every
+        # provider that has one, in both directions.
+        return unavailable, missing, bool(provider.get("estimate")), score
 
     return sorted(providers, key=key)
 
@@ -323,9 +749,10 @@ def normalize(report: dict[str, Any], primary: str | None,
 
 def main(argv: list[str]) -> int:
     args = _parse_args(argv)
-    report = _load_report(args)
+    report, source = _load_report(args)
     model = normalize(report, args.primary, args.max_secondary, args.order,
                       _parse_sequence(args.sequence))
+    model["source"] = source
     json.dump(model, sys.stdout, ensure_ascii=False)
     sys.stdout.write("\n")
     return 0
