@@ -4,33 +4,38 @@ BannerStack 1.0 BannerStack.qml
 BluetoothPage 1.0 BluetoothPage.qml
 CCButton 1.0 CCButton.qml
 CCPill 1.0 CCPill.qml
-singleton Config 1.0 Config.qml
 ControlsTab 1.0 ControlsTab.qml
-Glass 1.0 Glass.qml
+Demand 1.0 Demand.qml
+GlassControl 1.0 GlassControl.qml
 HomeTab 1.0 HomeTab.qml
-singleton Hub 1.0 Hub.qml
 Icon 1.0 Icon.qml
 IconButton 1.0 IconButton.qml
 IosSwitch 1.0 IosSwitch.qml
 Island 1.0 Island.qml
 IslandWindow 1.0 IslandWindow.qml
+LauncherPage 1.0 LauncherPage.qml
+Lens 1.0 Lens.qml
 Marquee 1.0 Marquee.qml
 MediaTab 1.0 MediaTab.qml
 MenuRow 1.0 MenuRow.qml
 NotifCard 1.0 NotifCard.qml
 NotificationCenter 1.0 NotificationCenter.qml
-singleton Notifs 1.0 Notifs.qml
 Ring 1.0 Ring.qml
 Scene 1.0 Scene.qml
 Segmented 1.0 Segmented.qml
-ShellShortcut 1.0 ShellShortcut.qml
 SettingsWindow 1.0 SettingsWindow.qml
-SliderBar 1.0 SliderBar.qml
+ShellShortcut 1.0 ShellShortcut.qml
+singleton Config 1.0 Config.qml
+singleton Hub 1.0 Hub.qml
+singleton Notifs 1.0 Notifs.qml
+singleton Platform 1.0 Platform.qml
 singleton Theme 1.0 Theme.qml
+SliderBar 1.0 SliderBar.qml
+Surface 1.0 Surface.qml
 TimerTab 1.0 TimerTab.qml
+TrayPanel 1.0 TrayPanel.qml
+TrayStrip 1.0 TrayStrip.qml
 Txt 1.0 Txt.qml
 Visualizer 1.0 Visualizer.qml
 Widget 1.0 Widget.qml
 WifiPage 1.0 WifiPage.qml
-TrayStrip 1.0 TrayStrip.qml
-LauncherPage 1.0 LauncherPage.qml

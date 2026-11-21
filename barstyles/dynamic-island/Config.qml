@@ -3,22 +3,83 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Persistent settings. Edited live from the Island's own settings window
-// (SUPER+, or the gear), stored under ~/.config/ryoku/dynamic-island/settings.json.
-// You can also hand-edit the JSON; changes are picked up instantly.
+// Persistent settings, edited live from the Settings window and stored as
+// settings.json in Platform.configDir. Hand edits are picked up instantly.
+//
+// `base` is the single list of defaults: the adapter below binds to it, Reset
+// applies it in place, and each platform may override a few entries
+// (Platform.configDefaults) where its desktop already does the job.
 Singleton {
     id: root
 
-    readonly property string dir: (Quickshell.env("XDG_CONFIG_HOME")
-        || (Quickshell.env("HOME") + "/.config")) + "/ryoku/dynamic-island"
-    readonly property string iconFont: "Material Symbols Rounded"
+    readonly property string version: "4.0.0"
+    readonly property string dir: Platform.configDir
 
     property alias s: adapter
     property bool resetting: false
 
-    // Upstream reset deleted the file and reloaded the whole Quickshell
-    // instance; here that would reload the entire Ryoku shell. Instead every
-    // default is mirrored below and applied in place.
+    readonly property var base: ({
+        // appearance
+        liquidGlass: true,           // liquid glass on buttons, chips and toggles
+        glassStrength: 1.0,          // refraction + rim, 0.4..1.6
+        glow: true,
+        accentSource: "auto",        // auto | desktop | matugen | wal | wallpaper | gtk | album | custom
+        customAccent: "#0a84ff",
+        matugenPath: "~/.cache/matugen/colors.json",
+        wallpaperPath: "",
+        albumTint: true,
+        font: "auto",
+        // island
+        overlayBar: true,
+        reserveSpace: true,
+        topMargin: 6,
+        outerGaps: 16,
+        motion: "balanced",          // gentle | balanced | bouncy | reduced
+        use24h: false,
+        showAmPm: false,
+        showSeconds: false,
+        showBattery: true,
+        showPrivacy: true,
+        workspaceFlash: true,
+        splitActivities: true,
+        activityClock: "split",      // split | inline | hidden
+        hoverPeek: true,
+        hoverDelay: 260,
+        // tray
+        trayInHeader: 3,             // icons shown next to the tabs before "+N"
+        // media
+        visualizer: true,
+        trackChangePeek: true,
+        spinArt: false,
+        // notifications
+        notifications: true,
+        takeover: true,
+        notifStyle: "banner",        // banner | island | corner
+        bannerTimeout: 5,
+        urgentTimeout: 12,           // seconds an urgent banner stays
+        urgentSticky: false,         // keep urgent banners until dismissed
+        previews: "always",
+        notifSound: true,
+        soundFile: "/usr/share/sounds/freedesktop/stereo/message.oga",
+        groupByApp: true,
+        dnd: false,
+        dndAllowCritical: true,
+        // weather
+        weather: true,
+        locationMode: "auto",        // auto | ip | manual
+        manualLat: 0,
+        manualLon: 0,
+        manualName: "",
+        units: "metric",
+        // controls
+        ccAccent: true,
+        nightLightTemp: 4000,
+        osdPopups: true,
+        osdTimeout: 1600,
+        confirmPower: true
+    })
+    readonly property var defaults: Object.assign({}, base, Platform.configDefaults || {})
+
     function reset() {
         resetting = true;
         const d = defaults;
@@ -29,25 +90,6 @@ Singleton {
         file.writeAdapter();
     }
 
-    // Mirrors every JsonAdapter default above; keep the two lists in sync.
-    readonly property var defaults: ({
-        style: "glass", appearance: "auto", glassOpacity: 0.55, glassRim: true,
-        glassAccentTint: true, glow: true, accentSource: "auto",
-        customAccent: "#0a84ff", matugenPath: "~/.cache/matugen/colors.json",
-        wallpaperPath: "", albumTint: true, font: "auto",
-        overlayBar: true, reserveSpace: true, topMargin: 6, outerGaps: 16,
-        motion: "balanced", use24h: false, showAmPm: false, showSeconds: false,
-        showBattery: true, showPrivacy: true, workspaceFlash: true,
-        splitActivities: true, activityClock: "split", hoverPeek: true, hoverDelay: 260,
-        visualizer: true, trackChangePeek: true, spinArt: true,
-        notifications: true, notifStyle: "banner", bannerTimeout: 5,
-        previews: "always", notifSound: false, soundFile: "/usr/share/sounds/freedesktop/stereo/message.oga",
-        groupByApp: true, dndAllowCritical: true,
-        weather: false, locationMode: "auto", manualLat: 0, manualLon: 0,
-        manualName: "", units: "metric",
-        ccAccent: true, nightLightTemp: 4000, osdPopups: false, osdTimeout: 1600, confirmPower: true
-    })
-
     FileView {
         id: file
         path: root.dir + "/settings.json"
@@ -56,76 +98,67 @@ Singleton {
         printErrors: false
         onFileChanged: reload()
         onAdapterUpdated: if (!root.resetting) writeAdapter()
-        onLoadFailed: err => {
-            // first run → write defaults
-            if (!root.resetting) writeAdapter();
-        }
+        onLoadFailed: err => { if (!root.resetting) writeAdapter(); }   // first run: write defaults
 
         JsonAdapter {
             id: adapter
+            property bool liquidGlass: root.defaults.liquidGlass
+            property real glassStrength: root.defaults.glassStrength
+            property bool glow: root.defaults.glow
+            property string accentSource: root.defaults.accentSource
+            property string customAccent: root.defaults.customAccent
+            property string matugenPath: root.defaults.matugenPath
+            property string wallpaperPath: root.defaults.wallpaperPath
+            property bool albumTint: root.defaults.albumTint
+            property string font: root.defaults.font
 
-            // ── Appearance ──
-            property string style: "glass"          // glass | black
-            property string appearance: "auto"      // auto | dark | light
-            property real glassOpacity: 0.55        // tint strength behind the blur
-            property bool glassRim: true            // liquid-glass specular edge
-            property bool glassAccentTint: true     // mix a hint of the accent into the glass
-            property bool glow: true
-            property string accentSource: "auto"    // auto | wallpaper | wal | matugen | ryoku | gtk | album | custom
-            property string customAccent: "#0a84ff"
-            property string matugenPath: "~/.cache/matugen/colors.json"
-            property string wallpaperPath: ""       // empty = detect (swww, hyprpaper, swaybg, waypaper…)
-            property bool albumTint: true           // tint island with album colour while music plays
-            property string font: "auto"            // auto = SF Pro if installed, else Inter
+            property bool overlayBar: root.defaults.overlayBar
+            property bool reserveSpace: root.defaults.reserveSpace
+            property int topMargin: root.defaults.topMargin
+            property int outerGaps: root.defaults.outerGaps
+            property string motion: root.defaults.motion
+            property bool use24h: root.defaults.use24h
+            property bool showAmPm: root.defaults.showAmPm
+            property bool showSeconds: root.defaults.showSeconds
+            property bool showBattery: root.defaults.showBattery
+            property bool showPrivacy: root.defaults.showPrivacy
+            property bool workspaceFlash: root.defaults.workspaceFlash
+            property bool splitActivities: root.defaults.splitActivities
+            property string activityClock: root.defaults.activityClock
+            property bool hoverPeek: root.defaults.hoverPeek
+            property int hoverDelay: root.defaults.hoverDelay
 
-            // ── Island ──
-            property bool overlayBar: true
-            property bool reserveSpace: true        // push maximized/tiled windows below the island (bar-like)
-            property int topMargin: 6
-            property int outerGaps: 16              // the compositor's outer gaps; trims the reserved strip
-            property string motion: "balanced"      // gentle | balanced | bouncy | reduced
-            property bool use24h: false
-            property bool showAmPm: false
-            property bool showSeconds: false
-            property bool showBattery: true
-            property bool showPrivacy: true
-            property bool workspaceFlash: true
-            property bool splitActivities: true     // iOS-style second bubble
-            property string activityClock: "split"  // split | inline | hidden — the time while music/timers run
-            property bool hoverPeek: true
-            property int hoverDelay: 260
+            property int trayInHeader: root.defaults.trayInHeader
 
-            // ── Media ──
-            property bool visualizer: true
-            property bool trackChangePeek: true
-            property bool spinArt: true
+            property bool visualizer: root.defaults.visualizer
+            property bool trackChangePeek: root.defaults.trackChangePeek
+            property bool spinArt: root.defaults.spinArt
 
-            // ── Notifications ──
-            // The Ryoku shell owns the freedesktop notification daemon, so the
-            // island wraps the shell's server instead of running its own.
-            property bool notifications: true       // island takes the banner display over from the shell
-            property string notifStyle: "banner"    // banner | island | corner
-            property int bannerTimeout: 5
-            property string previews: "always"      // always | never
-            property bool notifSound: false         // the shell already plays its own cue
-            property string soundFile: "/usr/share/sounds/freedesktop/stereo/message.oga"
-            property bool groupByApp: true
-            property bool dndAllowCritical: true    // critical banners pass through the shell's own Focus
+            property bool notifications: root.defaults.notifications
+            property bool takeover: root.defaults.takeover
+            property string notifStyle: root.defaults.notifStyle
+            property int bannerTimeout: root.defaults.bannerTimeout
+            property int urgentTimeout: root.defaults.urgentTimeout
+            property bool urgentSticky: root.defaults.urgentSticky
+            property string previews: root.defaults.previews
+            property bool notifSound: root.defaults.notifSound
+            property string soundFile: root.defaults.soundFile
+            property bool groupByApp: root.defaults.groupByApp
+            property bool dnd: root.defaults.dnd
+            property bool dndAllowCritical: root.defaults.dndAllowCritical
 
-            // ── Weather + location ──
-            property bool weather: false            // off until you turn it on: it contacts Open-Meteo and a geolocation service
-            property string locationMode: "auto"    // auto (GeoClue → IP) | ip | manual
-            property real manualLat: 0
-            property real manualLon: 0
-            property string manualName: ""
-            property string units: "metric"         // metric | imperial
+            property bool weather: root.defaults.weather
+            property string locationMode: root.defaults.locationMode
+            property real manualLat: root.defaults.manualLat
+            property real manualLon: root.defaults.manualLon
+            property string manualName: root.defaults.manualName
+            property string units: root.defaults.units
 
-            // ── Controls ──
-            property bool ccAccent: true            // Control Center toggles use your theme accent
-            property int nightLightTemp: 4000       // Night Shift temperature (K), applied to the shell's Nightlight
-            property bool osdPopups: false          // island volume/mic/brightness pills (the shell draws its own OSD)
-            property int osdTimeout: 1600
-            property bool confirmPower: true
+            property bool ccAccent: root.defaults.ccAccent
+            property int nightLightTemp: root.defaults.nightLightTemp
+            property bool osdPopups: root.defaults.osdPopups
+            property int osdTimeout: root.defaults.osdTimeout
+            property bool confirmPower: root.defaults.confirmPower
         }
     }
 }

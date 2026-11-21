@@ -5,14 +5,13 @@ import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
-import Ryoku.Ui.Singletons
 
 // The morphing island. Picks a mode, springs to its size, crossfades pages.
 Item {
     id: root
     required property string screenName
 
-    readonly property bool focusedHere: Wm.focusedOutput === "" || Wm.focusedOutput === screenName
+    readonly property bool focusedHere: Platform.focusedOutput === "" || Platform.focusedOutput === screenName
     readonly property bool isExpanded: Hub.expanded && Hub.expandedScreen === screenName
     readonly property bool isLauncher: Hub.launcherOpen && Hub.launcherScreen === screenName
     property bool peek: false
@@ -44,7 +43,7 @@ Item {
     readonly property size target: {
         switch (mode) {
         case "launcher":      return Qt.size(600, launcherPage.wantedHeight);
-        case "expanded":      return Qt.size(expandedWidth, tabHeights[Hub.tab] || 360);
+        case "expanded":      return Qt.size(expandedWidth, Hub.trayView !== "" ? trayPanel.wantedHeight : (tabHeights[Hub.tab] || 360));
         case "notif":         return Qt.size(470, Math.max(76, notifCard.implicitHeight + 24));
         case "osd":           return Qt.size(340, 50);
         case "device":        return Qt.size(390, 76);
@@ -73,9 +72,12 @@ Item {
         onHoveredChanged: {
             peekTimer.restart();
             Hub.holdEvent(hovered);
-            Notifs.hovering = hovered && root.mode === "notif";
         }
     }
+    // a notification shown inside the island pauses while hovered
+    readonly property bool holdingNotif: hover.hovered && root.mode === "notif"
+    onHoldingNotifChanged: Notifs.setHold("hover:island:" + screenName, holdingNotif)
+    Component.onDestruction: Notifs.setHold("hover:island:" + screenName, false)
     Timer {
         id: peekTimer
         interval: hover.hovered ? Config.s.hoverDelay : 160
@@ -88,7 +90,8 @@ Item {
         focus: true
         Keys.onPressed: e => {
             if (!root.isExpanded) return;
-            if (e.key === Qt.Key_Escape) Hub.expanded = false;
+            if (e.key === Qt.Key_Escape) { if (Hub.trayView !== "") trayPanel.back(); else Hub.expanded = false; }
+            else if (Hub.trayView !== "") return;
             else if (e.key === Qt.Key_Right || e.key === Qt.Key_Tab) Hub.tab = (Hub.tab + 1) % 4;
             else if (e.key === Qt.Key_Left || e.key === Qt.Key_Backtab) Hub.tab = (Hub.tab + 3) % 4;
             else if (e.key >= Qt.Key_1 && e.key <= Qt.Key_4) Hub.tab = e.key - Qt.Key_1;
@@ -117,7 +120,7 @@ Item {
         return 0;
     }
 
-    Glass {
+    Surface {
         id: surface
         anchors.fill: parent
         radius: root.isExpanded ? 36 : root.isLauncher ? 28 : root.height >= 60 ? 32 : root.height / 2
@@ -126,6 +129,13 @@ Item {
         shadowBlur: root.isExpanded || root.isLauncher ? 40 : 24
         shadowY: root.isExpanded || root.isLauncher ? 14 : 6
     }
+
+    // ── what the glass controls refract ──
+    // Black most of the time (the shader uses the surface colour, no
+    // sampling); blurred album art behind the media pages.
+    property var glassSource: ambient.fade > 0.01 ? ambientTex : null
+    property Item glassSpace: ambient
+    property color glassBase: Theme.surface
 
     // Whole-island gestures
     MouseArea {
@@ -172,24 +182,25 @@ Item {
         width: 8; height: 8; radius: 4
         SequentialAnimation on opacity {
             loops: Animation.Infinite
-            running: parent.visible
+            running: parent && parent.visible
             NumberAnimation { to: 0.25; duration: 750; easing.type: Easing.InOutSine }
             NumberAnimation { to: 1; duration: 750; easing.type: Easing.InOutSine }
         }
     }
 
-    component RoundBtn: Rectangle {
+    component RoundBtn: Lens {
         id: rb
         property string icon: ""
-        property color tint: Theme.fg
         property bool tinted: true
         property real size: 44
         signal clicked()
-        width: size; height: size; radius: size / 2
-        color: tinted ? Theme.alpha(tint, rbMa.containsMouse ? 0.32 : 0.22) : (rbMa.containsMouse ? Theme.fill3 : Theme.fill2)
-        scale: rbMa.pressed ? 0.88 : 1
+        width: size; height: size
+        tint: Theme.fg
+        tintAmount: tinted ? 0.28 : 0
+        hovered: rbMa.containsMouse
+        pressed: rbMa.pressed
+        scale: rbMa.pressed ? 0.9 : 1
         Behavior on scale { NumberAnimation { duration: 240; easing.type: Easing.OutBack; easing.overshoot: 2.5 } }
-        Behavior on color { ColorAnimation { duration: 150 } }
         Icon { anchors.centerIn: parent; text: rb.icon; size: rb.size * 0.5; fill: 1; color: rb.tinted ? rb.tint : Theme.fg }
         MouseArea { id: rbMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: rb.clicked() }
     }
@@ -215,6 +226,45 @@ Item {
         anchors.fill: parent
         radius: surface.r
         color: "transparent"
+
+        // ambient light under the pages: blurred album art on the media pages
+        Item {
+            id: ambient
+            anchors.fill: parent
+            readonly property bool artShown: Hub.artUrl !== ""
+                && ((root.mode === "expanded" && Hub.tab === 1 && Hub.trayView === "") || root.mode === "mediaPeek")
+            property real fade: artShown ? 1 : 0
+            Behavior on fade { NumberAnimation { duration: 500 } }
+            Image {
+                id: bgArt
+                anchors.fill: parent
+                source: ambient.fade > 0.01 ? Hub.artUrl : ""
+                fillMode: Image.PreserveAspectCrop
+                sourceSize.width: 160
+                sourceSize.height: 160
+                asynchronous: true
+                visible: false
+            }
+            MultiEffect {
+                anchors.fill: parent
+                visible: ambient.fade > 0.01
+                source: bgArt
+                opacity: ambient.fade * 0.42
+                blurEnabled: true
+                blurMax: 64
+                blur: 1
+                saturation: 0.25
+                brightness: -0.22
+            }
+        }
+        ShaderEffectSource {
+            id: ambientTex
+            sourceItem: ambient
+            live: ambient.fade > 0.01
+            hideSource: false
+            mipmap: true
+            visible: false
+        }
 
         // ─────────── IDLE ───────────
         Page {
@@ -327,7 +377,7 @@ Item {
                 RotationAnimator on rotation {
                     from: 0; to: 360; duration: 9000
                     loops: Animation.Infinite
-                    running: Config.s.spinArt && Hub.playing && root.mode === "media" && !Theme.reduced
+                    running: Config.s.spinArt && Hub.playing && root.mode === "media" && !Theme.reduced && miniArt.visible
                 }
             }
             Marquee {
@@ -373,7 +423,9 @@ Item {
 
         // ─────────── MEDIA PEEK (iOS expanded live activity) ───────────
         Page {
+            id: mediaPeekPage
             shown: root.mode === "mediaPeek"
+            Demand { kind: "position"; active: mediaPeekPage.shown }
             ArtImage {
                 id: peekArt
                 x: 18; y: 18
@@ -437,7 +489,7 @@ Item {
                 y: 120
                 spacing: 18
                 IconButton { icon: "fast_rewind"; size: 28; pad: 6; fill: 1; enabled: !!(Hub.player && Hub.player.canGoPrevious); onClicked: Hub.player.previous() }
-                IconButton { icon: Hub.playing ? "pause" : "play_arrow"; size: 34; pad: 5; fill: 1; onClicked: Hub.player.togglePlaying() }
+                IconButton { glass: true; icon: Hub.playing ? "pause" : "play_arrow"; size: 26; pad: 9; fill: 1; onClicked: Hub.player.togglePlaying() }
                 IconButton { icon: "fast_forward"; size: 28; pad: 6; fill: 1; enabled: !!(Hub.player && Hub.player.canGoNext); onClicked: Hub.player.next() }
             }
         }
@@ -688,101 +740,102 @@ Item {
         Page {
             shown: root.mode === "expanded"
 
-            // blurred album art behind the Media tab
+            // tabs, or the tray sheet in their place
             Item {
+                id: tabsView
                 anchors.fill: parent
-                opacity: Hub.tab === 1 && Hub.artUrl !== "" ? (Theme.dark ? 0.5 : 0.35) : 0
+                readonly property bool shown: Hub.trayView === ""
+                opacity: shown ? 1 : 0
                 visible: opacity > 0.01
-                Behavior on opacity { NumberAnimation { duration: 500 } }
-                Image {
-                    id: bgArt
-                    anchors.fill: parent
-                    source: Hub.artUrl
-                    fillMode: Image.PreserveAspectCrop
-                    sourceSize.width: 160
-                    sourceSize.height: 160
-                    asynchronous: true
-                    visible: false
-                }
-                MultiEffect {
-                    anchors.fill: parent
-                    source: bgArt
-                    blurEnabled: true
-                    blurMax: 64
-                    blur: 1
-                    saturation: 0.3
-                }
-            }
+                enabled: shown
+                Behavior on opacity { NumberAnimation { duration: Theme.reduced ? 1 : 220; easing.type: Easing.OutCubic } }
 
-            Item {
-                id: header
-                x: 20; y: 14
-                width: parent.width - 40
-                height: 34
+                Item {
+                    id: header
+                    x: 20; y: 14
+                    width: parent.width - 40
+                    height: 34
 
-                Segmented {
-                    anchors.centerIn: parent
-                    width: 400
-                    itemHeight: 30
-                    currentIndex: Hub.tab
-                    model: [
-                        { label: "Home", icon: "home" },
-                        { label: "Media", icon: "music_note" },
-                        { label: "Controls", icon: "toggle_on" },
-                        { label: "Timer", icon: "timer" }
-                    ]
-                    onActivated: i => Hub.tab = i
-                }
-                Row {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-                    Item {
-                        width: bell.width; height: bell.height
-                        IconButton { id: bell; icon: "notifications"; size: 19; pad: 7; onClicked: Notifs.toggleCenter(root.screenName) }
-                        Rectangle {
-                            visible: Notifs.visibleCount > 0
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.rightMargin: 2
-                            height: 15; radius: 7.5
-                            width: Math.max(15, bc.implicitWidth + 8)
-                            color: Theme.red
-                            Txt { id: bc; anchors.centerIn: parent; text: Notifs.visibleCount > 99 ? "99+" : Notifs.visibleCount; size: 9.5; weight: Font.Bold; color: "#ffffff" }
-                        }
+                    Segmented {
+                        anchors.centerIn: parent
+                        width: 400
+                        itemHeight: 30
+                        currentIndex: Hub.tab
+                        model: [
+                            { label: "Home", icon: "home" },
+                            { label: "Media", icon: "music_note" },
+                            { label: "Controls", icon: "toggle_on" },
+                            { label: "Timer", icon: "timer" }
+                        ]
+                        onActivated: i => Hub.tab = i
                     }
-                    IconButton { icon: "settings"; size: 19; pad: 7; onClicked: Hub.openSettings() }
+                    Row {
+                        anchors.right: parent.right
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 6
+                        Item {
+                            width: bell.width; height: bell.height
+                            IconButton { id: bell; glass: true; icon: "notifications"; size: 17; pad: 6; onClicked: Notifs.toggleCenter(root.screenName) }
+                            Rectangle {
+                                visible: Notifs.visibleCount > 0
+                                anchors.right: parent.right
+                                anchors.top: parent.top
+                                anchors.rightMargin: -3
+                                anchors.topMargin: -3
+                                height: 15; radius: 7.5
+                                width: Math.max(15, bc.implicitWidth + 8)
+                                color: Theme.red
+                                Txt { id: bc; anchors.centerIn: parent; text: Notifs.visibleCount > 99 ? "99+" : Notifs.visibleCount; size: 9.5; weight: Font.Bold; color: "#ffffff" }
+                            }
+                        }
+                        IconButton { glass: true; icon: "settings"; size: 17; pad: 6; onClicked: Hub.openSettings() }
+                    }
+                    Txt {
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: Hub.clockTextSec
+                        size: 14
+                        weight: Font.DemiBold
+                        color: Theme.fg2
+                        visible: Hub.tab !== 0 && tray.count === 0
+                    }
+                    // system tray, left of the tab switcher
+                    TrayStrip {
+                        id: tray
+                        visible: count > 0
+                        screenName: root.screenName
+                        anchors.left: parent.left
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
                 }
-                Txt {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: Hub.clockTextSec
-                    size: 14
-                    weight: Font.DemiBold
-                    color: Theme.fg2
-                    visible: Hub.tab !== 0 && tray.count === 0
-                }
-                // system tray: left of the tab switcher
-                TrayStrip {
-                    id: tray
-                    visible: count > 0
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    maxWidth: (parent.width - 400) / 2 - 8
-                    onActivated: Hub.expanded = false
+
+                Item {
+                    id: tabArea
+                    x: 20
+                    y: 62
+                    width: root.expandedWidth - 40
+                    height: 420
+                    TabPage { index: 0; height: root.tabHeights[0] - 82; HomeTab { anchors.fill: parent; screenName: root.screenName } }
+                    TabPage { index: 1; height: root.tabHeights[1] - 82; MediaTab { anchors.fill: parent } }
+                    TabPage { index: 2; height: root.tabHeights[2] - 82; ControlsTab { anchors.fill: parent } }
+                    TabPage { index: 3; height: root.tabHeights[3] - 82; TimerTab { anchors.fill: parent } }
                 }
             }
 
-            Item {
-                id: tabArea
-                x: 20
-                y: 62
-                width: root.expandedWidth - 40
-                height: 420
-                TabPage { index: 0; height: root.tabHeights[0] - 82; HomeTab { anchors.fill: parent; screenName: root.screenName } }
-                TabPage { index: 1; height: root.tabHeights[1] - 82; MediaTab { anchors.fill: parent } }
-                TabPage { index: 2; height: root.tabHeights[2] - 82; ControlsTab { anchors.fill: parent } }
-                TabPage { index: 3; height: root.tabHeights[3] - 82; TimerTab { anchors.fill: parent } }
+            TrayPanel {
+                id: trayPanel
+                width: root.expandedWidth
+                height: wantedHeight
+                screenName: root.screenName
+                readonly property bool shown: Hub.trayView !== ""
+                opacity: shown ? 1 : 0
+                visible: opacity > 0.01
+                enabled: shown
+                transform: Translate {
+                    x: trayPanel.shown ? 0 : 40
+                    Behavior on x { NumberAnimation { duration: Theme.reduced ? 1 : 360; easing.type: Easing.OutCubic } }
+                }
+                Behavior on opacity { NumberAnimation { duration: Theme.reduced ? 1 : 220; easing.type: Easing.OutCubic } }
             }
         }
     }
@@ -806,7 +859,7 @@ Item {
         Behavior on opacity { NumberAnimation { duration: 220 } }
         Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
-        Glass { anchors.fill: parent; radius: 19; shadowBlur: 18; shadowY: 4 }
+        Surface { anchors.fill: parent; radius: 19; shadowBlur: 18; shadowY: 4 }
         Row {
             id: clockRow
             anchors.centerIn: parent
@@ -857,7 +910,7 @@ Item {
         Behavior on scale { SpringAnimation { spring: Theme.spring; damping: Theme.damping + 0.1 } }
         Behavior on opacity { NumberAnimation { duration: 220 } }
 
-        Glass {
+        Surface {
             anchors.fill: parent
             radius: 19
             shadowBlur: 18

@@ -25,7 +25,7 @@ Item {
         width: parent.width
         height: root.h
         radius: height / 2
-        color: root.big ? (Theme.dark ? Theme.fill2 : Theme.fill3) : Theme.fill2
+        color: Theme.fill2
         scale: root.big && ma.pressed ? 1.025 : 1
         Behavior on height { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 2 } }

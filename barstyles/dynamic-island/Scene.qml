@@ -5,9 +5,9 @@ import Quickshell
 import shell.services as Shell
 import "."
 
-// The Ryoku bar product entry: the shell instantiates this scene once per
-// screen (modelData is that screen). Each scene hosts its island overlay;
-// the shared singletons arm once on the primary.
+// The bar style entry. The shell creates one scene per screen (modelData is
+// that screen); each scene hosts its island overlay, and the shared services
+// start once, on the primary screen.
 Item {
     id: scene
 
@@ -28,15 +28,15 @@ Item {
     }
 
     Component.onCompleted: if (scene.primary) {
-        // touch the singletons so the services start immediately
+        Platform.kind;
         Hub.armed;
-        Notifs.ready;
-        Theme.dark;
+        Notifs.count;
+        Theme.accent;
     }
 
-    // The desktop's surface bus routes the stock launcher/settings calls to
-    // the island's own surfaces, like the shell's built-in full-desktop
-    // styles do. Other routes belong to the shell and are left alone.
+    // The desktop's surface bus: Super+Space and the settings key open the
+    // island's own launcher and settings, the way the built-in full-desktop
+    // styles take them over. Every other route stays with the shell.
     Connections {
         target: scene.primary ? Shell.ShellState : null
 
@@ -44,7 +44,7 @@ Item {
             const base = String(id).split("#")[0];
             const screen = String(mon || "");
             if (base === "launcher")
-                Hub.openLauncher(screen !== "" ? screen : "");
+                Hub.openLauncher(screen);
             else if (base === "settings")
                 Hub.openSettings();
         }

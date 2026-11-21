@@ -25,6 +25,30 @@
       "license": "GPL-3.0-or-later",
       "lastUpdated": "2026-10-21",
       "official": true
+    },
+    {
+      "id": "island",
+      "name": "Island",
+      "version": "1.0.0",
+      "path": "osds/island",
+      "author": "Alan Betty",
+      "upstream": "https://github.com/Alan-Betty/quickshell-DynamicIsland/tree/main/ryostore/osds/island",
+      "summary": "A black pill that springs from the top edge",
+      "description": "Volume, microphone, brightness and keyboard changes spring out from the top edge as a black pill, the glyph in a well of liquid glass and the level as a white bar that greys out when muted; past full volume the overflow shows in your accent.",
+      "tags": [
+        "island",
+        "top",
+        "liquid-glass"
+      ],
+      "accent": "#0a84ff",
+      "surface": "#000000",
+      "preview": "assets/preview.webp",
+      "screenshots": [],
+      "manifest": "manifest.json",
+      "manifestSha256": "5e43c3d09f6b9b757a7191e8835749af5cebdefd09daf23929f8d6042738e32a",
+      "lastUpdated": "2026-11-21",
+      "official": false,
+      "license": "MIT"
     }
   ]
 }

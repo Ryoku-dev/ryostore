@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "island",
+  "category": "notifications",
+  "version": "1.0.0",
+  "destination": "ryoku/notifications/island",
+  "files": [
+    {
+      "source": "Card.qml",
+      "destination": "Card.qml",
+      "sha256": "a7b77cbd9ee3730accb3ad5a53b3f947bc0a5a87030f37ed37df9a6828eb59c0",
+      "mode": "0644",
+      "size": 9950,
+      "install": true
+    },
+    {
+      "source": "GlassControl.qml",
+      "destination": "GlassControl.qml",
+      "sha256": "cddc2ac1ccef412b3529dfa2eaee2b3ca6b2393e9928f6e6d0985bacd2efcf57",
+      "mode": "0644",
+      "size": 5190,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "055aeb4d33b97b531d78a1f8d67515fa53fdea00a904048cf06b46eeba4ca987",
+      "mode": "0644",
+      "size": 1067,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "a1056f0e56281761c20fc85a8091ffda7c7f20471a00fa716ed64b02c7f855e0",
+      "mode": "0644",
+      "size": 1360,
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "sha256": "826c1c3aaf7c56560d684c963fed313a3a5ce479766a3eff56f8ebf050846d89",
+      "mode": "0644",
+      "size": 15328,
+      "install": false
+    },
+    {
+      "source": "shaders/liquidglass.frag",
+      "destination": "shaders/liquidglass.frag",
+      "sha256": "2671e7950f1d0c4c7629b69528021609fb98041ee1ec44c2438979278300cc0f",
+      "mode": "0644",
+      "size": 6278,
+      "install": true
+    },
+    {
+      "source": "shaders/liquidglass.frag.qsb",
+      "destination": "shaders/liquidglass.frag.qsb",
+      "sha256": "767e7431b2e5749e826079d82530f948602f928e754774e85b01b55bffad08d3",
+      "mode": "0644",
+      "size": 9698,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

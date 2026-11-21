@@ -91,27 +91,36 @@ Item {
             width: parent.width
             height: 34
             Txt { Layout.fillWidth: true; Layout.leftMargin: 6; text: "Notification Center"; size: 21; weight: Font.Bold; color: "#ffffff" }
-            Rectangle {
-                width: 30; height: 30; radius: 15
-                color: dndMa.containsMouse ? Qt.rgba(1, 1, 1, 0.26) : Qt.rgba(1, 1, 1, 0.16)
+            Lens {
+                implicitWidth: 30; implicitHeight: 30
+                base: "#101012"
+                tint: Theme.indigo
+                tintAmount: Notifs.dnd ? 0.85 : 0
+                hovered: dndMa.containsMouse
+                pressed: dndMa.pressed
                 Icon { anchors.centerIn: parent; text: Notifs.dnd ? "bedtime" : "bedtime_off"; size: 16; fill: Notifs.dnd ? 1 : 0; color: "#ffffff" }
                 MouseArea { id: dndMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Notifs.toggleDnd() }
             }
             // iOS "×" that turns into "Clear"
-            Rectangle {
+            Lens {
                 visible: Notifs.groups.length > 0
-                height: 30
-                width: root.confirmClear ? clrTxt.implicitWidth + 26 : 30
+                implicitHeight: 30
+                implicitWidth: root.confirmClear ? clrTxt.implicitWidth + 26 : 30
                 radius: 15
-                color: root.confirmClear ? Qt.rgba(1, 1, 1, 0.3) : Qt.rgba(1, 1, 1, 0.16)
+                base: "#101012"
+                tint: Theme.red
+                tintAmount: root.confirmClear ? 0.8 : 0
+                hovered: clrMa.containsMouse
+                pressed: clrMa.pressed
                 clip: true
-                Behavior on width { SpringAnimation { spring: 5; damping: 0.42 } }
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on implicitWidth { SpringAnimation { spring: 5; damping: 0.42 } }
                 Icon { anchors.centerIn: parent; visible: !root.confirmClear; text: "close"; size: 16; weight: 700; color: "#ffffff" }
                 Txt { id: clrTxt; anchors.centerIn: parent; visible: root.confirmClear; text: "Clear"; size: 13; weight: Font.DemiBold; color: "#ffffff" }
                 Timer { id: clrReset; interval: 3000; onTriggered: root.confirmClear = false }
                 MouseArea {
+                    id: clrMa
                     anchors.fill: parent
+                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         if (!root.confirmClear) { root.confirmClear = true; clrReset.restart(); return; }
@@ -130,6 +139,7 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         y: hdr.height + 50
         text: !Config.s.notifications ? "Notifications are turned off"
+            : Platform.ownsDaemon && Platform.ownerStatus === "other" ? "Another app is handling notifications"
             : "No Older Notifications"
         size: 15
         weight: Font.DemiBold
@@ -176,13 +186,13 @@ Item {
                         width: parent.width
                         height: 8
                         clip: true
-                        Glass {
+                        Surface {
                             x: (parent.index + 1) * 12
                             width: parent.width - (parent.index + 1) * 24
                             y: -28 + 8
                             height: 28
                             radius: 14
-                            tint: Theme.alpha(Theme.card, Theme.card.a * (0.8 - parent.index * 0.22))
+                            color: Theme.mix(Theme.card, Qt.rgba(0, 0, 0, 1), 0.25 + parent.index * 0.2)
                             shadow: false
                         }
                     }
