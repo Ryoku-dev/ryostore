@@ -121,13 +121,13 @@ FloatingWindow {
     component SwitchRow: Row_ {
         id: sr
         property string key: ""
-        property bool checked: key !== "" ? !!Config.s[sr.key] : false
+        property bool checked: key !== "" ? !!Config.s[key] : false
         signal toggled(bool value)
         IosSwitch {
             checked: sr.checked
+            activeColor: Theme.green
             onToggled: v => {
-                if (sr.key !== "")
-                    Config.s[sr.key] = v;
+                if (sr.key !== "") Config.s[sr.key] = v;
                 sr.toggled(v);
             }
         }
@@ -374,18 +374,17 @@ FloatingWindow {
                 title: "Preview"
                 Item {
                     width: parent.width
-                    height: 170
+                    height: 186
                     Rectangle {
                         anchors.fill: parent
                         gradient: Gradient {
                             orientation: Gradient.Horizontal
-                            GradientStop { position: 0; color: Qt.darker(Theme.accent, 1.6) }
-                            GradientStop { position: 0.55; color: Theme.accent }
-                            GradientStop { position: 1; color: Qt.lighter(Theme.purple, 1.1) }
+                            GradientStop { position: 0; color: Qt.darker(Theme.accent, 2.2) }
+                            GradientStop { position: 0.55; color: Qt.darker(Theme.accent, 1.3) }
+                            GradientStop { position: 1; color: Qt.darker(Theme.purple, 1.6) }
                         }
                     }
-                    Glass {
-                        id: pvIsland
+                    Surface {
                         anchors.horizontalCenter: parent.horizontalCenter
                         y: 18
                         width: 220; height: 38
@@ -395,26 +394,44 @@ FloatingWindow {
                         Row {
                             anchors.centerIn: parent
                             spacing: 10
-                            Rectangle { width: 22; height: 22; radius: 11; color: Theme.live; anchors.verticalCenter: parent.verticalCenter }
+                            Rectangle { width: 22; height: 22; radius: 7; color: Theme.live; anchors.verticalCenter: parent.verticalCenter }
                             Txt { text: "Now Playing"; size: 12.5; weight: Font.DemiBold; anchors.verticalCenter: parent.verticalCenter }
                             Visualizer { count: 5; maxHeight: 14; anchors.verticalCenter: parent.verticalCenter }
                         }
                     }
-                    Glass {
+                    Surface {
+                        id: pvCard
                         anchors.horizontalCenter: parent.horizontalCenter
-                        y: 70
-                        width: 340; height: 76
-                        radius: 22
-                        tint: Theme.card
+                        y: 72
+                        width: 360; height: 96
+                        radius: 28
+                        property var glassSource: null
+                        property Item glassSpace: null
+                        property color glassBase: Theme.surface
                         Row {
-                            x: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 10
-                            AppIcon { size: 40; fallback: "chat_bubble"; fallbackColor: Theme.green }
-                            Column {
-                                anchors.verticalCenter: parent.verticalCenter
-                                Txt { text: "Messages"; size: 13.5; weight: Font.DemiBold }
-                                Txt { text: "Liquid glass looks good on you ✨"; size: 12.5; color: Theme.fg2 }
+                            anchors.centerIn: parent
+                            spacing: 14
+                            Repeater {
+                                model: [
+                                    { icon: "wifi", on: true, tint: Theme.ccTint(Theme.blue) },
+                                    { icon: "bluetooth", on: true, tint: Theme.ccTint(Theme.blue) },
+                                    { icon: "bedtime", on: false, tint: Theme.indigo },
+                                    { icon: "play_arrow", on: false, tint: "#ffffff" },
+                                    { icon: "nightlight", on: false, tint: "#ff9f45" }
+                                ]
+                                Lens {
+                                    id: pvBtn
+                                    required property var modelData
+                                    width: 52; height: 52
+                                    tint: pvBtn.modelData.tint
+                                    tintAmount: pvBtn.modelData.on ? 0.9 : 0
+                                    hovered: pvMa.containsMouse
+                                    pressed: pvMa.pressed
+                                    scale: pvMa.pressed ? 0.9 : 1
+                                    Behavior on scale { NumberAnimation { duration: 240; easing.type: Easing.OutBack; easing.overshoot: 2.4 } }
+                                    Icon { anchors.centerIn: parent; text: pvBtn.modelData.icon; size: 22; fill: pvBtn.modelData.on ? 1 : 0; color: "#ffffff" }
+                                    MouseArea { id: pvMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor }
+                                }
                             }
                         }
                     }
@@ -422,21 +439,17 @@ FloatingWindow {
             }
 
             Section {
-                title: "Style"
-                footer: "Glass is a translucent tint; the compositor blur behind it is not available here. Black is the classic solid look."
-                SegRow { label: "Material"; key: "style"; options: [{ label: "Liquid Glass", value: "glass" }, { label: "Black", value: "black" }] }
-                SegRow { label: "Appearance"; key: "appearance"; options: [{ label: "Auto", value: "auto" }, { label: "Dark", value: "dark" }, { label: "Light", value: "light" }] }
-                SliderRow { label: "Glass Tint"; key: "glassOpacity"; from: 0.15; to: 0.95; fmt: v => Math.round(v * 100) + "%" }
-                SwitchRow { label: "Specular Rim"; sub: "The bright refracted edge of liquid glass"; key: "glassRim" }
-                SwitchRow { label: "Tint Glass with Accent"; sub: "A hint of your theme colour in the glass"; key: "glassAccentTint" }
-                SwitchRow { label: "Glow"; sub: "Coloured halo while music plays or recording"; key: "glow" }
+                title: "Material"
+                footer: "The island is black, like the hardware. Liquid glass is for the controls on it: toggles, buttons, chips and the tab switcher. Each one bends and frosts whatever sits underneath, such as album art behind the player."
+                SwitchRow { label: "Liquid Glass"; sub: "Off draws plain flat controls, which is the lightest on the GPU"; key: "liquidGlass" }
+                SliderRow { visible: Config.s.liquidGlass; label: "Glass Strength"; sub: "How far the rim bends light"; key: "glassStrength"; from: 0.4; to: 1.6; step: 0.05; fmt: v => Math.round(v * 100) + "%" }
+                SwitchRow { label: "Glow"; sub: "A coloured halo while music plays, a timer runs or something urgent arrives"; key: "glow" }
             }
 
             Section {
                 title: "Accent Colour"
-                footer: "Automatic picks the first one found: Ryoku theme → Matugen → Pywal/Wallust → Wallpaper → GTK accent. Currently using " + Theme.originLabel + "."
+                footer: "Automatic picks the first one found: " + (Platform.accentFirst ? Platform.accentLabel + " → " : "") + "Matugen → Pywal/Wallust → Wallpaper → GTK accent" + (Platform.accentFirst ? "" : " → " + Platform.accentLabel) + ". Currently using " + Theme.originLabel + "."
                 CheckRow { label: "Automatic"; sub: "Follow your desktop theme"; key: "accentSource"; value: "auto" }
-                CheckRow { label: "Ryoku Theme"; sub: "Ryoku's active palette"; key: "accentSource"; value: "ryoku" }
                 CheckRow { label: "Matugen"; sub: Theme.matAccent !== "" ? Theme.matAccent : "Not found at " + Config.s.matugenPath; key: "accentSource"; value: "matugen" }
                 CheckRow { label: "Pywal / Wallust"; sub: Theme.walAccent !== "" ? Theme.walAccent : "~/.cache/wal/colors.json not found"; key: "accentSource"; value: "wal" }
                 CheckRow {
@@ -447,6 +460,7 @@ FloatingWindow {
                     Rectangle { visible: Theme.wallAccent !== ""; width: 18; height: 18; radius: 9; color: Theme.wallAccent || "transparent"; anchors.verticalCenter: parent.verticalCenter }
                 }
                 CheckRow { label: "GTK Accent"; sub: Theme.gtkAccent !== "" ? Theme.gtkAccent : "Not set"; key: "accentSource"; value: "gtk" }
+                CheckRow { label: Platform.accentLabel; sub: Platform.accent !== "" ? Platform.accent : "Unavailable"; key: "accentSource"; value: "desktop" }
                 CheckRow { label: "Album Art"; sub: "Changes with the song"; key: "accentSource"; value: "album" }
                 CheckRow { label: "Custom"; key: "accentSource"; value: "custom" }
                 Row_ {
@@ -462,7 +476,7 @@ FloatingWindow {
                             width: 26; height: 26; radius: 13
                             color: modelData
                             border.width: sel ? 3 : 0
-                            border.color: Theme.dark ? "#ffffff" : "#000000"
+                            border.color: "#ffffff"
                             anchors.verticalCenter: parent.verticalCenter
                             MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Config.s.customAccent = sw.modelData }
                         }
@@ -491,6 +505,12 @@ FloatingWindow {
                 SwitchRow { label: "On Top of Bar"; key: "overlayBar" }
                 SwitchRow { label: "Reserve Space"; sub: "Keep windows below the island so it never covers an app"; key: "reserveSpace" }
                 SliderRow { label: "Top Margin"; key: "topMargin"; from: 0; to: 60; step: 1; fmt: v => Math.round(v) + " px" }
+                SliderRow { visible: Platform.kind !== "standalone"; label: "Outer Gaps"; sub: "Your compositor's outer gaps, so tiled windows line up under the island"; key: "outerGaps"; from: 0; to: 48; step: 1; fmt: v => Math.round(v) + " px" }
+            }
+            Section {
+                title: "System Tray"
+                footer: "Tray apps live in the expanded island: a few in the header, the rest one click away. Their menus open inside the island, so closing one never collapses it."
+                SliderRow { label: "Icons in the Header"; key: "trayInHeader"; from: 0; to: 6; step: 1; fmt: v => Math.round(v) === 0 ? "None" : String(Math.round(v)) }
             }
             Section {
                 title: "Motion"
@@ -526,26 +546,41 @@ FloatingWindow {
             width: parent ? parent.width : 0
             Section {
                 title: "Status"
+                visible: Platform.ownsDaemon
                 Row_ {
-                    label: Config.s.notifications
-                         ? "Island is handling the banner display"
-                         : "Ryoku's own toasts are showing"
-                    sub: Config.s.notifications
-                         ? "Ryoku's shell owns the notification daemon; Island takes the banners from it."
-                         : "Turn Allow Notifications on to let Island draw the banners."
-                    icon: "check_circle"
-                    iconTint: Theme.green
+                    label: Platform.ownerStatus === "ours" ? "Island is handling notifications"
+                         : Platform.ownerStatus === "other" ? "Owned by " + (Platform.ownerName || "another app") + " (pid " + Platform.ownerPid + ")"
+                         : Platform.ownerStatus === "none" ? "No notification daemon running" : "Checking…"
+                    sub: Platform.ownerStatus === "other"
+                         ? (/quickshell|^qs$/.test(Platform.ownerName) ? "Your bar's Quickshell config runs its own notification server. Turn it off there." : "Take Over stops it and hands notifications to Island.")
+                         : ""
+                    icon: Platform.ownerStatus === "ours" ? "check_circle" : "error"
+                    iconTint: Platform.ownerStatus === "ours" ? Theme.green : Theme.orange
+                    Rectangle {
+                        visible: Platform.ownerStatus !== "ours"
+                        height: 30; radius: 15
+                        width: toTxt.implicitWidth + 24
+                        color: Theme.accent
+                        Txt { id: toTxt; anchors.centerIn: parent; text: "Take Over"; size: 13; weight: Font.DemiBold; color: Theme.accentText }
+                        MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Platform.takeOver() }
+                    }
+                    IconButton { icon: "refresh"; size: 18; pad: 6; onClicked: Platform.checkOwner() }
                 }
             }
             Section {
                 title: "Daemon"
-                footer: "Ryoku's shell owns org.freedesktop.Notifications. Island shows the banners and the Notification Center on top of it."
-                SwitchRow { label: "Allow Notifications"; sub: "Island takes the banner display over from the shell"; key: "notifications" }
+                footer: Platform.ownsDaemon
+                    ? "Replace Other Daemons stops mako, dunst, swaync and fnott each time Island starts, so it can own org.freedesktop.Notifications."
+                    : "Your desktop owns the notification daemon. With this on, Island draws the banners and the Notification Center instead of the desktop's own toasts."
+                SwitchRow { label: "Allow Notifications"; sub: Platform.ownsDaemon ? "" : "Island takes the banner display over"; key: "notifications" }
+                SwitchRow { visible: Platform.ownsDaemon; label: "Replace Other Daemons"; key: "takeover" }
             }
             Section {
                 title: "Banners"
                 SegRow { label: "Style"; key: "notifStyle"; options: [{ label: "Banner", value: "banner" }, { label: "Island", value: "island" }, { label: "Corner", value: "corner" }] }
                 SliderRow { label: "Duration"; key: "bannerTimeout"; from: 2; to: 15; step: 1; fmt: v => Math.round(v) + " s" }
+                SwitchRow { label: "Keep Urgent Banners"; sub: "Urgent banners wait until you dismiss them"; key: "urgentSticky" }
+                SliderRow { visible: !Config.s.urgentSticky; label: "Urgent Duration"; sub: "How long an urgent banner stays before it tucks into the Notification Center"; key: "urgentTimeout"; from: 5; to: 60; step: 1; fmt: v => Math.round(v) + " s" }
                 SegRow { label: "Show Previews"; key: "previews"; segWidth: 200; options: [{ label: "Always", value: "always" }, { label: "Never", value: "never" }] }
                 SwitchRow { label: "Group by App"; key: "groupByApp" }
             }
@@ -556,6 +591,7 @@ FloatingWindow {
             }
             Section {
                 ButtonRow { text: "Send Test Notification"; onClicked: Notifs.test() }
+                ButtonRow { text: "Send Urgent Test"; onClicked: Notifs.testUrgent() }
                 ButtonRow { text: "Open Notification Center"; onClicked: { Hub.settingsOpen = false; Notifs.toggleCenter(""); } }
                 ButtonRow { text: "Clear All Notifications"; textColor: Theme.red; onClicked: Notifs.clearAll() }
             }
@@ -568,7 +604,7 @@ FloatingWindow {
             width: parent ? parent.width : 0
             Section {
                 footer: "While Do Not Disturb is on, notifications go quietly to the Notification Center."
-                SwitchRow { label: "Do Not Disturb"; icon: "bedtime"; iconTint: Theme.indigo; checked: Notifs.dnd; key: ""; onToggled: v => Notifs.toggleDnd() }
+                SwitchRow { label: "Do Not Disturb"; icon: "bedtime"; iconTint: Theme.indigo; key: ""; checked: Notifs.dnd; onToggled: v => { if (v !== Notifs.dnd) Notifs.toggleDnd(); } }
                 SwitchRow { label: "Allow Critical Alerts"; sub: "Urgent notifications still show a banner"; key: "dndAllowCritical" }
             }
         }
@@ -607,7 +643,7 @@ FloatingWindow {
         Column {
             width: parent ? parent.width : 0
             Section {
-                footer: "Off by default. Turning it on sends your position to Open-Meteo for the forecast. Automatic tries GeoClue (Wi-Fi positioning, accurate to a street) and falls back to your IP address through ipinfo.io or ipapi.co, which is often only right to the nearest big city. Pick Manual to choose a city yourself and skip the lookup."
+                footer: "Automatic tries GeoClue (Wi-Fi positioning, accurate to a street) and falls back to your IP address, which is often only right to the nearest big city. If it's off, pick your city below. Weather from Open-Meteo."
                 SwitchRow { label: "Show Weather"; key: "weather" }
                 SegRow { label: "Location"; key: "locationMode"; segWidth: 300; options: [{ label: "Automatic", value: "auto" }, { label: "IP Only", value: "ip" }, { label: "Manual", value: "manual" }] }
                 SegRow { label: "Units"; key: "units"; segWidth: 200; options: [{ label: "°C", value: "metric" }, { label: "°F", value: "imperial" }] }
@@ -685,7 +721,7 @@ FloatingWindow {
             }
             Section {
                 title: "On-Screen Display"
-                SwitchRow { label: "Island OSD Pills"; sub: "Volume, mic and brightness pills on the island (the shell draws its own OSD)"; key: "osdPopups" }
+                SwitchRow { label: "Volume and Brightness Pills"; sub: Platform.ownsDaemon ? "The island shows volume, microphone and brightness changes" : "Off by default: your desktop already draws these"; key: "osdPopups" }
                 SliderRow { label: "OSD Duration"; key: "osdTimeout"; from: 800; to: 4000; step: 100; fmt: v => (v / 1000).toFixed(1) + " s" }
             }
             Section {
@@ -701,11 +737,15 @@ FloatingWindow {
             width: parent ? parent.width : 0
             Section {
                 title: "Global shortcuts"
-                footer: "The island registers these through the compositor's global-shortcut protocol. Bind them in your desktop's shortcut settings."
-                ValueRow { label: "App launcher"; value: "quickshell:islandLauncher" }
-                ValueRow { label: "Open / close island"; value: "quickshell:islandToggle" }
-                ValueRow { label: "Notification Center"; value: "quickshell:islandCenter" }
-                ValueRow { label: "Settings"; value: "quickshell:islandSettings" }
+                footer: Platform.shortcutHint
+                Repeater {
+                    model: Platform.shortcuts
+                    ValueRow {
+                        required property var modelData
+                        label: modelData.what
+                        value: "quickshell:" + modelData.name
+                    }
+                }
             }
             Section {
                 title: "In the island"
@@ -722,6 +762,12 @@ FloatingWindow {
                 ValueRow { label: "Banner: pull down, ⌄ or right-click"; value: "Actions & reply" }
                 ValueRow { label: "Center: swipe left"; value: "Options / Clear" }
                 ValueRow { label: "Center: swipe right or click"; value: "Open" }
+            }
+            Section {
+                title: "System tray"
+                ValueRow { label: "Click"; value: "The app's action" }
+                ValueRow { label: "Right-click or ⋯"; value: "The app's menu, inside the island" }
+                ValueRow { label: "Esc"; value: "Back one level" }
                 ValueRow { label: "Hover ✕"; value: "Clear" }
             }
         }
@@ -732,11 +778,12 @@ FloatingWindow {
         Column {
             width: parent ? parent.width : 0
             Section {
-                ValueRow { label: "Version"; value: "3.0" }
+                ValueRow { label: "Version"; value: Config.version }
+                ValueRow { label: "Build"; value: Platform.buildLabel }
                 ValueRow { label: "Config"; value: Config.dir }
                 ValueRow { label: "Accent Source"; value: Theme.originLabel }
                 ValueRow { label: "Font"; value: Theme.font }
-                ValueRow { label: "Theme"; value: Theme.dark ? "Dark" : "Light" }
+                ValueRow { label: "Liquid Glass"; value: !Config.s.liquidGlass ? "Off" : "On" }
             }
             Section {
                 title: "Dependencies"
@@ -761,7 +808,7 @@ FloatingWindow {
                     id: btSvc
                     readonly property var ok: Hub.btAdapter !== null
                     label: "Bluetooth adapter"
-                    sub: ok ? "adapter present" : "no adapter — enable the bluetooth service on your host"
+                    sub: ok ? "Adapter found" : "No adapter. " + Platform.bluetoothHint
                     Icon { anchors.verticalCenter: parent.verticalCenter; text: btSvc.ok ? "check_circle" : "cancel"; fill: 1; size: 20; color: btSvc.ok ? Theme.green : Theme.red }
                 }
                 Row_ {
@@ -774,6 +821,7 @@ FloatingWindow {
                 ButtonRow { text: "Recheck"; onClicked: Hub.checkDeps() }
             }
             Section {
+                ButtonRow { visible: Platform.canReload; text: "Reload Island"; onClicked: Platform.reload() }
                 ButtonRow { text: "Reset All Settings"; textColor: Theme.red; onClicked: Config.reset() }
             }
         }

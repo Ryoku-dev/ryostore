@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "id": "island",
+  "category": "launchers",
+  "version": "1.0.0",
+  "destination": "ryoku/launchers/island",
+  "files": [
+    {
+      "source": "GlassControl.qml",
+      "destination": "GlassControl.qml",
+      "sha256": "cddc2ac1ccef412b3529dfa2eaee2b3ca6b2393e9928f6e6d0985bacd2efcf57",
+      "mode": "0644",
+      "size": 5190,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "055aeb4d33b97b531d78a1f8d67515fa53fdea00a904048cf06b46eeba4ca987",
+      "mode": "0644",
+      "size": 1067,
+      "install": true
+    },
+    {
+      "source": "Main.qml",
+      "destination": "Main.qml",
+      "sha256": "b2b24336c35e6869de8f3e41ae480edda9b940bb94e0ccd39c5eaf41e6a90dbf",
+      "mode": "0644",
+      "size": 18984,
+      "install": true
+    },
+    {
+      "source": "Preview.qml",
+      "destination": "Preview.qml",
+      "sha256": "6a10064a4aa8ca3031e6b035fb65a22040bd8196bc2e19068a98eb1238a89d66",
+      "mode": "0644",
+      "size": 2785,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "7c18cf9b13c3e8b9361187c505bda07d3f503ea255d769f69f226902955f7161",
+      "mode": "0644",
+      "size": 1494,
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "sha256": "a299c423af21d4ab9260909596e8932ff85203342764af191f307689dc938070",
+      "mode": "0644",
+      "size": 18242,
+      "install": false
+    },
+    {
+      "source": "shaders/liquidglass.frag",
+      "destination": "shaders/liquidglass.frag",
+      "sha256": "2671e7950f1d0c4c7629b69528021609fb98041ee1ec44c2438979278300cc0f",
+      "mode": "0644",
+      "size": 6278,
+      "install": true
+    },
+    {
+      "source": "shaders/liquidglass.frag.qsb",
+      "destination": "shaders/liquidglass.frag.qsb",
+      "sha256": "767e7431b2e5749e826079d82530f948602f928e754774e85b01b55bffad08d3",
+      "mode": "0644",
+      "size": 9698,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

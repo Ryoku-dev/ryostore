@@ -9,15 +9,17 @@ import Quickshell.Bluetooth
 import Quickshell.Services.Mpris
 import Quickshell.Services.Pipewire
 import Quickshell.Services.UPower
-import shell.services as Shell
-import Ryoku.Ui.Singletons
+import Quickshell.Services.SystemTray
 
-// Live system state + services the island reacts to.
+// Live system state and the services the island reacts to.
+// Everything compositor- or desktop-specific goes through Platform.
 Singleton {
     id: root
 
     // ═══════════════════════════ CLOCK ═══════════════════════════
-    SystemClock { id: clock; precision: SystemClock.Seconds }
+    // Minute ticks unless seconds are on screen: the clock is the island's
+    // most frequent wake-up, so it only ticks as often as it is read.
+    SystemClock { id: clock; precision: Config.s.showSeconds ? SystemClock.Seconds : SystemClock.Minutes }
     readonly property date now: clock.date
     function pad2(n) { return (n < 10 ? "0" : "") + n; }
     // Qt's "h" is still 24-hour unless "AP" is in the format, so build the string by hand.
@@ -37,7 +39,6 @@ Singleton {
     readonly property string clockText: fmtClock(now, false)
     readonly property string clockTextSec: fmtClock(now, Config.s.showSeconds)
     readonly property string ampm: Config.s.use24h ? "" : (now.getHours() < 12 ? "AM" : "PM")
-    readonly property bool isNight: now.getHours() < 6 || now.getHours() >= 19
     readonly property string greeting: {
         const h = now.getHours();
         return h < 5 ? "Good night" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 22 ? "Good evening" : "Good night";
@@ -55,7 +56,7 @@ Singleton {
     property bool settingsOpen: false
 
     function focusedScreen() {
-        if (Wm.focusedOutput !== "") return Wm.focusedOutput;
+        if (Platform.focusedOutput !== "") return Platform.focusedOutput;
         return Quickshell.screens.length > 0 ? Quickshell.screens[0].name : "";
     }
     function openTab(screenName, t) {
@@ -69,9 +70,10 @@ Singleton {
         if (expanded) expanded = false;
         else openTab(screenName, -1);
     }
+    function collapse() { expanded = false; launcherOpen = false; Notifs.centerOpen = false; }
     function openSettings() { expanded = false; Notifs.centerOpen = false; settingsOpen = true; }
 
-    // ── Launcher (Super+Space): the island morphs into a search field ──
+    // ── Launcher: the island morphs into a search field ──
     property bool launcherOpen: false
     property string launcherScreen: ""
     function openLauncher(screenName) {
@@ -92,16 +94,14 @@ Singleton {
     property real eventValue: -1     // 0..1 shows a bar, -1 shows the label
     property color eventColor: "white"
     property bool eventTinted: false
-    property int eventSerial: 0
     property bool armed: false
     Timer { interval: 2500; running: true; onTriggered: root.armed = true }
     Timer { id: eventTimer; onTriggered: root.event = "" }
 
     function flash(kind, icon, label, value, color, ms, sub) {
-        // The shell draws its own volume/mic/brightness OSD; the island's pills
-        // are opt-in so exactly one of each paints out of the box.
-        if (kind === "osd" && !Config.s.osdPopups) return;
         if (!armed) return;
+        // volume / mic / brightness pills: off where the desktop draws its own OSD
+        if (kind === "osd" && !Config.s.osdPopups && /^(volume|mic|brightness)/.test(icon || "")) return;
         eventIcon = icon ?? "";
         eventLabel = label ?? "";
         eventSub = sub ?? "";
@@ -109,7 +109,6 @@ Singleton {
         eventTinted = color !== undefined && color !== null;
         eventColor = eventTinted ? color : Theme.fg;
         event = kind;
-        eventSerial++;
         eventTimer.interval = ms ?? Config.s.osdTimeout;
         eventTimer.restart();
     }
@@ -123,7 +122,7 @@ Singleton {
     property MprisPlayer pinnedPlayer: null
     // The player that most recently *started* playing. After you pause it stays the
     // target, so play/pause resumes your music instead of whatever paused tab
-    // (e.g. a Brave video) happens to be first on the bus.
+    // happens to be first on the bus.
     property MprisPlayer lastPlayer: null
     readonly property var players: Mpris.players.values
     readonly property MprisPlayer player: {
@@ -143,7 +142,6 @@ Singleton {
             function onIsPlayingChanged() {
                 if (!modelData.isPlaying) return;
                 root.lastPlayer = modelData;
-                // a different player starting overrides a manual pick from the switcher
                 if (root.pinnedPlayer && root.pinnedPlayer !== modelData) root.pinnedPlayer = null;
             }
             Component.onCompleted: if (modelData.isPlaying && !root.lastPlayer) root.lastPlayer = modelData
@@ -158,11 +156,19 @@ Singleton {
         ? Math.max(0, Math.min(1, player.position / player.length)) : 0
     readonly property string artUrl: player ? (player.trackArtUrl || "") : ""
 
+    // Demand counters: surfaces that draw the scrubber or the visualizer
+    // check in while visible, so nothing ticks when nobody is looking.
+    property int positionUsers: 0
+    property int vizUsers: 0
+    function want(kind, on) {
+        if (kind === "position") positionUsers = Math.max(0, positionUsers + (on ? 1 : -1));
+        else if (kind === "viz") vizUsers = Math.max(0, vizUsers + (on ? 1 : -1));
+    }
     Timer {
-        running: root.playing; interval: 500; repeat: true
+        running: root.playing && root.positionUsers > 0; interval: 500; repeat: true
         onTriggered: root.player.positionChanged()
     }
-    // keep the media activity around briefly after pausing, like iOS
+    // keep the media activity around briefly after pausing
     property bool mediaLinger: false
     Timer { id: lingerTimer; interval: 45000; onTriggered: root.mediaLinger = false }
     onPlayingChanged: { if (!playing && player) { mediaLinger = true; lingerTimer.restart(); } }
@@ -205,22 +211,24 @@ Singleton {
     readonly property bool albumColorValid: albumPick !== null
     readonly property color albumColor: albumPick ?? "#0a84ff"
 
-    // Visualizer (cava, fake fallback)
+    // Visualizer: cava at 30 fps while a visualizer is on screen, a cheap
+    // fake when cava is missing.
     property bool cavaAvailable: false
     property var bars: []
+    readonly property bool vizLive: Config.s.visualizer && root.playing && root.vizUsers > 0
     Process {
         running: true
         command: ["sh", "-c", "command -v cava"]
         onExited: code => root.cavaAvailable = code === 0
     }
     readonly property string cavaConf:
-        "[general]\nbars = 16\nframerate = 60\nautosens = 1\nsleep_timer = 3\n" +
+        "[general]\nbars = 12\nframerate = 30\nautosens = 1\nsleep_timer = 3\n" +
         "[input]\nmethod = pulse\nsource = auto\n" +
         "[output]\nmethod = raw\nraw_target = /dev/stdout\ndata_format = ascii\n" +
         "ascii_max_range = 100\nbar_delimiter = 59\nframe_delimiter = 10\n" +
         "[smoothing]\nnoise_reduction = 55\n"
     Process {
-        running: Config.s.visualizer && root.cavaAvailable && root.playing
+        running: root.vizLive && root.cavaAvailable
         command: ["sh", "-c",
             "f=\"${XDG_RUNTIME_DIR:-/tmp}/qs-island-cava.conf\"; printf '%s' \"$1\" > \"$f\" && exec cava -p \"$f\"",
             "sh", root.cavaConf]
@@ -235,11 +243,11 @@ Singleton {
         onRunningChanged: if (!running) root.bars = []
     }
     Timer {
-        interval: 110; repeat: true
-        running: Config.s.visualizer && !root.cavaAvailable && root.playing
+        interval: 140; repeat: true
+        running: root.vizLive && !root.cavaAvailable
         onTriggered: {
             const a = [];
-            for (let i = 0; i < 16; i++) a.push(15 + Math.random() * 80);
+            for (let i = 0; i < 12; i++) a.push(15 + Math.random() * 80);
             root.bars = a;
         }
         onRunningChanged: if (!running) root.bars = []
@@ -315,30 +323,24 @@ Singleton {
     }
 
     // ═════════════════════════ WORKSPACES ════════════════════════
-    // The neutral Wm facade reports workspace identity as provider-defined
-    // names; the island orders them by index and numbers the dots.
-    readonly property var wsList: Wm.workspaces || []
-    readonly property var focusedWs: Wm.focusedWorkspace
-    readonly property int wsId: focusedWs && typeof focusedWs.index === "number"
-        ? focusedWs.index : 1
-    readonly property var occupied: wsList.filter(w => !w.special && (w.windows || 0) > 0)
-        .map(w => typeof w.index === "number" ? w.index : 0).filter(i => i > 0)
+    readonly property int wsId: Platform.wsId
+    readonly property var occupied: Platform.occupied
     readonly property int wsCount: Math.min(10, Math.max(5, wsId, ...occupied))
     onWsIdChanged: if (Config.s.workspaceFlash && wsId > 0) flash("workspace", "", "Desktop " + wsId, -1, null, 1100)
 
     readonly property var activeWindow: ToplevelManager.activeToplevel
-    readonly property string activeTitle: activeWindow ? activeWindow.title : ""
     readonly property string activeAppId: activeWindow ? activeWindow.appId : ""
-    function appIcon(id) {
+    function entryFor(id) { return id ? (DesktopEntries.byId(id) ?? DesktopEntries.byId(id.toLowerCase())) : null; }
+    readonly property string activeIcon: {
+        const id = activeAppId;
         if (!id) return "";
-        const e = DesktopEntries.byId(id) ?? DesktopEntries.byId(id.toLowerCase());
+        const e = entryFor(id);
         return Quickshell.iconPath(e ? e.icon : id.toLowerCase(), true);
     }
-    readonly property string activeIcon: appIcon(activeAppId)
     readonly property string activeName: {
         const id = activeAppId;
         if (!id) return "";
-        const e = DesktopEntries.byId(id) ?? DesktopEntries.byId(id.toLowerCase());
+        const e = entryFor(id);
         return e ? e.name : id;
     }
 
@@ -389,16 +391,13 @@ Singleton {
         if (i.includes("speaker") || i.includes("audio")) return "speaker";
         return "bluetooth";
     }
-    property var eventDevice: null
     onBtConnectedChanged: {
         const addrs = btConnected.map(d => d.address);
         if (armed) {
             for (let i = 0; i < btConnected.length; i++) {
                 const d = btConnected[i];
-                if (btSeen.indexOf(d.address) < 0) {
-                    eventDevice = d;
+                if (btSeen.indexOf(d.address) < 0)
                     flash("device", btIcon(d.icon), d.name || d.deviceName, d.batteryAvailable ? d.battery : -1, null, 3200, "Connected");
-                }
             }
         }
         btSeen = addrs;
@@ -408,7 +407,6 @@ Singleton {
     readonly property string btSub: !btOn ? "Off" : btConnected.length === 1 ? (btConnected[0].name || btConnected[0].deviceName)
                                     : btConnected.length > 1 ? btConnected.length + " Devices" : "On"
 
-    // device lists for the Bluetooth menu
     function btNamed(d) { const n = d.name || d.deviceName || ""; return n !== "" && !/^([0-9a-f]{2}[-:]){5}[0-9a-f]{2}$/i.test(n); }
     readonly property var btPaired: Bluetooth.devices.values.filter(d => d.paired || d.bonded)
         .sort((a, b) => (b.connected - a.connected) || String(a.name).localeCompare(String(b.name)))
@@ -432,7 +430,6 @@ Singleton {
         btError = "";
         if (d.connected) { d.disconnect(); return; }
         if (d.paired) { d.connect(); return; }
-        // pair → trust → connect
         btPending = d;
         btPendingAddr = d.address;
         d.trusted = true;
@@ -466,44 +463,40 @@ Singleton {
         return out;
     }
 
-    // ═══════════════════════════ PRIVACY + SCREEN RECORDING ══════════════════
-    // Ryoku owns recording: the shell's Recorder service tracks the active
-    // session, so the island mirrors it instead of pgrep-ing recorders.
-    property bool micInUse: false
+    // ═══════════════ PRIVACY + SCREEN RECORDING ══════════════════
+    // Microphone: any audio capture stream on the Pipewire graph (cava excluded).
+    readonly property bool micInUse: Pipewire.nodes.values.some(n => n && n.type === PwNodeType.AudioInStream && !/cava/i.test(n.name || ""))
+    // Camera: only probed when a video device exists at all.
     property bool camInUse: false
-    property int recordSeconds: 0
-    readonly property bool recording: Shell.Recorder.anyActive
+    property bool hasCamera: false
     Process {
-        id: privacyProc
-        command: ["sh", "-c",
-            "m=0; c=0; " +
-            "n=$(pactl list source-outputs 2>/dev/null | grep 'application.process.binary' | grep -vc '\"cava\"'); " +
-            "[ \"${n:-0}\" -gt 0 ] && m=1; " +
-            "find /proc/[0-9]*/fd -lname '/dev/video*' -print -quit 2>/dev/null | grep -q . && c=1; " +
-            "echo \"$m $c\""]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const p = this.text.trim().split(" ");
-                root.micInUse = p[0] === "1";
-                root.camInUse = p[1] === "1";
-            }
-        }
+        running: true
+        command: ["sh", "-c", "ls /dev/video* >/dev/null 2>&1 && echo 1 || echo 0"]
+        stdout: StdioCollector { onStreamFinished: root.hasCamera = this.text.trim() === "1" }
     }
-    Timer { interval: 3000; repeat: true; triggeredOnStart: true; running: Config.s.showPrivacy; onTriggered: privacyProc.running = true }
+    Process {
+        id: camProc
+        command: ["sh", "-c", "find /proc/[0-9]*/fd -lname '/dev/video*' -print -quit 2>/dev/null | grep -q . && echo 1 || echo 0"]
+        stdout: StdioCollector { onStreamFinished: root.camInUse = this.text.trim() === "1" }
+    }
+    Timer {
+        interval: 5000; repeat: true; triggeredOnStart: true
+        running: Config.s.showPrivacy && root.hasCamera
+        onTriggered: camProc.running = true
+        onRunningChanged: if (!running) root.camInUse = false
+    }
+
+    readonly property bool recording: Platform.recording
+    property int recordSeconds: 0
     Timer { interval: 1000; repeat: true; running: root.recording; onTriggered: root.recordSeconds++ }
-    Connections {
-        target: Shell.Recorder
-        function onAnyActiveChanged() {
-            if (Shell.Recorder.anyActive) {
-                root.recordSeconds = 0;
-                root.flash("osd", "radio_button_checked", "Screen Recording", -1, Theme.red, 2000);
-            } else root.flash("osd", "stop_circle", "Recording Saved", -1, null, 2000);
-        }
+    onRecordingChanged: {
+        if (recording) { recordSeconds = 0; flash("osd", "radio_button_checked", "Screen Recording", -1, Theme.red, 2000); }
+        else flash("osd", "stop_circle", "Recording Saved", -1, null, 2000);
     }
-    function stopRecording() { Shell.Recorder.stop(); }
+    function stopRecording() { Platform.stopRecording(); }
 
     // ═════════════════════ LOCATION + WEATHER ════════════════════
-    // Location: GeoClue (Wi-Fi positioning, precise) → IP geolocation → or a city you pick.
+    // Location: GeoClue (Wi-Fi positioning) → IP geolocation → or a city you pick.
     // Weather: Open-Meteo (no key needed).
     property real locLat: NaN
     property real locLon: NaN
@@ -531,7 +524,7 @@ Singleton {
         } else ipProc.running = true;
     }
     function useGeo(lat, lon, acc) {
-        // Ignore coarse fixes (> 25 km) — the IP lookup is usually as good then.
+        // Ignore coarse fixes (> 25 km): the IP lookup is usually as good then.
         if (isNaN(lat) || isNaN(lon) || acc > 25000) { ipProc.running = true; return; }
         locLat = lat; locLon = lon; locAccuracy = acc;
         locSource = "Wi-Fi (GeoClue)";
@@ -539,15 +532,13 @@ Singleton {
         revProc.running = true;
         fetchWeather();
     }
-
-    // GeoClue demo client: prints Latitude/Longitude/Accuracy once it has a fix.
     Process {
         id: geoProc
         property real lat: NaN
         property real lon: NaN
         property real acc: -1
         property bool handled: false
-        command:["sh", "-c",
+        command: ["sh", "-c",
             "for p in /usr/lib/geoclue-2.0/demos/where-am-i /usr/libexec/geoclue-2.0/demos/where-am-i; do " +
             "[ -x \"$p\" ] && exec timeout 14 \"$p\" -t 12 -a 8; done; exit 127"]
         stdout: SplitParser {
@@ -573,8 +564,7 @@ Singleton {
     }
     Process {
         id: ipProc
-        command: ["sh", "-c",
-            "curl -sf --max-time 8 https://ipinfo.io/json || curl -sf --max-time 8 https://ipapi.co/json/"]
+        command: ["sh", "-c", "curl -sf --max-time 8 https://ipinfo.io/json || curl -sf --max-time 8 https://ipapi.co/json/"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
@@ -582,19 +572,16 @@ Singleton {
                     let lat = NaN, lon = NaN;
                     if (j.loc) { const p = j.loc.split(","); lat = parseFloat(p[0]); lon = parseFloat(p[1]); }
                     else if (j.latitude !== undefined) { lat = j.latitude; lon = j.longitude; }
-                    else if (j.lat !== undefined) { lat = j.lat; lon = j.lon; }
                     if (isNaN(lat) || isNaN(lon)) throw "no coords";
                     root.locLat = lat; root.locLon = lon; root.locAccuracy = -1;
-                    const region = j.region || j.regionName || "";
-                    root.locName = [j.city, region].filter(x => x && x !== "").join(", ");
+                    root.locName = [j.city, j.region || ""].filter(x => x && x !== "").join(", ");
                     root.locSource = "IP address";
                     root.locStatus = "";
                     root.fetchWeather();
-                } catch (e) { root.locStatus = "Couldn't find your location. Set it manually in Settings → Weather."; }
+                } catch (e) { root.locStatus = "Couldn't find your location. Set it in Settings → Weather."; }
             }
         }
     }
-    // Reverse-geocode GeoClue coordinates to a place name
     Process {
         id: revProc
         command: ["sh", "-c",
@@ -649,19 +636,14 @@ Singleton {
         resolveLocation();
     }
 
-    // ── Weather ──
     property string wTemp: ""
     property string wDesc: ""
     property string wHigh: ""
     property string wLow: ""
-    property string wFeels: ""
-    property int wHumidity: 0
     property bool wIsDay: true
     property var wHourly: []
     readonly property string wPlace: locName
     readonly property bool wImperial: Config.s.units === "imperial"
-    readonly property string weatherTemp: wTemp
-    readonly property string weatherDesc: wDesc
 
     readonly property var wmo: ({
         0: "Clear", 1: "Mostly Clear", 2: "Partly Cloudy", 3: "Cloudy", 45: "Fog", 48: "Fog",
@@ -675,7 +657,7 @@ Singleton {
         id: weatherProc
         command: ["sh", "-c",
             "curl -sf --max-time 12 \"https://api.open-meteo.com/v1/forecast?latitude=$1&longitude=$2" +
-            "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day" +
+            "&current=temperature_2m,weather_code,is_day" +
             "&hourly=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min" +
             "&timezone=auto&forecast_days=2$3\"",
             "sh", String(root.locLat), String(root.locLon), root.wImperial ? "&temperature_unit=fahrenheit" : ""]
@@ -687,13 +669,10 @@ Singleton {
             const j = JSON.parse(t);
             const c = j.current;
             wTemp = Math.round(c.temperature_2m) + "°";
-            wFeels = Math.round(c.apparent_temperature) + "°";
-            wHumidity = Math.round(c.relative_humidity_2m);
             wDesc = wmo[c.weather_code] || "—";
             wIsDay = c.is_day === 1;
             wHigh = Math.round(j.daily.temperature_2m_max[0]) + "°";
             wLow = Math.round(j.daily.temperature_2m_min[0]) + "°";
-            // hourly: start at the location's current hour (times are local to the location)
             const cur = String(c.time).slice(0, 13);
             const ts = j.hourly.time;
             let i0 = 0;
@@ -716,7 +695,7 @@ Singleton {
         running: Config.s.weather && root.hasLocation
         onTriggered: root.fetchWeather()
     }
-    Timer {   // re-locate every 2 h (you may have moved), and once at start
+    Timer {   // re-locate every 2 h, and once at start
         interval: 7200000; repeat: true; triggeredOnStart: true
         running: Config.s.weather
         onTriggered: root.resolveLocation()
@@ -734,7 +713,7 @@ Singleton {
         d = (d || "").toLowerCase();
         const n = night ?? !wIsDay;
         if (d.includes("thunder")) return "thunderstorm";
-        if (d.includes("snow") || d.includes("sleet") || d.includes("ice") || d.includes("blizzard")) return "weather_snowy";
+        if (d.includes("snow") || d.includes("sleet") || d.includes("ice")) return "weather_snowy";
         if (d.includes("rain") || d.includes("drizzle") || d.includes("shower")) return "rainy";
         if (d.includes("fog") || d.includes("mist") || d.includes("haze")) return "foggy";
         if (d.includes("partly")) return n ? "partly_cloudy_night" : "partly_cloudy_day";
@@ -754,7 +733,6 @@ Singleton {
     property real mem: 0
     property real disk: 0
     property real memUsedGb: 0
-    property real memTotalGb: 0
     property string uptime: ""
     property var lastCpu: null
     Process {
@@ -764,9 +742,9 @@ Singleton {
             "echo \"DISK $(df -P / | awk 'NR==2{print $5}')\"; echo \"UP $(cut -d' ' -f1 /proc/uptime)\""]
         stdout: StdioCollector { onStreamFinished: root.parseStats(this.text) }
     }
-    Timer {
+    Timer {   // only while the Home tab is on screen
         interval: 2000; repeat: true; triggeredOnStart: true
-        running: root.expanded
+        running: root.expanded && root.tab === 0 && root.trayView === ""
         onTriggered: statProc.running = true
     }
     function parseStats(t) {
@@ -792,7 +770,7 @@ Singleton {
                 uptime = d > 0 ? d + "d " + h + "h" : h > 0 ? h + "h " + m + "m" : m + "m";
             }
         }
-        if (mt > 0) { mem = 1 - ma / mt; memTotalGb = mt / 1048576; memUsedGb = (mt - ma) / 1048576; }
+        if (mt > 0) { mem = 1 - ma / mt; memUsedGb = (mt - ma) / 1048576; }
     }
 
     // ═══════════════════════ QUICK TOGGLES ═══════════════════════
@@ -823,9 +801,9 @@ Singleton {
             }
         }
     }
-    Timer {
+    Timer {   // only while the Control Center can show it
         interval: 5000; repeat: true; triggeredOnStart: true
-        running: root.expanded || root.settingsOpen
+        running: (root.expanded && root.tab === 2) || root.settingsOpen
         onTriggered: { netProc.running = true; if (root.hasBacklight) root.refreshBrightness(); }
     }
     Timer { id: netRefresh; interval: 1500; onTriggered: { netProc.running = true; if (root.wifiMenuOpen) wifiList.running = true; } }
@@ -856,10 +834,12 @@ Singleton {
     readonly property bool wifiMenuOpen: ccPage === "wifi" && expanded && tab === 2
     readonly property bool btMenuOpen: ccPage === "bt" && expanded && tab === 2
     onBtMenuOpenChanged: btScan(btMenuOpen)
-    onExpandedChanged: { if (!expanded) ccPage = ""; else launcherOpen = false; }
+    onExpandedChanged: {
+        if (!expanded) { ccPage = ""; closeTray(); }
+        else launcherOpen = false;
+    }
     function openCC(page, screenName) { ccPage = page; openTab(screenName, 2); }
     property var wifiNetworks: []        // [{ssid, signal, secure, active, known}]
-    property var wifiKnown: []
     property bool wifiScanning: false
     property string wifiBusy: ""          // SSID being joined
     property string wifiError: ""
@@ -883,7 +863,7 @@ Singleton {
                     if (k) { if (f[f.length - 1] === "802-11-wireless") known.push(f.slice(0, -1).join(":")); continue; }
                     if (f.length < 4) continue;
                     const ssid = f.slice(3).join(":");
-                    if (ssid === "") continue;   // hidden networks
+                    if (ssid === "") continue;
                     const n = { ssid: ssid, signal: parseInt(f[1]) || 0, secure: f[2] !== "" && f[2] !== "--", active: f[0] === "*" };
                     const prev = byName[ssid];
                     if (!prev) byName[ssid] = n;
@@ -892,7 +872,6 @@ Singleton {
                 const list = [];
                 for (const s in byName) { byName[s].known = known.indexOf(s) >= 0; list.push(byName[s]); }
                 list.sort((a, b) => (b.active - a.active) || (b.known - a.known) || (b.signal - a.signal));
-                root.wifiKnown = known;
                 root.wifiNetworks = list;
                 root.wifiScanning = false;
             }
@@ -906,7 +885,7 @@ Singleton {
     Timer { id: wifiListLater; interval: 2200; onTriggered: wifiList.running = true }
     Timer {
         interval: 10000; repeat: true; triggeredOnStart: true
-        running: root.wifiMenuOpen && root.wifiOn && root.expanded
+        running: root.wifiMenuOpen && root.wifiOn
         onTriggered: root.wifiScan()
     }
     function wifiScan() {
@@ -965,66 +944,75 @@ Singleton {
         return s >= 75 ? "signal_wifi_4_bar" : s >= 50 ? "network_wifi_3_bar" : s >= 25 ? "network_wifi_2_bar" : "network_wifi_1_bar";
     }
 
-    // Caffeine is the shell's shared keep-awake flag, held by the host
-    // inhibitor every Ryoku desktop ships, so the shell's own surfaces agree.
-    readonly property bool caffeine: Shell.Flags.keepAwake
-    function toggleCaffeine() { Shell.Flags.keepAwake = !Shell.Flags.keepAwake; }
-    // Night Shift is the shell's Nightlight service (daemon-driven, works on
-    // every compositor); the island just flips it with its own temperature.
-    readonly property bool nightLight: Shell.Nightlight.on
+    readonly property bool caffeine: Platform.caffeine
+    function toggleCaffeine() { Platform.setCaffeine(!Platform.caffeine); }
+    readonly property bool nightLight: Platform.nightLight
     function toggleNightLight() {
-        Shell.Nightlight.setEnabled(!Shell.Nightlight.on, Config.s.nightLightTemp);
-        flash("osd", "nightlight", Shell.Nightlight.on ? "Night Shift" : "Night Shift Off", -1, null, 1800);
-    }
-    function applyNightLightTemp() {
-        if (Shell.Nightlight.on) Shell.Nightlight.setTemperature(Config.s.nightLightTemp);
-    }
-    Connections {
-        target: Config.s
-        function onNightLightTempChanged() { root.applyNightLightTemp(); }
-    }
-    // ── Session actions: the shell's own SessionActions service ──
-    // lock/suspend run the daemon's fail-closed `ryoku-shell lock|suspend`
-    // (the same `ryoku-shell lock` the Super+L keybind runs on every compositor).
-    // logout/reboot/shutdown are the daemon's session.* verbs.
-    function session(action) {
-        expanded = false;
-        Shell.SessionActions.run(action);
+        const on = !Platform.nightLight;
+        Platform.setNightLight(on);
+        flash("osd", "nightlight", on ? "Night Shift" : "Night Shift Off", -1, on ? "#ff9f45" : null, 1800);
     }
 
-    function run(cmd, collapse) {
-        if (collapse) expanded = false;
-        Quickshell.execDetached(["sh", "-c", cmd]);
-    }
-    function screenshot() {
-        expanded = false;
-        Shell.Capture.shoot("region");
-    }
-    function colorPick() { run("sleep 0.5; hyprpicker -a", true); }
+    function session(action) { expanded = false; Platform.session(action); }
+    function screenshot() { expanded = false; Platform.screenshot(); }
+    function colorPick() { expanded = false; Platform.colorPick(); }
+    // open the first installed app from a fixed list (network / Bluetooth settings)
     function openFirst(cmds) {
-        run(cmds.map(c => "command -v " + c.split(" ")[0] + " >/dev/null && exec " + c).join("; ") + "; true", true);
+        expanded = false;
+        Quickshell.execDetached(["sh", "-c", cmds.map(c => "command -v " + c.split(" ")[0] + " >/dev/null && exec " + c).join("; ") + "; true"]);
     }
+
+    // ═══════════════════════ SYSTEM TRAY ═════════════════════════
+    // The tray lives inside the island: a strip in the header and a full
+    // sheet (every item, and each app's menu drawn in place). Nothing opens a
+    // separate popup window, so a menu can't outlive the island or collapse it.
+    readonly property var trayItems: SystemTray.items.values
+    property string trayView: ""      // "" | "list" | "menu"
+    property var trayItem: null       // the item whose menu is open
+    function openTrayList(screenName) {
+        trayItem = null;
+        trayView = "list";
+        if (!expanded) openTab(screenName, -1);
+    }
+    function openTrayMenu(item, screenName) {
+        if (!item || !item.hasMenu) return;
+        trayItem = item;
+        trayView = "menu";
+        if (!expanded) openTab(screenName, -1);
+    }
+    function closeTray() { trayView = ""; trayItem = null; }
+    function trayBack() { if (trayView === "menu") { trayItem = null; trayView = "list"; } else closeTray(); }
+    function trayActivate(item, button) {
+        if (!item) return;
+        if (button === Qt.RightButton) { openTrayMenu(item, ""); return; }
+        if (button === Qt.MiddleButton) { item.secondaryActivate(); return; }
+        if (item.onlyMenu) { openTrayMenu(item, ""); return; }
+        item.activate();
+    }
+    function trayName(item) {
+        if (!item) return "";
+        const t = item.tooltipTitle || item.title || "";
+        if (t !== "") return t;
+        return String(item.id || "App").replace(/[-_]/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    }
+    // drop a menu whose item went away
+    onTrayItemsChanged: if (trayItem && trayItems.indexOf(trayItem) < 0) trayBack()
 
     // ═══════════════════ DEPENDENCY CHECK (Settings → About) ═════
     property var deps: ({})
     readonly property var depList: [
         { cmd: "nmcli", pkg: "networkmanager", what: "Wi-Fi toggle and network menu" },
-        { cmd: "bluetoothctl", pkg: "bluez-utils", what: "Bluetooth (with the bluetooth service running)" },
         { cmd: "brightnessctl", pkg: "brightnessctl", what: "Display brightness" },
         { cmd: "cava", pkg: "cava (AUR)", what: "Real audio visualizer" },
-        { cmd: "hyprpicker", pkg: "hyprpicker", what: "Colour picker" },
         { cmd: "paplay", pkg: "libpulse", what: "Notification sounds" },
-        { cmd: "notify-send", pkg: "libnotify", what: "Test notification" },
         { cmd: "curl", pkg: "curl", what: "Weather and location" },
-        { cmd: "pactl", pkg: "libpulse", what: "Microphone-in-use dot" },
-        { cmd: "gsettings", pkg: "glib2", what: "GTK accent + dark mode sync" }
-    ]
+        { cmd: "gsettings", pkg: "glib2", what: "GTK accent colour" }
+    ].concat(Platform.extraDeps || [])
     Process {
         id: depProc
-        command: ["sh", "-c", "for c in " + root.depList.map(d => d.cmd).join(" ") +
-                  " where-am-i; do if [ \"$c\" = where-am-i ]; then ls /usr/lib/geoclue-2.0/demos/where-am-i /usr/libexec/geoclue-2.0/demos/where-am-i >/dev/null 2>&1 && echo \"$c 1\" || echo \"$c 0\"; " +
-                  "else command -v \"$c\" >/dev/null && echo \"$c 1\" || echo \"$c 0\"; fi; done; " +
-                  "true"]
+        command: ["sh", "-c", "for c in \"$@\"; do command -v \"$c\" >/dev/null && echo \"$c 1\" || echo \"$c 0\"; done; " +
+                  "ls /usr/lib/geoclue-2.0/demos/where-am-i /usr/libexec/geoclue-2.0/demos/where-am-i >/dev/null 2>&1 && echo 'where-am-i 1' || echo 'where-am-i 0'",
+                  "sh"].concat(root.depList.map(d => d.cmd))
         stdout: StdioCollector {
             onStreamFinished: {
                 const d = {};
@@ -1059,7 +1047,7 @@ Singleton {
         timerRunning = false;
         timerLeft = 0;
         flash("osd", "alarm", "Timer Done", -1, Theme.orange, 7000);
-        Quickshell.execDetached(["sh", "-c", "paplay /usr/share/sounds/freedesktop/stereo/complete.oga 2>/dev/null || true"]);
+        Quickshell.execDetached(["paplay", "/usr/share/sounds/freedesktop/stereo/complete.oga"]);
     }
 
     property bool swRunning: false
@@ -1068,7 +1056,8 @@ Singleton {
     property real swTick: 0
     readonly property real swElapsed: swRunning ? swAccum + (swTick - swStart) : swAccum
     readonly property bool swActive: swRunning || swAccum > 0
-    Timer { interval: 33; repeat: true; running: root.swRunning; onTriggered: root.swTick = Date.now() }
+    // 10 Hz is plenty for a centisecond readout nobody can read at 30 Hz
+    Timer { interval: 100; repeat: true; running: root.swRunning; onTriggered: root.swTick = Date.now() }
     function swToggle() {
         if (swRunning) { swAccum += Date.now() - swStart; swRunning = false; }
         else { swStart = Date.now(); swTick = swStart; swRunning = true; }
@@ -1094,15 +1083,21 @@ Singleton {
         else if (kind === "recording") stopRecording();
     }
 
-    // ════════════════════ IPC + GLOBAL SHORTCUTS ═════════════════
-    // qs -c island ipc call island <function> [args]
+    // ═════════════════════════════ IPC ═══════════════════════════
+    // qs ... ipc call island <function> [args]
     IpcHandler {
         target: "island"
         function toggle(): void { root.toggle(""); }
         function open(tab: int): void { root.openTab("", tab); }
-        function close(): void { root.expanded = false; Notifs.centerOpen = false; }
+        function close(): void { root.collapse(); }
         function settings(): void { root.openSettings(); }
-        function center(): void { Notifs.toggleCenter(); }
+        function center(): void { Notifs.toggleCenter(""); }
+        function tray(): void { if (root.trayView !== "") root.collapse(); else root.openTrayList(""); }
+        function trayMenu(app: string): void {
+            const q = app.toLowerCase();
+            const it = root.trayItems.find(i => root.trayName(i).toLowerCase().includes(q) || String(i.id).toLowerCase().includes(q));
+            if (it) root.openTrayMenu(it, "");
+        }
         function brightness(): void { root.showBrightness(); }
         function osd(icon: string, label: string, value: real): void { root.flash("osd", icon, label, value); }
         function dnd(): void { Notifs.toggleDnd(); }
@@ -1112,9 +1107,6 @@ Singleton {
         function pause(): void { root.pausePlayer(); }
         function next(): void { root.nextTrack(); }
         function previous(): void { root.prevTrack(); }
+        function clearBanners(): void { Notifs.clearPopups(); }
     }
-    ShellShortcut { name: "islandLauncher"; description: "App launcher in the island"; onPressed: root.toggleLauncher() }
-    ShellShortcut { name: "islandToggle"; description: "Toggle the dynamic island"; onPressed: root.toggle("") }
-    ShellShortcut { name: "islandCenter"; description: "Notification Center"; onPressed: Notifs.toggleCenter() }
-    ShellShortcut { name: "islandSettings"; description: "Island settings"; onPressed: root.openSettings() }
 }

@@ -102,6 +102,30 @@
       "lastUpdated": "2026-11-04",
       "official": false,
       "license": "GPL-3.0-only"
+    },
+    {
+      "id": "island",
+      "name": "Island",
+      "version": "1.0.0",
+      "path": "launchers/island",
+      "author": "Alan Betty",
+      "upstream": "https://github.com/Alan-Betty/quickshell-DynamicIsland/tree/main/ryostore/launchers/island",
+      "summary": "A pill that stretches into a search field",
+      "description": "Super+Space drops a black pill from the top edge that stretches into a search field. Apps you open most rise to the top, sums are answered as you type, and > runs a command (Ctrl+Enter in a terminal). The selected row is a gliding slab of liquid glass.",
+      "tags": [
+        "spotlight",
+        "island",
+        "liquid-glass"
+      ],
+      "accent": "#0a84ff",
+      "surface": "#000000",
+      "preview": "assets/preview.webp",
+      "screenshots": [],
+      "manifest": "manifest.json",
+      "manifestSha256": "90eb3d547ecf382f17dfeb611a5854a714e5af5141fe9216c0d667cd66c01dbb",
+      "lastUpdated": "2026-11-21",
+      "official": false,
+      "license": "MIT"
     }
   ]
 }

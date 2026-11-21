@@ -1,53 +1,33 @@
-Dynamic Island Ryoku Bar Style
+Dynamic Island, Ryoku bar style
 
 Upstream: quickshell-DynamicIsland, https://github.com/Alan-Betty/quickshell-DynamicIsland
-Landed from RyoStore issue #207 ("[Submit]: Dynamic Island Rich with Features").
-Upstream license: MIT; see LICENSE (Alan Betty).
+Version: 4.0.0
+Licence: MIT, see LICENSE (Alan Betty).
 
-All upstream QML is carried (36 files: shell surfaces, island, banner stack,
-notification center and cards, launcher, settings window, widgets) with the
-following Ryoku rewrites:
+Built from upstream's ryostore/barstyles/dynamic-island folder. In upstream:
 
-- shell.qml is replaced by Scene.qml, the Ryoku bar product entry: one island
-  overlay per screen, singletons armed on the primary, and the desktop's
-  surface bus routes `launcher` and `settings` to the island's surfaces.
-- IslandWindow.qml: Hyprland monitor/fullscreen state moves to the neutral Wm
-  facade (Wm.focusedOutput, Wm.outputHasFullscreen). The hyprctl gaps_out
-  probe becomes an "Outer gaps" setting. HyprlandFocusGrab is replaced by a
-  neutral full-window input mask plus a click-away underlay.
-- Island.qml: focusedMonitor lookup replaced by Wm.focusedOutput.
-- Hub.qml: focusedScreen uses Wm; workspace ids/dots come from Wm.workspaces;
-  session actions delegate to shell.services SessionActions; screen
-  recording delegates to shell.services Recorder; screenshots delegate to
-  shell.services Capture; Night Shift delegates to shell.services Nightlight
-  (the hyprsunset process and the hyprctl session fallback are gone).
-- Notifs.qml: rewritten as a wrapper over the shell's notification server
-  (shell.services Notifs). The upstream daemon takeover (pkill of mako,
-  dunst, swaync, fnott plus the bus-owner watcher) is removed; arrivals,
-  grouping, banners, expiry and the Notification Center bookkeeping stay.
-- Theme.qml: the hyprctl border accent source is replaced by a "ryoku"
-  source reading shell.services Theme.primary; the hyprpaper wallpaper probe
-  is replaced by a ryogami probe. Matugen, pywal, GTK and wallpaper sources
-  stay as upstream.
-- Config.qml: settings move to ~/.config/ryoku/dynamic-island/settings.json;
-  reset applies mirrored defaults in place instead of reloading the shell.
-  notification takeover and island-notifications-by-default sound knobs are
-  re-defaulted as documented in the README.
-- SettingsWindow.qml: daemon status/overwrite rows replaced by the shared
-  daemon wording, the Hyprland binds page becomes the global-shortcut list,
-  "Reload Island" (a whole-shell reload) is dropped.
+- shared/ holds the island's QML and shader, the same code the standalone
+  Hyprland build runs. tools/sync.sh copies it here verbatim.
+- Platform.qml is written for Ryoku: notifications wrap shell.services Notifs,
+  compositor state comes from the Wm facade, and Night Shift, Caffeine,
+  session actions, screenshots and recording go through the shell's
+  Nightlight, Flags, SessionActions, Capture and Recorder services. Launching
+  goes through AppLaunch and Spawn.
+- Scene.qml is the bar style entry. ShellShortcut.qml bridges global
+  shortcuts through the Wm provider's GlobalShortcutBridge.
 
-Honest degradations are listed in README.md. Everything else — the glass
-surface, springs, tabs, media, timer, launcher, weather and Bluetooth
-pages — is carried unchanged from the pinned upstream main branch.
+4.0.0
+- Black island; liquid glass is a shader on the controls only.
+- Tray menus open inside the island; urgent banners expire; banner holds
+  can't stick.
+- Idle work trimmed: minute clock ticks, visualizer and position ticks only
+  while visible, Pipewire mic detection, stats and network polls tied to
+  their tab.
+- One shared codebase with the standalone build, behind Platform.qml.
 
-1.0.1: idle fixes.
-- Island.qml: the recording pulse dot only animates while it is visible. It ran
-  from the moment the island loaded, which kept the shell's main thread waking
-  about 70 times a second with nothing on screen.
-- Theme.qml: the long-lived `gsettings monitor` is started under
-  `setpriv --pdeathsig TERM`, so it ends with the shell instead of outliving a
-  switch to another bar style.
-- Theme.qml: the wallpaper probe (a shell process every 15 s) runs only while
-  the accent source can use it: the wallpaper source is chosen, nothing else
-  provides an accent, or the settings window is open.
+1.0.1 (store port)
+- Recording pulse only animates while visible; gsettings monitor ends with
+  the shell; wallpaper probe only runs when it is used.
+
+1.0.0 (store port)
+- First Ryoku port of upstream 3.0.

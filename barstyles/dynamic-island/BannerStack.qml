@@ -8,6 +8,7 @@ import Quickshell
 Item {
     id: root
     property bool active: true
+    property string screenName: ""
     property real originY: -60          // where banners emerge from (relative to the stack)
     readonly property bool hovered: hov.hovered
     readonly property bool fanned: hovered || live.length <= 1
@@ -66,10 +67,12 @@ Item {
     height: Math.max(1, contentHeight)
     visible: shown.length > 0
 
-    HoverHandler {
-        id: hov
-        onHoveredChanged: Notifs.hovering = hovered
-    }
+    HoverHandler { id: hov }
+    // pause every banner while the pointer is on the stack; released the
+    // moment the stack hides, even if the pointer never "leaves"
+    readonly property bool holding: hov.hovered && visible && live.length > 0
+    onHoldingChanged: Notifs.setHold("hover:banners:" + screenName, holding)
+    Component.onDestruction: Notifs.setHold("hover:banners:" + screenName, false)
 
     // "N more" pill under a tucked stack
     Rectangle {
@@ -81,6 +84,8 @@ Item {
         height: 20; radius: 10
         width: moreTxt.implicitWidth + 16
         color: Theme.card
+        border.width: 1
+        border.color: Theme.hairline
         Txt { id: moreTxt; anchors.centerIn: parent; text: (root.live.length - 1) + " more"; size: 11; weight: Font.DemiBold; color: Theme.fg2 }
     }
 
@@ -94,13 +99,13 @@ Item {
             width: root.width
             height: 9
             clip: true
-            Glass {
+            Surface {
                 x: (parent.index + 1) * 14
                 width: parent.width - (parent.index + 1) * 28
                 y: -30 + 9
                 height: 30
                 radius: 15
-                tint: Theme.alpha(Theme.card, Theme.card.a * (0.85 - parent.index * 0.25))
+                color: Theme.mix(Theme.card, Qt.rgba(0, 0, 0, 1), 0.25 + parent.index * 0.2)
                 shadow: false
             }
         }

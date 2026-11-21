@@ -303,27 +303,29 @@
     {
       "id": "dynamic-island",
       "name": "Dynamic Island",
-      "version": "1.0.1",
+      "version": "4.0.0",
       "path": "barstyles/dynamic-island",
-      "author": "Alan-Betty",
+      "author": "Alan Betty",
       "upstream": "https://github.com/Alan-Betty/quickshell-DynamicIsland",
-      "summary": "Liquid-glass dynamic island",
-      "description": "The quickshell-DynamicIsland shell ported to Ryoku: a glass island that grows for live activities (music, timer, recording), draws the notification banners and Notification Center over the shell's daemon, and morphs into a Spotlight-style app launcher. Full settings window included.",
+      "summary": "A black island with liquid-glass controls",
+      "description": "A black island at the top of the screen that grows for live activities (music, timers, recording), opens into a dashboard with Home, Media, Controls and Timer tabs, draws the banners and the Notification Center over the shell's daemon, morphs into a Spotlight-style launcher, and keeps the system tray and its menus inside the island. Every control on it is refracting liquid glass.",
       "tags": [
         "top",
         "island",
-        "glass",
+        "subshell",
+        "liquid-glass",
         "notifications",
         "launcher",
-        "media"
+        "media",
+        "tray"
       ],
       "accent": "#0a84ff",
-      "surface": "#0d0d10",
+      "surface": "#000000",
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "778c1aa6d6e86d626236c1338b6028efa3abaef007a9396c4816b93852068575",
-      "lastUpdated": "2026-11-17",
+      "manifestSha256": "3ed17a2d62f704ac2d9b7e1c9d29fe4b7def871a8efb6ad4453213c0c43623d4",
+      "lastUpdated": "2026-11-21",
       "official": false,
       "license": "MIT"
     }

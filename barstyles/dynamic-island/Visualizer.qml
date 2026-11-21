@@ -9,6 +9,9 @@ Row {
     spacing: 2
     height: maxHeight
 
+    // cava only runs while a visualizer is actually on screen
+    Demand { kind: "viz"; active: root.visible && Hub.playing }
+
     Repeater {
         model: root.count
         Rectangle {
@@ -28,7 +31,7 @@ Row {
             height: Math.max(root.barWidth, root.maxHeight * (Hub.playing ? level : 0))
             radius: width / 2
             color: root.color
-            Behavior on height { NumberAnimation { duration: 90; easing.type: Easing.OutQuad } }
+            Behavior on height { enabled: !Theme.reduced; NumberAnimation { duration: 110; easing.type: Easing.OutQuad } }
             Behavior on color { ColorAnimation { duration: 400 } }
         }
     }
