@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "id": "island",
+  "category": "osds",
+  "version": "1.0.0",
+  "destination": "ryoku/osds/island",
+  "files": [
+    {
+      "source": "GlassControl.qml",
+      "destination": "GlassControl.qml",
+      "sha256": "aaa5b8a28ee3119c88dc6c9941727304578e8f77cd6a6acbcb6314a55a10bd45",
+      "mode": "0644",
+      "size": 5642,
+      "install": true
+    },
+    {
+      "source": "LICENSE",
+      "destination": "LICENSE",
+      "sha256": "055aeb4d33b97b531d78a1f8d67515fa53fdea00a904048cf06b46eeba4ca987",
+      "mode": "0644",
+      "size": 1067,
+      "install": true
+    },
+    {
+      "source": "Osd.qml",
+      "destination": "Osd.qml",
+      "sha256": "3b84e42e58e243ffab8da17c2768932a69fc569a2924166893ad361dcbd1f0a3",
+      "mode": "0644",
+      "size": 6095,
+      "install": true
+    },
+    {
+      "source": "README.md",
+      "destination": "README.md",
+      "sha256": "494931e966785d423a05d36794636bb34ac894cff7f66701911119b5d5a6480c",
+      "mode": "0644",
+      "size": 969,
+      "install": true
+    },
+    {
+      "source": "assets/preview.webp",
+      "destination": "assets/preview.webp",
+      "sha256": "ee6edc937ced82313fce1ab3ecc6266a5598e1c37f6804e3353c3e9a83e1cf4f",
+      "mode": "0644",
+      "size": 4308,
+      "install": false
+    },
+    {
+      "source": "shaders/liquidglass.frag",
+      "destination": "shaders/liquidglass.frag",
+      "sha256": "2671e7950f1d0c4c7629b69528021609fb98041ee1ec44c2438979278300cc0f",
+      "mode": "0644",
+      "size": 6278,
+      "install": true
+    },
+    {
+      "source": "shaders/liquidglass.frag.qsb",
+      "destination": "shaders/liquidglass.frag.qsb",
+      "sha256": "767e7431b2e5749e826079d82530f948602f928e754774e85b01b55bffad08d3",
+      "mode": "0644",
+      "size": 9698,
+      "install": true
+    }
+  ],
+  "license": "MIT"
+}

@@ -14,13 +14,16 @@ Item {
     implicitWidth: Math.max(size, 76)
     implicitHeight: size + (label !== "" ? 34 : 0)
 
-    Rectangle {
+    Lens {
         id: circle
         anchors.horizontalCenter: parent.horizontalCenter
-        width: root.size; height: root.size; radius: root.size / 2
-        color: root.active ? root.activeColor : ma.containsMouse ? Theme.fill3 : Theme.fill2
+        width: root.size; height: root.size
+        tint: root.activeColor
+        tintAmount: root.active ? 0.9 : 0
+        hovered: ma.containsMouse
+        pressed: ma.pressed
         scale: ma.pressed ? 0.9 : ma.containsMouse ? 1.04 : 1
-        Behavior on color { ColorAnimation { duration: 220 } }
+        Behavior on tintAmount { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: 280; easing.type: Easing.OutBack; easing.overshoot: 2.6 } }
         Icon {
             anchors.centerIn: parent

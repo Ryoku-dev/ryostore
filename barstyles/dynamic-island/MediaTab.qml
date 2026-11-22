@@ -9,6 +9,7 @@ import Quickshell.Services.Mpris
 Item {
     id: root
     readonly property MprisPlayer p: Hub.player
+    Demand { kind: "position"; active: root.visible && root.p !== null }
 
     Column {
         anchors.centerIn: parent
@@ -144,7 +145,8 @@ Item {
                     onClicked: root.p.previous()
                 }
                 IconButton {
-                    icon: Hub.playing ? "pause" : "play_arrow"; size: 42; fill: 1; pad: 4
+                    glass: true
+                    icon: Hub.playing ? "pause" : "play_arrow"; size: 30; fill: 1; pad: 11
                     onClicked: if (root.p) root.p.togglePlaying()
                 }
                 IconButton {

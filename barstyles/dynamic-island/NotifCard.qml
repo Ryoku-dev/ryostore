@@ -40,8 +40,12 @@ Item {
     implicitHeight: card.height + (menuShown ? menu.implicitHeight + 8 : 0)
     Behavior on implicitHeight { NumberAnimation { duration: Theme.reduced ? 1 : 260; easing.type: Easing.OutCubic } }
 
-    onExpandedChanged: if (isBanner) Notifs.bannerExpanded = expanded
-    Component.onDestruction: if (isBanner && expanded) Notifs.bannerExpanded = false
+    // An open banner (actions / reply showing) holds the countdown. The lease
+    // is keyed to this notification and dropped when the card goes away.
+    readonly property string nid: notif ? String(notif.id) : ""
+    readonly property bool holdingOpen: isBanner && expanded && visible
+    onHoldingOpenChanged: if (nid !== "") Notifs.setHold("expand:" + nid, holdingOpen)
+    Component.onDestruction: if (nid !== "") { Notifs.setHold("expand:" + nid, false); Notifs.setHold("reply:" + nid, false); }
 
     // ═══════════════════════ GESTURES ═══════════════════════
     property real dragX: 0
@@ -94,15 +98,23 @@ Item {
     component RevealBtn: Item {
         id: rvb
         property string label: ""
-        property color tint: Theme.card
+        property color tint: "#ffffff"
+        property bool tinted: false
         property color textColor: Theme.fg
         signal clicked()
         width: 74
-        Glass { anchors.fill: parent; radius: 20; tint: rvb.tint; shadow: false }
-        Txt { anchors.centerIn: parent; text: rvb.label; size: 13.5; weight: Font.DemiBold; color: rvb.textColor }
+        Lens {
+            anchors.fill: parent
+            radius: 20
+            tint: rvb.tint
+            tintAmount: rvb.tinted ? 0.85 : 0
+            hovered: rvbMa.containsMouse
+            pressed: rvbMa.pressed
+            Txt { anchors.centerIn: parent; text: rvb.label; size: 13.5; weight: Font.DemiBold; color: rvb.textColor }
+        }
         scale: rvbMa.pressed ? 0.94 : 1
         Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
-        MouseArea { id: rvbMa; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: rvb.clicked() }
+        MouseArea { id: rvbMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: rvb.clicked() }
     }
     Row {
         id: revealRow
@@ -120,6 +132,8 @@ Item {
         RevealBtn {
             height: card.height
             label: "Clear"
+            tint: Theme.red
+            tinted: true
             onClicked: root.leave(-(root.width + 60), 0, true)
         }
     }
@@ -136,15 +150,20 @@ Item {
         scale: root.isBanner && root.dragY > 0 ? 1 + root.dragY / 1200 : 1
         Behavior on height { NumberAnimation { duration: Theme.reduced ? 1 : 260; easing.type: Easing.OutCubic } }
 
-        Glass {
+        // glass controls on this card refract the card itself
+        property var glassSource: null
+        property Item glassSpace: null
+        property color glassBase: root.bare ? Theme.surface : Theme.card
+
+        Surface {
             anchors.fill: parent
             visible: !root.bare
             radius: root.isBanner ? 24 : 22
-            tint: Theme.card
+            color: Theme.card
             shadowBlur: root.isBanner ? 28 : 16
             shadowY: root.isBanner ? 9 : 4
             glowColor: Theme.red
-            glowStrength: root.crit ? 0.28 : 0
+            glowStrength: root.crit && Config.s.glow ? 0.32 : 0
         }
 
         TapHandler {
@@ -236,7 +255,7 @@ Item {
                     anchors.bottom: parent.bottom
                     anchors.margins: -4
                     width: 20; height: 20; radius: 6
-                    color: Theme.dark ? "#2c2c2e" : "#ffffff"
+                    color: "#2c2c2e"
                     AppIcon { anchors.centerIn: parent; size: 16; source: root.icon }
                 }
             }
@@ -347,20 +366,22 @@ Item {
             }
         }
 
-        // macOS-style close button
-        Rectangle {
+        // close button, a small glass bead on the corner
+        Lens {
             visible: opacity > 0.01
             opacity: !root.bare && hov.hovered && !root.leaving && !root.revealed ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 150 } }
             x: -7; y: -7
-            width: 22; height: 22; radius: 11
-            color: Theme.dark ? "#3a3a3c" : "#f2f2f7"
-            border.width: 0.5
-            border.color: Theme.sep
-            Icon { anchors.centerIn: parent; text: "close"; size: 13; weight: 700; color: Theme.fg2 }
+            width: 24; height: 24
+            base: "#1c1c1e"
+            hovered: closeMa.containsMouse
+            pressed: closeMa.pressed
+            Icon { anchors.centerIn: parent; text: "close"; size: 13; weight: 700; color: Theme.fg }
             MouseArea {
+                id: closeMa
                 anchors.fill: parent
                 anchors.margins: -3
+                hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: root.cleared()
             }
@@ -387,10 +408,10 @@ Item {
             visible: root.canReply
             width: parent.width
             height: 42
-            Glass {
+            Surface {
                 anchors.fill: parent
                 radius: 21
-                tint: root.bare ? Theme.fill2 : Theme.card
+                color: root.bare ? Theme.fill2 : Theme.card
                 shadow: !root.bare
                 shadowBlur: 16; shadowY: 4
             }
@@ -409,28 +430,31 @@ Item {
                 font.pixelSize: 14
                 selectionColor: Theme.accent
                 background: Item {}
-                onActiveFocusChanged: Notifs.replying = activeFocus
+                onActiveFocusChanged: if (root.nid !== "") Notifs.setHold("reply:" + root.nid, activeFocus)
                 onAccepted: send.go()
             }
-            Rectangle {
+            Lens {
                 id: send
                 anchors.right: parent.right
                 anchors.rightMargin: 5
                 anchors.verticalCenter: parent.verticalCenter
-                width: 32; height: 32; radius: 16
+                width: 32; height: 32
                 readonly property bool ready: reply.text.trim() !== ""
-                color: ready ? Theme.accent : Theme.fill2
-                Behavior on color { ColorAnimation { duration: 150 } }
+                tint: Theme.accent
+                tintAmount: ready ? 0.9 : 0
+                Behavior on tintAmount { NumberAnimation { duration: 150 } }
+                hovered: sendMa.containsMouse
+                pressed: sendMa.pressed
                 Icon { anchors.centerIn: parent; text: "arrow_upward"; size: 18; weight: 700; color: send.ready ? Theme.accentText : Theme.fg3 }
                 function go() {
                     if (!ready || !root.notif) return;
                     root.notif.sendInlineReply(reply.text);
                     reply.text = "";
-                    Notifs.replying = false;
+                    if (root.nid !== "") Notifs.setHold("reply:" + root.nid, false);
                     root.expanded = false;
                     Notifs.removePopup(root.notif);
                 }
-                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: send.go() }
+                MouseArea { id: sendMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: send.go() }
             }
         }
 
@@ -439,10 +463,10 @@ Item {
             visible: root.acts.length > 0
             width: parent.width
             height: actCol.implicitHeight
-            Glass {
+            Surface {
                 anchors.fill: parent
                 radius: 18
-                tint: root.bare ? Theme.fill2 : Theme.card
+                color: root.bare ? Theme.fill2 : Theme.card
                 shadow: !root.bare
                 shadowBlur: 16; shadowY: 4
             }
@@ -461,7 +485,7 @@ Item {
                             anchors.fill: parent
                             anchors.margins: 4
                             radius: 14
-                            color: actMa.pressed ? Theme.fill3 : actMa.containsMouse ? Theme.fill2 : "transparent"
+                            color: actMa.pressed ? Theme.fill3 : actMa.containsMouse ? Theme.fill : "transparent"
                             Behavior on color { ColorAnimation { duration: 120 } }
                         }
                         Rectangle { visible: act.index > 0; x: 16; width: parent.width - 32; height: 0.5; color: Theme.sep }

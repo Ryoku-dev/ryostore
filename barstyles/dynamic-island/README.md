@@ -1,95 +1,62 @@
 # Dynamic Island
 
-The [quickshell-DynamicIsland](https://github.com/Alan-Betty/quickshell-DynamicIsland)
-shell by Alan-Betty, ported to Ryoku. A liquid-glass dynamic island at the top
-of the screen that grows when something happens: a song starts, a timer runs,
-a notification arrives, you open the launcher.
+A black island at the top of the screen that grows when something happens: a song starts, a timer runs, a notification arrives, you open the launcher. Click it for a small dashboard. The controls on it are liquid glass.
 
-It keeps its three upstream jobs:
+From [quickshell-DynamicIsland](https://github.com/Alan-Betty/quickshell-DynamicIsland) by Alan Betty, version 4.0.0.
 
-- **Island.** Music, timer, stopwatch and screen-recording show up as live
-  activities. Click it to open a panel with a clock, weather, calendar,
-  media player and quick toggles (Wi-Fi, Bluetooth, night shift, brightness,
-  volume and so on).
-- **Notifications.** Banners in three styles (banner, island, corner), a
-  Notification Center with grouped stacks, inline reply when the app
-  supports it, and Do Not Disturb.
-- **App launcher.** The island morphs into a Spotlight-style search field:
-  apps, `> shell commands` and quick maths.
+![Dynamic Island](assets/preview.webp)
 
-## Ryoku integration
+## What it does
 
-Ryoku stays the owner of the desktop services the upstream shell carried
-itself:
+- **Live activities.** Music, timers, the stopwatch and shell recordings take over the pill. A second activity gets its own bubble and the clock steps out to the left.
+- **Dashboard.** Home (clock, weather, calendar, system rings, now playing), Media, Controls (Wi-Fi and Bluetooth menus, sound, brightness, Night Shift, Caffeine, power) and Timer.
+- **Notifications.** Banners drop from under the island. The Notification Center groups by app, and urgent banners stay a little longer, then tuck away.
+- **Launcher.** Super+Space stretches the island into a search field: apps (the ones you use most first), sums, and `>` commands.
+- **System tray.** Tray apps sit next to the tabs, and their menus open inside the island.
 
-- **Notifications** — Ryoku's shell owns the freedesktop daemon. While
-  *Allow Notifications* is on, the island lifts each arrival out of the
-  shell's toast queue and draws the banners and the Notification Center
-  itself, so exactly one banner surface paints. Do Not Disturb toggles the
-  shell's Focus state.
-- **Screen recording** — the recording activity mirrors the shell's
-  Recorder service, and *Stop* calls it. Screenshots call the shell's
-  capture (region shot), not grim/slurp.
-- **Night Shift** — toggles the shell's Nightlight service (temperature set
-  from the island's slider).
-- **Session actions** — lock/suspend/logout/reboot/shutdown go through the
-  shell's SessionActions service.
-- **Colours** — the accent follows Ryoku's active palette first, then
-  Matugen, Pywal/Wallust, the wallpaper, the GTK accent, album art or a
-  custom colour. Light/dark follows GTK and the shell surface.
-- **Workspaces and windows** — compositor state comes from the neutral `Wm`
-  facade (workspace dots, fullscreen hiding, focused screen), never from a
-  compositor CLI.
+## How it fits Ryoku
 
-## Open surfaces
+Ryoku stays in charge of the desktop's services. The island draws on top of them:
+
+- **Notifications.** The shell owns the daemon. With Allow Notifications on, the island takes each arrival out of the shell's toast queue and draws it, so exactly one banner shows. Do Not Disturb is the shell's Focus.
+- **Launcher and Settings.** Super+Space and the settings key open the island's launcher and settings through the shell's surface bus.
+- **Night Shift, Caffeine, session actions, screenshots, recording** go through `Nightlight`, `Flags.keepAwake`, `SessionActions`, `Capture` and `Recorder`.
+- **Workspaces, focused output, fullscreen** come from the `Wm` facade. There is no compositor CLI anywhere, so the same bar style runs on Hyprland and niri.
+- **Colours.** The accent follows the Ryoku palette first, then Matugen, Pywal or Wallust, the wallpaper, GTK, album art or a colour you pick.
+
+Out of the box the island leaves volume and brightness pills to the shell's own OSD and keeps notification sounds off, because the shell already plays one. Both are switches in the island's settings.
+
+## Shortcuts and IPC
+
+The island registers `quickshell:islandLauncher`, `islandToggle`, `islandCenter`, `islandTray` and `islandSettings` through the global-shortcut protocol when the compositor offers it. Bind them in Ryoku Hub → Keybinds.
 
 ```sh
-qs ipc call shell openSurface '' launcher    # island app launcher
-qs ipc call shell openSurface '' settings    # island settings window
-qs ipc call island toggle|center|launcher|settings|playPause|...
+qs ipc call island toggle | center | tray | launcher | settings | playPause | clearBanners
+qs ipc call island trayMenu <app>
 ```
-
-The island also registers global shortcuts (Wayland global-shortcut
-protocol): `quickshell:islandLauncher`, `quickshell:islandToggle`,
-`quickshell:islandCenter`, `quickshell:islandSettings`. Bind them in your
-desktop's shortcut settings — the island's settings window lists them.
 
 ## Settings
 
-The island's settings window (gear icon, or `qs ipc call island settings`)
-edits everything live. Changes persist under:
+The gear on the island opens the island's own settings window. Everything applies live and is saved to `~/.config/ryoku/dynamic-island/settings.json`.
 
-```text
-~/.config/ryoku/dynamic-island/settings.json
-```
+## What it runs, reads and writes
 
-## Honest degradations
+- **Runs:** `nmcli` (Wi-Fi), `brightnessctl`, `cava` (visualizer, if installed), `paplay` (sounds, off by default), `wl-copy` (maths results), `hyprpicker` (colour picker, if installed), `gsettings` (GTK accent), `curl` (weather, off by default), and a camera-in-use probe over `/proc` on machines with a camera.
+- **Reads:** Matugen and Pywal colour files, the current wallpaper (only when it is the accent source), and GeoClue's demo client if present.
+- **Writes:** its own `settings.json` and a small runtime file for cava's config.
+- **Network:** nothing until you turn Weather on. Then Open-Meteo for the forecast, and in Automatic or IP Only mode ipinfo.io or ipapi.co for your position, with BigDataCloud for a place name. Manual location skips the lookups.
+- **Privileges:** none.
 
-- **Glass blur** — upstream relies on a compositor layer blur rule behind
-  the island; Ryoku does not add one, so *Liquid Glass* renders as a
-  translucent tint without frosting. *Black* is unaffected.
-- **Click-away** — a compositor focus grab is not available through the
-  neutral facade, so the island instead grows its input mask and swallows
-  clicks on the desktop while it is open. Escape and the scrim still close
-  everything.
-- **OSD pills** — the shell draws its own volume/mic/brightness OSD. The
-  island's own pills are opt-in (*Island OSD Pills* in settings) so exactly
-  one of each paints out of the box.
-- **Reserved strip** — the top reserve subtracts the *Outer gaps* setting
-  instead of reading a compositor option.
-- **Screen recording indicator** — pgrep-based detection of third-party
-  recorders is replaced by the shell's Recorder state; only shell-owned
-  recordings show as an activity.
-- **Inline reply** — available when the sending app supports it and the
-  server advertises it; the shell's daemon does not, so the reply field
-  stays hidden while actions still work.
+`GlassControl.qml` draws the liquid glass with `shaders/liquidglass.frag.qsb`, a compiled Qt shader. Its GLSL source is `shaders/liquidglass.frag`.
 
-## Network
+## Limits
 
-Nothing leaves the machine until you turn *Show Weather* on in Settings →
-Weather. Then the island asks Open-Meteo for the forecast, and in
-Automatic or IP Only mode looks your position up through ipinfo.io or
-ipapi.co (GeoClue first, if installed). Pick Manual to choose a city and
-skip the position lookup. Notification icons are only read from local files.
+- The click-away doesn't use a compositor grab. While the island is open it covers the screen with an invisible layer, and the first click outside closes it rather than reaching the window underneath.
+- Only shell-owned recordings show as a live activity.
+- Inline reply needs the notification server to advertise it, and Ryoku's doesn't, so the reply field stays hidden. Actions still work.
 
-See `PROVENANCE.txt` for what was carried and what was rewritten.
+## Maintenance
+
+Maintained by Alan Betty at the upstream repository. Report problems there.
+
+See `PROVENANCE.txt` for how this package is built from upstream.

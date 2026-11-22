@@ -8,7 +8,7 @@ Item {
     id: root
     clip: true
 
-    component PowerBtn: Rectangle {
+    component PowerBtn: Lens {
         id: pb
         property string icon: ""
         property string label: ""
@@ -19,9 +19,12 @@ Item {
         Layout.fillWidth: true
         implicitHeight: 40
         radius: 20
-        color: armed ? armColor : pbMa.containsMouse ? Theme.fill2 : Theme.fill
+        tint: armColor
+        tintAmount: armed ? 0.9 : 0
+        hovered: pbMa.containsMouse
+        pressed: pbMa.pressed
         scale: pbMa.pressed ? 0.94 : 1
-        Behavior on color { ColorAnimation { duration: 180 } }
+        Behavior on tintAmount { NumberAnimation { duration: 180 } }
         Behavior on scale { NumberAnimation { duration: 240; easing.type: Easing.OutBack; easing.overshoot: 2.5 } }
         Row {
             anchors.centerIn: parent
