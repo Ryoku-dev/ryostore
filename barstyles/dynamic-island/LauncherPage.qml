@@ -61,7 +61,10 @@ Item {
             if (/[0-9.,]/.test(c)) {
                 let j = i;
                 while (j < src.length && /[0-9.,]/.test(src[j])) j++;
-                toks.push({ n: parseFloat(src.slice(i, j).replace(/,/g, ".")) });
+                // one well-formed number, or the whole sum is rejected ("1.2.3" is not 1.2)
+                const num = src.slice(i, j).replace(/,/g, ".");
+                if (!/^(?:\d+\.?\d*|\.\d+)$/.test(num)) return NaN;
+                toks.push({ n: Number(num) });
                 i = j;
                 continue;
             }
@@ -69,7 +72,8 @@ Item {
             toks.push({ o: c });
             i++;
         }
-        const prec = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2, "^": 3, "neg": 4 };
+        // unary minus binds looser than ^, so -2^2 is -(2^2) = -4
+        const prec = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2, "neg": 2.5, "^": 3 };
         const out = [], ops = [];
         let prev = null;
         for (const t of toks) {

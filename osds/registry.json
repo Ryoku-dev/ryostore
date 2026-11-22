@@ -45,8 +45,8 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "5e43c3d09f6b9b757a7191e8835749af5cebdefd09daf23929f8d6042738e32a",
-      "lastUpdated": "2026-11-21",
+      "manifestSha256": "900f788fe4a2c7d73dd3e7f89974b92333dfc4caaf143ccf03cb10b378527486",
+      "lastUpdated": "2026-11-22",
       "official": false,
       "license": "MIT"
     }

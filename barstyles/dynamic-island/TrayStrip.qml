@@ -15,8 +15,17 @@ Row {
     id: root
     property string screenName: ""
     readonly property var items: Hub.trayItems
-    readonly property int shownCount: Math.min(items.length, Math.max(0, Config.s.trayInHeader))
+    // room left of the tab switcher; beads that don't fit go behind "+N"
+    property real maxWidth: Infinity
     readonly property int count: items.length
+    readonly property int fitCount: {
+        if (!isFinite(maxWidth)) return count;
+        // every bead is 28 + 4 spacing; keep room for a "+N" bead (~40)
+        const all = count * 32 - spacing + 32;   // all beads plus the chevron
+        if (all <= maxWidth) return count;
+        return Math.max(0, Math.floor((maxWidth - 40) / 32));
+    }
+    readonly property int shownCount: Math.min(count, Math.max(0, Config.s.trayInHeader), fitCount)
     spacing: 4
 
     Repeater {

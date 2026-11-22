@@ -81,8 +81,8 @@
       "source": "GlassControl.qml",
       "destination": "GlassControl.qml",
       "mode": "0644",
-      "size": 5190,
-      "sha256": "cddc2ac1ccef412b3529dfa2eaee2b3ca6b2393e9928f6e6d0985bacd2efcf57",
+      "size": 5642,
+      "sha256": "aaa5b8a28ee3119c88dc6c9941727304578e8f77cd6a6acbcb6314a55a10bd45",
       "install": true
     },
     {
@@ -97,8 +97,8 @@
       "source": "Hub.qml",
       "destination": "Hub.qml",
       "mode": "0644",
-      "size": 53270,
-      "sha256": "3a1beaaa1484352c4232ad7778f78b36f18049ef26863f9080b0c2b7c6aceeb2",
+      "size": 53305,
+      "sha256": "025843d632592ea8c2016aba1a0148fd2b67785a0d46d0c92b284e36febfbbfa",
       "install": true
     },
     {
@@ -129,8 +129,8 @@
       "source": "Island.qml",
       "destination": "Island.qml",
       "mode": "0644",
-      "size": 42550,
-      "sha256": "f5684fd6e48f5b3f730660d08ef1eec16ab4bc19797a413901089bace5dbb080",
+      "size": 42638,
+      "sha256": "ce06aa038f99af49f520bf96a6ff09b9841ab128b00669f56c635b4fc208caa8",
       "install": true
     },
     {
@@ -153,8 +153,8 @@
       "source": "LauncherPage.qml",
       "destination": "LauncherPage.qml",
       "mode": "0644",
-      "size": 12137,
-      "sha256": "0f09849e0e9ff1f328a6d85195c09f005f0c2ca36283198cd0c5e262cd384923",
+      "size": 12396,
+      "sha256": "ac37f793b846515c6d5881a0539143e8ecd2b1e11c3ee9f86857ee514e64818e",
       "install": true
     },
     {
@@ -209,8 +209,8 @@
       "source": "Notifs.qml",
       "destination": "Notifs.qml",
       "mode": "0644",
-      "size": 11718,
-      "sha256": "579f5b8de96d6e8ede288e1fc3f7d4c315e58ac5e02aedc92e9d2e8eb2833e25",
+      "size": 12319,
+      "sha256": "2695487ae794b6c37a80ebf43afc96ac64c6da32ae76cfd1c9382caf060f93c6",
       "install": true
     },
     {
@@ -225,8 +225,8 @@
       "source": "Platform.qml",
       "destination": "Platform.qml",
       "mode": "0644",
-      "size": 8016,
-      "sha256": "9de71e80412a1f7df09b614edb6675e8c4423a2c4d9ee13d828230523ebb8f3b",
+      "size": 8248,
+      "sha256": "9dd85db2f197e91bc4967a61fabca526e26d7d88f41e1b71d47d128cfebc6228",
       "install": true
     },
     {
@@ -321,8 +321,8 @@
       "source": "TrayStrip.qml",
       "destination": "TrayStrip.qml",
       "mode": "0644",
-      "size": 2956,
-      "sha256": "a8b5b2b516381be48dc28aefefeb481e501f385c4cce03557fd904fd01a0d3b5",
+      "size": 3418,
+      "sha256": "bd379e2d2366750691f46237be75b26e7e0f0bb169bb18cf1021b5da532785d9",
       "install": true
     },
     {
@@ -361,16 +361,16 @@
       "source": "assets/preview.png",
       "destination": "assets/preview.png",
       "mode": "0644",
-      "size": 109283,
-      "sha256": "3cc1790d91e7945ead5fa0fd9437b270b55b23a29ad3b2a3851ee748245e1880",
+      "size": 97546,
+      "sha256": "bc59788ba7ce598c323a3391ae38c97233a7f4ba7893d6d4b88b8458ba59ce96",
       "install": true
     },
     {
       "source": "assets/preview.webp",
       "destination": "assets/preview.webp",
       "mode": "0644",
-      "size": 29408,
-      "sha256": "5436f013a4b78dc223987250213b0ce0a8afbe01f544bd8f87bcc89f2aa397f9",
+      "size": 19570,
+      "sha256": "194b495db04409a6a7b94f570fc1d706e4fc4adf1ae7bd1c04596e1b536f0428",
       "install": false
     },
     {

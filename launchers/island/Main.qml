@@ -65,7 +65,10 @@ Scope {
             if (/[0-9.,]/.test(c)) {
                 let j = i;
                 while (j < src.length && /[0-9.,]/.test(src[j])) j++;
-                toks.push({ n: parseFloat(src.slice(i, j).replace(/,/g, ".")) });
+                // one well-formed number, or the whole sum is rejected ("1.2.3" is not 1.2)
+                const num = src.slice(i, j).replace(/,/g, ".");
+                if (!/^(?:\d+\.?\d*|\.\d+)$/.test(num)) return NaN;
+                toks.push({ n: Number(num) });
                 i = j;
                 continue;
             }
@@ -73,7 +76,8 @@ Scope {
             toks.push({ o: c });
             i++;
         }
-        const prec = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2, "^": 3, "neg": 4 };
+        // unary minus binds looser than ^, so -2^2 is -(2^2) = -4
+        const prec = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2, "neg": 2.5, "^": 3 };
         const out = [], ops = [];
         let prev = null;
         for (const t of toks) {
@@ -266,6 +270,13 @@ Scope {
                             font.weight: Font.Medium
                             Component.onCompleted: forceActiveFocus()
                             onTextEdited: { root.query = text; root.selected = 0; }
+                            // reopening during the close animation keeps this field
+                            // alive, so take show()'s reset and the focus back
+                            Connections {
+                                target: root
+                                function onQueryChanged() { if (field.text !== root.query) field.text = root.query; }
+                                function onOpenChanged() { if (root.open) field.forceActiveFocus(); }
+                            }
                             Text {
                                 visible: field.text.length === 0
                                 anchors.verticalCenter: parent.verticalCenter

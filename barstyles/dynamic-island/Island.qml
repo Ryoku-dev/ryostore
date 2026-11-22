@@ -757,6 +757,7 @@ Item {
                     height: 34
 
                     Segmented {
+                        id: tabSwitch
                         anchors.centerIn: parent
                         width: 400
                         itemHeight: 30
@@ -806,6 +807,7 @@ Item {
                         screenName: root.screenName
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
+                        maxWidth: tabSwitch.x - 8
                     }
                 }
 

@@ -466,22 +466,19 @@ Singleton {
     // ═══════════════ PRIVACY + SCREEN RECORDING ══════════════════
     // Microphone: any audio capture stream on the Pipewire graph (cava excluded).
     readonly property bool micInUse: Pipewire.nodes.values.some(n => n && n.type === PwNodeType.AudioInStream && !/cava/i.test(n.name || ""))
-    // Camera: only probed when a video device exists at all.
+    // Camera: each probe re-checks for a video device first (0 = none, 1 = idle,
+    // 2 = in use), so hot-plugged USB cameras are picked up. Polls slowly while
+    // no device exists, quickly while one does.
     property bool camInUse: false
     property bool hasCamera: false
     Process {
-        running: true
-        command: ["sh", "-c", "ls /dev/video* >/dev/null 2>&1 && echo 1 || echo 0"]
-        stdout: StdioCollector { onStreamFinished: root.hasCamera = this.text.trim() === "1" }
-    }
-    Process {
         id: camProc
-        command: ["sh", "-c", "find /proc/[0-9]*/fd -lname '/dev/video*' -print -quit 2>/dev/null | grep -q . && echo 1 || echo 0"]
-        stdout: StdioCollector { onStreamFinished: root.camInUse = this.text.trim() === "1" }
+        command: ["sh", "-c", "ls /dev/video* >/dev/null 2>&1 || { echo 0; exit; }; find /proc/[0-9]*/fd -lname '/dev/video*' -print -quit 2>/dev/null | grep -q . && echo 2 || echo 1"]
+        stdout: StdioCollector { onStreamFinished: { const v = this.text.trim(); root.hasCamera = v !== "0"; root.camInUse = v === "2"; } }
     }
     Timer {
-        interval: 5000; repeat: true; triggeredOnStart: true
-        running: Config.s.showPrivacy && root.hasCamera
+        interval: root.hasCamera ? 5000 : 30000; repeat: true; triggeredOnStart: true
+        running: Config.s.showPrivacy
         onTriggered: camProc.running = true
         onRunningChanged: if (!running) root.camInUse = false
     }

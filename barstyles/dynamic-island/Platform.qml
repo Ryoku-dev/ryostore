@@ -86,6 +86,10 @@ Singleton {
         const t = notifList;
         for (let i = 0; i < t.length; i++) s[t[i].id] = true;
         seen = s;
+        // they still need a time, or the Center shows them as "now" forever;
+        // the shell knows when each one really arrived
+        const arrived = Shell.Notifs.arrivalMs || {};
+        Notifs.seed(t, n => arrived[n.id]);
         seeded = true;
     }
 

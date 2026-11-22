@@ -8,9 +8,9 @@
     {
       "source": "GlassControl.qml",
       "destination": "GlassControl.qml",
-      "sha256": "cddc2ac1ccef412b3529dfa2eaee2b3ca6b2393e9928f6e6d0985bacd2efcf57",
+      "sha256": "aaa5b8a28ee3119c88dc6c9941727304578e8f77cd6a6acbcb6314a55a10bd45",
       "mode": "0644",
-      "size": 5190,
+      "size": 5642,
       "install": true
     },
     {

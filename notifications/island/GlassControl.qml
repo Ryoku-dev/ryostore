@@ -38,6 +38,17 @@ Item {
     property Item backdropSpace: _owner ? _owner.glassSpace : null
 
     readonly property real pad: 6
+    // ShaderEffectSource leaves textureSize at (0, 0) when it sizes itself, so
+    // fall back to what it covers; the shader divides by this
+    readonly property size _texSize: {
+        const b = root.backdrop;
+        if (!b) return Qt.size(1, 1);
+        const t = b.textureSize;
+        if (t && t.width > 0 && t.height > 0) return t;
+        const it = b.sourceItem || root.backdropSpace;
+        const w = it ? it.width : 0, h = it ? it.height : 0;
+        return Qt.size(Math.max(1, w), Math.max(1, h));
+    }
     readonly property bool live: !flat && glass.status !== ShaderEffect.Error
     property real _light: pressed ? 1 : hovered ? 0.55 : 0
     Behavior on _light { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
@@ -58,8 +69,8 @@ Item {
     function _place() {
         if (!root.backdrop || !root.backdropSpace || !root.visible) return;
         const pt = root.mapToItem(root.backdropSpace, -root.pad, -root.pad);
-        const sx = root.backdropSpace.width > 0 ? root.backdrop.textureSize.width / root.backdropSpace.width : 1;
-        const sy = root.backdropSpace.height > 0 ? root.backdrop.textureSize.height / root.backdropSpace.height : 1;
+        const sx = root.backdropSpace.width > 0 ? root._texSize.width / root.backdropSpace.width : 1;
+        const sy = root.backdropSpace.height > 0 ? root._texSize.height / root.backdropSpace.height : 1;
         root._origin = Qt.point(pt.x * (sx || 1), pt.y * (sy || 1));
     }
     onXChanged: _place()
@@ -90,7 +101,7 @@ Item {
         property var src: root.backdrop ? root.backdrop : nullTex
         property size itemSize: Qt.size(width, height)
         property point srcOrigin: root._origin
-        property size srcSize: root.backdrop ? root.backdrop.textureSize : Qt.size(1, 1)
+        property size srcSize: root._texSize
         property color base: root.base
         property color tint: root.tint
         property real pad: root.pad
