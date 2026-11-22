@@ -1,0 +1,277 @@
+{
+  "id": "system-card",
+  "name": "System Card",
+  "version": "0.7.0",
+  "author": "pixel <pixel@ryoku>",
+  "description": "The Ryoku Hub System Card as a desktop tile, in two live faces: the poster and the collectible trading card — CPU, GPU and memory read like a system monitor, graded for any machine.",
+  "license": "GPL-3.0-only",
+  "official": false,
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/Barcode.qml",
+    "content/CutRect.qml",
+    "content/Label.qml",
+    "content/Foil.qml",
+    "content/Card.qml",
+    "lib/rarity.js",
+    "bin/dossier",
+    "bin/poll",
+    "assets/caracalla.png",
+    "assets/preview-widget.png"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact"
+    ]
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "none"
+    },
+    "icon": "extension",
+    "label": "System Card"
+  },
+  "commands": [
+    "bin/dossier",
+    "bin/poll"
+  ],
+  "dependencies": {
+    "commands": [
+      "bash",
+      "stat",
+      "ryoku-hub"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "face",
+        "type": "choice",
+        "label": "Face",
+        "group": "Layout",
+        "default": "poster",
+        "options": [
+          {
+            "value": "poster",
+            "label": "Poster (1280×800)"
+          },
+          {
+            "value": "card",
+            "label": "Trading card (630×880)"
+          }
+        ]
+      },
+      {
+        "key": "gloss",
+        "type": "toggle",
+        "label": "Japanese glosses",
+        "group": "Text",
+        "default": true
+      },
+      {
+        "key": "name",
+        "type": "text",
+        "label": "Name",
+        "group": "Text",
+        "default": "",
+        "placeholder": "Blank uses your username"
+      },
+      {
+        "key": "tagline",
+        "type": "text",
+        "label": "Tagline",
+        "group": "Text",
+        "default": "For the sake of power and beauty."
+      },
+      {
+        "key": "watermarkGlyph",
+        "type": "text",
+        "label": "Watermark glyph",
+        "group": "Text",
+        "default": "顔"
+      },
+      {
+        "key": "epithets",
+        "type": "text",
+        "label": "Epithets (comma separated)",
+        "group": "Text",
+        "default": "Power,Beauty,Grace,Ruin,Demise,Void"
+      },
+      {
+        "key": "marginalia",
+        "type": "text",
+        "label": "Spine text",
+        "group": "Text",
+        "default": "",
+        "placeholder": "Blank: RYOKU · codename · KERNEL x.y"
+      },
+      {
+        "key": "art",
+        "type": "image",
+        "label": "Figure picture",
+        "group": "Card",
+        "default": "",
+        "placeholder": "Blank uses your profile figure"
+      },
+      {
+        "key": "artStyle",
+        "type": "choice",
+        "label": "Art style",
+        "group": "Card",
+        "default": "photo",
+        "options": [
+          {
+            "value": "photo",
+            "label": "Photo"
+          },
+          {
+            "value": "mono",
+            "label": "Mono"
+          },
+          {
+            "value": "dither",
+            "label": "1-bit dither"
+          }
+        ]
+      },
+      {
+        "key": "heroSide",
+        "type": "choice",
+        "label": "Figure side",
+        "group": "Layout",
+        "default": "right",
+        "options": [
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "left",
+            "label": "Left"
+          }
+        ]
+      },
+      {
+        "key": "vitals",
+        "type": "multi",
+        "label": "Live readings",
+        "group": "Layout",
+        "default": [
+          "core",
+          "gpu",
+          "mem",
+          "net",
+          "frac"
+        ],
+        "options": [
+          {
+            "value": "core",
+            "label": "Core (temp / CPU)"
+          },
+          {
+            "value": "gpu",
+            "label": "Graphics (temp / load)"
+          },
+          {
+            "value": "mem",
+            "label": "Memory (RAM)"
+          },
+          {
+            "value": "net",
+            "label": "Network (rates)"
+          },
+          {
+            "value": "frac",
+            "label": "Release (edition)"
+          }
+        ]
+      },
+      {
+        "key": "pollMs",
+        "type": "int",
+        "label": "Live readings interval (ms)",
+        "group": "Live",
+        "default": 1500,
+        "min": 500,
+        "max": 10000
+      },
+      {
+        "key": "motion",
+        "type": "toggle",
+        "label": "Animate the card",
+        "group": "Live",
+        "default": true
+      },
+      {
+        "key": "blockWatermark",
+        "type": "toggle",
+        "label": "Watermark",
+        "group": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockEpithets",
+        "type": "toggle",
+        "label": "Epithets",
+        "group": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockMarginalia",
+        "type": "toggle",
+        "label": "Spine",
+        "group": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockSpecs",
+        "type": "toggle",
+        "label": "Specs",
+        "group": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockPackages",
+        "type": "toggle",
+        "label": "Packages",
+        "group": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockPalette",
+        "type": "toggle",
+        "label": "Palette strip",
+        "group": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockBarcode",
+        "type": "toggle",
+        "label": "Barcode",
+        "group": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockTelemetry",
+        "type": "toggle",
+        "label": "Live readings",
+        "group": "Blocks",
+        "default": true
+      },
+      {
+        "key": "blockSignal",
+        "type": "toggle",
+        "label": "Signal wave",
+        "group": "Blocks",
+        "default": true
+      }
+    ]
+  }
+}

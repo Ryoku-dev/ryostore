@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# bin/poll — one live telemetry sample, printed as a single line:
+#   cpu ram cpuTemp load netDown netUp [gpuUtil gpuTemp vramUsed vramTotal]
+# Reads /proc and /sys only, with shell builtins, so a sample costs next to
+# nothing; probes nvidia-smi only when every NVIDIA card is awake (a
+# suspended discrete GPU counts as absent, so this never wakes it); reads
+# amdgpu/i915/xe sysfs when there is no NVIDIA answer. Every field falls to
+# zero when its source is absent. Writes nothing.
+
+cpu_now() {
+  local u n s i w q sq st
+  read -r _ u n s i w q sq st _ < /proc/stat
+  CT=$((u + n + s + i + w + q + sq + st))
+  CI=$((i + w))
+}
+
+net_now() {
+  local iface rx tx
+  RX=0
+  TX=0
+  while read -r iface rx _ _ _ _ _ _ _ tx _; do
+    case "$iface" in
+      *'|'* | lo:) continue ;;
+      *:) RX=$((RX + rx)); TX=$((TX + tx)) ;;
+    esac
+  done < /proc/net/dev
+}
+
+cpu_now; t1=$CT; i1=$CI
+net_now; rx1=$RX; tx1=$TX
+sleep 0.3
+cpu_now; t2=$CT; i2=$CI
+net_now; rx2=$RX; tx2=$TX
+
+dt=$((t2 - t1))
+cpu=0
+[ "$dt" -gt 0 ] && cpu=$(((200 * (dt - (i2 - i1)) + dt) / (2 * dt)))
+dn=$(((rx2 - rx1) * 10 / 3))
+up=$(((tx2 - tx1) * 10 / 3))
+[ "$dn" -lt 0 ] && dn=0
+[ "$up" -lt 0 ] && up=0
+
+mt=0; ma=0
+while read -r k v _; do
+  case "$k" in
+    MemTotal:) mt=$v ;;
+    MemAvailable:) ma=$v ;;
+  esac
+done < /proc/meminfo
+ram=0
+[ "$mt" -gt 0 ] && ram=$(((200 * (mt - ma) + mt) / (2 * mt)))
+
+ld=0
+read -r ld _ < /proc/loadavg
+
+ct=""
+for h in /sys/class/hwmon/hwmon*; do
+  IFS= read -r nm < "$h/name" 2>/dev/null || continue
+  [[ " k10temp coretemp zenpower " == *" $nm "* ]] || continue
+  IFS= read -r raw < "$h/temp1_input" 2>/dev/null || continue
+  ct=$((raw / 1000))
+  break
+done
+if [ -z "$ct" ]; then
+  IFS= read -r raw < /sys/class/thermal/thermal_zone0/temp 2>/dev/null && ct=$((raw / 1000))
+fi
+ct=${ct:-0}
+
+asleep=0
+for st in /sys/bus/pci/drivers/nvidia/*/power/runtime_status; do
+  [ -r "$st" ] || continue
+  IFS= read -r s < "$st"
+  [ "$s" = suspended ] && asleep=1
+done
+
+g=""
+if [ "$asleep" = 0 ] && command -v nvidia-smi > /dev/null; then
+  best=-1
+  while IFS=, read -r gu gt vu vt; do
+    gu=${gu// /}; gt=${gt// /}; vu=${vu// /}; vt=${vt// /}
+    case "$gu$gt$vu$vt" in *[!0-9]* | "") continue ;; esac
+    if [ "$vt" -gt "$best" ]; then best=$vt; g="$gu $gt $vu $vt"; fi
+  done < <(nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits 2> /dev/null)
+fi
+
+# no NVIDIA answer: the card with the most VRAM wins, so a discrete card
+# is chosen over the processor's built-in graphics
+if [ -z "$g" ]; then
+  best_d=""; best_vt=0
+  for d in /sys/class/drm/card*/device; do
+    drv=""
+    while IFS= read -r l; do
+      case "$l" in DRIVER=*) drv=${l#DRIVER=} ;; esac
+    done < "$d/uevent" 2> /dev/null
+    [[ " amdgpu i915 xe " == *" $drv "* ]] || continue
+    [ -r "$d/gpu_busy_percent" ] || continue
+    vt=0
+    if IFS= read -r raw < "$d/mem_info_vram_total" 2> /dev/null; then vt=$((raw / 1048576)); fi
+    if [ "$vt" -gt "$best_vt" ]; then best_vt=$vt; best_d=$d; fi
+    [ -n "$best_d" ] || best_d=$d
+  done
+  if [ -n "$best_d" ]; then
+    IFS= read -r gu < "$best_d/gpu_busy_percent" 2> /dev/null
+    gt=0
+    for h in "$best_d"/hwmon/hwmon*/temp1_input; do
+      if IFS= read -r raw < "$h" 2> /dev/null; then gt=$((raw / 1000)); break; fi
+    done
+    vu=0
+    if IFS= read -r raw < "$best_d/mem_info_vram_used" 2> /dev/null; then vu=$((raw / 1048576)); fi
+    [ "$best_vt" -gt 0 ] || best_vt=1
+    case "$gu" in "" | *[!0-9]*) ;; *) g="$gu $gt $vu $best_vt" ;; esac
+  fi
+fi
+
+echo "$cpu $ram $ct $ld $dn $up $g"
