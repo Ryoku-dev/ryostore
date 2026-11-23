@@ -5055,6 +5055,9 @@ Scope {
                         opacity: 0
                         property bool hostShown: true      // false while the window hosting this backdrop is hidden (set by its Loader)
                         property rect region: Qt.rect(0, 0, 0, 0)      // the glass that is on screen right now (set by its Loader); windows behind it stay live while recording
+                        // the whole-screen snapshot may only feed this backdrop when both live in the same window (see below)
+                        readonly property bool snapUsable: !!(root.nativeBackdrop) && screenSnap.hasContent
+                            && bd.Window.window !== null && bd.Window.window === screenSnap.Window.window
                         x: 0; y: 0
                         width: win.modelData.width
                         height: win.modelData.height
@@ -5071,18 +5074,19 @@ Scope {
                         ShaderEffectSource {
                             z: -2
                             anchors.fill: parent
-                            sourceItem: screenSnap
+                            // backdropComp is also instantiated inside swWin / wpWin / spotWin. screenSnap lives in `win`, so
+                            // there this would be a cross-window ShaderEffectSource: on output removal the source's window
+                            // goes first and ~QQuickShaderEffectSource → derefFromEffectItem → dirty crashed. Only attach
+                            // when it is ours (same window) and actually drawn (Niri output snapshot).
+                            sourceItem: bd.snapUsable ? screenSnap : null
                             sourceRect: Qt.rect(0, 0, bd.width, bd.height)
                             live: true
-                            visible: !!(root.nativeBackdrop)
-                                && screenSnap.hasContent
+                            visible: bd.snapUsable
                         }
                         Image {
                             z: -2
                             anchors.fill: parent
-                            visible: status === Image.Ready
-                                && (!(root.nativeBackdrop)
-                                    || !screenSnap.hasContent)
+                            visible: status === Image.Ready && !bd.snapUsable
                             source: root.fileUrl(root.wallpaperFor(win.modelData.name))
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
@@ -5092,8 +5096,7 @@ Scope {
                         // Never refract a prior image of our own menu bar.
                         Item {
                             z: -1
-                            visible: !!(root.nativeBackdrop)
-                                && screenSnap.hasContent
+                            visible: bd.snapUsable
                             x: 0; y: 0; width: bd.width; height: root.barHeight
                             clip: true
                             Image {
