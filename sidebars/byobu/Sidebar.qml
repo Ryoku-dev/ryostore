@@ -169,7 +169,12 @@ Item {
 
         Item {
             id: overview
-            anchors.fill: parent
+            // These two pages size themselves instead of anchors.fill: with both
+            // left and right anchors set, the anchor layout owns x and the slide
+            // bindings are discarded, leaving both pages stacked on top of each
+            // other (Wi-Fi/Bluetooth text drawn over the overview sections).
+            width: parent.width
+            height: parent.height
             x: root.detail ? -width : 0
 
             Behavior on x {
@@ -243,7 +248,8 @@ Item {
 
         Item {
             id: detailPage
-            anchors.fill: parent
+            width: parent.width
+            height: parent.height
             x: root.detail ? 0 : width
 
             Behavior on x {

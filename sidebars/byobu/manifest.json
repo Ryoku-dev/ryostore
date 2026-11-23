@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "byobu",
   "category": "sidebars",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "destination": "ryoku/sidebars/byobu",
   "files": [
     {
@@ -32,9 +32,9 @@
     {
       "source": "Sidebar.qml",
       "destination": "Sidebar.qml",
-      "sha256": "fd8d1f9bf173bd7c2b50404ed78b93a1b598fc1f7ef3553fefa46afa7d4c8e3d",
+      "sha256": "b91ec70ce0cc9a62c180cf2f8e440be6b42b377ae62e07a79cffd1754743b613",
       "mode": "0644",
-      "size": 12734,
+      "size": 13123,
       "install": true
     },
     {
