@@ -4,7 +4,7 @@
     {
       "id": "byobu",
       "name": "Byobu",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "path": "sidebars/byobu",
       "author": "Ryoku Team",
       "upstream": "https://github.com/ryoku-dev/ryostore/tree/main/sidebars/byobu",
@@ -21,9 +21,9 @@
       "preview": "assets/preview.webp",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "ebdb9a1c399f503d51ee0ae36ccabf31133e3352ade8174555eb32a424b6576a",
+      "manifestSha256": "fbf33b197d62b462dc20f8ec34847425f4fb633b7c3bc39f66b1cd301bcb1f5d",
       "license": "GPL-3.0-or-later",
-      "lastUpdated": "2026-10-21",
+      "lastUpdated": "2026-11-23",
       "official": true
     }
   ]
