@@ -39,7 +39,13 @@ Item {
         if (s.name && g.sname !== s.name) g.sname = s.name;
     }
 
-    onScreenChanged: sync()
+    // name is constant and readable at once, so a newly bound screen never keeps the previous
+    // screen's name while its geometry is still 0x0; geometry follows on the next valid sync()
+    onScreenChanged: {
+        if (g.screen && g.screen.name && g.sname !== g.screen.name)
+            g.sname = g.screen.name;
+        sync();
+    }
     Component.onCompleted: sync()
 
     Connections {
