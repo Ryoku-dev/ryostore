@@ -230,7 +230,7 @@ Scope {
                         width: 108; height: 78; radius: 9
                         color: "transparent"
                         border.width: 4; border.color: pal.text2
-                        Text { anchors.centerIn: parent; text: ">_"; font.family: Fonts.forWeight(font.weight, root.fam); font.pixelSize: 30; font.bold: true; color: pal.text2 }
+                        Text { anchors.centerIn: parent; text: ">_"; font.family: Fonts.forWeight(((true) ? Font.Bold : Font.Normal), root.fam); font.pixelSize: 30; font.bold: true; color: pal.text2 }
                     }
                 }
                 Item { width: 1; height: 20 }
@@ -244,7 +244,7 @@ Scope {
                     elide: Text.ElideRight
                     text: "Gokko"
                     color: pal.text
-                    font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 24; font.weight: Font.Bold
+                    font.family: root.fontForWeight(Font.Bold, root.fam); font.pixelSize: 24; font.weight: Font.Bold
                 }
                 Item { width: 1; height: 3 }
                 Text {
@@ -253,7 +253,7 @@ Scope {
                     elide: Text.ElideRight
                     text: root.info.sub || ""
                     color: pal.text3
-                    font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 12
+                    font.family: root.fontForWeight(Font.Normal, root.fam); font.pixelSize: 12
                 }
                 Item { width: 1; height: 22 }
 
@@ -273,7 +273,7 @@ Scope {
                                 wrapMode: Text.Wrap
                                 text: modelData.k
                                 color: pal.text
-                                font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 12; font.weight: Font.DemiBold
+                                font.family: root.fontForWeight(Font.DemiBold, root.fam); font.pixelSize: 12; font.weight: Font.DemiBold
                             }
                             Column {
                                 width: parent.width - 104
@@ -282,7 +282,7 @@ Scope {
                                     wrapMode: Text.Wrap
                                     text: modelData.v
                                     color: pal.text
-                                    font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 12
+                                    font.family: root.fontForWeight(Font.Normal, root.fam); font.pixelSize: 12
                                 }
                                 Text {
                                     visible: modelData.s !== ""
@@ -290,7 +290,7 @@ Scope {
                                     wrapMode: Text.Wrap
                                     text: modelData.s
                                     color: pal.text2
-                                    font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 11
+                                    font.family: root.fontForWeight(Font.Normal, root.fam); font.pixelSize: 11
                                 }
                             }
                         }
@@ -306,7 +306,7 @@ Scope {
                         width: moreTxt.implicitWidth + 30; height: 24; radius: 7
                         color: moreMa.pressed ? pal.btnDown : pal.btn
                         border.width: 1; border.color: pal.border
-                        Text { id: moreTxt; anchors.centerIn: parent; text: I18n.tr("More Info\u2026"); color: pal.text; font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 12 }
+                        Text { id: moreTxt; anchors.centerIn: parent; text: I18n.tr("More Info\u2026"); color: pal.text; font.family: root.fontForWeight(Font.Normal, root.fam); font.pixelSize: 12 }
                         MouseArea {
                             id: moreMa; anchors.fill: parent; cursorShape: Qt.PointingHandCursor
                             onClicked: {
@@ -325,7 +325,7 @@ Scope {
                     wrapMode: Text.Wrap
                     text: "Linux® is a registered trademark of Linus Torvalds."
                     color: pal.text3
-                    font.family: root.fontForWeight(font.weight, root.fam); font.pixelSize: 10
+                    font.family: root.fontForWeight(Font.Normal, root.fam); font.pixelSize: 10
                     lineHeight: 1.1
                 }
             }

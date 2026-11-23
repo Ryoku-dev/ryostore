@@ -246,7 +246,7 @@ Item {
             width: Math.min(implicitWidth, 158 * w.s - 2 * w.pad - (w.located ? 14 * w.s : 0))
             elide: Text.ElideRight
             color: w.fg
-            font.family: Fonts.forWeight(font.weight, w.fam)
+            font.family: Fonts.forWeight(Font.DemiBold, w.fam)
             font.pixelSize: 15 * w.s
             font.weight: Font.DemiBold
         }
@@ -310,7 +310,7 @@ Item {
             text: w.cond
             elide: Text.ElideRight
             color: w.fg
-            font.family: Fonts.forWeight(font.weight, w.fam)
+            font.family: Fonts.forWeight(Font.DemiBold, w.fam)
             font.pixelSize: 14 * w.s
             font.weight: Font.DemiBold
         }
@@ -319,7 +319,7 @@ Item {
             horizontalAlignment: w.isLarge ? Text.AlignRight : Text.AlignLeft
             text: w.hasData ? ("H:" + w.hi + w.unitSuffix + " L:" + w.lo + w.unitSuffix) : " "
             color: w.fg
-            font.family: Fonts.forWeight(font.weight, w.fam)
+            font.family: Fonts.forWeight(Font.DemiBold, w.fam)
             font.pixelSize: 14 * w.s
             font.weight: Font.DemiBold
         }
@@ -388,7 +388,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: dr.modelData.d
                     color: w.fg
-                    font.family: Fonts.forWeight(font.weight, w.fam)
+                    font.family: Fonts.forWeight(Font.DemiBold, w.fam)
                     font.pixelSize: 14 * w.s
                     font.weight: Font.DemiBold
                 }
@@ -406,7 +406,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: dr.modelData.lo + w.unitSuffix
                     color: w.fgSub
-                    font.family: Fonts.forWeight(font.weight, w.fam)
+                    font.family: Fonts.forWeight(Font.DemiBold, w.fam)
                     font.pixelSize: 14 * w.s
                     font.weight: Font.DemiBold
                 }
@@ -433,7 +433,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: dr.modelData.hi + w.unitSuffix
                     color: w.fg
-                    font.family: Fonts.forWeight(font.weight, w.fam)
+                    font.family: Fonts.forWeight(Font.DemiBold, w.fam)
                     font.pixelSize: 14 * w.s
                     font.weight: Font.DemiBold
                 }

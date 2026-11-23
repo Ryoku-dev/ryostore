@@ -694,6 +694,8 @@ Scope {
         Item {
             id: win
             readonly property var modelData: root.widgetScreen
+            // hotplug-safe geometry: never re-binds sizes to a dying ShellScreen (see ScreenGeom.qml)
+            MacParts.ScreenGeom { id: widgetGeo; screen: win.modelData }
             anchors.fill: parent
             visible: root.ready && (root.widgetCount > 0 || root.editing)
 
@@ -716,7 +718,7 @@ Scope {
                 Repeater {   // free Small-sized grid cells; Medium and Large snap across 2-cell footprints
                     model: {
                         var revision = root.rev;
-                        return root.editing ? root.gridSlots(win.modelData.width, win.modelData.height) : [];
+                        return root.editing ? root.gridSlots(widgetGeo.sw, widgetGeo.sh) : [];
                     }
                     delegate: Rectangle {
                         required property var modelData
@@ -759,7 +761,7 @@ Scope {
                             host: root
                             wtype: ww.wtype; wstyle: ww.wstyle; wsize: ww.wsize; wmode: ww.wmode; wsrc: ww.wsrc
                             sx: ww.x; sy: ww.y
-                            sname: win.modelData.name; sw: win.modelData.width; sh: win.modelData.height
+                            sname: widgetGeo.sname; sw: widgetGeo.sw; sh: widgetGeo.sh
                         }
 
                         scale: dragArea.pressed ? 1.03 : 1.0

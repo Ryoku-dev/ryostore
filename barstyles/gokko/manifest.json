@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "gokko",
   "category": "barstyles",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "destination": "ryoku/barstyles/gokko",
   "files": [
     {
@@ -25,8 +25,8 @@
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
       "mode": "0644",
-      "size": 941,
-      "sha256": "56d409602d065e448f5caaf304e1d659ace77a91ee6ee73e6e1467945cd36d38",
+      "size": 1288,
+      "sha256": "2211a2b3a8989c8f4defa34982317b8c1b49832a14ca801dee70a38b5fc8e840",
       "install": true
     },
     {
@@ -50,7 +50,7 @@
       "destination": "VERSION",
       "mode": "0644",
       "size": 6,
-      "sha256": "027a61167f091a427fa7844dcac0c5141bafbcbdcadc7e04a93578147ab956f2",
+      "sha256": "d5d1d767be9218f02ebda081a83a2b2fede85055e910e5a94a09329966486fcc",
       "install": true
     },
     {
@@ -65,16 +65,16 @@
       "source": "upstream/AboutApp.qml",
       "destination": "upstream/AboutApp.qml",
       "mode": "0644",
-      "size": 16037,
-      "sha256": "6483649258f3a54951ea6d02cc147dbd344dc3db486c9f9ccc4601ea234e6fd7",
+      "size": 16060,
+      "sha256": "7814cc6dd2b263dbdaf383cbc4a513347362b503a0c76962fa0b319e71adc731",
       "install": true
     },
     {
       "source": "upstream/CalendarWidget.qml",
       "destination": "upstream/CalendarWidget.qml",
       "mode": "0644",
-      "size": 17599,
-      "sha256": "e0484961d632f95946a3fe9e3547d0d35d06a9360637e9fe6f257fdfd850508b",
+      "size": 17632,
+      "sha256": "dfdf28b373c4ff99699025b8efa5dc0074ba210a9f3ce9b0f8e5fa5e4803d363",
       "install": true
     },
     {
@@ -89,8 +89,8 @@
       "source": "upstream/ClockApp.qml",
       "destination": "upstream/ClockApp.qml",
       "mode": "0644",
-      "size": 64032,
-      "sha256": "b035a9ee3c3679cfeb154ef6ddf9304af752a364f3d19643e3f11986382a5ba6",
+      "size": 64091,
+      "sha256": "19de0847d78278c83efb55141dc5e031bef4da70f4b55c22cacd2a1308022222",
       "install": true
     },
     {
@@ -105,8 +105,8 @@
       "source": "upstream/ClockWidget.qml",
       "destination": "upstream/ClockWidget.qml",
       "mode": "0644",
-      "size": 14501,
-      "sha256": "0a1eca4b9b18861fc7afc650cb557f4f702c197312a52d424ba53252eae49372",
+      "size": 14499,
+      "sha256": "5a5184603a198c90a8f6fb9a2dd899bb80b346739e1b49fadd4a5d8c7e9fd8c2",
       "install": true
     },
     {
@@ -121,8 +121,8 @@
       "source": "upstream/Desktop.qml",
       "destination": "upstream/Desktop.qml",
       "mode": "0644",
-      "size": 22618,
-      "sha256": "39adae6096f1e179170d0bb5cec1cc2ce71f77cf09e300abd0cd21c6ad6972b8",
+      "size": 22620,
+      "sha256": "3336d3d0911fa6e6f209c719feb7ab6e9bd37f3f9e4f2636cfdc3dcc709d6dda",
       "install": true
     },
     {
@@ -153,8 +153,8 @@
       "source": "upstream/ExtraWidgets.qml",
       "destination": "upstream/ExtraWidgets.qml",
       "mode": "0644",
-      "size": 46743,
-      "sha256": "b12c1abc38abd016586d33453c04fe9bedc35dc9a059548a803e8a8178d80458",
+      "size": 46747,
+      "sha256": "2c0f7176012587e7c4e555f1bb07b5fcdcb4f29e801663c5baf79fb38979c235",
       "install": true
     },
     {
@@ -177,8 +177,8 @@
       "source": "upstream/GlassSegmented.qml",
       "destination": "upstream/GlassSegmented.qml",
       "mode": "0644",
-      "size": 13416,
-      "sha256": "66972cceacfa1d72d1898a3727f22c4a36c47e0f004c0b7b635d7fa699adf30a",
+      "size": 13420,
+      "sha256": "b2ffe4f51f57769c591ff3d4fb62cbfc984e7ae311112bb2082cda4544c3335b",
       "install": true
     },
     {
@@ -265,16 +265,16 @@
       "source": "upstream/MacBar.qml",
       "destination": "upstream/MacBar.qml",
       "mode": "0644",
-      "size": 587841,
-      "sha256": "743a7d9f282ef4cb088e8e3850417ea375ab4e04410b8a1fc3877e63f98e2cbc",
+      "size": 588778,
+      "sha256": "4ed7527810a9d8abc260da47e0673cfb98cff01059a55abfd383dc86bb0338ac",
       "install": true
     },
     {
       "source": "upstream/MacDock.qml",
       "destination": "upstream/MacDock.qml",
       "mode": "0644",
-      "size": 308848,
-      "sha256": "75876fb1e79b7badb15e67d7caa7e20cfe147382b5d3a8572ae793d5e6aa5229",
+      "size": 309068,
+      "sha256": "ecadd2bee706c40a3e14f522a00084d144172fc3836db59850cee025cad4053d",
       "install": true
     },
     {
@@ -289,8 +289,8 @@
       "source": "upstream/MacWidgets.qml",
       "destination": "upstream/MacWidgets.qml",
       "mode": "0644",
-      "size": 42993,
-      "sha256": "b79c6815c90db965cf9748f5d957634522535e1f1d95b306a028e6b73d869275",
+      "size": 43136,
+      "sha256": "ef3b7493d50bbc8b74a62e149de5a1a7f9b6f4d5e65b0032707ae125629f8e9a",
       "install": true
     },
     {
@@ -353,8 +353,8 @@
       "source": "upstream/PlayerBtn.qml",
       "destination": "upstream/PlayerBtn.qml",
       "mode": "0644",
-      "size": 3810,
-      "sha256": "93b3be0d24d86178c421bf196579f0752d488c5d6e938b43a2e56a8b1870f8ba",
+      "size": 3808,
+      "sha256": "53c9abddb2809bb47a0bbde85fcd5251dde5bb8182ad0615393043b898287750",
       "install": true
     },
     {
@@ -370,15 +370,23 @@
       "destination": "upstream/PlayerWidget.qml",
       "mode": "0644",
       "size": 34234,
-      "sha256": "1d43ef2e36204250a3541053aa3e174c89d3ed743b89db2b0dd21ff34636dc0d",
+      "sha256": "9e34d34de574fc3f2a522a20adb937bed7001dd0de1dec4c9e706763f8b5f7f8",
       "install": true
     },
     {
       "source": "upstream/SPopUp.qml",
       "destination": "upstream/SPopUp.qml",
       "mode": "0644",
-      "size": 5390,
-      "sha256": "7197ce1b0401e9e8394a658bc88105785e3eab16ecf102e10ea1c5290858de15",
+      "size": 5413,
+      "sha256": "67a7e22c9bf56b3023decd75e5dec2fbd7aa0b13e447536ae73026935b058230",
+      "install": true
+    },
+    {
+      "source": "upstream/ScreenGeom.qml",
+      "destination": "upstream/ScreenGeom.qml",
+      "mode": "0644",
+      "size": 2024,
+      "sha256": "0db5dfbe79752427e02a0a1da1480ddaacdf421340191a4e830fee838ba7eca5",
       "install": true
     },
     {
@@ -409,8 +417,8 @@
       "source": "upstream/WeatherHourCol.qml",
       "destination": "upstream/WeatherHourCol.qml",
       "mode": "0644",
-      "size": 1066,
-      "sha256": "14c93b4ab1cae9692e8a9ff395aa8771aaf95f25e9b4090ef4c2dda8d263d01b",
+      "size": 1070,
+      "sha256": "828945f505537a66e7906044835143fd8421a0eae0691a5875ba8e75f673a520",
       "install": true
     },
     {
@@ -425,8 +433,8 @@
       "source": "upstream/WeatherWidget.qml",
       "destination": "upstream/WeatherWidget.qml",
       "mode": "0644",
-      "size": 18917,
-      "sha256": "88fac93b975c2c3c74e887e6d6cd37ead251b785df552b2ee3c5c7d3b580a528",
+      "size": 18929,
+      "sha256": "f22df3027cd0e0c40d8a81c4d39edcb29a37513f558e61fb5d0e57e96d59af23",
       "install": true
     },
     {
@@ -449,8 +457,8 @@
       "source": "upstream/WindowBar.qml",
       "destination": "upstream/WindowBar.qml",
       "mode": "0644",
-      "size": 9049,
-      "sha256": "dd0a9b879f3870bca6c122775bce95356398fca4dff6287d1815a9c80717bd61",
+      "size": 9051,
+      "sha256": "e2671171db1b373a8fb10404d771d7a9bfc4bfddfee9f0a56e1f8437e6c2a87c",
       "install": true
     },
     {

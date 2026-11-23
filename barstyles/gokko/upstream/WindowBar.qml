@@ -167,7 +167,7 @@ Scope {
                         }
                         duration: 260
                         color: root.darkMode ? "white" : "#1D1D1F"
-                        font.family: Fonts.forWeight(font.weight, root.fam); font.pixelSize: 11; font.weight: Font.DemiBold
+                        font.family: Fonts.forWeight(Font.DemiBold, root.fam); font.pixelSize: 11; font.weight: Font.DemiBold
                     }
                 }
             }

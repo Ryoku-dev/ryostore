@@ -178,7 +178,7 @@ Item {
                     anchors.centerIn: parent
                     text: I18n.tr(seg.modelData)
                     color: g.textColor
-                    font.family: Fonts.forWeight(font.weight, g.fontFamily)
+                    font.family: Fonts.forWeight(Font.DemiBold, g.fontFamily)
                     font.pixelSize: g.fontSize
                     font.weight: Font.DemiBold
                 }
@@ -204,7 +204,7 @@ Item {
                 y: g.m + (g.height - implicitHeight) / 2
                 text: I18n.tr(modelData)
                 color: g.textColor
-                font.family: Fonts.forWeight(font.weight, g.fontFamily)
+                font.family: Fonts.forWeight(Font.DemiBold, g.fontFamily)
                 font.pixelSize: g.fontSize
                 font.weight: Font.DemiBold
             }
