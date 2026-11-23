@@ -4476,8 +4476,10 @@ Scope {
         PanelWindow {
             id: win
             required property var modelData
+            // hotplug-safe geometry: never re-binds sizes to a dying ShellScreen (see ScreenGeom.qml)
+            MacParts.ScreenGeom { id: dockGeo; screen: win.modelData }
             screen: modelData
-            visible: root.monitor === "" || modelData.name === root.monitor
+            visible: root.monitor === "" || dockGeo.sname === root.monitor
 
             anchors { left: true; right: true; bottom: true }
             implicitHeight: root.windowHeight
@@ -4616,7 +4618,7 @@ Scope {
                 property real menuCx: 0
                 readonly property bool menuOpen: menuItem !== null
                 readonly property bool wantsHide: root.hideMode === "always"
-                    || (root.hideMode === "smart" && root.busyMonitors[win.modelData.name] === true)
+                    || (root.hideMode === "smart" && root.busyMonitors[dockGeo.sname] === true)
                 property bool dragging: false
                 property int dragIndex: -1
                 property int dragTarget: -1
@@ -4651,8 +4653,8 @@ Scope {
                 }
                 function wsel() { return 'window = "address:' + tearAddr + '"'; }
                 function realPos() {
-                    return { x: Math.round(win.modelData.x + tearX - tearW / 2),
-                             y: Math.round(win.modelData.y + tearGhost.offY + tearY - tearH * 0.035) };
+                    return { x: Math.round(dockGeo.sx + tearX - tearW / 2),
+                             y: Math.round(dockGeo.sy + tearGhost.offY + tearY - tearH * 0.035) };
                 }
                 function moveReal() {
                     if (!following || !tearAddr) return;
@@ -4699,7 +4701,7 @@ Scope {
                     if (item.kind === "win") {
                         var h = hyprOf(item.tl), o = h ? h.lastIpcObject : null;
                         tearAddr = h ? ("0x" + h.address.replace(/^0x/, "")) : "";
-                        var sw = win.modelData.width, sh = win.modelData.height;
+                        var sw = dockGeo.sw, sh = dockGeo.sh;
                         var w = (o && o.size) ? o.size[0] : (gsv.implicitWidth || 900);
                         var hh = (o && o.size) ? o.size[1] : (gsv.implicitHeight || 600);
                         // a fullscreen / huge window comes off as a comfortable floating size, like macOS restoring it
@@ -4710,7 +4712,7 @@ Scope {
                         oldSnap.shown = false; oldOut.stop();
                         oldVisible = !!(o && o.at && o.workspace && mon0 && mon0.activeWorkspace && o.workspace.id === mon0.activeWorkspace.id);
                         if (oldVisible) {
-                            oldSnap.x = o.at[0] - win.modelData.x; oldSnap.y = o.at[1] - win.modelData.y;
+                            oldSnap.x = o.at[0] - dockGeo.sx; oldSnap.y = o.at[1] - dockGeo.sy;
                             oldSnap.width = o.size[0]; oldSnap.height = o.size[1];
                             oldSv.captureSource = item.tl;          // one still frame (live: false)
                         }
@@ -4833,9 +4835,9 @@ Scope {
                     sourceComponent: Item {
                         id: bd
                         x: 0
-                        y: -(win.modelData.height - ui.height)
-                        width: win.modelData.width
-                        height: win.modelData.height
+                        y: -(dockGeo.sh - ui.height)
+                        width: dockGeo.sw
+                        height: dockGeo.sh
 
                         // placeholder until a wallpaper loads: deliberately colourful so a missing wallpaper is obvious
                         Rectangle {
@@ -4848,7 +4850,7 @@ Scope {
                         Image {
                             id: wpShown
                             anchors.fill: parent
-                            source: root.fileUrl(root.wallpaperFor(win.modelData.name))
+                            source: root.fileUrl(root.wallpaperFor(dockGeo.sname))
                             visible: status === Image.Ready
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
@@ -4864,7 +4866,7 @@ Scope {
                             anchors.fill: parent
                             video: root.bar ? root.bar.glassVideo : ""
                             live: root.glassLive
-                            paused: !!root.bar && (root.bar.gaming || root.bar.screenCovered[win.modelData.name] === true)
+                            paused: !!root.bar && (root.bar.gaming || root.bar.screenCovered[dockGeo.sname] === true)
                         }
 
                         ListModel { id: wm }
@@ -4940,7 +4942,7 @@ Scope {
                         function sync() {
                             var mon = null;
                             for (var i = 0; i < root.monData.length; i++)
-                                if (root.monData[i].name === win.modelData.name) mon = root.monData[i];
+                                if (root.monData[i].name === dockGeo.sname) mon = root.monData[i];
                             if (!mon) return;
                             var ws = [mon.activeWorkspace ? mon.activeWorkspace.id : -999];
                             if (mon.specialWorkspace && mon.specialWorkspace.id !== 0) ws.push(mon.specialWorkspace.id);
@@ -5016,7 +5018,7 @@ Scope {
                                 live: !ui.tucked
                                 visible: false
                                 sourceRect: Qt.rect(dock.x - parent.padPx - parent.margin,
-                                                    dock.y + (win.modelData.height - ui.height) - parent.padPx - parent.margin,
+                                                    dock.y + (dockGeo.sh - ui.height) - parent.padPx - parent.margin,
                                                     dock.width + 2 * (parent.padPx + parent.margin),
                                                     dock.height + 2 * (parent.padPx + parent.margin))
                                 textureSize: Qt.size(Math.max(1, Math.round(sourceRect.width * dg.ds)), Math.max(1, Math.round(sourceRect.height * dg.ds)))

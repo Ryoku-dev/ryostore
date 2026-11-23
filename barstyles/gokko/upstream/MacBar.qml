@@ -4622,6 +4622,8 @@ Scope {
         PanelWindow {
             id: win
             property var modelData: perScreen.modelData
+            // hotplug-safe geometry: never re-binds sizes to a dying ShellScreen (see ScreenGeom.qml)
+            MacParts.ScreenGeom { id: barGeo; screen: win.modelData }
             screen: perScreen.modelData
             // Keep this transparent host mapped so the screen snapshot/Liquid Glass backdrop stays live.
             // In launcher-only mode its input mask and visible bar elements are disabled below.
@@ -4681,8 +4683,8 @@ Scope {
                 onCcPageChanged: wifiPrompt = ""
                 Timer { interval: 400; repeat: true; running: ui.pop === "vol"; onTriggered: root.audioTick++ }
                 readonly property bool toastScreen: root.launcherOnly && root.launcherMonitor !== ""
-                    ? win.modelData.name === root.launcherMonitor
-                    : (Quickshell.screens.length === 1 || (macWm.focusedMonitor !== null && macWm.focusedMonitor.name === win.modelData.name))
+                    ? barGeo.sname === root.launcherMonitor
+                    : (Quickshell.screens.length === 1 || (macWm.focusedMonitor !== null && macWm.focusedMonitor.name === barGeo.sname))
                 // the Control Center IPC: the focused screen opens it
                 Connections {
                     target: root
@@ -4693,7 +4695,7 @@ Scope {
                 }
                 readonly property bool toastsShown: toastScreen && notifToasts.count > 0
                 // notifications arriving with no panel open: measure what's behind the banners
-                onToastsShownChanged: if (toastsShown && pop === "") root.measureTone(win.modelData.x + ui.width - 374, win.modelData.y + root.barHeight + 8, 364, 90)
+                onToastsShownChanged: if (toastsShown && pop === "") root.measureTone(barGeo.sx + ui.width - 374, barGeo.sy + root.barHeight + 8, 364, 90)
 
                 function wifiPick(n) {
                     if (n.inUse) { root.disconnectWifi(); return; }
@@ -4849,7 +4851,7 @@ Scope {
                     }
                     launcherSpotWasOpen = (pop === "spot");
                     if (pop !== "" && pop !== "spot") toneT.restart();
-                    if (pop === "spot" && ui.toastScreen) root.measureTone(win.modelData.x + ui.width / 2 - 320, win.modelData.y + ui.height * 0.4 - 30, 640, 60);
+                    if (pop === "spot" && ui.toastScreen) root.measureTone(barGeo.sx + ui.width / 2 - 320, barGeo.sy + ui.height * 0.4 - 30, 640, 60);
                     armed = "";
                     wifiPrompt = "";
                     spHoverLabel = "";
@@ -4962,7 +4964,7 @@ Scope {
                 ScreencopyView {
                     id: screenSnap
                     x: 0; y: 0
-                    width: win.modelData.width; height: win.modelData.height
+                    width: barGeo.sw; height: barGeo.sh
                     opacity: 0                      // only ever captured by the glass, never drawn itself
                     captureSource: root.liquidActive && !root.captureQuiet
                         && ((root.nativeBackdrop) || !glassBackdrop.item)
@@ -5007,7 +5009,7 @@ Scope {
                     onTriggered: {
                         var r = ui.glassRect;
                         if (r.width <= 0) return;
-                        root.measureTone(win.modelData.x + r.x + 64, win.modelData.y + r.y + 64, r.width - 128, r.height - 128);
+                        root.measureTone(barGeo.sx + r.x + 64, barGeo.sy + r.y + 64, r.width - 128, r.height - 128);
                     }
                 }
                 // the bar changed size: the old whole-screen snapshot shows the windows where they WERE, so drop it, take a new one if
@@ -5059,8 +5061,8 @@ Scope {
                         readonly property bool snapUsable: !!(root.nativeBackdrop) && screenSnap.hasContent
                             && bd.Window.window !== null && bd.Window.window === screenSnap.Window.window
                         x: 0; y: 0
-                        width: win.modelData.width
-                        height: win.modelData.height
+                        width: barGeo.sw
+                        height: barGeo.sh
 
                         Rectangle {
                             z: -3
@@ -5087,7 +5089,7 @@ Scope {
                             z: -2
                             anchors.fill: parent
                             visible: status === Image.Ready && !bd.snapUsable
-                            source: root.fileUrl(root.wallpaperFor(win.modelData.name))
+                            source: root.fileUrl(root.wallpaperFor(barGeo.sname))
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             sourceSize.width: bd.width
@@ -5102,7 +5104,7 @@ Scope {
                             Image {
                                 anchors.top: parent.top
                                 width: bd.width; height: bd.height
-                                source: root.fileUrl(root.wallpaperFor(win.modelData.name))
+                                source: root.fileUrl(root.wallpaperFor(barGeo.sname))
                                 fillMode: Image.PreserveAspectCrop
                                 asynchronous: true
                                 sourceSize.width: bd.width
@@ -5117,13 +5119,13 @@ Scope {
                             anchors.fill: parent
                             video: root.glassVideo
                             live: true
-                            paused: root.gaming || root.screenCovered[win.modelData.name] === true
+                            paused: root.gaming || root.screenCovered[barGeo.sname] === true
                         }
 
                         // the desktop widgets (they sit on the desktop layer, below every window), drawn from the same
                         // content as the real ones, so the glass shows them under the live windows
                         Repeater {
-                            model: (root.hub && root.hub.widgets && Quickshell.screens.length > 0 && win.modelData.name === Quickshell.screens[0].name)
+                            model: (root.hub && root.hub.widgets && Quickshell.screens.length > 0 && barGeo.sname === Quickshell.screens[0].name)
                                    ? root.hub.widgets.model : null
                             delegate: Item {
                                 id: mw
@@ -5144,7 +5146,7 @@ Scope {
                                     host: root.hub.widgets
                                     wtype: mw.wtype; wstyle: mw.wstyle; wsize: mw.wsize; wmode: mw.wmode; wsrc: mw.wsrc
                                     sx: mw.x; sy: mw.y
-                                    sname: win.modelData.name; sw: win.modelData.width; sh: win.modelData.height
+                                    sname: barGeo.sname; sw: barGeo.sw; sh: barGeo.sh
                                 }
                             }
                         }
@@ -5232,7 +5234,7 @@ Scope {
                         function sync() {
                             var mon = null, i;
                             for (i = 0; i < root.monData.length; i++)
-                                if (root.monData[i].name === win.modelData.name) mon = root.monData[i];
+                                if (root.monData[i].name === barGeo.sname) mon = root.monData[i];
                             if (!mon) return;
                             var ws = [mon.activeWorkspace ? mon.activeWorkspace.id : -999];
                             if (mon.specialWorkspace && mon.specialWorkspace.id !== 0) ws.push(mon.specialWorkspace.id);
