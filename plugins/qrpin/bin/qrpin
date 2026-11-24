@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# QR Pin helper. Argv only (R9). Writes only under the state dir passed in (R8).
+#
+#   qrpin encode <state-dir> <url>
+#   qrpin clear  <state-dir>
+#   qrpin paste  <state-dir>     # wl-paste → encode
+#   qrpin read   <state-dir>     # print saved url (empty if none)
+set -euo pipefail
+
+cmd="${1:-}"
+dir="${2:-}"
+
+need_dir() {
+  [[ -n "${dir}" ]] || { echo "state dir required" >&2; exit 2; }
+  mkdir -p "${dir}"
+}
+
+normalize() {
+  local raw="$1"
+  raw="$(printf '%s' "${raw}" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+  [[ -n "${raw}" ]] || return 1
+  if [[ "${raw}" != *"://"* ]]; then
+    raw="https://${raw}"
+  fi
+  printf '%s' "${raw}"
+}
+
+do_encode() {
+  local url="$1"
+  need_dir
+  command -v qrencode >/dev/null 2>&1 || { echo "qrencode missing" >&2; exit 1; }
+  local norm
+  norm="$(normalize "${url}")" || { echo "empty url" >&2; exit 1; }
+  # Atomic write: encode to temp, then replace.
+  local tmp="${dir}/qr.png.tmp.$$"
+  qrencode -t PNG -s 8 -m 2 -o "${tmp}" -- "${norm}"
+  mv -f "${tmp}" "${dir}/qr.png"
+  printf '%s\n' "${norm}" > "${dir}/url"
+  printf '%s\n' "${norm}"
+}
+
+case "${cmd}" in
+  encode)
+    do_encode "${3:-}"
+    ;;
+  clear)
+    need_dir
+    rm -f "${dir}/url" "${dir}/qr.png" "${dir}/qr.png.tmp."* 2>/dev/null || true
+    ;;
+  paste)
+    need_dir
+    command -v wl-paste >/dev/null 2>&1 || { echo "wl-paste missing" >&2; exit 1; }
+    do_encode "$(wl-paste -n 2>/dev/null || true)"
+    ;;
+  read)
+    need_dir
+    if [[ -f "${dir}/url" ]]; then
+      tr -d '\r\n' < "${dir}/url"
+      printf '\n'
+    fi
+    ;;
+  *)
+    echo "usage: qrpin encode|clear|paste|read <state-dir> [url]" >&2
+    exit 2
+    ;;
+esac

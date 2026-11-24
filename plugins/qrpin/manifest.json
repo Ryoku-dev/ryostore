@@ -1,0 +1,60 @@
+{
+  "id": "qrpin",
+  "name": "QR Pin",
+  "version": "0.1.0",
+  "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
+  "description": "Pin any URL as a QR code on the wallpaper. Stays until you clear it.",
+  "license": "MIT",
+  "official": false,
+  "tags": [
+    "qr",
+    "url",
+    "desktop-widget",
+    "share"
+  ],
+  "hosts": [
+    "desktopWidget"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "assets/preview-widget.png"
+  ],
+  "commands": [
+    "bin/qrpin"
+  ],
+  "capabilities": {
+    "densities": [
+      "compact",
+      "full"
+    ]
+  },
+  "defaults": {
+    "host": "desktopWidget",
+    "desktopWidget": {
+      "bg": "card"
+    },
+    "icon": "qr_code_2",
+    "label": "QR Pin"
+  },
+  "dependencies": {
+    "commands": [
+      "qrencode",
+      "wl-paste"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "url",
+        "type": "text",
+        "label": "Pinned URL",
+        "group": "QR Pin",
+        "default": "",
+        "placeholder": "https://example.com"
+      }
+    ]
+  }
+}

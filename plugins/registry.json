@@ -1498,6 +1498,37 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-11-09"
+    },
+    {
+      "id": "qrpin",
+      "name": "QR Pin",
+      "version": "0.1.0",
+      "path": "plugins/qrpin",
+      "author": "Visnu <109976023+visnudeva@users.noreply.github.com>",
+      "upstream": "https://github.com/visnudeva/ryostore/tree/main/plugins/qrpin",
+      "summary": "Pin any URL as a QR code on the wallpaper.",
+      "description": "Pin any URL as a QR code on the wallpaper. Stays until you clear it.",
+      "tags": [
+        "qr",
+        "url",
+        "desktop-widget",
+        "share"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-widget.png",
+      "screenshots": [
+        "assets/preview-widget.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "be53e76fd2da242b61a0de1b525f5d7801e173995539fabb49e56617202e0379",
+      "official": false,
+      "tagline": "Pin any URL as a QR code on the wallpaper.",
+      "icon": "qr_code_2",
+      "hosts": [
+        "desktopWidget"
+      ],
+      "lastUpdated": "2026-11-24"
     }
   ]
 }
