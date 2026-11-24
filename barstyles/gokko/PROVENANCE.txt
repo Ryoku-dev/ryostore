@@ -4,5 +4,6 @@ Pinned starting revision: d4f8500c41577ab7d056470a7931392786ed0300
 Upstream work, shaders and assets retain their original attribution.
 Ryoku core integration is maintained separately from this Store barstyle.
 Niri output snapshot reference: MacShell 1.0.5 (bef9fc4d20cedd570c1a9a9fb72f548fe4571936)
+0.3.5: fix Bluetooth connected/paired detection on newer BlueZ (5.87+) with per-bearer info lines; open Wi-Fi and Bluetooth lists directly when clicking their Control Center tiles; add Forget Network (with Known Networks / Nearby Networks split) and Forget Device with inline confirmation in System Settings.
 0.3.3: the menu-bar magnifier delegates to Ryoku's selected launcher; the old Spotlight UI now ships separately as a launcher.
 0.3.2: the bar's system tray now renders the daemon-owned shell.services Tray frame and the native BarKit tray menu (same lifecycle as Ricelin/Obi/Nacre) instead of Quickshell's SystemTray. Closed apps disappear from the bar instead of piling up as duplicates, and a restarted app can reappear. Native left/right click and scroll are kept; the custom glass tray popover and the unsupported middle-click secondary activation were removed.

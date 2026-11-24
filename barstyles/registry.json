@@ -213,7 +213,7 @@
     {
       "id": "gokko",
       "name": "Gokko",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "path": "barstyles/gokko",
       "author": "aethctl",
       "upstream": "https://github.com/0-ss/MacShell",
@@ -232,8 +232,8 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "c2c4866c82217f662e81e4864d4de82abfbb98705389852f542e95fd2be9dfea",
-      "lastUpdated": "2026-10-29",
+      "manifestSha256": "65e6bc03aef21ecacea05b0e5244a7777c25793420377c1b6004149966391236",
+      "lastUpdated": "2026-11-24",
       "official": false,
       "license": "MIT"
     },
