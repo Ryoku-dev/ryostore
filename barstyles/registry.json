@@ -232,7 +232,7 @@
       "preview": "assets/preview.png",
       "screenshots": [],
       "manifest": "manifest.json",
-      "manifestSha256": "2d7f9ca166d9ca3b120551bb938d5672051adb815f16b38e2aa84f14c339afa6",
+      "manifestSha256": "65e6bc03aef21ecacea05b0e5244a7777c25793420377c1b6004149966391236",
       "lastUpdated": "2026-11-24",
       "official": false,
       "license": "MIT"
