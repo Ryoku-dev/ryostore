@@ -265,16 +265,16 @@
       "source": "upstream/MacBar.qml",
       "destination": "upstream/MacBar.qml",
       "mode": "0644",
-      "size": 592700,
-      "sha256": "de02aba5efe04690da11809bd4356dcdaa0d23de79788f14cd44b6052ca66d80",
+      "size": 592822,
+      "sha256": "690eb5ec0db71997968ef438c216f86bc6acd97bbf84c954a2e074c02b5e64af",
       "install": true
     },
     {
       "source": "upstream/MacDock.qml",
       "destination": "upstream/MacDock.qml",
       "mode": "0644",
-      "size": 316324,
-      "sha256": "d71a5ced1bcb0b799ffb73ffc0376665200821446c9d682012ca0420f159d889",
+      "size": 316277,
+      "sha256": "d94f1c2997c6707c634433c91b7368ff90cd8f5c47ef4297c0ca37fb3fe1cd9f",
       "install": true
     },
     {
