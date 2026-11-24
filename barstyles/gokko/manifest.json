@@ -265,8 +265,8 @@
       "source": "upstream/MacBar.qml",
       "destination": "upstream/MacBar.qml",
       "mode": "0644",
-      "size": 592822,
-      "sha256": "690eb5ec0db71997968ef438c216f86bc6acd97bbf84c954a2e074c02b5e64af",
+      "size": 595917,
+      "sha256": "0b4f4a5c74aa34044516d03da253f36c7072fa4a9c23a06373c974372ddc3c29",
       "install": true
     },
     {
