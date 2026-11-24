@@ -2,7 +2,7 @@
   "schema": 1,
   "id": "gokko",
   "category": "barstyles",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "destination": "ryoku/barstyles/gokko",
   "files": [
     {
@@ -25,8 +25,8 @@
       "source": "PROVENANCE.txt",
       "destination": "PROVENANCE.txt",
       "mode": "0644",
-      "size": 941,
-      "sha256": "56d409602d065e448f5caaf304e1d659ace77a91ee6ee73e6e1467945cd36d38",
+      "size": 1250,
+      "sha256": "3fac1b7380227eb9ab641082e325ff6bbf7eb5b779543115cb6ca04db56ef419",
       "install": true
     },
     {
@@ -50,7 +50,7 @@
       "destination": "VERSION",
       "mode": "0644",
       "size": 6,
-      "sha256": "027a61167f091a427fa7844dcac0c5141bafbcbdcadc7e04a93578147ab956f2",
+      "sha256": "d5d1d767be9218f02ebda081a83a2b2fede85055e910e5a94a09329966486fcc",
       "install": true
     },
     {
@@ -265,16 +265,16 @@
       "source": "upstream/MacBar.qml",
       "destination": "upstream/MacBar.qml",
       "mode": "0644",
-      "size": 587841,
-      "sha256": "743a7d9f282ef4cb088e8e3850417ea375ab4e04410b8a1fc3877e63f98e2cbc",
+      "size": 592700,
+      "sha256": "de02aba5efe04690da11809bd4356dcdaa0d23de79788f14cd44b6052ca66d80",
       "install": true
     },
     {
       "source": "upstream/MacDock.qml",
       "destination": "upstream/MacDock.qml",
       "mode": "0644",
-      "size": 308848,
-      "sha256": "75876fb1e79b7badb15e67d7caa7e20cfe147382b5d3a8572ae793d5e6aa5229",
+      "size": 316324,
+      "sha256": "d71a5ced1bcb0b799ffb73ffc0376665200821446c9d682012ca0420f159d889",
       "install": true
     },
     {
