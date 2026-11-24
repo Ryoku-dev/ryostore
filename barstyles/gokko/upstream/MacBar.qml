@@ -7560,7 +7560,7 @@ Scope {
                             id: tl
                             clickable: true
                             on: root.wifiOn
-                            onClicked: root.toggleWifi()
+                            onClicked: { root.wifiError = ""; root.scanWifi(); root.refreshConnections(); ui.ccPage = "wifi"; }
                             t: ccPal; gx: ccg
                             CCBtn {
                                 plain: true
@@ -7568,11 +7568,6 @@ Scope {
                                 x: 12; anchors.verticalCenter: parent.verticalCenter
                                 kind: "wifi"; level: root.wifiOn ? (root.wifiLevel || 3) : 3
                                 on: root.wifiOn
-                            }
-                            MouseArea {
-                                // only the arrow end opens the Wi-Fi page inside the Control Center; the rest of the tile switches Wi-Fi on / off
-                                x: parent.width - 48; width: 48; height: parent.height
-                                onClicked: { root.wifiError = ""; root.scanWifi(); root.refreshConnections(); ui.ccPage = "wifi"; }
                             }
                             Column {
                                 x: 62; anchors.verticalCenter: parent.verticalCenter
@@ -7593,7 +7588,7 @@ Scope {
                         CCTile {
                             clickable: true
                             on: root.btOn
-                            onClicked: root.toggleBt()
+                            onClicked: { root.btError = ""; root.scanBt(); root.refreshBt(); ui.ccPage = "bt"; }
                             id: btTile
                             t: ccPal; gx: ccg
                             // one grid cell is ~70 px wide, two are ~150 px: wide = shows the label and opens the device list
@@ -7605,12 +7600,6 @@ Scope {
                                 x: btTile.wide ? 12 : (parent.width - width) / 2
                                 anchors.verticalCenter: parent.verticalCenter
                                 kind: "bluetooth"; on: root.btOn
-                            }
-                            MouseArea {
-                                visible: btTile.wide
-                                // only the arrow end opens the Bluetooth page inside the Control Center; the rest of the tile switches Bluetooth on / off
-                                x: parent.width - 48; width: 48; height: parent.height
-                                onClicked: { root.btError = ""; root.scanBt(); root.refreshBt(); ui.ccPage = "bt"; }
                             }
                             Column {
                                 visible: btTile.wide
