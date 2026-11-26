@@ -1498,6 +1498,39 @@
         "topbarGlyph"
       ],
       "lastUpdated": "2026-11-09"
+    },
+    {
+      "id": "ai-usage",
+      "name": "AI Usage",
+      "version": "0.5.1",
+      "path": "plugins/ai-usage",
+      "author": "Danilo Heroso <danmaxis@gmail.com>",
+      "upstream": "https://github.com/danmaxis/ryoku-ai-usage-widget",
+      "summary": "AI plan usage in a frame popout, from ai-usagebar or from Ryoku's built-in AI usage monitor: the primary provider in full, every other provider as a pill, and a drawer with the detail of the one you click. Read-only; no credentials, no network of its own.",
+      "description": "AI plan usage in a frame popout, from ai-usagebar or from Ryoku's built-in AI usage monitor: the primary provider in full, every other provider as a pill, and a drawer with the detail of the one you click. Read-only; no credentials, no network of its own.",
+      "license": "MIT",
+      "tags": [
+        "frame-popout",
+        "ai",
+        "usage",
+        "monitoring"
+      ],
+      "accent": "#8f8378",
+      "surface": "#101010",
+      "preview": "assets/preview-popout.png",
+      "screenshots": [
+        "assets/preview-popout.png",
+        "assets/preview-drawer.png"
+      ],
+      "manifest": "product-manifest.json",
+      "manifestSha256": "2ad0853adb57d69ae120a1d0698f86eb5bbe3632229c728780c504dba3d0ddc3",
+      "official": false,
+      "tagline": "Every AI plan quota at a glance, with pace against the clock.",
+      "icon": "data_usage",
+      "hosts": [
+        "framePopout"
+      ],
+      "lastUpdated": "2026-11-20"
     }
   ]
 }

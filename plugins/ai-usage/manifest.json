@@ -1,0 +1,333 @@
+{
+  "id": "ai-usage",
+  "name": "AI Usage",
+  "version": "0.5.1",
+  "author": "Danilo Heroso <danmaxis@gmail.com>",
+  "description": "AI plan usage on the Ryoku desktop: the primary provider in full, every other provider as a pill in a 2-4 column grid, and a drawer with the full detail of the one you click. Opens from the frame edge or a keybind. Read-only over the local `ai-usagebar usage --json` report or, without it, over the cache files of Ryoku's built-in AI usage monitor; no credentials, no network of its own.",
+  "license": "MIT",
+  "official": false,
+  "tags": [
+    "frame-popout",
+    "ai",
+    "usage",
+    "monitoring"
+  ],
+  "hosts": [
+    "framePopout"
+  ],
+  "entryPoints": {
+    "main": "service/Main.qml",
+    "content": "content/Widget.qml"
+  },
+  "files": [
+    "content/i18n/en.json",
+    "content/i18n/pt_BR.json",
+    "content/i18n/pt.json",
+    "content/i18n/es.json",
+    "content/i18n/fr.json"
+  ],
+  "commands": [
+    "bin/ai-usage-collect"
+  ],
+  "capabilities": {
+    "densities": [
+      "full"
+    ]
+  },
+  "defaults": {
+    "host": "framePopout",
+    "framePopout": {
+      "edge": "center",
+      "align": "center"
+    },
+    "icon": "data_usage",
+    "label": "AI Usage"
+  },
+  "dependencies": {
+    "commands": [
+      "ai-usagebar"
+    ]
+  },
+  "metadata": {
+    "settings": [
+      {
+        "key": "language",
+        "type": "choice",
+        "label": "Language",
+        "group": "Appearance",
+        "default": "en",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "en",
+            "label": "English"
+          },
+          {
+            "value": "es",
+            "label": "Español"
+          },
+          {
+            "value": "fr",
+            "label": "Français"
+          },
+          {
+            "value": "pt",
+            "label": "Português"
+          },
+          {
+            "value": "pt_BR",
+            "label": "Português (BR)"
+          }
+        ]
+      },
+      {
+        "key": "accent",
+        "type": "choice",
+        "label": "Accent",
+        "group": "Appearance",
+        "default": "wallpaper",
+        "options": [
+          {
+            "value": "wallpaper",
+            "label": "Wallpaper"
+          },
+          {
+            "value": "brand",
+            "label": "Brand"
+          },
+          {
+            "value": "mono",
+            "label": "Monochrome"
+          }
+        ]
+      },
+      {
+        "key": "source",
+        "type": "choice",
+        "label": "Data source",
+        "group": "Data",
+        "default": "auto",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "ai-usagebar",
+            "label": "ai-usagebar"
+          },
+          {
+            "value": "ryoku",
+            "label": "Ryoku built-in"
+          }
+        ],
+        "description": "Auto uses ai-usagebar when it is installed, otherwise the cache files of Ryoku's own AI usage monitor (Claude Code, Codex, OpenCode). The two are never mixed."
+      },
+      {
+        "key": "order",
+        "type": "choice",
+        "label": "Provider order (headline usage %)",
+        "group": "Data",
+        "default": "upstream",
+        "options": [
+          {
+            "value": "upstream",
+            "label": "Upstream primary"
+          },
+          {
+            "value": "highest",
+            "label": "Highest headline % first"
+          },
+          {
+            "value": "lowest",
+            "label": "Lowest headline % first"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetical"
+          },
+          {
+            "value": "manual",
+            "label": "Manual sequence (below)"
+          }
+        ]
+      },
+      {
+        "key": "orderSequence",
+        "type": "text",
+        "label": "Manual sequence",
+        "group": "Data",
+        "placeholder": "anthropic,openai@work,copilot",
+        "default": ""
+      },
+      {
+        "key": "primary",
+        "type": "text",
+        "label": "Pinned provider (exact id)",
+        "group": "Data",
+        "placeholder": "anthropic",
+        "default": ""
+      },
+      {
+        "key": "primaryChoice",
+        "type": "choice",
+        "label": "Pinned provider — all order modes",
+        "group": "Data",
+        "default": "auto",
+        "options": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "anthropic",
+            "label": "Anthropic"
+          },
+          {
+            "value": "openai",
+            "label": "OpenAI"
+          },
+          {
+            "value": "copilot",
+            "label": "GitHub Copilot"
+          },
+          {
+            "value": "openrouter",
+            "label": "OpenRouter"
+          },
+          {
+            "value": "synthetic",
+            "label": "Synthetic"
+          }
+        ]
+      },
+      {
+        "key": "showMetricDetail",
+        "type": "toggle",
+        "label": "Show primary pace detail",
+        "group": "Data",
+        "default": true
+      },
+      {
+        "key": "padding",
+        "type": "slider",
+        "label": "Padding",
+        "group": "Layout",
+        "min": 0,
+        "max": 32,
+        "decimals": 0,
+        "default": 12
+      },
+      {
+        "key": "gap",
+        "type": "slider",
+        "label": "Row gap",
+        "group": "Layout",
+        "min": 2,
+        "max": 24,
+        "decimals": 0,
+        "default": 6
+      },
+      {
+        "key": "columns",
+        "type": "slider",
+        "label": "Columns",
+        "group": "Layout",
+        "min": 2,
+        "max": 4,
+        "decimals": 0,
+        "default": 2
+      },
+      {
+        "key": "drawerDirection",
+        "type": "choice",
+        "label": "Drawer direction",
+        "group": "Layout",
+        "default": "down",
+        "options": [
+          {
+            "value": "down",
+            "label": "Down"
+          },
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "key": "drawerMaxHeight",
+        "type": "slider",
+        "label": "Drawer max height",
+        "group": "Layout",
+        "min": 160,
+        "max": 480,
+        "decimals": 0,
+        "default": 320
+      },
+      {
+        "key": "secondaryLabel",
+        "type": "choice",
+        "label": "Secondary label",
+        "group": "Layout",
+        "default": "name",
+        "options": [
+          {
+            "value": "name",
+            "label": "Name"
+          },
+          {
+            "value": "short",
+            "label": "Short code"
+          },
+          {
+            "value": "plan",
+            "label": "Plan"
+          }
+        ]
+      },
+      {
+        "key": "showSecondaries",
+        "type": "toggle",
+        "label": "Show secondary pills",
+        "group": "Layout",
+        "default": true
+      },
+      {
+        "key": "maxSecondary",
+        "type": "slider",
+        "label": "Secondary pills",
+        "group": "Data",
+        "min": 0,
+        "max": 12,
+        "decimals": 0,
+        "default": 6
+      },
+      {
+        "key": "pollSeconds",
+        "type": "slider",
+        "label": "Every (s)",
+        "group": "Data",
+        "min": 60,
+        "max": 3600,
+        "decimals": 0,
+        "default": 300
+      },
+      {
+        "key": "keybindHint",
+        "type": "text",
+        "label": "Keybind (toggle) - type in Keybinds",
+        "group": "Keybind",
+        "placeholder": "ryoku-shell plugin ai-usage",
+        "default": ""
+      }
+    ]
+  }
+}
