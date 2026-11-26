@@ -80,9 +80,7 @@ Item {
                     x: 12; width: parent.width - 24
                     topPadding: 14; bottomPadding: 14
                     wrapMode: Text.Wrap
-                    text: Hub.deps["bluetooth.service"] === false
-                        ? "The Bluetooth service isn't running — enable it in your system's service settings."
-                        : "No Bluetooth adapter found."
+                    text: "No Bluetooth adapter found. Is the bluetooth service running? " + Platform.bluetoothHint
                     size: 13
                     color: Theme.fg2
                 }

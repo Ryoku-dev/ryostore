@@ -25,6 +25,30 @@
       "license": "GPL-3.0-or-later",
       "lastUpdated": "2026-10-21",
       "official": true
+    },
+    {
+      "id": "island",
+      "name": "Island",
+      "version": "1.0.0",
+      "path": "notifications/island",
+      "author": "Alan Betty",
+      "upstream": "https://github.com/Alan-Betty/quickshell-DynamicIsland/tree/main/ryostore/notifications/island",
+      "summary": "The Dynamic Island's notification card",
+      "description": "A black card with the app icon or the sender's picture, the summary, body and time, and liquid glass only where your hand goes: a close bead on hover and glass action pills. Urgent notifications carry a Time Sensitive line and a red halo; timed cards drain a hairline along the foot.",
+      "tags": [
+        "black",
+        "island",
+        "liquid-glass"
+      ],
+      "accent": "#0a84ff",
+      "surface": "#000000",
+      "preview": "assets/preview.webp",
+      "screenshots": [],
+      "manifest": "manifest.json",
+      "manifestSha256": "68b8f52f22cb7161378ac6bf3f60fe631c44765985307af9e891791c0932f91b",
+      "lastUpdated": "2026-11-22",
+      "official": false,
+      "license": "MIT"
     }
   ]
 }

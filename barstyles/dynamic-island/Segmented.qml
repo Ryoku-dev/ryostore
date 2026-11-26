@@ -16,16 +16,21 @@ Rectangle {
     radius: 9
     color: Theme.fill
 
-    Rectangle {
+    // the thumb is a drop of glass sliding over the labels
+    Lens {
+        id: thumb
         y: 2
         x: 2 + root.currentIndex * root.segW
         width: root.segW
         height: root.itemHeight
-        radius: 7
-        color: Theme.dark ? Qt.rgba(1, 1, 1, 0.20) : "#ffffff"
-        border.width: Theme.dark ? 0 : 0.5
-        border.color: Qt.rgba(0, 0, 0, 0.06)
-        Behavior on x { SpringAnimation { spring: 5; damping: 0.4 } }
+        radius: Math.min(7, height / 2)
+        base: "#1a1a1c"
+        tint: "#ffffff"
+        tintAmount: 0.10
+        shadow: 0.35
+        property bool moving: false
+        hovered: moving
+        Behavior on x { SpringAnimation { spring: 5; damping: 0.4; onRunningChanged: thumb.moving = running } }
     }
     Row {
         x: 2; y: 2

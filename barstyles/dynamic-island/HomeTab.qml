@@ -53,6 +53,8 @@ Item {
         Column {
             id: clockCol
             width: 186
+            // centred on its own when weather is off
+            x: Config.s.weather ? 0 : (parent.width - implicitWidth) / 2
             anchors.verticalCenter: parent.verticalCenter
             spacing: -2
             Txt { text: Hub.greeting; size: 12.5; weight: Font.DemiBold; color: Theme.accent }
@@ -70,6 +72,7 @@ Item {
 
         Rectangle {
             id: vsep
+            visible: Config.s.weather
             anchors.left: clockCol.right
             anchors.leftMargin: 12
             width: 1

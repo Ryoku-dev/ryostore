@@ -29,14 +29,18 @@ Item {
         onClicked: root.hasMenu ? root.opened() : root.toggled()
     }
 
-    Rectangle {
+    Lens {
         id: circle
         x: 4
         anchors.verticalCenter: parent.verticalCenter
-        width: 36; height: 36; radius: 18
-        color: root.active ? root.activeColor : circMa.containsMouse ? Theme.fill3 : Theme.fill2
+        width: 36; height: 36
+        base: "#141414"
+        tint: root.activeColor
+        tintAmount: root.active ? 0.9 : 0
+        hovered: circMa.containsMouse
+        pressed: circMa.pressed
         scale: circMa.pressed ? 0.88 : 1
-        Behavior on color { ColorAnimation { duration: 220 } }
+        Behavior on tintAmount { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: 260; easing.type: Easing.OutBack; easing.overshoot: 2.6 } }
         Icon {
             anchors.centerIn: parent
